@@ -4,9 +4,9 @@
 
 - [x] Project scaffolding (README, CLAUDE.md, directory structure)
 - [ ] Data models (`PuzzleEnvelope`, `GridSpec`, `FilledGrid`)
-- [ ] Configuration loading (`config.yaml` → Pydantic settings)
-- [ ] Dictionary module (load, filter by score, lookup)
-- [ ] Unit tests for dictionary and config modules
+- [x] Configuration loading (`config.yaml` → Pydantic settings)
+- [x] Dictionary module (load, filter by score, lookup)
+- [x] Unit tests for dictionary and config modules
 
 ## Phase 1 — Grid Fill Pipeline
 
