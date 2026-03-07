@@ -3,7 +3,7 @@
 ## Phase 0 — Project Foundation (current)
 
 - [x] Project scaffolding (README, CLAUDE.md, directory structure)
-- [ ] Data models (`PuzzleEnvelope`, `GridSpec`, `FilledGrid`)
+- [x] Data models (`PuzzleEnvelope`, `GridSpec`, `FilledGrid`)
 - [x] Configuration loading (`config.yaml` → Pydantic settings)
 - [x] Dictionary module (load, filter by score, lookup)
 - [x] Unit tests for dictionary and config modules
