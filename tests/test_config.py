@@ -106,6 +106,6 @@ class TestLoadConfig:
         """When no config files exist, load_config returns defaults."""
         import crossword_generator.config as config_module
 
-        monkeypatch.setattr(config_module, "_find_project_root", lambda: tmp_path)
+        monkeypatch.setattr(config_module, "find_project_root", lambda: tmp_path)
         cfg = load_config()
         assert cfg == Config()

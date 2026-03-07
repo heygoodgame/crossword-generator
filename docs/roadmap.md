@@ -8,7 +8,7 @@
 - [x] Dictionary module (load, filter by score, lookup)
 - [x] Unit tests for dictionary and config modules
 
-## Phase 1 — Grid Fill Pipeline (current)
+## Phase 1 — Grid Fill Pipeline
 
 - [x] go-crossword Docker wrapper (pull image, invoke, parse output)
 - [x] go-crossword compact output parser
@@ -23,10 +23,10 @@
 
 ## Phase 2 — Fill Quality Grading
 
-- [ ] Rule-based fill scorer against Jeff Chen word list
-- [ ] Scoring criteria: minimum word score, obscurity penalties, duplicate detection
-- [ ] Retry logic: if fill scores below threshold, re-run filler with different seed
-- [ ] 2-letter word handling for midi grids (relaxed threshold or supplemental list)
+- [x] Rule-based fill scorer against Jeff Chen word list
+- [x] Scoring criteria: minimum word score, obscurity penalties, duplicate detection
+- [x] Retry logic: if fill scores below threshold, re-run filler with different seed
+- [x] 2-letter word handling for midi grids (relaxed threshold or supplemental list)
 
 ## Phase 3 — Clue Generation
 

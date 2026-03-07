@@ -91,6 +91,13 @@ def generate(
     )
     if result.fill:
         click.echo(f"Filler: {result.fill.filler_used}")
+        if result.fill.grade_report:
+            report = result.fill.grade_report
+            click.echo(
+                f"Fill quality: {report.overall_score:.1f}/100 "
+                f"({'PASS' if report.passing else 'FAIL'})"
+            )
+            click.echo(f"Attempt: {result.fill.attempt_number}")
         # Print the grid
         for row in result.fill.grid:
             click.echo(" ".join(c if c != "." else "\u2588" for c in row))

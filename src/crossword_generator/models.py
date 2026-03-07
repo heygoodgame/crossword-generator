@@ -43,6 +43,29 @@ class ThemeConcept(BaseModel):
     revealer_clue: str = ""
 
 
+class WordGrade(BaseModel):
+    """Quality grade for a single word in the grid."""
+
+    word: str
+    length: int
+    direction: str
+    number: int
+    dictionary_score: int | None = None
+    penalties: dict[str, float] = Field(default_factory=dict)
+    adjusted_score: float = 0.0
+
+
+class FillGradeReport(BaseModel):
+    """Aggregate fill quality report for a completed grid."""
+
+    overall_score: float  # 0-100
+    word_count: int
+    passing: bool
+    word_grades: list[WordGrade] = Field(default_factory=list)
+    penalties_applied: dict[str, float] = Field(default_factory=dict)
+    summary: str = ""
+
+
 class FillResult(BaseModel):
     """Result of grid filling."""
 
@@ -50,6 +73,7 @@ class FillResult(BaseModel):
     quality_score: float | None = None
     filler_used: str = ""
     attempt_number: int = 1
+    grade_report: FillGradeReport | None = None
 
 
 class PuzzleEnvelope(BaseModel):

@@ -6,14 +6,16 @@ import logging
 from datetime import UTC, datetime
 from pathlib import Path
 
-from crossword_generator.config import Config
+from crossword_generator.config import Config, find_project_root
+from crossword_generator.dictionary import Dictionary
 from crossword_generator.exporters.base import Exporter
 from crossword_generator.exporters.ipuz_exporter import IpuzExporter
 from crossword_generator.exporters.puz_exporter import PuzExporter
 from crossword_generator.fillers.go_crossword import GoCrosswordFiller
+from crossword_generator.graders.fill_grader import FillGrader
 from crossword_generator.models import PuzzleEnvelope, PuzzleType
 from crossword_generator.steps.base import PipelineStep
-from crossword_generator.steps.fill_step import FillStep
+from crossword_generator.steps.fill_step import FillWithGradingStep
 
 logger = logging.getLogger(__name__)
 
@@ -85,8 +87,26 @@ def create_pipeline(
     else:
         raise ValueError(f"Unknown fill provider: {config.fill.provider}")
 
+    # Build fill grader and composite step
+    project_root = find_project_root()
+    dictionary = Dictionary.load(
+        project_root / config.dictionary.path,
+        min_word_score=config.dictionary.min_word_score,
+        min_2letter_score=config.dictionary.min_2letter_score,
+    )
+    grader = FillGrader(
+        dictionary,
+        min_passing_score=config.grading.fill.min_score,
+    )
+    fill_step = FillWithGradingStep(
+        filler,
+        grader,
+        max_retries=config.fill.max_retries,
+        retry_on_fail=config.grading.fill.retry_on_fail,
+    )
+
     # Build steps
-    steps: list[PipelineStep] = [FillStep(filler)]
+    steps: list[PipelineStep] = [fill_step]
 
     # Build exporters
     exporters: list[Exporter] = []

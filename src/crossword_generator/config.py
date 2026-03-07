@@ -11,7 +11,7 @@ from pydantic import BaseModel
 logger = logging.getLogger(__name__)
 
 
-def _find_project_root() -> Path:
+def find_project_root() -> Path:
     """Walk up from this module to find the directory containing pyproject.toml."""
     current = Path(__file__).resolve().parent
     while current != current.parent:
@@ -125,7 +125,7 @@ def load_config(path: Path | None = None) -> Config:
     Raises:
         FileNotFoundError: If an explicit path is given but does not exist.
     """
-    project_root = _find_project_root()
+    project_root = find_project_root()
 
     if path is not None:
         if not path.exists():
