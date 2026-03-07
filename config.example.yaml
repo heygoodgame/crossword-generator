@@ -1,0 +1,39 @@
+# Crossword Generator Configuration
+
+puzzle:
+  type: mini        # mini or midi
+  grid_size: 5      # 5, 7 for mini; 9, 11 for midi
+
+dictionary:
+  path: dictionaries/XwiJeffChenList.txt
+  min_word_score: 50
+  # For midi grids, 2-letter words may need a lower threshold
+  min_2letter_score: 30
+
+fill:
+  provider: go-crossword  # go-crossword, genxword, or built-in
+  max_retries: 5
+  go_crossword:
+    docker_image: "ccz-crossmatics/go-crossword:latest"
+  genxword: {}
+
+grading:
+  fill:
+    min_score: 70           # Minimum overall fill quality score (0-100)
+    retry_on_fail: true
+  clue:
+    min_score: 70           # Minimum clue quality score (0-100)
+    regenerate_on_fail: true
+
+llm:
+  provider: ollama
+  ollama:
+    base_url: "http://localhost:11434"
+    model: llama3
+    timeout: 120
+
+output:
+  directory: output
+  formats:
+    - puz
+    - ipuz
