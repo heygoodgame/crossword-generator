@@ -11,7 +11,7 @@ dictionary:
   min_2letter_score: 30
 
 fill:
-  provider: go-crossword  # go-crossword, genxword, or built-in
+  provider: go-crossword  # go-crossword or csp
   max_retries: 5
   go_crossword:
     docker_image: "crossword-generator/go-crossword-cli:latest"
@@ -20,7 +20,11 @@ fill:
     output_format: json
     dictionary_path: dictionaries/XwiJeffChenList.txt  # null to use embedded dictionary
     min_dictionary_score: 50
-  genxword: {}
+  csp:
+    dictionary_path: dictionaries/XwiJeffChenList.txt
+    min_word_score: 50
+    min_2letter_score: 30
+    timeout: 30
 
 grading:
   fill:

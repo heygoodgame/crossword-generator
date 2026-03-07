@@ -21,12 +21,15 @@ logger = logging.getLogger(__name__)
 class GoCrosswordFiller(GridFiller):
     """Grid filler using the go-crossword Docker image."""
 
-    def __init__(self, config: GoCrosswordConfig) -> None:
+    def __init__(
+        self, config: GoCrosswordConfig, *, name: str | None = None
+    ) -> None:
         self._config = config
+        self._name_override = name
 
     @property
     def name(self) -> str:
-        return "go-crossword"
+        return self._name_override or "go-crossword"
 
     def fill(self, spec: GridSpec, *, seed: int | None = None) -> FilledGrid:
         """Fill a grid by invoking go-crossword via Docker.

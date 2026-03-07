@@ -11,6 +11,7 @@ from crossword_generator.dictionary import Dictionary
 from crossword_generator.exporters.base import Exporter
 from crossword_generator.exporters.ipuz_exporter import IpuzExporter
 from crossword_generator.exporters.puz_exporter import PuzExporter
+from crossword_generator.fillers.csp import CSPFiller
 from crossword_generator.fillers.go_crossword import GoCrosswordFiller
 from crossword_generator.graders.fill_grader import FillGrader
 from crossword_generator.models import PuzzleEnvelope, PuzzleType
@@ -81,19 +82,21 @@ def create_pipeline(
     Returns:
         Tuple of (Pipeline, initial PuzzleEnvelope).
     """
-    # Build filler
-    if config.fill.provider == "go-crossword":
-        filler = GoCrosswordFiller(config.fill.go_crossword)
-    else:
-        raise ValueError(f"Unknown fill provider: {config.fill.provider}")
-
-    # Build fill grader and composite step
+    # Build fill grader dictionary (shared with CSP filler if selected)
     project_root = find_project_root()
     dictionary = Dictionary.load(
         project_root / config.dictionary.path,
         min_word_score=config.dictionary.min_word_score,
         min_2letter_score=config.dictionary.min_2letter_score,
     )
+
+    # Build filler
+    if config.fill.provider == "go-crossword":
+        filler = GoCrosswordFiller(config.fill.go_crossword)
+    elif config.fill.provider == "csp":
+        filler = CSPFiller(config.fill.csp, dictionary)
+    else:
+        raise ValueError(f"Unknown fill provider: {config.fill.provider}")
     grader = FillGrader(
         dictionary,
         min_passing_score=config.grading.fill.min_score,

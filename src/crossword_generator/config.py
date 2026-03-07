@@ -47,8 +47,13 @@ class GoCrosswordConfig(BaseModel):
     min_dictionary_score: int = 50
 
 
-class GenxwordConfig(BaseModel):
-    """Settings for the genxword filler (placeholder)."""
+class CSPFillerConfig(BaseModel):
+    """Settings for the native Python CSP filler."""
+
+    dictionary_path: str = "dictionaries/XwiJeffChenList.txt"
+    min_word_score: int = 50
+    min_2letter_score: int = 30
+    timeout: int = 30
 
 
 class FillConfig(BaseModel):
@@ -57,7 +62,7 @@ class FillConfig(BaseModel):
     provider: str = "go-crossword"
     max_retries: int = 5
     go_crossword: GoCrosswordConfig = GoCrosswordConfig()
-    genxword: GenxwordConfig = GenxwordConfig()
+    csp: CSPFillerConfig = CSPFillerConfig()
 
 
 class FillGradingConfig(BaseModel):

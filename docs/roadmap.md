@@ -58,9 +58,9 @@
 
 ## Phase 7 — Alternative Fillers
 
-- [ ] genxword integration
-- [ ] Native Python CSP solver (constraint satisfaction)
-- [ ] Filler benchmarking (speed, fill quality, success rate)
+- N/A genxword integration (not suitable — freeform word placer, not grid autofill)
+- [x] Native Python CSP solver (constraint satisfaction with backtracking + forward checking)
+- [x] Filler evaluation framework (`evaluate` CLI command, markdown report)
 - [ ] Filler-specific dictionary preprocessing
 
 ### go-crossword Enhancements (fork in `tools/go-crossword/`)

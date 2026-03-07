@@ -3,12 +3,13 @@
 from __future__ import annotations
 
 import logging
+import random
 import sys
 from pathlib import Path
 
 import click
 
-from crossword_generator.config import load_config
+from crossword_generator.config import find_project_root, load_config
 from crossword_generator.pipeline import create_pipeline
 
 
@@ -101,6 +102,108 @@ def generate(
         # Print the grid
         for row in result.fill.grid:
             click.echo(" ".join(c if c != "." else "\u2588" for c in row))
+
+
+@main.command()
+@click.option(
+    "--sizes",
+    default="5,7",
+    help="Comma-separated grid sizes to evaluate.",
+)
+@click.option(
+    "--num-seeds",
+    type=int,
+    default=5,
+    help="Number of random seeds per filler per size.",
+)
+@click.option(
+    "--config",
+    "config_path",
+    type=click.Path(exists=True),
+    default=None,
+    help="Path to config file.",
+)
+@click.option(
+    "-v",
+    "--verbose",
+    is_flag=True,
+    default=False,
+    help="Enable debug logging.",
+)
+def evaluate(
+    sizes: str,
+    num_seeds: int,
+    config_path: str | None,
+    verbose: bool,
+) -> None:
+    """Evaluate fill quality across all available fillers."""
+    _setup_logging(verbose)
+    logger = logging.getLogger(__name__)
+
+    from crossword_generator.dictionary import Dictionary
+    from crossword_generator.evaluation import FillerEvaluator
+    from crossword_generator.fillers.base import GridFiller
+    from crossword_generator.fillers.csp import CSPFiller
+    from crossword_generator.fillers.go_crossword import GoCrosswordFiller
+    from crossword_generator.graders.fill_grader import FillGrader
+
+    config = load_config(Path(config_path) if config_path else None)
+
+    # Load shared dictionary
+    project_root = find_project_root()
+    dictionary = Dictionary.load(
+        project_root / config.dictionary.path,
+        min_word_score=config.dictionary.min_word_score,
+        min_2letter_score=config.dictionary.min_2letter_score,
+    )
+    grader = FillGrader(dictionary, min_passing_score=config.grading.fill.min_score)
+
+    # Build all available fillers
+    fillers: list[GridFiller] = []
+
+    # go-crossword (without external dictionary)
+    go_config_default = config.fill.go_crossword.model_copy(
+        update={"dictionary_path": None}
+    )
+    go_filler_default = GoCrosswordFiller(
+        go_config_default, name="go-xword"
+    )
+    if go_filler_default.is_available():
+        fillers.append(go_filler_default)
+        logger.info("go-xword (embedded dict): available")
+    else:
+        logger.warning("go-crossword: not available (Docker not running?)")
+
+    # go-crossword with Jeff Chen dictionary
+    go_filler_jchen = GoCrosswordFiller(
+        config.fill.go_crossword, name="go-xword-jc"
+    )
+    if go_filler_jchen.is_available():
+        fillers.append(go_filler_jchen)
+        logger.info("go-xword-jc (Jeff Chen dict): available")
+
+    # CSP filler (always available)
+    csp_filler = CSPFiller(config.fill.csp, dictionary)
+    fillers.append(csp_filler)
+    logger.info("csp: available")
+
+    if not fillers:
+        click.echo("No fillers available.", err=True)
+        sys.exit(1)
+
+    # Parse sizes and generate seeds
+    grid_sizes = [int(s.strip()) for s in sizes.split(",")]
+    seeds = [random.randint(0, 2**31 - 1) for _ in range(num_seeds)]
+
+    click.echo(
+        f"Evaluating {len(fillers)} fillers × "
+        f"{len(grid_sizes)} sizes × {num_seeds} seeds\n"
+    )
+
+    evaluator = FillerEvaluator(fillers, grader)
+    results = evaluator.evaluate(grid_sizes, seeds)
+    report = FillerEvaluator.format_report(results)
+    click.echo(report)
 
 
 def _setup_logging(verbose: bool) -> None:
