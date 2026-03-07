@@ -115,9 +115,7 @@ class FillGrader:
             grid_penalties["duplicate_words"] = 5.0 * duplicate_pairs
 
         # High unknown ratio
-        unknown_count = sum(
-            1 for wg in word_grades if wg.dictionary_score is None
-        )
+        unknown_count = sum(1 for wg in word_grades if wg.dictionary_score is None)
         if len(word_grades) > 0 and unknown_count / len(word_grades) > 0.2:
             grid_penalties["high_unknown_ratio"] = 10.0
 

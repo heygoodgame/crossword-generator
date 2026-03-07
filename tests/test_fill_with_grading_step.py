@@ -71,9 +71,19 @@ class SequentialMockFiller(GridFiller):
 
 # Dictionary that knows the high-quality grid words
 GOOD_WORDS = {
-    "STARE": 80, "TONES": 75, "ARENA": 85, "RESET": 70, "SPEED": 90,
-    "STARS": 80, "TORED": 60, "ANISE": 65, "RENEE": 60, "EASET": 55,
-    "STORE": 70, "PARSE": 75, "ENTER": 80,
+    "STARE": 80,
+    "TONES": 75,
+    "ARENA": 85,
+    "RESET": 70,
+    "SPEED": 90,
+    "STARS": 80,
+    "TORED": 60,
+    "ANISE": 65,
+    "RENEE": 60,
+    "EASET": 55,
+    "STORE": 70,
+    "PARSE": 75,
+    "ENTER": 80,
 }
 
 
@@ -100,11 +110,13 @@ class TestRetryOnFailure:
         grader = FillGrader(dictionary, min_passing_score=30)
 
         # First 2 attempts return bad grid, third returns good
-        filler = SequentialMockFiller([
-            LOW_QUALITY_GRID,
-            LOW_QUALITY_GRID,
-            HIGH_QUALITY_GRID,
-        ])
+        filler = SequentialMockFiller(
+            [
+                LOW_QUALITY_GRID,
+                LOW_QUALITY_GRID,
+                HIGH_QUALITY_GRID,
+            ]
+        )
         step = FillWithGradingStep(filler, grader, max_retries=5)
 
         envelope = PuzzleEnvelope(puzzle_type=PuzzleType.MINI, grid_size=5)
@@ -227,10 +239,12 @@ class TestAttemptNumberTracking:
         dictionary = _make_dict(GOOD_WORDS)
         grader = FillGrader(dictionary, min_passing_score=30)
 
-        filler = SequentialMockFiller([
-            LOW_QUALITY_GRID,
-            HIGH_QUALITY_GRID,
-        ])
+        filler = SequentialMockFiller(
+            [
+                LOW_QUALITY_GRID,
+                HIGH_QUALITY_GRID,
+            ]
+        )
         step = FillWithGradingStep(filler, grader, max_retries=5)
 
         envelope = PuzzleEnvelope(puzzle_type=PuzzleType.MINI, grid_size=5)

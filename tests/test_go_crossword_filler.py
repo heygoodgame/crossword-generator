@@ -1,5 +1,6 @@
 """Tests for go-crossword Docker filler."""
 
+import json
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -20,6 +21,35 @@ U V W X Y
 Crossword generated successfully!
 Seed: 42
 """
+
+JSON_OUTPUT = json.dumps(
+    {
+        "rows": 5,
+        "cols": 5,
+        "seed": 42,
+        "grid": [
+            ["A", "B", "C", "D", "E"],
+            ["F", "G", "H", "I", "J"],
+            ["K", "L", "M", "N", "O"],
+            ["P", "Q", "R", "S", "T"],
+            ["U", "V", "W", "X", "Y"],
+        ],
+        "words_across": [
+            {"word": "ABCDE", "row": 0, "col": 0},
+            {"word": "FGHIJ", "row": 1, "col": 0},
+            {"word": "KLMNO", "row": 2, "col": 0},
+            {"word": "PQRST", "row": 3, "col": 0},
+            {"word": "UVWXY", "row": 4, "col": 0},
+        ],
+        "words_down": [
+            {"word": "AFKPU", "row": 0, "col": 0},
+            {"word": "BGLQV", "row": 0, "col": 1},
+            {"word": "CHMRW", "row": 0, "col": 2},
+            {"word": "DINSX", "row": 0, "col": 3},
+            {"word": "EJOTY", "row": 0, "col": 4},
+        ],
+    }
+)
 
 
 @pytest.fixture
@@ -48,7 +78,16 @@ class TestBuildCommand:
         assert "-cols" in cmd
         assert "-seed" in cmd
         assert "42" in cmd
+        assert "-format" in cmd
+        assert "json" in cmd
+        assert "-compact" not in cmd
+
+    def test_compact_mode_command(self, spec: GridSpec) -> None:
+        config = GoCrosswordConfig(output_format="compact")
+        filler = GoCrosswordFiller(config)
+        cmd = filler._build_command(spec, seed=1)
         assert "-compact" in cmd
+        assert "-format" not in cmd
 
     def test_threads_flag(self, filler: GoCrosswordFiller, spec: GridSpec) -> None:
         cmd = filler._build_command(spec, seed=1)
@@ -70,6 +109,18 @@ class TestFill:
         # Mock image inspect (already present)
         inspect_result = MagicMock(returncode=0)
         # Mock docker run
+        run_result = MagicMock(returncode=0, stdout=JSON_OUTPUT, stderr="")
+        mock_run.side_effect = [inspect_result, run_result]
+
+        result = filler.fill(spec, seed=42)
+        assert len(result.grid) == 5
+        assert result.grid[0][0] == "A"
+
+    @patch("crossword_generator.fillers.go_crossword.subprocess.run")
+    def test_successful_fill_compact(self, mock_run: MagicMock, spec: GridSpec) -> None:
+        config = GoCrosswordConfig(output_format="compact")
+        filler = GoCrosswordFiller(config)
+        inspect_result = MagicMock(returncode=0)
         run_result = MagicMock(returncode=0, stdout=COMPACT_OUTPUT, stderr="")
         mock_run.side_effect = [inspect_result, run_result]
 
@@ -114,7 +165,7 @@ class TestFill:
         self, mock_run: MagicMock, filler: GoCrosswordFiller, spec: GridSpec
     ) -> None:
         inspect_result = MagicMock(returncode=0)
-        run_result = MagicMock(returncode=0, stdout=COMPACT_OUTPUT, stderr="")
+        run_result = MagicMock(returncode=0, stdout=JSON_OUTPUT, stderr="")
         mock_run.side_effect = [inspect_result, run_result]
 
         filler.fill(spec, seed=12345)

@@ -1,4 +1,4 @@
-.PHONY: setup install test lint format check-deps setup-ollama generate-mini generate-midi clean
+.PHONY: setup install test lint format check-deps setup-ollama generate-mini generate-midi build-go-crossword clean
 
 setup: install
 
@@ -24,6 +24,10 @@ check-deps:
 
 setup-ollama:
 	bash scripts/setup_ollama.sh
+
+build-go-crossword:
+	docker build -t crossword-generator/go-crossword-cli:latest \
+		-f tools/go-crossword/cli/Dockerfile tools/go-crossword/
 
 generate-mini:
 	uv run crossword-generator generate --type mini

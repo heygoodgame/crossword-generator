@@ -63,12 +63,12 @@
 - [ ] Filler benchmarking (speed, fill quality, success rate)
 - [ ] Filler-specific dictionary preprocessing
 
-### go-crossword Enhancements (requires fork of ahboujelben/go-crossword)
+### go-crossword Enhancements (fork in `tools/go-crossword/`)
 
-- [ ] `-skip-clues` flag: skip Ollama clue generation, return grid only
+- [x] `-format json` flag: structured JSON output instead of text rendering
+- [ ] `-skip-clues` flag: N/A — go-crossword has no clue generation (purely a grid filler)
 - [ ] `-dictionary <path>` flag: use custom word list (Jeff Chen) instead of embedded dictionary
 - [ ] `-grid-template <path>` flag: accept pre-built grid with black-square pattern
-- [ ] `-format json` flag: structured JSON output instead of text rendering
 
 ## Phase 8 — Polish
 

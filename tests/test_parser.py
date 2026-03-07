@@ -1,8 +1,14 @@
-"""Tests for go-crossword compact output parser."""
+"""Tests for go-crossword output parsers (compact and JSON)."""
+
+import json
 
 import pytest
 
-from crossword_generator.fillers.parser import ParseError, parse_compact_output
+from crossword_generator.fillers.parser import (
+    ParseError,
+    parse_compact_output,
+    parse_json_output,
+)
 
 # Realistic go-crossword compact output
 COMPACT_OUTPUT_5X5 = """\
@@ -106,3 +112,110 @@ class TestParseErrors:
         # The parser skips non-grid lines, so multi-char tokens just end the grid.
         result = parse_compact_output(output)
         assert result.grid == [["A", "B"]]
+
+
+# --- JSON output fixtures ---
+
+JSON_OUTPUT_5X5 = json.dumps(
+    {
+        "rows": 5,
+        "cols": 5,
+        "seed": 42,
+        "grid": [
+            ["O", "H", ".", ".", "."],
+            ["F", ".", "P", ".", "F"],
+            [".", "H", "O", "W", "L"],
+            ["A", ".", "S", ".", "I"],
+            ["S", "L", "E", "E", "P"],
+        ],
+        "words_across": [
+            {"word": "OH", "row": 0, "col": 0},
+            {"word": "HOWL", "row": 2, "col": 1},
+            {"word": "SLEEP", "row": 4, "col": 0},
+        ],
+        "words_down": [
+            {"word": "OF", "row": 0, "col": 0},
+            {"word": "POSE", "row": 1, "col": 2},
+            {"word": "FLIP", "row": 1, "col": 4},
+        ],
+    }
+)
+
+
+class TestParseJsonOutput:
+    def test_basic_5x5(self) -> None:
+        result = parse_json_output(JSON_OUTPUT_5X5)
+        assert len(result.grid) == 5
+        assert len(result.grid[0]) == 5
+
+    def test_letters_uppercase(self) -> None:
+        result = parse_json_output(JSON_OUTPUT_5X5)
+        for row in result.grid:
+            for cell in row:
+                if cell != ".":
+                    assert cell.isupper()
+
+    def test_black_squares(self) -> None:
+        result = parse_json_output(JSON_OUTPUT_5X5)
+        assert result.grid[0] == ["O", "H", ".", ".", "."]
+        assert result.grid[2] == [".", "H", "O", "W", "L"]
+
+    def test_across_words(self) -> None:
+        result = parse_json_output(JSON_OUTPUT_5X5)
+        assert "OH" in result.words_across
+        assert "HOWL" in result.words_across
+        assert "SLEEP" in result.words_across
+
+    def test_down_words(self) -> None:
+        result = parse_json_output(JSON_OUTPUT_5X5)
+        assert "OF" in result.words_down
+        assert "POSE" in result.words_down
+        assert "FLIP" in result.words_down
+
+    def test_lowercase_input_uppercased(self) -> None:
+        data = {
+            "rows": 2,
+            "cols": 2,
+            "seed": 1,
+            "grid": [["a", "b"], ["c", "d"]],
+            "words_across": [
+                {"word": "ab", "row": 0, "col": 0},
+                {"word": "cd", "row": 1, "col": 0},
+            ],
+            "words_down": [
+                {"word": "ac", "row": 0, "col": 0},
+                {"word": "bd", "row": 0, "col": 1},
+            ],
+        }
+        result = parse_json_output(json.dumps(data))
+        assert result.grid == [["A", "B"], ["C", "D"]]
+        assert "AB" in result.words_across
+        assert "AC" in result.words_down
+
+
+class TestParseJsonErrors:
+    def test_invalid_json(self) -> None:
+        with pytest.raises(ParseError, match="Invalid JSON"):
+            parse_json_output("not json at all")
+
+    def test_missing_grid_field(self) -> None:
+        with pytest.raises(ParseError, match="Missing required field.*grid"):
+            parse_json_output(json.dumps({"rows": 3, "cols": 3}))
+
+    def test_missing_rows_field(self) -> None:
+        with pytest.raises(ParseError, match="Missing required field.*rows"):
+            parse_json_output(json.dumps({"grid": [], "cols": 3}))
+
+    def test_missing_cols_field(self) -> None:
+        with pytest.raises(ParseError, match="Missing required field.*cols"):
+            parse_json_output(json.dumps({"grid": [], "rows": 3}))
+
+    def test_row_count_mismatch(self) -> None:
+        data = {"rows": 3, "cols": 2, "grid": [["A", "B"], ["C", "D"]]}
+        with pytest.raises(ParseError, match="row count mismatch"):
+            parse_json_output(json.dumps(data))
+
+    def test_col_count_mismatch(self) -> None:
+        data = {"rows": 2, "cols": 3, "grid": [["A", "B"], ["C", "D"]]}
+        with pytest.raises(ParseError, match="column count mismatch"):
+            parse_json_output(json.dumps(data))

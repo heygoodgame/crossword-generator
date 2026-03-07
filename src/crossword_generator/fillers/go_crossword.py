@@ -8,7 +8,11 @@ import subprocess
 
 from crossword_generator.config import GoCrosswordConfig
 from crossword_generator.fillers.base import FilledGrid, FillError, GridFiller, GridSpec
-from crossword_generator.fillers.parser import ParseError, parse_compact_output
+from crossword_generator.fillers.parser import (
+    ParseError,
+    parse_compact_output,
+    parse_json_output,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -67,7 +71,10 @@ class GoCrosswordFiller(GridFiller):
             )
 
         try:
-            filled = parse_compact_output(result.stdout)
+            if self._config.output_format == "json":
+                filled = parse_json_output(result.stdout)
+            else:
+                filled = parse_compact_output(result.stdout)
         except ParseError as e:
             raise FillError(f"Failed to parse go-crossword output: {e}") from e
 
@@ -103,15 +110,16 @@ class GoCrosswordFiller(GridFiller):
             str(spec.cols),
             "-seed",
             str(seed),
-            "-compact",
             "-threads",
             str(self._config.threads),
         ]
+        if self._config.output_format == "json":
+            cmd.extend(["-format", "json"])
+        else:
+            cmd.append("-compact")
         # Future go-crossword fork flags:
-        # -skip-clues: skip Ollama clue generation
         # -dictionary <path>: use custom word list
         # -grid-template <path>: accept pre-built grid
-        # -format json: structured output
         return cmd
 
     def _ensure_image(self) -> None:

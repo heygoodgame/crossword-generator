@@ -1,7 +1,8 @@
-"""Parser for go-crossword compact output format."""
+"""Parser for go-crossword output formats (compact text and JSON)."""
 
 from __future__ import annotations
 
+import json
 import re
 
 from crossword_generator.fillers.base import FilledGrid
@@ -137,6 +138,61 @@ def parse_compact_output(raw: str) -> FilledGrid:
 
     words_across = _extract_words(grid, "across")
     words_down = _extract_words(grid, "down")
+
+    return FilledGrid(
+        grid=grid,
+        words_across=words_across,
+        words_down=words_down,
+    )
+
+
+def parse_json_output(raw: str) -> FilledGrid:
+    """Parse go-crossword JSON output into a FilledGrid.
+
+    Args:
+        raw: Raw stdout from go-crossword with -format json flag.
+
+    Returns:
+        FilledGrid with uppercase letters and "." for black squares.
+
+    Raises:
+        ParseError: If the output cannot be parsed into a valid grid.
+    """
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError as e:
+        raise ParseError(f"Invalid JSON output: {e}") from e
+
+    for field in ("grid", "rows", "cols"):
+        if field not in data:
+            raise ParseError(f"Missing required field: {field!r}")
+
+    rows = data["rows"]
+    cols = data["cols"]
+    raw_grid = data["grid"]
+
+    if len(raw_grid) != rows:
+        raise ParseError(
+            f"Grid row count mismatch: expected {rows}, got {len(raw_grid)}"
+        )
+
+    grid: list[list[str]] = []
+    for i, raw_row in enumerate(raw_grid):
+        if len(raw_row) != cols:
+            raise ParseError(
+                f"Grid column count mismatch on row {i}: "
+                f"expected {cols}, got {len(raw_row)}"
+            )
+        row: list[str] = []
+        for cell in raw_row:
+            if cell == BLACK:
+                row.append(BLACK)
+            else:
+                row.append(cell.upper())
+        grid.append(row)
+
+    words_across = [entry["word"].upper() for entry in data.get("words_across", [])]
+    words_down = [entry["word"].upper() for entry in data.get("words_down", [])]
 
     return FilledGrid(
         grid=grid,

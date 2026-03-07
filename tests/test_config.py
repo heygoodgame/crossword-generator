@@ -48,7 +48,11 @@ class TestConfigDefaults:
 
     def test_nested_defaults(self) -> None:
         fill = FillConfig()
-        assert fill.go_crossword.docker_image == "ahboujelben/go-crossword-cli:latest"
+        assert (
+            fill.go_crossword.docker_image
+            == "crossword-generator/go-crossword-cli:latest"
+        )
+        assert fill.go_crossword.output_format == "json"
 
 
 class TestLoadConfig:

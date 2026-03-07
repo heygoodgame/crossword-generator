@@ -42,8 +42,11 @@ GOOD_DICT = _make_dict(
 class TestWordScoring:
     def test_high_score_word(self) -> None:
         words = {
-            "OCEAN": 80, "PARSE": 75, "ENTER": 85,
-            "ROSES": 70, "ANGEL": 90,
+            "OCEAN": 80,
+            "PARSE": 75,
+            "ENTER": 85,
+            "ROSES": 70,
+            "ANGEL": 90,
         }
         grader = FillGrader(_make_dict(words))
         # Grade a grid with just one across word
@@ -137,8 +140,12 @@ class TestGridLevelPenalties:
     def test_excessive_short_glue_penalty(self) -> None:
         # Grid with many 3-letter low-score words
         words = {
-            "ABC": 50, "DEF": 50, "GHI": 50,
-            "ADG": 50, "BEH": 50, "CFI": 50,
+            "ABC": 50,
+            "DEF": 50,
+            "GHI": 50,
+            "ADG": 50,
+            "BEH": 50,
+            "CFI": 50,
         }
         grader = FillGrader(_make_dict(words))
         grid = [
@@ -154,12 +161,18 @@ class TestGridLevelPenalties:
         # All across and down words must be in the dict
         words = {
             # across
-            "OCEAN": 80, "PARSE": 75, "ENTER": 85,
-            "ROSES": 70, "ANGEL": 90,
+            "OCEAN": 80,
+            "PARSE": 75,
+            "ENTER": 85,
+            "ROSES": 70,
+            "ANGEL": 90,
             # down (col0=OPERA, col1=CANON, col2=ERTSG,
             #        col3=ASEEE, col4=NERSL)
-            "OPERA": 65, "CANON": 70, "ERTSG": 60,
-            "ASEEE": 60, "NERSL": 60,
+            "OPERA": 65,
+            "CANON": 70,
+            "ERTSG": 60,
+            "ASEEE": 60,
+            "NERSL": 60,
         }
         grader = FillGrader(_make_dict(words))
         report = grader.grade(GOOD_GRID)
