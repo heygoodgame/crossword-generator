@@ -82,6 +82,39 @@ class TestBuildCommand:
         assert "json" in cmd
         assert "-compact" not in cmd
 
+    def test_dictionary_flags(self, filler: GoCrosswordFiller, spec: GridSpec) -> None:
+        cmd = filler._build_command(spec, seed=42)
+        assert "-dictionary" in cmd
+        assert "/data/dictionary.txt" in cmd
+        assert "-min-score" in cmd
+        assert "50" in cmd
+
+    def test_dictionary_volume_mount(
+        self, filler: GoCrosswordFiller, spec: GridSpec
+    ) -> None:
+        cmd = filler._build_command(spec, seed=42)
+        # Find the -v flag and verify it mounts read-only
+        idx = cmd.index("-v")
+        mount = cmd[idx + 1]
+        assert mount.endswith(":/data/dictionary.txt:ro")
+        assert "XwiJeffChenList.txt" in mount
+
+    def test_volume_mount_before_image(
+        self, filler: GoCrosswordFiller, spec: GridSpec
+    ) -> None:
+        cmd = filler._build_command(spec, seed=42)
+        v_idx = cmd.index("-v")
+        img_idx = cmd.index(filler._config.docker_image)
+        assert v_idx < img_idx
+
+    def test_no_dictionary_command(self, spec: GridSpec) -> None:
+        config = GoCrosswordConfig(dictionary_path=None)
+        filler = GoCrosswordFiller(config)
+        cmd = filler._build_command(spec, seed=1)
+        assert "-dictionary" not in cmd
+        assert "-min-score" not in cmd
+        assert "-v" not in cmd
+
     def test_compact_mode_command(self, spec: GridSpec) -> None:
         config = GoCrosswordConfig(output_format="compact")
         filler = GoCrosswordFiller(config)

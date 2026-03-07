@@ -5,8 +5,9 @@ from __future__ import annotations
 import logging
 import random
 import subprocess
+from pathlib import Path
 
-from crossword_generator.config import GoCrosswordConfig
+from crossword_generator.config import GoCrosswordConfig, find_project_root
 from crossword_generator.fillers.base import FilledGrid, FillError, GridFiller, GridSpec
 from crossword_generator.fillers.parser import (
     ParseError,
@@ -103,6 +104,16 @@ class GoCrosswordFiller(GridFiller):
             "docker",
             "run",
             "--rm",
+        ]
+
+        # Volume mount for external dictionary (must come before image name)
+        if self._config.dictionary_path is not None:
+            dict_path = Path(self._config.dictionary_path)
+            if not dict_path.is_absolute():
+                dict_path = find_project_root() / dict_path
+            cmd.extend(["-v", f"{dict_path}:/data/dictionary.txt:ro"])
+
+        cmd.extend([
             self._config.docker_image,
             "-rows",
             str(spec.rows),
@@ -112,13 +123,21 @@ class GoCrosswordFiller(GridFiller):
             str(seed),
             "-threads",
             str(self._config.threads),
-        ]
+        ])
         if self._config.output_format == "json":
             cmd.extend(["-format", "json"])
         else:
             cmd.append("-compact")
+
+        # External dictionary flags
+        if self._config.dictionary_path is not None:
+            cmd.extend([
+                "-dictionary",
+                "/data/dictionary.txt",
+                "-min-score",
+                str(self._config.min_dictionary_score),
+            ])
         # Future go-crossword fork flags:
-        # -dictionary <path>: use custom word list
         # -grid-template <path>: accept pre-built grid
         return cmd
 

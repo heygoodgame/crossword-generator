@@ -67,7 +67,7 @@
 
 - [x] `-format json` flag: structured JSON output instead of text rendering
 - [ ] `-skip-clues` flag: N/A — go-crossword has no clue generation (purely a grid filler)
-- [ ] `-dictionary <path>` flag: use custom word list (Jeff Chen) instead of embedded dictionary
+- [x] `-dictionary <path>` flag: use custom word list (Jeff Chen) instead of embedded dictionary
 - [ ] `-grid-template <path>` flag: accept pre-built grid with black-square pattern
 
 ## Phase 8 — Polish

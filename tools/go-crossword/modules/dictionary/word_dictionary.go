@@ -1,8 +1,12 @@
 package dictionary
 
 import (
+	"bufio"
 	_ "embed"
+	"fmt"
+	"os"
 	"slices"
+	"strconv"
 	"strings"
 )
 
@@ -21,15 +25,69 @@ type wordDictionaryKey struct {
 	pos    int
 }
 
+// NewWordDictionary creates a WordDictionary from the embedded word list.
 func NewWordDictionary() WordDictionary {
+	return buildWordDictionary(strings.Fields(words))
+}
+
+// NewWordDictionaryFromFile creates a WordDictionary from an external file.
+// Supports two formats:
+//   - "word;score" per line (Jeff Chen format): filters to words with score >= minScore
+//   - plain word per line: all words are included regardless of minScore
+func NewWordDictionaryFromFile(filePath string, minScore int) (WordDictionary, error) {
+	f, err := os.Open(filePath)
+	if err != nil {
+		return WordDictionary{}, fmt.Errorf("open dictionary: %w", err)
+	}
+	defer f.Close()
+
+	var wordList []string
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		if line == "" {
+			continue
+		}
+
+		parts := strings.SplitN(line, ";", 2)
+		word := strings.ToLower(parts[0])
+		if word == "" {
+			continue
+		}
+
+		if len(parts) == 2 {
+			score, err := strconv.Atoi(strings.TrimSpace(parts[1]))
+			if err != nil {
+				continue // skip malformed lines
+			}
+			if score < minScore {
+				continue
+			}
+		}
+
+		wordList = append(wordList, word)
+	}
+	if err := scanner.Err(); err != nil {
+		return WordDictionary{}, fmt.Errorf("read dictionary: %w", err)
+	}
+
+	if len(wordList) == 0 {
+		return WordDictionary{}, fmt.Errorf("no words in dictionary after filtering (minScore=%d)", minScore)
+	}
+
+	return buildWordDictionary(wordList), nil
+}
+
+// buildWordDictionary constructs a WordDictionary from a slice of words.
+func buildWordDictionary(wordList []string) WordDictionary {
 	dict := WordDictionary{
-		AllWords:  []string{},
-		wordSet:   map[string]struct{}{},
+		AllWords:  make([]string, 0, len(wordList)),
+		wordSet:   make(map[string]struct{}, len(wordList)),
 		lengthMap: map[int][]int{},
 		letterMap: map[wordDictionaryKey]map[int]struct{}{},
 	}
 
-	for wordIndex, word := range strings.Fields(words) {
+	for wordIndex, word := range wordList {
 		dict.AllWords = append(dict.AllWords, word)
 		dict.wordSet[word] = struct{}{}
 		dict.lengthMap[len(word)] = append(dict.lengthMap[len(word)], wordIndex)
@@ -43,7 +101,6 @@ func NewWordDictionary() WordDictionary {
 	}
 
 	return dict
-
 }
 
 func (wd WordDictionary) Contains(word string) bool {

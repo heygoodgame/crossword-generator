@@ -53,6 +53,11 @@ class TestConfigDefaults:
             == "crossword-generator/go-crossword-cli:latest"
         )
         assert fill.go_crossword.output_format == "json"
+        assert (
+            fill.go_crossword.dictionary_path
+            == "dictionaries/XwiJeffChenList.txt"
+        )
+        assert fill.go_crossword.min_dictionary_score == 50
 
 
 class TestLoadConfig:

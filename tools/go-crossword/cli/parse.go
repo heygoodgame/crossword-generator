@@ -9,12 +9,14 @@ import (
 
 // parseResult holds the parsed command-line arguments
 type parseResult struct {
-	Rows          int
-	Cols          int
-	CrosswordSeed int64
-	Threads       int
-	Renderer      renderer.Renderer
-	Format        string
+	Rows           int
+	Cols           int
+	CrosswordSeed  int64
+	Threads        int
+	Renderer       renderer.Renderer
+	Format         string
+	DictionaryPath string
+	MinScore       int
 }
 
 // parseArguments parses command-line arguments and returns a ParseResult
@@ -25,6 +27,8 @@ func parseArguments() (*parseResult, error) {
 	threads := flag.Int("threads", 100, "number of goroutines to use (>= 1)")
 	compact := flag.Bool("compact", false, "compact rendering")
 	format := flag.String("format", "text", "output format: text or json")
+	dictionaryPath := flag.String("dictionary", "", "path to external dictionary file (word;score format)")
+	minScore := flag.Int("min-score", 0, "minimum word score for external dictionary (0-100)")
 
 	flag.Parse()
 
@@ -50,12 +54,14 @@ func parseArguments() (*parseResult, error) {
 	}
 
 	return &parseResult{
-		Rows:          *rows,
-		Cols:          *cols,
-		CrosswordSeed: *crosswordSeed,
-		Threads:       *threads,
-		Renderer:      render,
-		Format:        *format,
+		Rows:           *rows,
+		Cols:           *cols,
+		CrosswordSeed:  *crosswordSeed,
+		Threads:        *threads,
+		Renderer:       render,
+		Format:         *format,
+		DictionaryPath: *dictionaryPath,
+		MinScore:       *minScore,
 	}, nil
 }
 

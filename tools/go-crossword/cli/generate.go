@@ -16,12 +16,26 @@ func generateCrossword(parseResult *parseResult) {
 		fmt.Println("Generating crossword...")
 	}
 
+	var wordDict dictionary.WordDictionary
+	if parseResult.DictionaryPath != "" {
+		var err error
+		wordDict, err = dictionary.NewWordDictionaryFromFile(parseResult.DictionaryPath, parseResult.MinScore)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error loading dictionary: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Fprintf(os.Stderr, "Loaded %d words from %s (min-score=%d)\n",
+			len(wordDict.AllWords), parseResult.DictionaryPath, parseResult.MinScore)
+	} else {
+		wordDict = dictionary.NewWordDictionary()
+	}
+
 	crosswordResult := crossword.NewCrossword(crossword.CrosswordConfig{
 		Rows:     parseResult.Rows,
 		Cols:     parseResult.Cols,
 		Seed:     parseResult.CrosswordSeed,
 		Threads:  parseResult.Threads,
-		WordDict: dictionary.NewWordDictionary(),
+		WordDict: wordDict,
 	})
 
 	if parseResult.Format == "json" {

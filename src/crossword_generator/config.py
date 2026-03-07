@@ -43,6 +43,8 @@ class GoCrosswordConfig(BaseModel):
     timeout: int = 60
     threads: int = 100
     output_format: str = "json"
+    dictionary_path: str | None = "dictionaries/XwiJeffChenList.txt"
+    min_dictionary_score: int = 50
 
 
 class GenxwordConfig(BaseModel):
