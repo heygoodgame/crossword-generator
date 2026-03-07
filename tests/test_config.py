@@ -48,7 +48,7 @@ class TestConfigDefaults:
 
     def test_nested_defaults(self) -> None:
         fill = FillConfig()
-        assert fill.go_crossword.docker_image == "ccz-crossmatics/go-crossword:latest"
+        assert fill.go_crossword.docker_image == "ahboujelben/go-crossword-cli:latest"
 
 
 class TestLoadConfig:
@@ -64,8 +64,7 @@ class TestLoadConfig:
     def test_load_explicit_path_custom_values(self, tmp_path: Path) -> None:
         yaml_file = tmp_path / "custom.yaml"
         yaml_file.write_text(
-            "puzzle:\n  type: midi\n  grid_size: 9\n"
-            "dictionary:\n  min_word_score: 40\n"
+            "puzzle:\n  type: midi\n  grid_size: 9\ndictionary:\n  min_word_score: 40\n"
         )
         cfg = load_config(yaml_file)
         assert cfg.puzzle.type == "midi"

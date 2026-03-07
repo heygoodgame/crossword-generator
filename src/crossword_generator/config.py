@@ -39,7 +39,9 @@ class DictionaryConfig(BaseModel):
 class GoCrosswordConfig(BaseModel):
     """Settings for the go-crossword Docker filler."""
 
-    docker_image: str = "ccz-crossmatics/go-crossword:latest"
+    docker_image: str = "ahboujelben/go-crossword-cli:latest"
+    timeout: int = 60
+    threads: int = 100
 
 
 class GenxwordConfig(BaseModel):

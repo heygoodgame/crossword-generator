@@ -1,1 +1,111 @@
 """Pipeline orchestration for crossword generation."""
+
+from __future__ import annotations
+
+import logging
+from datetime import UTC, datetime
+from pathlib import Path
+
+from crossword_generator.config import Config
+from crossword_generator.exporters.base import Exporter
+from crossword_generator.exporters.ipuz_exporter import IpuzExporter
+from crossword_generator.exporters.puz_exporter import PuzExporter
+from crossword_generator.fillers.go_crossword import GoCrosswordFiller
+from crossword_generator.models import PuzzleEnvelope, PuzzleType
+from crossword_generator.steps.base import PipelineStep
+from crossword_generator.steps.fill_step import FillStep
+
+logger = logging.getLogger(__name__)
+
+
+class Pipeline:
+    """Runs a sequence of pipeline steps and exports the result."""
+
+    def __init__(
+        self,
+        steps: list[PipelineStep],
+        exporters: list[Exporter],
+        output_dir: Path,
+    ) -> None:
+        self._steps = steps
+        self._exporters = exporters
+        self._output_dir = output_dir
+
+    def run(self, envelope: PuzzleEnvelope) -> PuzzleEnvelope:
+        """Execute all steps sequentially, saving intermediates and exporting."""
+        self._output_dir.mkdir(parents=True, exist_ok=True)
+
+        for step in self._steps:
+            logger.info("Running step: %s", step.name)
+            envelope = step.run(envelope)
+            self._save_intermediate(envelope, step.name)
+
+        # Export
+        exported: list[Path] = []
+        for exporter in self._exporters:
+            try:
+                path = exporter.export(envelope, self._output_dir)
+                exported.append(path)
+            except Exception:
+                logger.exception("Export failed for format %s", exporter.file_extension)
+
+        if exported:
+            logger.info("Exported files: %s", [str(p) for p in exported])
+        else:
+            logger.warning("No files were exported")
+
+        return envelope
+
+    def _save_intermediate(self, envelope: PuzzleEnvelope, step_name: str) -> None:
+        """Save an intermediate envelope JSON for debugging/resumption."""
+        timestamp = datetime.now(tz=UTC).strftime("%Y%m%d_%H%M%S")
+        filename = f"intermediate_{step_name}_{timestamp}.json"
+        filepath = self._output_dir / filename
+        filepath.write_text(envelope.model_dump_json(indent=2))
+        logger.debug("Saved intermediate: %s", filepath)
+
+
+def create_pipeline(
+    config: Config,
+    *,
+    seed: int | None = None,
+) -> tuple[Pipeline, PuzzleEnvelope]:
+    """Wire up a Pipeline and initial PuzzleEnvelope from config.
+
+    Args:
+        config: Loaded configuration.
+        seed: Optional random seed for the filler.
+
+    Returns:
+        Tuple of (Pipeline, initial PuzzleEnvelope).
+    """
+    # Build filler
+    if config.fill.provider == "go-crossword":
+        filler = GoCrosswordFiller(config.fill.go_crossword)
+    else:
+        raise ValueError(f"Unknown fill provider: {config.fill.provider}")
+
+    # Build steps
+    steps: list[PipelineStep] = [FillStep(filler)]
+
+    # Build exporters
+    exporters: list[Exporter] = []
+    for fmt in config.output.formats:
+        if fmt == "puz":
+            exporters.append(PuzExporter())
+        elif fmt == "ipuz":
+            exporters.append(IpuzExporter())
+        else:
+            logger.warning("Unknown export format: %s", fmt)
+
+    output_dir = Path(config.output.directory)
+
+    pipeline = Pipeline(steps=steps, exporters=exporters, output_dir=output_dir)
+
+    envelope = PuzzleEnvelope(
+        puzzle_type=PuzzleType(config.puzzle.type),
+        grid_size=config.puzzle.grid_size,
+        metadata={"seed": seed} if seed is not None else {},
+    )
+
+    return pipeline, envelope

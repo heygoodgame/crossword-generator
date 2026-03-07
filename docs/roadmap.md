@@ -1,6 +1,6 @@
 # Roadmap
 
-## Phase 0 — Project Foundation (current)
+## Phase 0 — Project Foundation
 
 - [x] Project scaffolding (README, CLAUDE.md, directory structure)
 - [x] Data models (`PuzzleEnvelope`, `GridSpec`, `FilledGrid`)
@@ -8,13 +8,18 @@
 - [x] Dictionary module (load, filter by score, lookup)
 - [x] Unit tests for dictionary and config modules
 
-## Phase 1 — Grid Fill Pipeline
+## Phase 1 — Grid Fill Pipeline (current)
 
-- [ ] go-crossword Docker wrapper (pull image, invoke, parse output)
-- [ ] `GridSpec` definitions for mini (5x5, 7x7) and midi (9x9–11x11) with black-square patterns
-- [ ] `.puz` exporter via puzpy
-- [ ] `.ipuz` exporter via ipuz + crossword
-- [ ] End-to-end: config → grid fill → export
+- [x] go-crossword Docker wrapper (pull image, invoke, parse output)
+- [x] go-crossword compact output parser
+- [x] `GridSpec` catalog for mini (5x5, 7x7) and midi (9x9–11x11)
+- [x] Clue numbering utility (standard American crossword numbering)
+- [x] `.puz` exporter via puzpy
+- [x] `.ipuz` exporter via ipuz + crossword
+- [x] `FillStep` pipeline step
+- [x] Pipeline orchestration with intermediate saves
+- [x] CLI wiring (`--size`, `--seed`, `--verbose`)
+- [x] End-to-end: config → grid fill → export
 
 ## Phase 2 — Fill Quality Grading
 
@@ -57,6 +62,13 @@
 - [ ] Native Python CSP solver (constraint satisfaction)
 - [ ] Filler benchmarking (speed, fill quality, success rate)
 - [ ] Filler-specific dictionary preprocessing
+
+### go-crossword Enhancements (requires fork of ahboujelben/go-crossword)
+
+- [ ] `-skip-clues` flag: skip Ollama clue generation, return grid only
+- [ ] `-dictionary <path>` flag: use custom word list (Jeff Chen) instead of embedded dictionary
+- [ ] `-grid-template <path>` flag: accept pre-built grid with black-square pattern
+- [ ] `-format json` flag: structured JSON output instead of text rendering
 
 ## Phase 8 — Polish
 
