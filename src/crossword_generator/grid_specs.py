@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import random
+
 from crossword_generator.fillers.base import GridSpec
 from crossword_generator.models import PuzzleType
 
@@ -14,16 +16,46 @@ _VALID_SPECS: dict[tuple[PuzzleType, int], tuple[int, int]] = {
     (PuzzleType.MIDI, 11): (11, 11),
 }
 
+# Black cell patterns for each (puzzle_type, grid_size).
+# Each pattern is a list of (row, col) positions for black cells.
+# Mini puzzles use a small number of black cells to break up the constraint
+# graph and make CSP filling tractable, following real NYT mini conventions.
+_GRID_PATTERNS: dict[tuple[PuzzleType, int], list[list[tuple[int, int]]]] = {
+    (PuzzleType.MINI, 5): [
+        # Pattern 0: two opposing corners
+        [(0, 4), (4, 0)],
+        # Pattern 1: center cell
+        [(2, 2)],
+        # Pattern 2: diagonal pair
+        [(0, 0), (4, 4)],
+    ],
+    (PuzzleType.MINI, 7): [
+        # Pattern 0: symmetric pairs at edges, 4 black cells
+        [(0, 3), (3, 0), (3, 6), (6, 3)],
+        # Pattern 1: corners trimmed, 4 black cells
+        [(0, 6), (6, 0), (0, 0), (6, 6)],
+        # Pattern 2: staggered diagonal, 4 black cells
+        [(0, 2), (2, 6), (4, 0), (6, 4)],
+    ],
+}
 
-def get_grid_spec(puzzle_type: PuzzleType | str, grid_size: int) -> GridSpec:
+
+def get_grid_spec(
+    puzzle_type: PuzzleType | str,
+    grid_size: int,
+    *,
+    seed: int | None = None,
+) -> GridSpec:
     """Return a GridSpec for the given puzzle type and size.
 
     Args:
         puzzle_type: "mini" or "midi" (or PuzzleType enum).
         grid_size: Grid dimension (e.g., 5, 7, 9, 10, 11).
+        seed: Optional seed to randomly select a black cell pattern.
+              When None, uses the first pattern as default.
 
     Returns:
-        GridSpec with the appropriate rows and cols.
+        GridSpec with the appropriate rows, cols, and black cells.
 
     Raises:
         ValueError: If the puzzle_type/grid_size combination is not supported.
@@ -39,4 +71,15 @@ def get_grid_spec(puzzle_type: PuzzleType | str, grid_size: int) -> GridSpec:
         )
 
     rows, cols = _VALID_SPECS[key]
-    return GridSpec(rows=rows, cols=cols)
+
+    patterns = _GRID_PATTERNS.get(key)
+    if patterns:
+        if seed is not None:
+            rng = random.Random(seed)
+            black_cells = rng.choice(patterns)
+        else:
+            black_cells = patterns[0]
+    else:
+        black_cells = []
+
+    return GridSpec(rows=rows, cols=cols, black_cells=black_cells)

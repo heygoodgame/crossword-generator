@@ -29,13 +29,15 @@ class FillStep(PipelineStep):
         if errors:
             raise ValueError(f"FillStep validation failed: {'; '.join(errors)}")
 
-        spec = get_grid_spec(envelope.puzzle_type, envelope.grid_size)
+        seed = envelope.metadata.get("seed")
+        spec = get_grid_spec(envelope.puzzle_type, envelope.grid_size, seed=seed)
 
         logger.info(
-            "Running grid fill with %s (%dx%d)",
+            "Running grid fill with %s (%dx%d, %d black cells)",
             self._filler.name,
             spec.rows,
             spec.cols,
+            len(spec.black_cells),
         )
 
         filled = self._filler.fill(spec)
@@ -94,7 +96,8 @@ class FillWithGradingStep(PipelineStep):
                 f"FillWithGradingStep validation failed: {'; '.join(errors)}"
             )
 
-        spec = get_grid_spec(envelope.puzzle_type, envelope.grid_size)
+        seed = envelope.metadata.get("seed")
+        spec = get_grid_spec(envelope.puzzle_type, envelope.grid_size, seed=seed)
         max_attempts = self._max_retries if self._retry_on_fail else 1
 
         best_result: FillResult | None = None

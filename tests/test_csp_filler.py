@@ -291,14 +291,29 @@ class TestCSPFiller:
         result = filler.fill(spec, seed=42)
         assert len(result.grid) == 5
 
-    @pytest.mark.slow
-    def test_fill_7x7_open(self, real_dictionary: Dictionary) -> None:
-        config = CSPFillerConfig(timeout=120)
+    def test_fill_7x7(self, real_dictionary: Dictionary) -> None:
+        config = CSPFillerConfig(timeout=30)
         filler = CSPFiller(config, real_dictionary)
-        spec = GridSpec(rows=7, cols=7)
+        # Use black cells to break up the constraint graph
+        spec = GridSpec(
+            rows=7, cols=7, black_cells=[(0, 3), (3, 0), (3, 6), (6, 3)]
+        )
         result = filler.fill(spec, seed=42)
         assert len(result.grid) == 7
         assert len(result.grid[0]) == 7
-        for row in result.grid:
-            for cell in row:
-                assert cell.isalpha() and cell.isupper()
+        for r, row in enumerate(result.grid):
+            for c, cell in enumerate(row):
+                if (r, c) in {(0, 3), (3, 0), (3, 6), (6, 3)}:
+                    assert cell == "."
+                else:
+                    assert cell.isalpha() and cell.isupper()
+
+    def test_fill_7x7_valid_words(self, real_dictionary: Dictionary) -> None:
+        config = CSPFillerConfig(timeout=30)
+        filler = CSPFiller(config, real_dictionary)
+        spec = GridSpec(
+            rows=7, cols=7, black_cells=[(0, 3), (3, 0), (3, 6), (6, 3)]
+        )
+        result = filler.fill(spec, seed=42)
+        for word in result.words_across + result.words_down:
+            assert real_dictionary.contains(word), f"{word} not in dictionary"
