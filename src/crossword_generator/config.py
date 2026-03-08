@@ -55,6 +55,7 @@ class CSPFillerConfig(BaseModel):
     min_2letter_score: int = 30
     timeout: int = 30
     timeout_by_size: dict[int, int] | None = None
+    quality_tiers: list[int] = [60, 50]
 
 
 class FillConfig(BaseModel):

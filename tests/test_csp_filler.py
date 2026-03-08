@@ -6,7 +6,7 @@ import pytest
 
 from crossword_generator.config import CSPFillerConfig
 from crossword_generator.dictionary import Dictionary
-from crossword_generator.fillers.base import FillError, GridSpec
+from crossword_generator.fillers.base import FilledGrid, FillError, GridSpec
 from crossword_generator.fillers.csp import CSPFiller, _extract_slots
 
 
@@ -317,3 +317,39 @@ class TestCSPFiller:
         result = filler.fill(spec, seed=42)
         for word in result.words_across + result.words_down:
             assert real_dictionary.contains(word), f"{word} not in dictionary"
+
+    def test_quality_tiers_improve_scores(
+        self, real_dictionary: Dictionary
+    ) -> None:
+        """Fill with quality tiers [60, 50] should produce higher scores than [50]."""
+        spec = GridSpec(rows=5, cols=5)
+
+        # With tiers (tries score-60 first)
+        config_tiered = CSPFillerConfig(timeout=10, quality_tiers=[60, 50])
+        filler_tiered = CSPFiller(config_tiered, real_dictionary)
+        result_tiered = filler_tiered.fill(spec, seed=42)
+
+        # Without tiers (score-50 only)
+        config_flat = CSPFillerConfig(timeout=10, quality_tiers=[50])
+        filler_flat = CSPFiller(config_flat, real_dictionary)
+        result_flat = filler_flat.fill(spec, seed=42)
+
+        def avg_score(result: FilledGrid) -> float:
+            words = result.words_across + result.words_down
+            scores = [real_dictionary.score(w) or 0 for w in words]
+            return sum(scores) / len(scores)
+
+        tiered_avg = avg_score(result_tiered)
+        flat_avg = avg_score(result_flat)
+        # Tiered should be at least as good
+        assert tiered_avg >= flat_avg
+
+    def test_single_tier_50_works(self, real_dictionary: Dictionary) -> None:
+        """Single tier [50] should still produce a valid fill."""
+        config = CSPFillerConfig(timeout=10, quality_tiers=[50])
+        filler = CSPFiller(config, real_dictionary)
+        spec = GridSpec(rows=5, cols=5)
+        result = filler.fill(spec, seed=42)
+        assert len(result.grid) == 5
+        for word in result.words_across + result.words_down:
+            assert real_dictionary.contains(word)

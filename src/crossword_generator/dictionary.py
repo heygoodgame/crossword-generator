@@ -108,9 +108,19 @@ class Dictionary:
         """Return the score for a word, or None if not found."""
         return self._words.get(word.upper())
 
-    def words_by_length(self, length: int) -> list[str]:
-        """Return all words of the given length."""
-        return self._by_length.get(length, [])
+    def words_by_length(
+        self, length: int, *, min_score: int | None = None
+    ) -> list[str]:
+        """Return all words of the given length.
+
+        Args:
+            length: Word length to filter by.
+            min_score: If provided, return only words with score >= this value.
+        """
+        words = self._by_length.get(length, [])
+        if min_score is not None:
+            words = [w for w in words if (self._words.get(w, 0)) >= min_score]
+        return words
 
     def export_plain(self, output_path: Path | str, *, min_score: int = 50) -> int:
         """Write words to a plain text file (one lowercase word per line).

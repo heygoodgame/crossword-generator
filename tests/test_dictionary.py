@@ -90,6 +90,32 @@ class TestDictionaryLoad:
         assert d.score("zzz") is None
 
 
+class TestWordsByLengthMinScore:
+    """Test words_by_length with min_score filtering."""
+
+    def test_min_score_filters(self, small_dict_file: Path) -> None:
+        d = Dictionary.load(small_dict_file, min_word_score=50, min_2letter_score=30)
+        # cat has score 60, ocean has score 50
+        threes = d.words_by_length(3, min_score=60)
+        assert "CAT" in threes
+        # ocean is length 5 with score 50, not returned at min_score=60
+        fives = d.words_by_length(5, min_score=60)
+        assert "OCEAN" not in fives
+
+    def test_min_score_none_returns_all(self, small_dict_file: Path) -> None:
+        d = Dictionary.load(small_dict_file, min_word_score=50, min_2letter_score=30)
+        threes = d.words_by_length(3)
+        assert "CAT" in threes
+
+    def test_min_score_returns_empty_when_none_qualify(
+        self, small_dict_file: Path
+    ) -> None:
+        d = Dictionary.load(small_dict_file, min_word_score=50, min_2letter_score=30)
+        # No 5-letter words with score >= 70
+        fives = d.words_by_length(5, min_score=70)
+        assert fives == []
+
+
 class TestExportPlain:
     """Test Dictionary.export_plain()."""
 

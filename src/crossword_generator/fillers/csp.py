@@ -215,11 +215,10 @@ class CSPFiller(GridFiller):
         return "csp"
 
     def fill(self, spec: GridSpec, *, seed: int | None = None) -> FilledGrid:
-        """Fill a grid using CSP backtracking with random restarts."""
+        """Fill a grid using CSP backtracking with quality-tier passes."""
         if seed is None:
             seed = random.randint(0, 2**31 - 1)
 
-        rng = random.Random(seed)
         logger.info(
             "CSP filling %dx%d grid (seed=%d)", spec.rows, spec.cols, seed
         )
@@ -234,60 +233,6 @@ class CSPFiller(GridFiller):
             ]
             return FilledGrid(grid=grid)
 
-        # Build candidate word lists and flat letter-index arrays per length
-        candidates_by_slot: list[list[str]] = []
-        li_flat: dict[int, list[int]] = {}  # word_length -> flat array
-
-        for slot in slots:
-            words = self._dictionary.words_by_length(slot.length)
-            if not words:
-                raise FillError(
-                    f"No dictionary words of length {slot.length} "
-                    f"for {slot.direction} slot at ({slot.row},{slot.col})"
-                )
-            candidates_by_slot.append(list(words))
-            if slot.length not in li_flat:
-                li_flat[slot.length] = _build_letter_index_flat(
-                    words, slot.length
-                )
-
-        # Per-slot flat array reference (avoids dict lookup in hot path)
-        slot_li: list[list[int]] = [
-            li_flat[slot.length] for slot in slots
-        ]
-
-        # Build prefix tries per word length
-        tries: dict[int, _PrefixTrie] = {}
-        for length in li_flat:
-            trie = _PrefixTrie()
-            for slot in slots:
-                if slot.length == length:
-                    for w in candidates_by_slot[slot.index]:
-                        trie.insert(w)
-                    break
-            tries[length] = trie
-
-        # Pre-compute word scores for value ordering
-        scores_by_slot: list[list[int]] = []
-        for slot_cands in candidates_by_slot:
-            scores_by_slot.append(
-                [self._dictionary.score(w) or 0 for w in slot_cands]
-            )
-
-        # Domains as bitsets
-        initial_domains: list[int] = [
-            (1 << len(cands)) - 1 for cands in candidates_by_slot
-        ]
-
-        # Initial arc consistency using flat arrays
-        self._initial_ac3_flat(slots, initial_domains, slot_li)
-        for si, dom in enumerate(initial_domains):
-            if not dom:
-                raise FillError(
-                    f"CSP solver: infeasible after initial AC-3 "
-                    f"(slot {si} empty domain)"
-                )
-
         # Resolve timeout
         grid_max = max(spec.rows, spec.cols)
         if self._config.timeout_by_size and grid_max in self._config.timeout_by_size:
@@ -299,6 +244,130 @@ class CSPFiller(GridFiller):
 
         if time.monotonic() > deadline:
             raise FillError(f"CSP solver timed out after {timeout}s")
+
+        # Quality tier loop: try high-score words first, then fall back
+        tiers = self._config.quality_tiers
+        for tier_idx, tier_min_score in enumerate(tiers):
+            is_last_tier = tier_idx == len(tiers) - 1
+            logger.info(
+                "CSP tier %d/%d: min_score=%d",
+                tier_idx + 1, len(tiers), tier_min_score,
+            )
+
+            # Build candidate word lists for this tier
+            candidates_by_slot: list[list[str]] = []
+            li_flat: dict[int, list[int]] = {}
+            skip_tier = False
+
+            for slot in slots:
+                words = self._dictionary.words_by_length(
+                    slot.length, min_score=tier_min_score
+                )
+                if not words:
+                    # Fall back to all words for this length within this tier
+                    words = self._dictionary.words_by_length(slot.length)
+                if not words:
+                    if is_last_tier:
+                        raise FillError(
+                            f"No dictionary words of length {slot.length} "
+                            f"for {slot.direction} slot at ({slot.row},{slot.col})"
+                        )
+                    skip_tier = True
+                    break
+                candidates_by_slot.append(list(words))
+                if slot.length not in li_flat:
+                    li_flat[slot.length] = _build_letter_index_flat(
+                        words, slot.length
+                    )
+
+            if skip_tier:
+                continue
+
+            # Per-slot flat array reference
+            slot_li: list[list[int]] = [
+                li_flat[slot.length] for slot in slots
+            ]
+
+            # Build prefix tries per word length
+            tries: dict[int, _PrefixTrie] = {}
+            for length in li_flat:
+                trie = _PrefixTrie()
+                for slot in slots:
+                    if slot.length == length:
+                        for w in candidates_by_slot[slot.index]:
+                            trie.insert(w)
+                        break
+                tries[length] = trie
+
+            # Pre-compute word scores for value ordering
+            scores_by_slot: list[list[int]] = []
+            for slot_cands in candidates_by_slot:
+                scores_by_slot.append(
+                    [self._dictionary.score(w) or 0 for w in slot_cands]
+                )
+
+            # Domains as bitsets
+            initial_domains: list[int] = [
+                (1 << len(cands)) - 1 for cands in candidates_by_slot
+            ]
+
+            # Initial arc consistency
+            self._initial_ac3_flat(slots, initial_domains, slot_li)
+
+            # Check if any domain is empty after AC-3
+            infeasible = False
+            for si, dom in enumerate(initial_domains):
+                if not dom:
+                    infeasible = True
+                    break
+            if infeasible:
+                if is_last_tier:
+                    raise FillError(
+                        f"CSP solver: infeasible after initial AC-3 "
+                        f"(slot {si} empty domain)"
+                    )
+                logger.info(
+                    "Tier %d infeasible after AC-3, trying next tier",
+                    tier_idx + 1,
+                )
+                continue
+
+            result = self._solve_with_restarts(
+                spec, slots, candidates_by_slot, slot_li, tries,
+                scores_by_slot, initial_domains, black, seed, deadline,
+                timeout,
+            )
+            if result is not None:
+                return result
+
+            # This tier failed — try next
+            if not is_last_tier:
+                logger.info(
+                    "Tier %d (min_score=%d) failed, trying next tier",
+                    tier_idx + 1, tier_min_score,
+                )
+
+        raise FillError(
+            f"CSP solver could not fill {spec.rows}x{spec.cols} grid "
+            f"(exhausted all quality tiers)"
+        )
+
+    def _solve_with_restarts(
+        self,
+        spec: GridSpec,
+        slots: list[_Slot],
+        candidates_by_slot: list[list[str]],
+        slot_li: list[list[int]],
+        tries: dict[int, _PrefixTrie],
+        scores_by_slot: list[list[int]],
+        initial_domains: list[int],
+        black: set[tuple[int, int]],
+        seed: int,
+        deadline: float,
+        timeout: int,
+    ) -> FilledGrid | None:
+        """Run the random-restart solve loop. Returns FilledGrid or None."""
+        rng = random.Random(seed)
 
         # Mutable state (reset per restart attempt)
         domains: list[int] = list(initial_domains)
@@ -490,15 +559,11 @@ class CSPFiller(GridFiller):
                 rng = random.Random(seed + attempt)
                 continue
 
-            # solve() returned False — exhausted search
-            raise FillError(
-                f"CSP solver could not fill {spec.rows}x{spec.cols} grid"
-            )
+            # solve() returned False — exhausted search, tier failed
+            return None
         else:
-            raise FillError(
-                f"CSP solver timed out after {timeout}s "
-                f"({attempt} attempts, {total_backtracks} backtracks)"
-            )
+            # Timed out — let the tier loop try the next tier
+            return None
 
         # Build grid from assignment
         grid: list[list[str]] = [
