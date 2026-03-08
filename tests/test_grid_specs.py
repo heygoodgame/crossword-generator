@@ -54,7 +54,7 @@ class TestGetGridSpec:
         for seed in range(100):
             spec = get_grid_spec(PuzzleType.MINI, 7, seed=seed)
             patterns_seen.add(tuple(sorted(spec.black_cells)))
-        # With 3 patterns and 100 seeds, we should see more than 1
+        # With 4 patterns and 100 seeds, we should see more than 1
         assert len(patterns_seen) > 1
 
     def test_same_seed_same_pattern(self) -> None:
@@ -79,6 +79,17 @@ class TestGetGridSpec:
         for seed in range(100):
             spec = get_grid_spec(PuzzleType.MINI, 7, seed=seed)
             _assert_valid_grid_structure(spec)
+
+    def test_black_cell_count_mini_7(self) -> None:
+        """All 7x7 patterns have 8-12 black cells."""
+        patterns_seen: set[tuple[tuple[int, int], ...]] = set()
+        for seed in range(100):
+            spec = get_grid_spec(PuzzleType.MINI, 7, seed=seed)
+            patterns_seen.add(tuple(sorted(spec.black_cells)))
+        for pattern in patterns_seen:
+            assert 8 <= len(pattern) <= 12, (
+                f"7x7 pattern has {len(pattern)} black cells, expected 8-12: {pattern}"
+            )
 
     def test_invalid_size_raises(self) -> None:
         with pytest.raises(ValueError, match="Unsupported"):

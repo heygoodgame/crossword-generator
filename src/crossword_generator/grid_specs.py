@@ -18,8 +18,8 @@ _VALID_SPECS: dict[tuple[PuzzleType, int], tuple[int, int]] = {
 
 # Black cell patterns for each (puzzle_type, grid_size).
 # Each pattern is a list of (row, col) positions for black cells.
-# Mini puzzles use a small number of black cells to break up the constraint
-# graph and make CSP filling tractable, following real NYT mini conventions.
+# Mini puzzles use black cells to break up the constraint graph and make CSP
+# filling tractable, following real NYT mini conventions.
 _GRID_PATTERNS: dict[tuple[PuzzleType, int], list[list[tuple[int, int]]]] = {
     # 5x5: only corner positions avoid creating sub-3-letter slots.
     (PuzzleType.MINI, 5): [
@@ -30,14 +30,23 @@ _GRID_PATTERNS: dict[tuple[PuzzleType, int], list[list[tuple[int, int]]]] = {
         # Pattern 2: all four corners (all slots = 3)
         [(0, 0), (0, 4), (4, 0), (4, 4)],
     ],
-    # 7x7: black cells at row/col 0, 3, or 6 keep all slots >= 3.
+    # 7x7: 8-12 black cells, matching real NYT mini conventions.
+    # Corner L-shapes and edge-midpoint pairs keep all slots >= 3.
     (PuzzleType.MINI, 7): [
-        # Pattern 0: edge midpoints, 4 black cells (all slots 3 or 5)
-        [(0, 3), (3, 0), (3, 6), (6, 3)],
-        # Pattern 1: four corners, 4 black cells (all slots = 5)
-        [(0, 0), (0, 6), (6, 0), (6, 6)],
-        # Pattern 2: four corners + center, 5 black cells (all slots 3 or 5)
-        [(0, 0), (0, 6), (3, 3), (6, 0), (6, 6)],
+        # Pattern 0: corner L-shapes at opposite corners, 8 black cells
+        [(0, 0), (0, 1), (0, 6), (1, 0), (5, 6), (6, 0), (6, 5), (6, 6)],
+        # Pattern 1: cross — paired bars at edge midpoints, 8 black cells
+        [(0, 3), (1, 3), (3, 0), (3, 1), (3, 5), (3, 6), (5, 3), (6, 3)],
+        # Pattern 2: extended corner pairs, 10 black cells
+        [
+            (0, 0), (0, 1), (0, 5), (0, 6), (1, 0),
+            (5, 6), (6, 0), (6, 1), (6, 5), (6, 6),
+        ],
+        # Pattern 3: full corner blocks, 12 black cells
+        [
+            (0, 0), (0, 1), (0, 5), (0, 6), (1, 0), (1, 6),
+            (5, 0), (5, 6), (6, 0), (6, 1), (6, 5), (6, 6),
+        ],
     ],
 }
 
