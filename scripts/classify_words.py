@@ -37,7 +37,7 @@ crossword grid fill.
 KEEP — suitable for crossword fill:
 - Common everyday English words solvers recognize
 - Lively, contemporary vocabulary
-- Well-known proper nouns (people, places, brands)
+- Well-known proper nouns (see proper noun rules below)
 - Multi-word phrases people actually say (entries may have no spaces)
 - Words with interesting letter patterns
 
@@ -51,7 +51,38 @@ REJECT — unsuitable for crossword fill:
 - Three-letter glue/junk words
 - Contrived or dictionary-only entries
 - Standalone prefixes or suffixes
-- Overly niche proper nouns
+- Obscure proper nouns (see proper noun rules below)
+
+PROPER NOUN RULES:
+Test: Would most American adults recognize this name without context?
+If you need a qualifier to explain who they are, REJECT.
+
+Categories that are usually KEEP:
+- US presidents, world leaders, major historical figures
+- World capitals, US states, major world cities
+- Oscar/Grammy-level actors, musicians, directors
+- Major sports teams, Hall of Fame athletes
+- Global brands, Fortune 500 companies
+
+Categories that are usually REJECT:
+- Single-season reality TV contestants
+- Minor biblical or mythological figures
+- Local or regional politicians
+- Niche athletes outside mainstream sports
+- One-hit wonders remembered only by crossword constructors
+
+Cross-generational check: Would both a 25-year-old and a 65-year-old \
+recognize it? If only one generation knows it, lean REJECT.
+
+Examples:
+- ELVIS → KEEP (universally recognized musician)
+- OPRAH → KEEP (universally recognized TV host)
+- AALIYAH → KEEP (widely known singer)
+- TESLA → KEEP (major brand and historical figure)
+- OTERI → REJECT (needs qualifier: "SNL cast member")
+- ESAI → REJECT (crosswordese actor name)
+- NENE → REJECT (reality TV, not broadly known)
+- ELIHU → REJECT (obscure biblical figure)
 
 For each word, provide a brief reason (under 10 words)."""
 
