@@ -39,8 +39,11 @@ class FillGrader:
                 summary="Empty grid — no words to grade.",
             )
 
+        grid_size = len(grid)
         word_grades = [self._grade_word(entry) for entry in entries]
-        overall_score, grid_penalties = self._compute_aggregate(word_grades)
+        overall_score, grid_penalties = self._compute_aggregate(
+            word_grades, grid_size=grid_size
+        )
         passing = overall_score >= self._min_passing_score
 
         summary_parts = [
@@ -90,7 +93,7 @@ class FillGrader:
         )
 
     def _compute_aggregate(
-        self, word_grades: list[WordGrade]
+        self, word_grades: list[WordGrade], *, grid_size: int = 0
     ) -> tuple[float, dict[str, float]]:
         """Compute length-weighted mean and grid-level penalties."""
         total_weight = sum(wg.length for wg in word_grades)
@@ -115,15 +118,17 @@ class FillGrader:
         if len(word_grades) > 0 and unknown_count / len(word_grades) > 0.2:
             grid_penalties["high_unknown_ratio"] = 10.0
 
-        # Excessive short glue
-        short_glue_count = sum(
-            1
-            for wg in word_grades
-            if wg.length == 3
-            and (wg.dictionary_score is None or wg.dictionary_score < 55)
-        )
-        if len(word_grades) > 0 and short_glue_count / len(word_grades) > 0.3:
-            grid_penalties["excessive_short_glue"] = 5.0
+        # Excessive short glue — skip for mini grids (5x5, 7x7) where short
+        # words are structurally unavoidable
+        if grid_size > 7:
+            short_glue_count = sum(
+                1
+                for wg in word_grades
+                if wg.length == 3
+                and (wg.dictionary_score is None or wg.dictionary_score < 55)
+            )
+            if len(word_grades) > 0 and short_glue_count / len(word_grades) > 0.3:
+                grid_penalties["excessive_short_glue"] = 5.0
 
         overall = max(0.0, min(100.0, raw_score - sum(grid_penalties.values())))
         return overall, grid_penalties

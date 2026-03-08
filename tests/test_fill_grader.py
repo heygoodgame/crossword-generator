@@ -128,24 +128,52 @@ class TestGridLevelPenalties:
         assert report.penalties_applied["high_unknown_ratio"] == 10.0
 
     def test_excessive_short_glue_penalty(self) -> None:
-        # Grid with many 3-letter low-score words
+        # 8x8 grid (non-mini) with many 3-letter low-score words.
+        # Black cells (.) partition the grid so most entries are 3 letters.
         words = {
-            "ABC": 50,
-            "DEF": 50,
-            "GHI": 50,
-            "ADG": 50,
-            "BEH": 50,
-            "CFI": 50,
+            "ABC": 50, "DEF": 50, "GHI": 50, "JKL": 50,
+            "MNO": 50, "PQR": 50, "STU": 50, "VWX": 50,
+            "AGMS": 50, "BHNT": 50, "CIOU": 50,
+            "DJPV": 50, "EKQW": 50, "FLRX": 50,
+            "ABCDEFGH": 60, "IJKLMNOP": 60,
+        }
+        grader = FillGrader(_make_dict(words))
+        # Use a grid > 7 rows so excessive_short_glue applies
+        grid = [
+            ["A", "B", "C", ".", "D", "E", "F", "."],
+            ["G", "H", "I", ".", "J", "K", "L", "."],
+            ["M", "N", "O", ".", "P", "Q", "R", "."],
+            ["S", "T", "U", ".", "V", "W", "X", "."],
+            [".", ".", ".", ".", ".", ".", ".", "."],
+            [".", ".", ".", ".", ".", ".", ".", "."],
+            ["A", "B", "C", "D", "E", "F", "G", "H"],
+            ["I", "J", "K", "L", "M", "N", "O", "P"],
+        ]
+        report = grader.grade(grid)
+        # Most words are 3-letter with score < 55 → ratio > 0.3
+        assert "excessive_short_glue" in report.penalties_applied
+
+    def test_excessive_short_glue_skipped_for_mini(self) -> None:
+        # Mini grids (5x5, 7x7) should not get the excessive_short_glue penalty
+        # because short words are structurally unavoidable.
+        words = {
+            "ABC": 50, "DEF": 50, "GHI": 50, "JKL": 50, "MNO": 50,
+            "PQR": 50, "STU": 50,
+            "ADGJMPS": 50, "BEHKNQT": 50, "CILORU": 50,
         }
         grader = FillGrader(_make_dict(words))
         grid = [
-            ["A", "B", "C"],
-            ["D", "E", "F"],
-            ["G", "H", "I"],
+            ["A", "B", "C", ".", "D", "E", "F"],
+            [".", ".", ".", ".", ".", ".", "."],
+            ["G", "H", "I", ".", "J", "K", "L"],
+            [".", ".", ".", ".", ".", ".", "."],
+            ["M", "N", "O", ".", "P", "Q", "R"],
+            [".", ".", ".", ".", ".", ".", "."],
+            ["S", "T", "U", ".", ".", ".", "."],
         ]
         report = grader.grade(grid)
-        # All 6 words are 3-letter with score < 55 → ratio = 1.0 > 0.3
-        assert "excessive_short_glue" in report.penalties_applied
+        # Most words are 3-letter with score < 55, but grid is 7x7 (mini)
+        assert "excessive_short_glue" not in report.penalties_applied
 
     def test_no_grid_penalties_for_good_fill(self) -> None:
         # All across and down words must be in the dict
