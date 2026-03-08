@@ -13,6 +13,7 @@ Below are core guiding principles for how we think about attempting to create mi
 -   Typically 5 Across and 5 Down clues on weekdays (10 total), with more on Saturday's 7×7
 -   Word lengths on weekdays range from 3 to 5 letters; on Saturday from 3 to 7 letters
 -   A small number of black squares (typically 2–5) appear in the 5×5 grid to delineate word boundaries; it is not a fully dense grid
+-   A slightly larger number of black squares (typically 8-14) appear in the 7×7 grid to delineate word boundaries; it is not a fully dense grid
 -   Every white cell is "checked" — each letter participates in both an Across and a Down answer, consistent with American crossword conventions
 -   The grid does not strictly require 180-degree rotational symmetry the way the full crossword does, but patterns tend to be clean and visually balanced
 -   On rare occasions (like Earth Day 2022), the black-square pattern can form a recognizable picture (e.g., a redwood tree), but this is the exception rather than the rule
