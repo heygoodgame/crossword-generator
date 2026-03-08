@@ -124,6 +124,12 @@ def generate(
     help="Path to config file.",
 )
 @click.option(
+    "--max-consecutive-failures",
+    type=int,
+    default=5,
+    help="Skip remaining seeds after N consecutive failures (0 to disable).",
+)
+@click.option(
     "-v",
     "--verbose",
     is_flag=True,
@@ -134,6 +140,7 @@ def evaluate(
     sizes: str,
     num_seeds: int,
     config_path: str | None,
+    max_consecutive_failures: int,
     verbose: bool,
 ) -> None:
     """Evaluate fill quality across all available fillers."""
@@ -201,9 +208,68 @@ def evaluate(
     )
 
     evaluator = FillerEvaluator(fillers, grader)
-    results = evaluator.evaluate(grid_sizes, seeds)
+    results = evaluator.evaluate(
+        grid_sizes, seeds, max_consecutive_failures=max_consecutive_failures
+    )
     report = FillerEvaluator.format_report(results)
     click.echo(report)
+
+
+@main.command(name="export-dictionary")
+@click.option(
+    "--min-score",
+    type=int,
+    default=50,
+    help="Minimum word score to include.",
+)
+@click.option(
+    "--output",
+    "output_path",
+    type=click.Path(),
+    default="dictionaries/jeff-chen-filtered.txt",
+    help="Output file path.",
+)
+@click.option(
+    "--config",
+    "config_path",
+    type=click.Path(exists=True),
+    default=None,
+    help="Path to config file.",
+)
+@click.option(
+    "-v",
+    "--verbose",
+    is_flag=True,
+    default=False,
+    help="Enable debug logging.",
+)
+def export_dictionary(
+    min_score: int,
+    output_path: str,
+    config_path: str | None,
+    verbose: bool,
+) -> None:
+    """Export a filtered plain-text dictionary for external tools."""
+    _setup_logging(verbose)
+
+    from crossword_generator.dictionary import Dictionary
+
+    config = load_config(Path(config_path) if config_path else None)
+    project_root = find_project_root()
+
+    # Load with min_word_score=0 to get all words, then filter via export_plain
+    dictionary = Dictionary.load(
+        project_root / config.dictionary.path,
+        min_word_score=0,
+        min_2letter_score=0,
+    )
+
+    out = Path(output_path)
+    if not out.is_absolute():
+        out = project_root / out
+
+    count = dictionary.export_plain(out, min_score=min_score)
+    click.echo(f"Exported {count} words (min_score={min_score}) to {out}")
 
 
 def _setup_logging(verbose: bool) -> None:

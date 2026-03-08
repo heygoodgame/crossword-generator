@@ -90,10 +90,22 @@ class GoCrosswordFiller(GridFiller):
         return filled
 
     def is_available(self) -> bool:
-        """Check if Docker is running and accessible."""
+        """Check if Docker is running and the required image exists locally."""
         try:
             result = subprocess.run(
                 ["docker", "info"],
+                capture_output=True,
+                timeout=10,
+            )
+            if result.returncode != 0:
+                return False
+        except (FileNotFoundError, subprocess.TimeoutExpired):
+            return False
+
+        # Check that the Docker image exists locally
+        try:
+            result = subprocess.run(
+                ["docker", "image", "inspect", self._config.docker_image],
                 capture_output=True,
                 timeout=10,
             )

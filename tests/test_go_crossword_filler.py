@@ -212,15 +212,29 @@ class TestFill:
 class TestIsAvailable:
     @patch("crossword_generator.fillers.go_crossword.subprocess.run")
     def test_available(self, mock_run: MagicMock, filler: GoCrosswordFiller) -> None:
+        # Both docker info and docker image inspect succeed
         mock_run.return_value = MagicMock(returncode=0)
         assert filler.is_available() is True
+        assert mock_run.call_count == 2
 
     @patch("crossword_generator.fillers.go_crossword.subprocess.run")
-    def test_not_available(
+    def test_not_available_docker_not_running(
         self, mock_run: MagicMock, filler: GoCrosswordFiller
     ) -> None:
         mock_run.return_value = MagicMock(returncode=1)
         assert filler.is_available() is False
+        # Should only call docker info, not image inspect
+        assert mock_run.call_count == 1
+
+    @patch("crossword_generator.fillers.go_crossword.subprocess.run")
+    def test_not_available_image_missing(
+        self, mock_run: MagicMock, filler: GoCrosswordFiller
+    ) -> None:
+        docker_info = MagicMock(returncode=0)
+        image_inspect = MagicMock(returncode=1)
+        mock_run.side_effect = [docker_info, image_inspect]
+        assert filler.is_available() is False
+        assert mock_run.call_count == 2
 
     @patch("crossword_generator.fillers.go_crossword.subprocess.run")
     def test_docker_missing(

@@ -43,12 +43,17 @@ class FillerEvaluator:
         self,
         grid_sizes: list[int],
         seeds: list[int],
+        *,
+        max_consecutive_failures: int = 0,
     ) -> list[EvalResult]:
         """Run all fillers across all sizes and seeds.
 
         Args:
             grid_sizes: Grid dimensions to test (square grids).
             seeds: Random seeds for each trial.
+            max_consecutive_failures: If > 0, skip remaining seeds for a
+                filler×size combo after this many consecutive failures.
+                Set to 0 to disable early abort.
 
         Returns:
             List of EvalResult for every filler x size x seed combination.
@@ -63,9 +68,33 @@ class FillerEvaluator:
                 continue
 
             for size in grid_sizes:
+                consecutive_failures = 0
                 for seed in seeds:
+                    if (
+                        max_consecutive_failures > 0
+                        and consecutive_failures >= max_consecutive_failures
+                    ):
+                        results.append(EvalResult(
+                            filler_name=filler.name,
+                            grid_size=size,
+                            seed=seed,
+                            success=False,
+                            quality_score=None,
+                            time_seconds=0.0,
+                            error="skipped (early abort)",
+                            word_count=0,
+                            passing=False,
+                        ))
+                        continue
+
                     result = self._run_single(filler, size, seed)
                     results.append(result)
+
+                    if result.success:
+                        consecutive_failures = 0
+                    else:
+                        consecutive_failures += 1
+
                     status = (
                         f"score={result.quality_score:.1f}"
                         if result.success
@@ -79,6 +108,18 @@ class FillerEvaluator:
                         seed,
                         status,
                         result.time_seconds,
+                    )
+
+                if (
+                    max_consecutive_failures > 0
+                    and consecutive_failures >= max_consecutive_failures
+                ):
+                    logger.warning(
+                        "Early abort: %s at %dx%d after %d consecutive failures",
+                        filler.name,
+                        size,
+                        size,
+                        consecutive_failures,
                     )
 
         return results

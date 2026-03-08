@@ -54,6 +54,7 @@ class CSPFillerConfig(BaseModel):
     min_word_score: int = 50
     min_2letter_score: int = 30
     timeout: int = 30
+    timeout_by_size: dict[int, int] | None = None
 
 
 class FillConfig(BaseModel):

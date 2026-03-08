@@ -112,6 +112,30 @@ class Dictionary:
         """Return all words of the given length."""
         return self._by_length.get(length, [])
 
+    def export_plain(self, output_path: Path | str, *, min_score: int = 50) -> int:
+        """Write words to a plain text file (one lowercase word per line).
+
+        Useful for creating a pre-filtered dictionary that external tools
+        like go-crossword can ingest via their ``-dictionary`` flag.
+
+        Args:
+            output_path: Where to write the file.
+            min_score: Minimum score threshold for included words.
+
+        Returns:
+            Number of words written.
+        """
+        output_path = Path(output_path)
+        words = sorted(
+            w.lower() for w, s in self._words.items() if s >= min_score
+        )
+        output_path.write_text("\n".join(words) + "\n" if words else "")
+        logger.info(
+            "Exported %d words (min_score=%d) to %s",
+            len(words), min_score, output_path,
+        )
+        return len(words)
+
     def __contains__(self, word: str) -> bool:
         return self.contains(word)
 

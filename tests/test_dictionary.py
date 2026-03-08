@@ -90,6 +90,37 @@ class TestDictionaryLoad:
         assert d.score("zzz") is None
 
 
+class TestExportPlain:
+    """Test Dictionary.export_plain()."""
+
+    def test_export_plain_writes_words(
+        self, small_dict_file: Path, tmp_path: Path
+    ) -> None:
+        d = Dictionary.load(small_dict_file, min_word_score=0, min_2letter_score=0)
+        out = tmp_path / "export.txt"
+        count = d.export_plain(out, min_score=50)
+        lines = out.read_text().strip().split("\n")
+        assert count == len(lines)
+        # All words with score >= 50: ocean(50), cat(60), hi(50)
+        assert "ocean" in lines
+        assert "cat" in lines
+        assert "hi" in lines
+        # dog(40), ab(30), cd(10) excluded
+        assert "dog" not in lines
+
+    def test_export_plain_respects_min_score(
+        self, small_dict_file: Path, tmp_path: Path
+    ) -> None:
+        d = Dictionary.load(small_dict_file, min_word_score=0, min_2letter_score=0)
+        out = tmp_path / "export.txt"
+        count = d.export_plain(out, min_score=60)
+        lines = out.read_text().strip().split("\n")
+        assert count == 1
+        assert "cat" in lines
+        # ocean(50) excluded at min_score=60
+        assert "ocean" not in lines
+
+
 class TestRealDictionary:
     """Tests against the actual Jeff Chen word list."""
 

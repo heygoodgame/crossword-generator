@@ -25,6 +25,11 @@ fill:
     min_word_score: 50
     min_2letter_score: 30
     timeout: 30
+    # Per-size timeout overrides (seconds). Falls back to `timeout` for unlisted sizes.
+    # timeout_by_size:
+    #   5: 30
+    #   7: 120
+    #   9: 300
 
 grading:
   fill:

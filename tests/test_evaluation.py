@@ -124,6 +124,68 @@ class TestFillerEvaluator:
         assert len(failures) == 2
 
 
+class FakeFlakeyFiller(GridFiller):
+    """Filler that fails a configurable number of times then succeeds."""
+
+    def __init__(self, fail_count: int = 3) -> None:
+        self._fail_count = fail_count
+        self._call_count = 0
+
+    @property
+    def name(self) -> str:
+        return "fake-flakey"
+
+    def fill(self, spec: GridSpec, *, seed: int | None = None) -> FilledGrid:
+        self._call_count += 1
+        if self._call_count <= self._fail_count:
+            raise FillError(f"fail #{self._call_count}")
+        grid = [["A"] * spec.cols for _ in range(spec.rows)]
+        return FilledGrid(grid=grid)
+
+
+class TestEarlyAbort:
+    def test_early_abort_after_consecutive_failures(
+        self, mock_grader: MagicMock
+    ) -> None:
+        evaluator = FillerEvaluator([FakeFailFiller()], mock_grader)
+        seeds = list(range(10))
+        results = evaluator.evaluate(
+            [5], seeds, max_consecutive_failures=3
+        )
+        assert len(results) == 10
+        # First 3 are actual failures, rest are skipped
+        actual = [r for r in results if r.error != "skipped (early abort)"]
+        skipped = [r for r in results if r.error == "skipped (early abort)"]
+        assert len(actual) == 3
+        assert len(skipped) == 7
+
+    def test_early_abort_resets_on_success(
+        self, mock_grader: MagicMock
+    ) -> None:
+        # Fails 2 times, then succeeds — should NOT abort with threshold 3
+        flakey = FakeFlakeyFiller(fail_count=2)
+        evaluator = FillerEvaluator([flakey], mock_grader)
+        seeds = list(range(5))
+        results = evaluator.evaluate(
+            [5], seeds, max_consecutive_failures=3
+        )
+        skipped = [r for r in results if r.error == "skipped (early abort)"]
+        assert len(skipped) == 0
+
+    def test_no_early_abort_when_disabled(
+        self, mock_grader: MagicMock
+    ) -> None:
+        evaluator = FillerEvaluator([FakeFailFiller()], mock_grader)
+        seeds = list(range(5))
+        results = evaluator.evaluate(
+            [5], seeds, max_consecutive_failures=0
+        )
+        # All should be actual failures, no skips
+        skipped = [r for r in results if r.error == "skipped (early abort)"]
+        assert len(skipped) == 0
+        assert len(results) == 5
+
+
 class TestFormatReport:
     def test_empty_results(self) -> None:
         assert FillerEvaluator.format_report([]) == "No evaluation results."

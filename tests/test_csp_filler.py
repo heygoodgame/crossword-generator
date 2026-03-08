@@ -269,3 +269,36 @@ class TestCSPFiller:
         result = filler.fill(spec, seed=42)
         assert len(result.words_across) == 5
         assert len(result.words_down) == 5
+
+    def test_timeout_by_size_overrides_default(
+        self, real_dictionary: Dictionary
+    ) -> None:
+        config = CSPFillerConfig(timeout=10, timeout_by_size={5: 0})
+        filler = CSPFiller(config, real_dictionary)
+        spec = GridSpec(rows=5, cols=5)
+        # timeout_by_size[5]=0 should cause immediate timeout
+        with pytest.raises(FillError, match="timed out"):
+            filler.fill(spec, seed=42)
+
+    def test_timeout_falls_back_to_default(
+        self, real_dictionary: Dictionary
+    ) -> None:
+        # timeout_by_size has no entry for size 5, so default timeout=10 is used
+        config = CSPFillerConfig(timeout=10, timeout_by_size={7: 120})
+        filler = CSPFiller(config, real_dictionary)
+        spec = GridSpec(rows=5, cols=5)
+        # Should succeed with default 10s timeout
+        result = filler.fill(spec, seed=42)
+        assert len(result.grid) == 5
+
+    @pytest.mark.slow
+    def test_fill_7x7_open(self, real_dictionary: Dictionary) -> None:
+        config = CSPFillerConfig(timeout=120)
+        filler = CSPFiller(config, real_dictionary)
+        spec = GridSpec(rows=7, cols=7)
+        result = filler.fill(spec, seed=42)
+        assert len(result.grid) == 7
+        assert len(result.grid[0]) == 7
+        for row in result.grid:
+            for cell in row:
+                assert cell.isalpha() and cell.isupper()
