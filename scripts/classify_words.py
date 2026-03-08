@@ -48,7 +48,6 @@ REJECT — unsuitable for crossword fill:
 - Roman numerals used as filler
 - Archaic or variant spellings
 - Foreign words that aren't common English loanwords
-- Three-letter glue/junk words
 - Contrived or dictionary-only entries
 - Standalone prefixes or suffixes
 - Obscure proper nouns (see proper noun rules below)
