@@ -9,6 +9,7 @@ Usage:
     uv run python scripts/classify_words.py                    # Start fresh or resume
     uv run python scripts/classify_words.py --batch-size 100   # Larger batches
     uv run python scripts/classify_words.py --model llama3.1   # Different model
+    uv run python scripts/classify_words.py --workers 4       # Parallel LLM calls
     uv run python scripts/classify_words.py --dry-run
     uv run python scripts/classify_words.py --reset
     uv run python scripts/classify_words.py --retry-errors
@@ -21,7 +22,9 @@ import json
 import os
 import signal
 import sys
+import threading
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
@@ -181,22 +184,23 @@ class OutputWriter:
         self.kept_path = output_dir / "kept.txt"
         self.rejected_path = output_dir / "rejected.txt"
         self.errors_path = output_dir / "errors.txt"
+        self._lock = threading.Lock()
 
     def ensure_dir(self) -> None:
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
     def append_kept(self, entries: list[tuple[str, int, str]]) -> None:
-        with open(self.kept_path, "a") as f:
+        with self._lock, open(self.kept_path, "a") as f:
             for word, score, reason in entries:
                 f.write(f"{word};{score};{reason}\n")
 
     def append_rejected(self, entries: list[tuple[str, int, str]]) -> None:
-        with open(self.rejected_path, "a") as f:
+        with self._lock, open(self.rejected_path, "a") as f:
             for word, score, reason in entries:
                 f.write(f"{word};{score};{reason}\n")
 
     def append_errors(self, entries: list[tuple[str, int, str]]) -> None:
-        with open(self.errors_path, "a") as f:
+        with self._lock, open(self.errors_path, "a") as f:
             for word, score, reason in entries:
                 f.write(f"{word};{score};{reason}\n")
 
@@ -397,6 +401,7 @@ def run_classification(
     base_url: str,
     output_dir: Path,
     max_retries: int,
+    workers: int = 1,
     start_batch: int = 0,
     checkpoint: Checkpoint | None = None,
 ) -> None:
@@ -436,36 +441,56 @@ def run_classification(
     prev_handler = signal.signal(signal.SIGINT, handle_interrupt)
 
     try:
-        for batch_idx in range(start_batch, total_batches):
-            if interrupted:
-                break
+        with ThreadPoolExecutor(max_workers=workers) as executor:
+            # Process in groups of `workers` batches
+            for group_start in range(start_batch, total_batches, workers):
+                if interrupted:
+                    break
 
-            batch = batches[batch_idx]
-            kept, rejected, errors = classifier.classify_batch(batch)
+                group_end = min(group_start + workers, total_batches)
+                futures = {
+                    executor.submit(
+                        classifier.classify_batch, batches[idx]
+                    ): idx
+                    for idx in range(group_start, group_end)
+                }
 
-            if kept:
-                writer.append_kept(kept)
-            if rejected:
-                writer.append_rejected(rejected)
-            if errors:
-                writer.append_errors(errors)
+                for future in as_completed(futures):
+                    if interrupted:
+                        break
+                    kept, rejected, errors = future.result()
 
-            checkpoint.last_completed_batch = batch_idx
-            checkpoint.words_processed += len(batch)
-            checkpoint.words_kept += len(kept)
-            checkpoint.words_rejected += len(rejected)
-            checkpoint.words_errored += len(errors)
-            cp_mgr.save(checkpoint)
+                    if kept:
+                        writer.append_kept(kept)
+                    if rejected:
+                        writer.append_rejected(rejected)
+                    if errors:
+                        writer.append_errors(errors)
 
-            progress.update(len(kept), len(rejected), len(errors))
-            progress.display()
+                    progress.update(
+                        len(kept), len(rejected), len(errors)
+                    )
+                    progress.display()
+
+                # Update checkpoint after full group completes
+                checkpoint.last_completed_batch = group_end - 1
+                group_words = sum(
+                    len(batches[i])
+                    for i in range(group_start, group_end)
+                )
+                checkpoint.words_processed += group_words
+                checkpoint.words_kept = progress.kept
+                checkpoint.words_rejected = progress.rejected
+                checkpoint.words_errored = progress.errored
+                cp_mgr.save(checkpoint)
     finally:
         signal.signal(signal.SIGINT, prev_handler)
 
     sys.stderr.write("\n")
     if interrupted:
         print(
-            f"\nInterrupted at batch {checkpoint.last_completed_batch + 1}"
+            f"\nInterrupted at batch "
+            f"{checkpoint.last_completed_batch + 1}"
             f"/{total_batches}. Resume by re-running the script."
         )
     else:
@@ -522,6 +547,12 @@ def main() -> None:
         default=3,
         help="Max retries per LLM call (default: 3)",
     )
+    parser.add_argument(
+        "--workers",
+        type=int,
+        default=1,
+        help="Concurrent LLM calls (default: 1)",
+    )
     args = parser.parse_args()
 
     # Load words
@@ -572,6 +603,7 @@ def main() -> None:
             args.base_url,
             args.output_dir,
             args.max_retries,
+            workers=args.workers,
         )
         return
 
@@ -613,6 +645,7 @@ def main() -> None:
         args.base_url,
         args.output_dir,
         args.max_retries,
+        workers=args.workers,
         start_batch=start_batch,
         checkpoint=cp,
     )
