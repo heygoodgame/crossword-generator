@@ -114,8 +114,8 @@ def _assert_valid_grid_structure(spec: "GridSpec") -> None:  # noqa: F821
                 length += 1
                 c += 1
             if length > 0:
-                assert length >= 2, (
-                    f"Across slot at row {r} has length {length} < 2 "
+                assert length >= 3, (
+                    f"Across slot at row {r} has length {length} < 3 "
                     f"(black_cells={spec.black_cells})"
                 )
 
@@ -131,7 +131,7 @@ def _assert_valid_grid_structure(spec: "GridSpec") -> None:  # noqa: F821
                 length += 1
                 r += 1
             if length > 0:
-                assert length >= 2, (
-                    f"Down slot at col {c} has length {length} < 2 "
+                assert length >= 3, (
+                    f"Down slot at col {c} has length {length} < 3 "
                     f"(black_cells={spec.black_cells})"
                 )

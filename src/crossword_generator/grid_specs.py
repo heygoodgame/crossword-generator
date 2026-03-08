@@ -21,21 +21,23 @@ _VALID_SPECS: dict[tuple[PuzzleType, int], tuple[int, int]] = {
 # Mini puzzles use a small number of black cells to break up the constraint
 # graph and make CSP filling tractable, following real NYT mini conventions.
 _GRID_PATTERNS: dict[tuple[PuzzleType, int], list[list[tuple[int, int]]]] = {
+    # 5x5: only corner positions avoid creating sub-3-letter slots.
     (PuzzleType.MINI, 5): [
         # Pattern 0: two opposing corners
         [(0, 4), (4, 0)],
-        # Pattern 1: center cell
-        [(2, 2)],
-        # Pattern 2: diagonal pair
+        # Pattern 1: other diagonal pair
         [(0, 0), (4, 4)],
+        # Pattern 2: all four corners (all slots = 3)
+        [(0, 0), (0, 4), (4, 0), (4, 4)],
     ],
+    # 7x7: black cells at row/col 0, 3, or 6 keep all slots >= 3.
     (PuzzleType.MINI, 7): [
-        # Pattern 0: symmetric pairs at edges, 4 black cells
+        # Pattern 0: edge midpoints, 4 black cells (all slots 3 or 5)
         [(0, 3), (3, 0), (3, 6), (6, 3)],
-        # Pattern 1: corners trimmed, 4 black cells
-        [(0, 6), (6, 0), (0, 0), (6, 6)],
-        # Pattern 2: staggered diagonal, 4 black cells
-        [(0, 2), (2, 6), (4, 0), (6, 4)],
+        # Pattern 1: four corners, 4 black cells (all slots = 5)
+        [(0, 0), (0, 6), (6, 0), (6, 6)],
+        # Pattern 2: four corners + center, 5 black cells (all slots 3 or 5)
+        [(0, 0), (0, 6), (3, 3), (6, 0), (6, 6)],
     ],
 }
 
