@@ -60,5 +60,8 @@ output/*.json
 config.yaml
 !config.example.yaml
 
+# Puzzle data
+data/
+
 # Logs
 *.log

@@ -36,9 +36,10 @@ class TestGetGridSpec:
         spec = get_grid_spec("mini", 5)
         assert spec.rows == 5
 
-    def test_black_cells_present_mini_5(self) -> None:
+    def test_default_mini_5_is_open_grid(self) -> None:
+        """Default 5x5 pattern (most common) has no black cells."""
         spec = get_grid_spec(PuzzleType.MINI, 5)
-        assert len(spec.black_cells) > 0
+        assert spec.black_cells == []
 
     def test_black_cells_present_mini_7(self) -> None:
         spec = get_grid_spec(PuzzleType.MINI, 7)
@@ -56,6 +57,15 @@ class TestGetGridSpec:
             patterns_seen.add(tuple(sorted(spec.black_cells)))
         # With 4 patterns and 100 seeds, we should see more than 1
         assert len(patterns_seen) > 1
+
+    def test_weighted_selection_mini_5(self) -> None:
+        """5x5 patterns are selected with weighted probability."""
+        patterns_seen = set()
+        for seed in range(200):
+            spec = get_grid_spec(PuzzleType.MINI, 5, seed=seed)
+            patterns_seen.add(tuple(sorted(spec.black_cells)))
+        # With 20 weighted patterns and 200 seeds, should see many
+        assert len(patterns_seen) >= 10
 
     def test_same_seed_same_pattern(self) -> None:
         spec1 = get_grid_spec(PuzzleType.MINI, 7, seed=42)
@@ -81,14 +91,14 @@ class TestGetGridSpec:
             _assert_valid_grid_structure(spec)
 
     def test_black_cell_count_mini_7(self) -> None:
-        """All 7x7 patterns have 8-12 black cells."""
+        """All 7x7 patterns have 4-13 black cells."""
         patterns_seen: set[tuple[tuple[int, int], ...]] = set()
         for seed in range(100):
             spec = get_grid_spec(PuzzleType.MINI, 7, seed=seed)
             patterns_seen.add(tuple(sorted(spec.black_cells)))
         for pattern in patterns_seen:
-            assert 8 <= len(pattern) <= 12, (
-                f"7x7 pattern has {len(pattern)} black cells, expected 8-12: {pattern}"
+            assert 4 <= len(pattern) <= 13, (
+                f"7x7 pattern has {len(pattern)} black cells, expected 4-13: {pattern}"
             )
 
     def test_invalid_size_raises(self) -> None:
