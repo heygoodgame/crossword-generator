@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 class FillGrader:
     """Scores a filled crossword grid against a scored dictionary.
 
-    Per-word scoring starts with the dictionary score (or 20 if unknown),
+    Per-word scoring starts with the dictionary score (or 0 if unknown),
     then subtracts penalties. Grid-level scoring is a length-weighted mean
     of adjusted word scores, minus grid-level penalties.
     """
@@ -67,8 +67,7 @@ class FillGrader:
         penalties: dict[str, float] = {}
 
         if dict_score is None:
-            base = 20.0
-            penalties["not_in_dictionary"] = 30.0
+            base = 0.0
         else:
             base = float(dict_score)
 
@@ -76,10 +75,7 @@ class FillGrader:
             penalties["two_letter"] = 5.0
 
         if entry.length == 3 and (dict_score is None or dict_score < 55):
-            penalties["short_glue"] = 10.0
-
-        if dict_score is not None and 50 <= dict_score < 55:
-            penalties["low_score"] = 5.0
+            penalties["short_glue"] = 5.0
 
         adjusted = max(0.0, min(100.0, base - sum(penalties.values())))
 
@@ -112,7 +108,7 @@ class FillGrader:
             seen[wg.word] = seen.get(wg.word, 0) + 1
         duplicate_pairs = sum(count - 1 for count in seen.values() if count > 1)
         if duplicate_pairs > 0:
-            grid_penalties["duplicate_words"] = 5.0 * duplicate_pairs
+            grid_penalties["duplicate_words"] = 30.0 * duplicate_pairs
 
         # High unknown ratio
         unknown_count = sum(1 for wg in word_grades if wg.dictionary_score is None)

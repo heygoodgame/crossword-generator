@@ -63,18 +63,9 @@ class TestWordScoring:
         report = grader.grade(grid)
         wg = report.word_grades[0]
         assert wg.dictionary_score is None
-        assert "not_in_dictionary" in wg.penalties
-        # Base 20 - 30 (not_in_dictionary) = -10, clamped to 0
+        # Base 0, no penalty key
+        assert "not_in_dictionary" not in wg.penalties
         assert wg.adjusted_score == 0.0
-
-    def test_low_score_penalty(self) -> None:
-        grader = FillGrader(_make_dict({"ABCDE": 52}))
-        grid = [["A", "B", "C", "D", "E"]]
-        report = grader.grade(grid)
-        wg = report.word_grades[0]
-        assert wg.dictionary_score == 52
-        assert "low_score" in wg.penalties
-        assert wg.adjusted_score == 52.0 - 5.0
 
     def test_short_glue_penalty(self) -> None:
         grader = FillGrader(_make_dict({"ABC": 50}))
@@ -82,9 +73,8 @@ class TestWordScoring:
         report = grader.grade(grid)
         wg = report.word_grades[0]
         assert "short_glue" in wg.penalties
-        assert "low_score" in wg.penalties
-        # 50 - 10 (short_glue) - 5 (low_score) = 35
-        assert wg.adjusted_score == 35.0
+        # 50 - 5 (short_glue) = 45
+        assert wg.adjusted_score == 45.0
 
     def test_short_glue_not_applied_above_55(self) -> None:
         grader = FillGrader(_make_dict({"ABC": 60}))
@@ -104,7 +94,7 @@ class TestWordScoring:
 
     def test_score_clamped_to_zero(self) -> None:
         grader = FillGrader(_make_dict({}))
-        # Unknown 3-letter: 20 - 30 - 10 = -20, clamped to 0
+        # Unknown 3-letter: base 0, clamped to 0
         grid = [["X", "Y", "Z"]]
         report = grader.grade(grid)
         wg = report.word_grades[0]
@@ -122,9 +112,9 @@ class TestGridLevelPenalties:
             ["A", "B", "C"],
         ]
         report = grader.grade(grid)
-        # "ABC" across appears twice → 1 duplicate pair → -5
+        # "ABC" across appears twice → 1 duplicate pair → -30
         if "duplicate_words" in report.penalties_applied:
-            assert report.penalties_applied["duplicate_words"] == 5.0
+            assert report.penalties_applied["duplicate_words"] == 30.0
 
     def test_high_unknown_ratio_penalty(self) -> None:
         # All words unknown → high_unknown_ratio
@@ -213,7 +203,7 @@ class TestAggregateScoring:
         )
         grid = [["A", "B", "C", "D", "E"]]
         report = grader.grade(grid)
-        # Score = 50 - 5 (low_score) = 45, below 70
+        # Score = 50, below 70
         assert report.passing is False
 
     def test_configurable_threshold(self) -> None:
@@ -223,7 +213,7 @@ class TestAggregateScoring:
         )
         grid = [["A", "B", "C", "D", "E"]]
         report = grader.grade(grid)
-        # Score = 50 - 5 = 45, above 40
+        # Score = 50, above 40
         assert report.passing is True
 
 
