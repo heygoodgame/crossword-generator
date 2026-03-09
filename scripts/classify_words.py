@@ -935,13 +935,17 @@ def run_batch_api_classification(
 
 def run_tally(output_dir: Path) -> None:
     """Read all per-run output files, tally votes, write final results."""
-    votes: dict[str, dict[str, int]] = defaultdict(lambda: {"keep": 0, "reject": 0})
+    votes: dict[str, dict[str, int]] = defaultdict(
+        lambda: {"keep": 0, "reject": 0}
+    )
     scores: dict[str, int] = {}
+    kept_reasons: dict[str, str] = {}
+    rejected_reasons: dict[str, str] = {}
     runs_found: set[int] = set()
 
     # Find all numbered kept/rejected files (exclude *-final.txt)
     for path in sorted(output_dir.glob("kept-*.txt")):
-        if path.name == "kept-final.txt":
+        if path.name in ("kept-final.txt", "kept-final-summary.txt"):
             continue
         run_str = path.stem.split("-", 1)[1]
         try:
@@ -949,9 +953,11 @@ def run_tally(output_dir: Path) -> None:
         except ValueError:
             continue
         runs_found.add(run_num)
-        for word, score, _ in read_output_file(path):
+        for word, score, reason in read_output_file(path):
             votes[word]["keep"] += 1
             scores[word] = score
+            if reason and word not in kept_reasons:
+                kept_reasons[word] = reason
 
     for path in sorted(output_dir.glob("rejected-*.txt")):
         if path.name == "rejected-final.txt":
@@ -962,9 +968,11 @@ def run_tally(output_dir: Path) -> None:
         except ValueError:
             continue
         runs_found.add(run_num)
-        for word, score, _ in read_output_file(path):
+        for word, score, reason in read_output_file(path):
             votes[word]["reject"] += 1
             scores[word] = score
+            if reason and word not in rejected_reasons:
+                rejected_reasons[word] = reason
 
     if not votes:
         print("No run output files found.")
@@ -972,19 +980,28 @@ def run_tally(output_dir: Path) -> None:
 
     kept_final = output_dir / "kept-final.txt"
     rejected_final = output_dir / "rejected-final.txt"
+    kept_summary = output_dir / "kept-final-summary.txt"
 
     kept_count = 0
     rejected_count = 0
 
-    with open(kept_final, "w") as kf, open(rejected_final, "w") as rf:
+    with (
+        open(kept_final, "w") as kf,
+        open(rejected_final, "w") as rf,
+        open(kept_summary, "w") as ks,
+    ):
         for word in sorted(votes):
             v = votes[word]
             keep_n = v["keep"]
             reject_n = v["reject"]
             score = scores[word]
-            line = f"{word};{score};{keep_n};{reject_n}\n"
+            k_reason = kept_reasons.get(word, "").replace(";", ",")
+            r_reason = rejected_reasons.get(word, "").replace(";", ",")
+            line = (f"{word};{score};{keep_n};{reject_n}"
+                    f";{k_reason};{r_reason}\n")
             if keep_n >= reject_n:
                 kf.write(line)
+                ks.write(f"{word};{score}\n")
                 kept_count += 1
             else:
                 rf.write(line)
@@ -996,6 +1013,7 @@ def run_tally(output_dir: Path) -> None:
     print(f"KEEP (majority): {kept_count:,}")
     print(f"REJECT (majority): {rejected_count:,}")
     print(f"Written to {kept_final} and {rejected_final}")
+    print(f"Summary: {kept_summary}")
 
 
 def main() -> None:
