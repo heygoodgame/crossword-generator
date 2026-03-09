@@ -24,6 +24,7 @@ import signal
 import sys
 import threading
 import time
+from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
@@ -33,15 +34,25 @@ import ollama
 
 DICT_PATH = Path("dictionaries/XwiJeffChenList.txt")
 
+LAZY_BATCH_THRESHOLD = 0.7  # retry if >70% share the same reason
+
 SYSTEM_PROMPT = """\
 You are a crossword puzzle construction expert evaluating word quality for \
 crossword grid fill.
+
+IMPORTANT: Crossword entries are written WITHOUT SPACES. You must mentally \
+insert spaces to recognize phrases, names, and compound words. For example:
+- ABANDONSSHIP → "ABANDONS SHIP" (common phrase — KEEP)
+- ABBIEHOFFMAN → "ABBIE HOFFMAN" (famous activist — KEEP)
+- ABARRELOFLAUGHS → "A BARREL OF LAUGHS" (common expression — KEEP)
+- AARONBURR → "AARON BURR" (US Vice President — KEEP)
+Always try to parse an entry as a phrase or name before classifying it.
 
 KEEP — suitable for crossword fill:
 - Common everyday English words solvers recognize
 - Lively, contemporary vocabulary
 - Well-known proper nouns (see proper noun rules below)
-- Multi-word phrases people actually say (entries may have no spaces)
+- Multi-word phrases people actually say (entries have no spaces)
 - Words with interesting letter patterns
 
 REJECT — unsuitable for crossword fill:
@@ -86,7 +97,9 @@ Examples:
 - NENE → REJECT (reality TV, not broadly known)
 - ELIHU → REJECT (obscure biblical figure)
 
-For each word, provide a brief reason (under 10 words)."""
+Evaluate each word independently. Give a specific reason for each word \
+that references the word itself — do not use the same generic reason \
+(like "not a word") for multiple entries."""
 
 RESPONSE_SCHEMA = {
     "type": "object",
@@ -282,23 +295,47 @@ class WordClassifier:
                 [(w, s, "llm_call_failed") for w, s in words_with_scores],
             )
 
-        kept, rejected, classified = self._process_results(results, score_map)
+        # Detect lazy batch: if >70% share the same reason, retry once
+        if self._is_lazy_batch(results):
+            retry = self._call_llm(word_list)
+            if retry and not self._is_lazy_batch(retry):
+                results = retry
+
+        kept, rejected, classified = self._process_results(
+            results, score_map
+        )
 
         # Find missing words and retry once
         missing = [w for w in word_list if w not in classified]
         if missing:
             retry_results = self._call_llm(missing)
             if retry_results:
-                k2, r2, c2 = self._process_results(retry_results, score_map)
+                k2, r2, c2 = self._process_results(
+                    retry_results, score_map
+                )
                 kept.extend(k2)
                 rejected.extend(r2)
                 classified.update(c2)
 
         # Anything still missing goes to errors
         still_missing = [w for w in word_list if w not in classified]
-        errors = [(w, score_map[w], "missing_from_response") for w in still_missing]
+        errors = [
+            (w, score_map[w], "missing_from_response")
+            for w in still_missing
+        ]
 
         return kept, rejected, errors
+
+    @staticmethod
+    def _is_lazy_batch(results: list[dict]) -> bool:
+        """Check if a batch has suspiciously uniform reasons."""
+        if len(results) < 5:
+            return False
+        reasons = [
+            r.get("reason", "").lower().strip() for r in results
+        ]
+        most_common_count = Counter(reasons).most_common(1)[0][1]
+        return most_common_count / len(results) > LAZY_BATCH_THRESHOLD
 
     def _call_llm(self, words: list[str]) -> list[dict] | None:
         """Call Ollama and return parsed classifications list, or None on failure."""
