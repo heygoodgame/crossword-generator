@@ -68,7 +68,7 @@ src/crossword_generator/
 
 ## Dictionary
 
-- File: `dictionaries/XwiJeffChenList.txt`
+- File: `dictionaries/HggCuratedCrosswordList.txt`
 - Format: `word;score` per line (e.g., `ocean;60`)
 - ~280K entries, scores 0–100
 - Minimum acceptable score: 50 (configurable)

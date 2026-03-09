@@ -136,7 +136,7 @@ def small_dictionary() -> Dictionary:
 def real_dictionary(project_root) -> Dictionary:
     """Load the real Jeff Chen dictionary."""
     return Dictionary.load(
-        project_root / "dictionaries" / "XwiJeffChenList.txt",
+        project_root / "dictionaries" / "HggCuratedCrosswordList.txt",
         min_word_score=50,
     )
 

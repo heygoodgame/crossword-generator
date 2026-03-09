@@ -160,7 +160,7 @@ class TestRealDictionary:
         twos = d.words_by_length(2)
         assert len(twos) == 0
 
-    def test_23_2letter_words_at_score_10(self, dictionary_path: Path) -> None:
+    def test_no_2letter_words_at_score_10(self, dictionary_path: Path) -> None:
         d = Dictionary.load(dictionary_path, min_2letter_score=10)
         twos = d.words_by_length(2)
-        assert len(twos) == 23
+        assert len(twos) == 0
