@@ -18,7 +18,7 @@ class TestConfigDefaults:
 
     def test_default_dictionary(self) -> None:
         cfg = Config()
-        assert cfg.dictionary.path == "dictionaries/XwiJeffChenList.txt"
+        assert cfg.dictionary.path == "dictionaries/HggCuratedCrosswordList.txt"
         assert cfg.dictionary.min_word_score == 50
         assert cfg.dictionary.min_2letter_score == 30
 
@@ -55,7 +55,7 @@ class TestConfigDefaults:
         assert fill.go_crossword.output_format == "json"
         assert (
             fill.go_crossword.dictionary_path
-            == "dictionaries/XwiJeffChenList.txt"
+            == "dictionaries/HggCuratedCrosswordList.txt"
         )
         assert fill.go_crossword.min_dictionary_score == 50
 

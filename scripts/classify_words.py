@@ -55,7 +55,7 @@ try:
 except ImportError:
     anthropic = None
 
-DICT_PATH = Path("dictionaries/XwiJeffChenList.txt")
+DICT_PATH = Path("dictionaries/HggCuratedCrosswordList.txt")
 
 # Claude pricing per million tokens
 CLAUDE_PRICING: dict[str, dict[str, float]] = {
