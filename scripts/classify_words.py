@@ -144,14 +144,19 @@ RESPONSE_SCHEMA = {
                 "type": "object",
                 "properties": {
                     "word": {"type": "string"},
-                    "verdict": {"type": "string", "enum": ["KEEP", "REJECT"]},
+                    "verdict": {
+                        "type": "string",
+                        "enum": ["KEEP", "REJECT"],
+                    },
                     "reason": {"type": "string"},
                 },
                 "required": ["word", "verdict", "reason"],
+                "additionalProperties": False,
             },
         },
     },
     "required": ["classifications"],
+    "additionalProperties": False,
 }
 
 
