@@ -498,6 +498,17 @@ class WordClassifier:
                 if attempt < self.max_retries - 1:
                     time.sleep(2 ** (attempt + 1))
                 continue
+            except anthropic.AuthenticationError as e:
+                print(f"\nAuth error: {e}", file=sys.stderr)
+                sys.exit(1)
+            except anthropic.BadRequestError as e:
+                msg = str(e)
+                if "credit balance" in msg or "billing" in msg.lower():
+                    print(f"\nBilling error: {e}", file=sys.stderr)
+                    sys.exit(1)
+                if attempt < self.max_retries - 1:
+                    time.sleep(2 ** (attempt + 1))
+                continue
             except Exception:
                 if attempt < self.max_retries - 1:
                     backoff = 2 ** (2 * attempt + 1)
@@ -743,6 +754,8 @@ def run_batch_api_classification(
     batches = make_batches(words, batch_size)
     score_map = {w: s for w, s in words}
 
+    max_retries = 5
+
     # Check for existing batch checkpoint
     cp = _load_batch_checkpoint(output_dir, run)
     if cp and cp.get("status") in ("in_progress", "finalizing"):
@@ -755,8 +768,26 @@ def run_batch_api_classification(
             for idx, batch_words in enumerate(batches)
         ]
 
-        print(f"Run {run}: submitting {len(requests)} batches to Batch API...")
-        result = client.messages.batches.create(requests=requests)
+        print(
+            f"Run {run}: submitting {len(requests)} "
+            f"batches to Batch API..."
+        )
+        for attempt in range(max_retries):
+            try:
+                result = client.messages.batches.create(
+                    requests=requests
+                )
+                break
+            except Exception as e:
+                if attempt < max_retries - 1:
+                    wait = 2 ** (attempt + 1)
+                    print(f"Submit failed ({e}), "
+                          f"retrying in {wait}s...")
+                    time.sleep(wait)
+                else:
+                    print(f"Submit failed after {max_retries} "
+                          f"attempts: {e}")
+                    sys.exit(1)
         batch_id = result.id
         print(f"Batch ID: {batch_id}")
 
@@ -770,8 +801,24 @@ def run_batch_api_classification(
 
     # Poll until complete
     poll_interval = 60
+    poll_errors = 0
     while True:
-        status = client.messages.batches.retrieve(batch_id)
+        try:
+            status = client.messages.batches.retrieve(batch_id)
+        except Exception as e:
+            poll_errors += 1
+            if poll_errors >= max_retries:
+                print(f"\nPolling failed after {max_retries} "
+                      f"consecutive errors: {e}")
+                print(f"Re-run to resume polling batch {batch_id}")
+                sys.exit(1)
+            wait = 2 ** poll_errors
+            sys.stderr.write(
+                f"\nPoll error ({e}), retrying in {wait}s...\n"
+            )
+            time.sleep(wait)
+            continue
+        poll_errors = 0
         counts = status.request_counts
         total = (counts.processing + counts.succeeded + counts.errored
                  + counts.canceled + counts.expired)
@@ -800,12 +847,29 @@ def run_batch_api_classification(
     sys.stderr.write("\n")
     print("Batch complete. Processing results...")
 
-    # Stream results
+    # Stream results (with retry on transient errors)
     kept_count = 0
     rejected_count = 0
     errored_count = 0
+    results_iter = None
+    for attempt in range(max_retries):
+        try:
+            results_iter = client.messages.batches.results(batch_id)
+            break
+        except Exception as e:
+            if attempt < max_retries - 1:
+                wait = 2 ** (attempt + 1)
+                print(f"Results fetch failed ({e}), "
+                      f"retrying in {wait}s...")
+                time.sleep(wait)
+            else:
+                print(f"Failed to fetch results after "
+                      f"{max_retries} attempts: {e}")
+                print(f"Re-run to retry (batch {batch_id} "
+                      f"is still available)")
+                sys.exit(1)
 
-    for result in client.messages.batches.results(batch_id):
+    for result in results_iter:
         if result.result.type != "succeeded":
             # Mark all words in this batch as errored
             batch_idx = int(result.custom_id.split("-", 1)[1])
@@ -1142,20 +1206,30 @@ def main() -> None:
         if not error_words:
             print(f"No errors to retry for run {run_num}.")
             return
-        print(f"Retrying {len(error_words)} errored words (run {run_num})...")
+        print(f"Retrying {len(error_words)} errored words "
+              f"(run {run_num})...")
         # Clear errors file before retry
         writer.errors_path.unlink(missing_ok=True)
-        run_classification(
-            error_words,
-            args.batch_size,
-            model,
-            args.base_url,
-            args.output_dir,
-            args.max_retries,
-            workers=args.workers,
-            run=run_num,
-            provider=args.provider,
-        )
+        if args.batch_api:
+            run_batch_api_classification(
+                error_words,
+                args.batch_size,
+                model,
+                args.output_dir,
+                run=run_num,
+            )
+        else:
+            run_classification(
+                error_words,
+                args.batch_size,
+                model,
+                args.base_url,
+                args.output_dir,
+                args.max_retries,
+                workers=args.workers,
+                run=run_num,
+                provider=args.provider,
+            )
         return
 
     # Apply skip-decided filtering
