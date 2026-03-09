@@ -2,9 +2,9 @@
 """Classify dictionary words as KEEP or REJECT using an LLM.
 
 Loads words scored 50-60 from the Jeff Chen word list and sends batches
-to Ollama for crossword fill quality classification. Results are written
-incrementally to kept-{run}.txt and rejected-{run}.txt with checkpoint/resume
-support.
+to an LLM for crossword fill quality classification. Supports Ollama (local)
+and Claude Haiku 4.5 (API) as providers. Results are written incrementally
+to kept-{run}.txt and rejected-{run}.txt with checkpoint/resume support.
 
 Multi-run workflow for reliability (majority vote):
     uv run python scripts/classify_words.py --run 1
@@ -12,6 +12,12 @@ Multi-run workflow for reliability (majority vote):
     uv run python scripts/classify_words.py --run 3
     uv run python scripts/classify_words.py --run 3 --skip-decided
     uv run python scripts/classify_words.py --tally
+
+Claude provider:
+    uv run python scripts/classify_words.py --provider claude --run 1
+    uv run python scripts/classify_words.py --provider claude --batch-api --run 1
+    uv run python scripts/classify_words.py --provider claude --limit 100 --run 1
+    uv run python scripts/classify_words.py --provider claude --dry-run
 
 Other options:
     uv run python scripts/classify_words.py --batch-size 100     # Larger batches
@@ -21,6 +27,7 @@ Other options:
     uv run python scripts/classify_words.py --reset              # Clear all runs
     uv run python scripts/classify_words.py --reset --run 2      # Clear only run 2
     uv run python scripts/classify_words.py --retry-errors
+    uv run python scripts/classify_words.py --limit 50           # Test on subset
 """
 
 from __future__ import annotations
@@ -41,7 +48,25 @@ from pathlib import Path
 
 import ollama
 
+try:
+    import anthropic
+    from anthropic.types.message_create_params import MessageCreateParamsNonStreaming
+    from anthropic.types.messages.batch_create_params import Request
+except ImportError:
+    anthropic = None
+
 DICT_PATH = Path("dictionaries/XwiJeffChenList.txt")
+
+# Claude pricing per million tokens
+CLAUDE_PRICING: dict[str, dict[str, float]] = {
+    "claude-haiku-4-5-20251001": {"input": 1.00, "output": 5.00},
+    "claude-haiku-4-5": {"input": 1.00, "output": 5.00},
+}
+
+DEFAULT_MODELS = {
+    "ollama": "llama3",
+    "claude": "claude-haiku-4-5",
+}
 
 LAZY_BATCH_THRESHOLD = 0.7  # retry if >70% share the same reason
 
@@ -324,10 +349,24 @@ class ProgressTracker:
 
 
 class WordClassifier:
-    def __init__(self, model: str, base_url: str, max_retries: int) -> None:
+    def __init__(
+        self,
+        model: str,
+        base_url: str,
+        max_retries: int,
+        provider: str = "ollama",
+    ) -> None:
         self.model = model
-        self.client = ollama.Client(host=base_url)
+        self.provider = provider
         self.max_retries = max_retries
+        if provider == "claude":
+            if anthropic is None:
+                print("Error: anthropic package not installed. "
+                      "Run: uv pip install anthropic")
+                sys.exit(1)
+            self.claude_client = anthropic.Anthropic()
+        else:
+            self.client = ollama.Client(host=base_url)
 
     def classify_batch(
         self, words_with_scores: list[tuple[str, int]]
@@ -391,6 +430,12 @@ class WordClassifier:
         return most_common_count / len(results) > LAZY_BATCH_THRESHOLD
 
     def _call_llm(self, words: list[str]) -> list[dict] | None:
+        """Call the LLM and return parsed classifications list, or None on failure."""
+        if self.provider == "claude":
+            return self._call_claude(words)
+        return self._call_ollama(words)
+
+    def _call_ollama(self, words: list[str]) -> list[dict] | None:
         """Call Ollama and return parsed classifications list, or None on failure."""
         user_msg = "Classify each word as KEEP or REJECT.\n\nWords:\n"
         user_msg += "\n".join(words)
@@ -417,6 +462,40 @@ class WordClassifier:
             except Exception:
                 if attempt < self.max_retries - 1:
                     backoff = 2 ** (2 * attempt + 1)  # 2s, 8s, 32s
+                    time.sleep(backoff)
+                continue
+        return None
+
+    def _call_claude(self, words: list[str]) -> list[dict] | None:
+        """Call Claude API and return parsed classifications."""
+        user_msg = "Classify each word as KEEP or REJECT.\n\nWords:\n"
+        user_msg += "\n".join(words)
+
+        for attempt in range(self.max_retries):
+            try:
+                response = self.claude_client.messages.create(
+                    model=self.model,
+                    system=SYSTEM_PROMPT,
+                    messages=[{"role": "user", "content": user_msg}],
+                    max_tokens=4096,
+                    temperature=0.1,
+                    output_config={
+                        "format": {
+                            "type": "json_schema",
+                            "schema": RESPONSE_SCHEMA,
+                        }
+                    },
+                )
+                content = response.content[0].text
+                parsed = json.loads(content)
+                return parsed.get("classifications", [])
+            except (json.JSONDecodeError, KeyError, TypeError, IndexError):
+                if attempt < self.max_retries - 1:
+                    time.sleep(2 ** (attempt + 1))
+                continue
+            except Exception:
+                if attempt < self.max_retries - 1:
+                    backoff = 2 ** (2 * attempt + 1)
                     time.sleep(backoff)
                 continue
         return None
@@ -495,6 +574,7 @@ def run_classification(
     start_batch: int = 0,
     checkpoint: Checkpoint | None = None,
     run: int = 1,
+    provider: str = "ollama",
 ) -> None:
     batches = make_batches(words, batch_size)
     total_batches = len(batches)
@@ -502,7 +582,7 @@ def run_classification(
     writer = OutputWriter(output_dir, run=run)
     writer.ensure_dir()
     cp_mgr = CheckpointManager(output_dir, run=run)
-    classifier = WordClassifier(model, base_url, max_retries)
+    classifier = WordClassifier(model, base_url, max_retries, provider=provider)
 
     if checkpoint is None:
         checkpoint = Checkpoint(
@@ -590,6 +670,200 @@ def run_classification(
               f"ERR: {checkpoint.words_errored}")
 
 
+# ---------------------------------------------------------------------------
+# Batch API classification (Claude only)
+# ---------------------------------------------------------------------------
+
+
+def _build_batch_request(
+    batch_words: list[tuple[str, int]], batch_idx: int, model: str
+) -> Request:
+    """Build a single Anthropic Batch API request for a word batch."""
+    word_list = [w for w, _ in batch_words]
+    user_msg = "Classify each word as KEEP or REJECT.\n\nWords:\n"
+    user_msg += "\n".join(word_list)
+
+    return Request(
+        custom_id=f"batch-{batch_idx}",
+        params=MessageCreateParamsNonStreaming(
+            model=model,
+            system=SYSTEM_PROMPT,
+            messages=[{"role": "user", "content": user_msg}],
+            max_tokens=4096,
+            temperature=0.1,
+            output_config={
+                "format": {
+                    "type": "json_schema",
+                    "schema": RESPONSE_SCHEMA,
+                }
+            },
+        ),
+    )
+
+
+def _load_batch_checkpoint(output_dir: Path, run: int) -> dict | None:
+    """Load batch API checkpoint (separate from real-time checkpoint)."""
+    path = output_dir / f"batch-checkpoint-{run}.json"
+    if not path.exists():
+        return None
+    with open(path) as f:
+        return json.load(f)
+
+
+def _save_batch_checkpoint(output_dir: Path, run: int, data: dict) -> None:
+    """Save batch API checkpoint."""
+    path = output_dir / f"batch-checkpoint-{run}.json"
+    tmp = path.with_suffix(".tmp")
+    with open(tmp, "w") as f:
+        json.dump(data, f, indent=2)
+    os.replace(tmp, path)
+
+
+def run_batch_api_classification(
+    words: list[tuple[str, int]],
+    batch_size: int,
+    model: str,
+    output_dir: Path,
+    run: int = 1,
+) -> None:
+    """Submit all word batches to the Anthropic Batch API, poll, and process results."""
+    if anthropic is None:
+        print("Error: anthropic package not installed. Run: uv pip install anthropic")
+        sys.exit(1)
+
+    client = anthropic.Anthropic()
+    writer = OutputWriter(output_dir, run=run)
+    writer.ensure_dir()
+
+    batches = make_batches(words, batch_size)
+    score_map = {w: s for w, s in words}
+
+    # Check for existing batch checkpoint
+    cp = _load_batch_checkpoint(output_dir, run)
+    if cp and cp.get("status") in ("in_progress", "finalizing"):
+        batch_id = cp["batch_id"]
+        print(f"Run {run}: resuming poll for batch {batch_id}")
+    else:
+        # Build and submit requests
+        requests = [
+            _build_batch_request(batch_words, idx, model)
+            for idx, batch_words in enumerate(batches)
+        ]
+
+        print(f"Run {run}: submitting {len(requests)} batches to Batch API...")
+        result = client.messages.batches.create(requests=requests)
+        batch_id = result.id
+        print(f"Batch ID: {batch_id}")
+
+        _save_batch_checkpoint(output_dir, run, {
+            "batch_id": batch_id,
+            "run": run,
+            "status": "in_progress",
+            "total_batches": len(batches),
+            "submitted_at": datetime.now(UTC).isoformat(),
+        })
+
+    # Poll until complete
+    poll_interval = 60
+    while True:
+        status = client.messages.batches.retrieve(batch_id)
+        counts = status.request_counts
+        total = (counts.processing + counts.succeeded + counts.errored
+                 + counts.canceled + counts.expired)
+        done = (counts.succeeded + counts.errored
+                + counts.canceled + counts.expired)
+
+        sys.stderr.write(
+            f"\r[Batch {batch_id}] {done}/{total} requests done "
+            f"(succeeded: {counts.succeeded}, errored: {counts.errored}, "
+            f"processing: {counts.processing})    "
+        )
+        sys.stderr.flush()
+
+        _save_batch_checkpoint(output_dir, run, {
+            "batch_id": batch_id,
+            "run": run,
+            "status": status.processing_status,
+            "total_batches": len(batches),
+        })
+
+        if status.processing_status == "ended":
+            break
+
+        time.sleep(poll_interval)
+
+    sys.stderr.write("\n")
+    print("Batch complete. Processing results...")
+
+    # Stream results
+    kept_count = 0
+    rejected_count = 0
+    errored_count = 0
+
+    for result in client.messages.batches.results(batch_id):
+        if result.result.type != "succeeded":
+            # Mark all words in this batch as errored
+            batch_idx = int(result.custom_id.split("-", 1)[1])
+            if batch_idx < len(batches):
+                errors = [
+                    (w, s, f"batch_api_{result.result.type}")
+                    for w, s in batches[batch_idx]
+                ]
+                writer.append_errors(errors)
+                errored_count += len(errors)
+            continue
+
+        message = result.result.message
+        try:
+            content = message.content[0].text
+            parsed = json.loads(content)
+            classifications = parsed.get("classifications", [])
+        except (json.JSONDecodeError, KeyError, TypeError, IndexError):
+            batch_idx = int(result.custom_id.split("-", 1)[1])
+            if batch_idx < len(batches):
+                errors = [
+                    (w, s, "parse_error") for w, s in batches[batch_idx]
+                ]
+                writer.append_errors(errors)
+                errored_count += len(errors)
+            continue
+
+        kept: list[tuple[str, int, str]] = []
+        rejected: list[tuple[str, int, str]] = []
+
+        for item in classifications:
+            word = item.get("word", "").lower().strip()
+            verdict = item.get("verdict", "").upper().strip()
+            reason = item.get("reason", "").strip()
+
+            if word not in score_map:
+                continue
+
+            if verdict == "KEEP":
+                kept.append((word, score_map[word], reason))
+            elif verdict == "REJECT":
+                rejected.append((word, score_map[word], reason))
+
+        if kept:
+            writer.append_kept(kept)
+            kept_count += len(kept)
+        if rejected:
+            writer.append_rejected(rejected)
+            rejected_count += len(rejected)
+
+    _save_batch_checkpoint(output_dir, run, {
+        "batch_id": batch_id,
+        "run": run,
+        "status": "completed",
+        "kept": kept_count,
+        "rejected": rejected_count,
+        "errored": errored_count,
+    })
+
+    print(f"Done. KEEP: {kept_count} | REJECT: {rejected_count} | "
+          f"ERR: {errored_count}")
+
+
 def run_tally(output_dir: Path) -> None:
     """Read all per-run output files, tally votes, write final results."""
     votes: dict[str, dict[str, int]] = defaultdict(lambda: {"keep": 0, "reject": 0})
@@ -660,15 +934,35 @@ def main() -> None:
         description="Classify dictionary words as KEEP or REJECT using an LLM."
     )
     parser.add_argument(
+        "--provider",
+        choices=["ollama", "claude"],
+        default="ollama",
+        help="LLM provider (default: ollama)",
+    )
+    parser.add_argument(
         "--batch-size", type=int, default=50, help="Words per LLM call (default: 50)"
     )
     parser.add_argument(
-        "--model", default="llama3", help="Ollama model name (default: llama3)"
+        "--model",
+        default=None,
+        help="Model name (default: auto-selects per provider)",
     )
     parser.add_argument(
         "--base-url",
         default="http://localhost:11434",
         help="Ollama base URL (default: http://localhost:11434)",
+    )
+    parser.add_argument(
+        "--batch-api",
+        action="store_true",
+        help="Use Anthropic Batch API (50%% cheaper, async). "
+             "Only with --provider claude.",
+    )
+    parser.add_argument(
+        "--limit",
+        type=int,
+        default=None,
+        help="Classify only the first N words (after shuffle). For testing.",
     )
     parser.add_argument(
         "--output-dir",
@@ -732,6 +1026,14 @@ def main() -> None:
         run_tally(args.output_dir)
         return
 
+    # Resolve model default based on provider
+    model = args.model if args.model else DEFAULT_MODELS[args.provider]
+
+    # Validate --batch-api only with --provider claude
+    if args.batch_api and args.provider != "claude":
+        print("Error: --batch-api requires --provider claude")
+        sys.exit(1)
+
     run_num = args.run if args.run is not None else 1
 
     # Load words
@@ -747,18 +1049,53 @@ def main() -> None:
             skipped = original_count - len(words)
 
         shuffled = shuffle_words(words, run_num)
+        if args.limit:
+            shuffled = shuffled[: args.limit]
         batches = make_batches(shuffled, args.batch_size)
 
         print(f"Dictionary: {DICT_PATH}")
         print(f"Score range: {args.min_score}-{args.max_score}")
+        print(f"Provider: {args.provider}")
         print(f"Run: {run_num}")
         print(f"Words found: {len(words):,}")
+        if args.limit:
+            print(f"Limit: {args.limit} (classifying {len(shuffled):,})")
         if skipped:
             print(f"Skipped (already decided): {skipped:,}")
         print(f"Batch size: {args.batch_size}")
         print(f"Total batches: {len(batches):,}")
-        print(f"Model: {args.model}")
+        print(f"Model: {model}")
         print(f"Output dir: {args.output_dir}")
+        if args.batch_api:
+            print("Mode: Batch API (async, 50% cheaper)")
+
+        # Claude cost estimate
+        if args.provider == "claude":
+            pricing = CLAUDE_PRICING.get(model)
+            if pricing:
+                # Estimate tokens: ~780 system prompt tokens,
+                # ~3 tokens per word in batch, ~1200 output tokens per batch
+                sys_prompt_tokens = 780
+                avg_word_tokens = 3
+                words_per_batch = args.batch_size
+                input_per_batch = (sys_prompt_tokens
+                                  + words_per_batch * avg_word_tokens + 20)
+                output_per_batch = 1200
+
+                total_input = input_per_batch * len(batches)
+                total_output = output_per_batch * len(batches)
+
+                input_cost = total_input / 1_000_000 * pricing["input"]
+                output_cost = total_output / 1_000_000 * pricing["output"]
+                total_cost = input_cost + output_cost
+
+                print(f"\nEstimated cost ({model}):")
+                print(f"  Input:  ~{total_input / 1_000_000:.2f}M tokens "
+                      f"× ${pricing['input']:.2f}/MTok = ${input_cost:.2f}")
+                print(f"  Output: ~{total_output / 1_000_000:.2f}M tokens "
+                      f"× ${pricing['output']:.2f}/MTok = ${output_cost:.2f}")
+                print(f"  Total:  ~${total_cost:.2f}")
+                print(f"  With Batch API (50% off): ~${total_cost / 2:.2f}")
 
         cp_mgr = CheckpointManager(args.output_dir, run=run_num)
         cp = cp_mgr.load()
@@ -778,13 +1115,16 @@ def main() -> None:
             writer = OutputWriter(args.output_dir, run=run_num)
             cp_mgr.reset()
             writer.clear_all()
+            # Also clear batch checkpoint
+            batch_cp = args.output_dir / f"batch-checkpoint-{run_num}.json"
+            batch_cp.unlink(missing_ok=True)
             print(f"Run {run_num} checkpoint and output files cleared.")
         else:
             # Clear all runs
             output_dir = args.output_dir
             cleared = 0
             for pattern in ("kept-*.txt", "rejected-*.txt", "errors-*.txt",
-                            "checkpoint-*.json"):
+                            "checkpoint-*.json", "batch-checkpoint-*.json"):
                 for path in output_dir.glob(pattern):
                     path.unlink(missing_ok=True)
                     cleared += 1
@@ -803,12 +1143,13 @@ def main() -> None:
         run_classification(
             error_words,
             args.batch_size,
-            args.model,
+            model,
             args.base_url,
             args.output_dir,
             args.max_retries,
             workers=args.workers,
             run=run_num,
+            provider=args.provider,
         )
         return
 
@@ -823,6 +1164,22 @@ def main() -> None:
 
     # Shuffle words deterministically per run
     words = shuffle_words(words, run_num)
+
+    # Apply limit
+    if args.limit:
+        words = words[: args.limit]
+
+    # Batch API path (Claude only)
+    if args.batch_api:
+        run_batch_api_classification(
+            words,
+            args.batch_size,
+            model,
+            args.output_dir,
+            run=run_num,
+        )
+        return
+
     batches = make_batches(words, args.batch_size)
 
     # Check for existing checkpoint
@@ -832,13 +1189,13 @@ def main() -> None:
 
     if cp is not None:
         # Validate checkpoint compatibility
-        if cp.batch_size != args.batch_size or cp.model != args.model:
+        if cp.batch_size != args.batch_size or cp.model != model:
             print(
                 f"Warning: checkpoint was created with batch_size={cp.batch_size}, "
                 f"model={cp.model}."
             )
             print(
-                f"Current args: batch_size={args.batch_size}, model={args.model}."
+                f"Current args: batch_size={args.batch_size}, model={model}."
             )
             print("Use --reset to start over, or match the checkpoint settings.")
             sys.exit(1)
@@ -860,7 +1217,7 @@ def main() -> None:
     run_classification(
         words,
         args.batch_size,
-        args.model,
+        model,
         args.base_url,
         args.output_dir,
         args.max_retries,
@@ -868,6 +1225,7 @@ def main() -> None:
         start_batch=start_batch,
         checkpoint=cp,
         run=run_num,
+        provider=args.provider,
     )
 
 
