@@ -3,15 +3,23 @@
 
 Loads words scored 50-60 from the Jeff Chen word list and sends batches
 to Ollama for crossword fill quality classification. Results are written
-incrementally to kept.txt and rejected.txt with checkpoint/resume support.
+incrementally to kept-{run}.txt and rejected-{run}.txt with checkpoint/resume
+support.
 
-Usage:
-    uv run python scripts/classify_words.py                    # Start fresh or resume
-    uv run python scripts/classify_words.py --batch-size 100   # Larger batches
-    uv run python scripts/classify_words.py --model llama3.1   # Different model
-    uv run python scripts/classify_words.py --workers 4       # Parallel LLM calls
+Multi-run workflow for reliability (majority vote):
+    uv run python scripts/classify_words.py --run 1
+    uv run python scripts/classify_words.py --run 2
+    uv run python scripts/classify_words.py --run 3
+    uv run python scripts/classify_words.py --run 3 --skip-decided
+    uv run python scripts/classify_words.py --tally
+
+Other options:
+    uv run python scripts/classify_words.py --batch-size 100     # Larger batches
+    uv run python scripts/classify_words.py --model llama3.1     # Different model
+    uv run python scripts/classify_words.py --workers 4          # Parallel LLM calls
     uv run python scripts/classify_words.py --dry-run
-    uv run python scripts/classify_words.py --reset
+    uv run python scripts/classify_words.py --reset              # Clear all runs
+    uv run python scripts/classify_words.py --reset --run 2      # Clear only run 2
     uv run python scripts/classify_words.py --retry-errors
 """
 
@@ -20,11 +28,12 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import random
 import signal
 import sys
 import threading
 import time
-from collections import Counter
+from collections import Counter, defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
@@ -147,6 +156,50 @@ def load_target_words(
     return words
 
 
+def shuffle_words(
+    words: list[tuple[str, int]], run: int
+) -> list[tuple[str, int]]:
+    """Return a shuffled copy of words, deterministic per run number."""
+    shuffled = list(words)
+    random.Random(run).shuffle(shuffled)
+    return shuffled
+
+
+def read_output_file(path: Path) -> list[tuple[str, int, str]]:
+    """Read a kept/rejected output file. Returns list of (word, score, reason)."""
+    if not path.exists():
+        return []
+    entries: list[tuple[str, int, str]] = []
+    with open(path) as f:
+        for line in f:
+            line = line.strip()
+            if not line or ";" not in line:
+                continue
+            parts = line.split(";", 2)
+            if len(parts) >= 2:
+                try:
+                    reason = parts[2] if len(parts) > 2 else ""
+                    entries.append((parts[0], int(parts[1]), reason))
+                except ValueError:
+                    continue
+    return entries
+
+
+def load_decided_words(output_dir: Path, current_run: int) -> set[str]:
+    """Read prior run outputs, return set of decided words."""
+    votes: dict[str, list[str]] = defaultdict(list)
+    for r in range(1, current_run):
+        for word, _, _ in read_output_file(output_dir / f"kept-{r}.txt"):
+            votes[word].append("KEEP")
+        for word, _, _ in read_output_file(output_dir / f"rejected-{r}.txt"):
+            votes[word].append("REJECT")
+    return {
+        w
+        for w, v in votes.items()
+        if v.count("KEEP") >= 2 or v.count("REJECT") >= 2
+    }
+
+
 # ---------------------------------------------------------------------------
 # Checkpoint management
 # ---------------------------------------------------------------------------
@@ -166,8 +219,8 @@ class Checkpoint:
 
 
 class CheckpointManager:
-    def __init__(self, output_dir: Path) -> None:
-        self.path = output_dir / "checkpoint.json"
+    def __init__(self, output_dir: Path, run: int = 1) -> None:
+        self.path = output_dir / f"checkpoint-{run}.json"
 
     def load(self) -> Checkpoint | None:
         if not self.path.exists():
@@ -192,11 +245,11 @@ class CheckpointManager:
 
 
 class OutputWriter:
-    def __init__(self, output_dir: Path) -> None:
+    def __init__(self, output_dir: Path, run: int = 1) -> None:
         self.output_dir = output_dir
-        self.kept_path = output_dir / "kept.txt"
-        self.rejected_path = output_dir / "rejected.txt"
-        self.errors_path = output_dir / "errors.txt"
+        self.kept_path = output_dir / f"kept-{run}.txt"
+        self.rejected_path = output_dir / f"rejected-{run}.txt"
+        self.errors_path = output_dir / f"errors-{run}.txt"
         self._lock = threading.Lock()
 
     def ensure_dir(self) -> None:
@@ -441,13 +494,14 @@ def run_classification(
     workers: int = 1,
     start_batch: int = 0,
     checkpoint: Checkpoint | None = None,
+    run: int = 1,
 ) -> None:
     batches = make_batches(words, batch_size)
     total_batches = len(batches)
 
-    writer = OutputWriter(output_dir)
+    writer = OutputWriter(output_dir, run=run)
     writer.ensure_dir()
-    cp_mgr = CheckpointManager(output_dir)
+    cp_mgr = CheckpointManager(output_dir, run=run)
     classifier = WordClassifier(model, base_url, max_retries)
 
     if checkpoint is None:
@@ -536,6 +590,71 @@ def run_classification(
               f"ERR: {checkpoint.words_errored}")
 
 
+def run_tally(output_dir: Path) -> None:
+    """Read all per-run output files, tally votes, write final results."""
+    votes: dict[str, dict[str, int]] = defaultdict(lambda: {"keep": 0, "reject": 0})
+    scores: dict[str, int] = {}
+    runs_found: set[int] = set()
+
+    # Find all numbered kept/rejected files (exclude *-final.txt)
+    for path in sorted(output_dir.glob("kept-*.txt")):
+        if path.name == "kept-final.txt":
+            continue
+        run_str = path.stem.split("-", 1)[1]
+        try:
+            run_num = int(run_str)
+        except ValueError:
+            continue
+        runs_found.add(run_num)
+        for word, score, _ in read_output_file(path):
+            votes[word]["keep"] += 1
+            scores[word] = score
+
+    for path in sorted(output_dir.glob("rejected-*.txt")):
+        if path.name == "rejected-final.txt":
+            continue
+        run_str = path.stem.split("-", 1)[1]
+        try:
+            run_num = int(run_str)
+        except ValueError:
+            continue
+        runs_found.add(run_num)
+        for word, score, _ in read_output_file(path):
+            votes[word]["reject"] += 1
+            scores[word] = score
+
+    if not votes:
+        print("No run output files found.")
+        return
+
+    kept_final = output_dir / "kept-final.txt"
+    rejected_final = output_dir / "rejected-final.txt"
+
+    kept_count = 0
+    rejected_count = 0
+
+    with open(kept_final, "w") as kf, open(rejected_final, "w") as rf:
+        for word in sorted(votes):
+            v = votes[word]
+            keep_n = v["keep"]
+            reject_n = v["reject"]
+            score = scores[word]
+            line = f"{word};{score};{keep_n};{reject_n}\n"
+            if keep_n >= reject_n:
+                kf.write(line)
+                kept_count += 1
+            else:
+                rf.write(line)
+                rejected_count += 1
+
+    total = len(votes)
+    print(f"Tally across {len(runs_found)} runs ({sorted(runs_found)})")
+    print(f"Total words: {total:,}")
+    print(f"KEEP (majority): {kept_count:,}")
+    print(f"REJECT (majority): {rejected_count:,}")
+    print(f"Written to {kept_final} and {rejected_final}")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Classify dictionary words as KEEP or REJECT using an LLM."
@@ -590,22 +709,58 @@ def main() -> None:
         default=1,
         help="Concurrent LLM calls (default: 1)",
     )
+    parser.add_argument(
+        "--run",
+        type=int,
+        default=None,
+        help="Run number for multi-run majority vote (default: 1)",
+    )
+    parser.add_argument(
+        "--skip-decided",
+        action="store_true",
+        help="Skip words already decided by prior runs (2+ votes same way)",
+    )
+    parser.add_argument(
+        "--tally",
+        action="store_true",
+        help="Combine all run results with majority vote, write final files",
+    )
     args = parser.parse_args()
+
+    # Tally mode: no classification, just combine results
+    if args.tally:
+        run_tally(args.output_dir)
+        return
+
+    run_num = args.run if args.run is not None else 1
 
     # Load words
     words = load_target_words(DICT_PATH, args.min_score, args.max_score)
-    batches = make_batches(words, args.batch_size)
 
     if args.dry_run:
+        # Apply skip-decided filtering for accurate count
+        skipped = 0
+        if args.skip_decided:
+            decided = load_decided_words(args.output_dir, run_num)
+            original_count = len(words)
+            words = [(w, s) for w, s in words if w not in decided]
+            skipped = original_count - len(words)
+
+        shuffled = shuffle_words(words, run_num)
+        batches = make_batches(shuffled, args.batch_size)
+
         print(f"Dictionary: {DICT_PATH}")
         print(f"Score range: {args.min_score}-{args.max_score}")
+        print(f"Run: {run_num}")
         print(f"Words found: {len(words):,}")
+        if skipped:
+            print(f"Skipped (already decided): {skipped:,}")
         print(f"Batch size: {args.batch_size}")
         print(f"Total batches: {len(batches):,}")
         print(f"Model: {args.model}")
         print(f"Output dir: {args.output_dir}")
 
-        cp_mgr = CheckpointManager(args.output_dir)
+        cp_mgr = CheckpointManager(args.output_dir, run=run_num)
         cp = cp_mgr.load()
         if cp:
             remaining = len(batches) - (cp.last_completed_batch + 1)
@@ -617,20 +772,32 @@ def main() -> None:
         return
 
     if args.reset:
-        cp_mgr = CheckpointManager(args.output_dir)
-        writer = OutputWriter(args.output_dir)
-        cp_mgr.reset()
-        writer.clear_all()
-        print("Checkpoint and output files cleared.")
+        if args.run is not None:
+            # Clear only the specified run
+            cp_mgr = CheckpointManager(args.output_dir, run=run_num)
+            writer = OutputWriter(args.output_dir, run=run_num)
+            cp_mgr.reset()
+            writer.clear_all()
+            print(f"Run {run_num} checkpoint and output files cleared.")
+        else:
+            # Clear all runs
+            output_dir = args.output_dir
+            cleared = 0
+            for pattern in ("kept-*.txt", "rejected-*.txt", "errors-*.txt",
+                            "checkpoint-*.json"):
+                for path in output_dir.glob(pattern):
+                    path.unlink(missing_ok=True)
+                    cleared += 1
+            print(f"All run files cleared ({cleared} files removed).")
         return
 
     if args.retry_errors:
-        writer = OutputWriter(args.output_dir)
+        writer = OutputWriter(args.output_dir, run=run_num)
         error_words = load_error_words(writer.errors_path)
         if not error_words:
-            print("No errors to retry.")
+            print(f"No errors to retry for run {run_num}.")
             return
-        print(f"Retrying {len(error_words)} errored words...")
+        print(f"Retrying {len(error_words)} errored words (run {run_num})...")
         # Clear errors file before retry
         writer.errors_path.unlink(missing_ok=True)
         run_classification(
@@ -641,11 +808,25 @@ def main() -> None:
             args.output_dir,
             args.max_retries,
             workers=args.workers,
+            run=run_num,
         )
         return
 
+    # Apply skip-decided filtering
+    if args.skip_decided:
+        decided = load_decided_words(args.output_dir, run_num)
+        original_count = len(words)
+        words = [(w, s) for w, s in words if w not in decided]
+        skipped = original_count - len(words)
+        print(f"Skipping {skipped:,} already-decided words, "
+              f"classifying {len(words):,}")
+
+    # Shuffle words deterministically per run
+    words = shuffle_words(words, run_num)
+    batches = make_batches(words, args.batch_size)
+
     # Check for existing checkpoint
-    cp_mgr = CheckpointManager(args.output_dir)
+    cp_mgr = CheckpointManager(args.output_dir, run=run_num)
     cp = cp_mgr.load()
     start_batch = 0
 
@@ -664,15 +845,16 @@ def main() -> None:
 
         start_batch = cp.last_completed_batch + 1
         if start_batch >= len(batches):
-            print("All batches already completed. Use --reset to start over.")
+            print(f"Run {run_num}: all batches already completed. "
+                  f"Use --reset --run {run_num} to start over.")
             return
         print(
-            f"Resuming from batch {start_batch}/{len(batches)} "
+            f"Run {run_num}: resuming from batch {start_batch}/{len(batches)} "
             f"({cp.words_processed:,} words processed)"
         )
     else:
-        print(f"Starting classification of {len(words):,} words in "
-              f"{len(batches):,} batches")
+        print(f"Run {run_num}: starting classification of {len(words):,} words "
+              f"in {len(batches):,} batches")
         cp = None
 
     run_classification(
@@ -685,6 +867,7 @@ def main() -> None:
         workers=args.workers,
         start_batch=start_batch,
         checkpoint=cp,
+        run=run_num,
     )
 
 
