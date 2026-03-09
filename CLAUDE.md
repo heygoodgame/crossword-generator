@@ -70,7 +70,7 @@ src/crossword_generator/
 
 - File: `dictionaries/HggCuratedCrosswordList.txt`
 - Format: `word;score` per line (e.g., `ocean;60`)
-- ~280K entries, scores 0–100
+- ~203K entries, scores 0–100
 - Minimum acceptable score: 50 (configurable)
 - Words are lowercase in the file
 - No 2-letter words score 50+; midi grids allow 2-letter words — needs special handling

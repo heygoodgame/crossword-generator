@@ -64,7 +64,7 @@ go-crossword uses its own internal dictionary. The fill quality grading step val
 
 ## Dictionary
 
-Uses the [Jeff Chen / XWordInfo scored word list](https://www.xwordinfo.com/) (~280K entries). Format: `word;score` (e.g., `OCEAN;60`). Words scoring 50+ are considered acceptable fill. The dictionary module loads, filters, and provides lookup by word and score.
+Uses the HGG Curated Crossword List (~203K entries), derived from the [Jeff Chen / XWordInfo scored word list](https://www.xwordinfo.com/). Format: `word;score` (e.g., `OCEAN;60`). Words scoring 50+ are considered acceptable fill. The dictionary module loads, filters, and provides lookup by word and score.
 
 ## Output Formats
 
