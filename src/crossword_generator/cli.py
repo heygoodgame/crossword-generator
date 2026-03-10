@@ -47,6 +47,13 @@ def main() -> None:
     help="Path to config file.",
 )
 @click.option(
+    "--llm",
+    "llm_provider",
+    type=click.Choice(["ollama", "claude"]),
+    default=None,
+    help="LLM provider to use (overrides config).",
+)
+@click.option(
     "-v",
     "--verbose",
     is_flag=True,
@@ -58,6 +65,7 @@ def generate(
     size: int | None,
     seed: int | None,
     config_path: str | None,
+    llm_provider: str | None,
     verbose: bool,
 ) -> None:
     """Generate a crossword puzzle."""
@@ -70,6 +78,8 @@ def generate(
     config.puzzle.type = puzzle_type
     if size is not None:
         config.puzzle.grid_size = size
+    if llm_provider is not None:
+        config.llm.provider = llm_provider
 
     logger.info(
         "Generating %s crossword (%dx%d)",
