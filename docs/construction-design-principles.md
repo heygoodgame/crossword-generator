@@ -68,7 +68,7 @@ Below are core guiding principles for how we think about attempting to create mi
 
 **Grid Layout**
 
--   180-degree rotational symmetry is quite common. In most grids, if you rotate the black square pattern half a turn around the center, it maps onto itself. This is the single most dominant structural rule.
+-   180-degree rotational symmetry is quite common. In most grids, if you rotate the black square pattern half a turn around the center, it maps onto itself. When that isn't the case, there is often symmetry when splitting the puzzle vertically. This is the single most dominant structural rule. (Note that this can be "close" without being 100% cell for cell match.)
 -   No word shorter than 3 letters. Black squares are never placed such that only one or two white cells sit between a black square and the grid edge (or another black square) in the same row or column.
 -   Every white cell is reachable. Black squares never partition the grid into disconnected white regions — all white cells form one contiguous group.
 -   No entire row or column is blacked out. There's always at least one white cell in every row and column, preserving grid connectivity.
