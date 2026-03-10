@@ -66,6 +66,26 @@ class FillGradeReport(BaseModel):
     summary: str = ""
 
 
+class ClueGrade(BaseModel):
+    """Quality grade for a single clue from LLM evaluation."""
+
+    number: int
+    direction: str
+    answer: str
+    score: float  # 0-100
+    feedback: str = ""
+
+
+class ClueGradeReport(BaseModel):
+    """Aggregate clue quality report from LLM evaluation."""
+
+    overall_score: float  # 0-100
+    clue_count: int
+    passing: bool
+    clue_grades: list[ClueGrade] = Field(default_factory=list)
+    summary: str = ""
+
+
 class FillResult(BaseModel):
     """Result of grid filling."""
 
@@ -89,6 +109,7 @@ class PuzzleEnvelope(BaseModel):
     theme: ThemeConcept | None = None
     fill: FillResult | None = None
     clues: list[ClueEntry] = Field(default_factory=list)
+    clue_grade_report: ClueGradeReport | None = None
 
     # Metadata
     step_history: list[str] = Field(default_factory=list)

@@ -38,10 +38,10 @@
 
 ## Phase 4 — Clue Quality Grading
 
-- [ ] LLM-based clue evaluation (accuracy, fairness, misdirection)
-- [ ] Scoring rubric aligned with `docs/clue-quality.md`
-- [ ] Clue regeneration for entries flagged as low quality
-- [ ] Human-override annotations (accept/reject/edit)
+- [x] LLM-based clue evaluation (accuracy, fairness, misdirection)
+- [x] Scoring rubric aligned with `docs/clue-quality.md`
+- [x] Clue regeneration for entries flagged as low quality
+- [ ] Human-override annotations (accept/reject/edit) — requires UI
 
 ## Phase 5 — Theme Generation (midi)
 

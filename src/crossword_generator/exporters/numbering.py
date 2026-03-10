@@ -107,3 +107,44 @@ def compute_numbering(
                 )
 
     return entries
+
+
+def compute_crossing_words(
+    entries: list[NumberedEntry], grid: list[list[str]]
+) -> dict[tuple[int, str], list[str]]:
+    """Compute which words cross each entry in the grid.
+
+    For each entry, find all entries that share at least one cell.
+    Returns a mapping of (number, direction) -> list of crossing answer words.
+    """
+    # Build a cell -> entry index for fast lookup
+    cell_to_entries: dict[tuple[int, int], list[int]] = {}
+    for idx, entry in enumerate(entries):
+        if entry.direction == "across":
+            for offset in range(entry.length):
+                cell = (entry.row, entry.col + offset)
+                cell_to_entries.setdefault(cell, []).append(idx)
+        else:  # down
+            for offset in range(entry.length):
+                cell = (entry.row + offset, entry.col)
+                cell_to_entries.setdefault(cell, []).append(idx)
+
+    # For each entry, collect crossing entry answers
+    crossing_words: dict[tuple[int, str], list[str]] = {}
+    for idx, entry in enumerate(entries):
+        crossings: list[str] = []
+        if entry.direction == "across":
+            cells = [(entry.row, entry.col + offset) for offset in range(entry.length)]
+        else:
+            cells = [(entry.row + offset, entry.col) for offset in range(entry.length)]
+
+        seen: set[int] = set()
+        for cell in cells:
+            for other_idx in cell_to_entries.get(cell, []):
+                if other_idx != idx and other_idx not in seen:
+                    seen.add(other_idx)
+                    crossings.append(entries[other_idx].answer)
+
+        crossing_words[(entry.number, entry.direction)] = crossings
+
+    return crossing_words

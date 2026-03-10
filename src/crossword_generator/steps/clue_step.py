@@ -5,7 +5,11 @@ from __future__ import annotations
 import json
 import logging
 
-from crossword_generator.exporters.numbering import NumberedEntry, compute_numbering
+from crossword_generator.exporters.numbering import (
+    NumberedEntry,
+    compute_crossing_words,
+    compute_numbering,
+)
 from crossword_generator.llm.base import LLMProvider
 from crossword_generator.llm.prompts.clue_generation import (
     build_clue_generation_prompt,
@@ -40,7 +44,7 @@ class ClueGenerationStep(PipelineStep):
 
         # Compute numbering and crossing words
         entries = compute_numbering(grid)
-        crossing_words = _compute_crossing_words(entries, grid)
+        crossing_words = compute_crossing_words(entries, grid)
 
         # Build prompt
         prompt = build_clue_generation_prompt(
@@ -98,47 +102,6 @@ class ClueGenerationStep(PipelineStep):
         if envelope.clues:
             errors.append("Envelope already has clues")
         return errors
-
-
-def _compute_crossing_words(
-    entries: list[NumberedEntry], grid: list[list[str]]
-) -> dict[tuple[int, str], list[str]]:
-    """Compute which words cross each entry in the grid.
-
-    For each entry, find all entries that share at least one cell.
-    Returns a mapping of (number, direction) → list of crossing answer words.
-    """
-    # Build a cell → entry index for fast lookup
-    cell_to_entries: dict[tuple[int, int], list[int]] = {}
-    for idx, entry in enumerate(entries):
-        if entry.direction == "across":
-            for offset in range(entry.length):
-                cell = (entry.row, entry.col + offset)
-                cell_to_entries.setdefault(cell, []).append(idx)
-        else:  # down
-            for offset in range(entry.length):
-                cell = (entry.row + offset, entry.col)
-                cell_to_entries.setdefault(cell, []).append(idx)
-
-    # For each entry, collect crossing entry answers
-    crossing_words: dict[tuple[int, str], list[str]] = {}
-    for idx, entry in enumerate(entries):
-        crossings: list[str] = []
-        if entry.direction == "across":
-            cells = [(entry.row, entry.col + offset) for offset in range(entry.length)]
-        else:
-            cells = [(entry.row + offset, entry.col) for offset in range(entry.length)]
-
-        seen: set[int] = set()
-        for cell in cells:
-            for other_idx in cell_to_entries.get(cell, []):
-                if other_idx != idx and other_idx not in seen:
-                    seen.add(other_idx)
-                    crossings.append(entries[other_idx].answer)
-
-        crossing_words[(entry.number, entry.direction)] = crossings
-
-    return crossing_words
 
 
 def _parse_clue_response(

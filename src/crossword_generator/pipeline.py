@@ -13,12 +13,13 @@ from crossword_generator.exporters.ipuz_exporter import IpuzExporter
 from crossword_generator.exporters.puz_exporter import PuzExporter
 from crossword_generator.fillers.csp import CSPFiller
 from crossword_generator.fillers.go_crossword import GoCrosswordFiller
+from crossword_generator.graders.clue_grader import ClueGrader
 from crossword_generator.graders.fill_grader import FillGrader
 from crossword_generator.llm.claude_provider import ClaudeProvider
 from crossword_generator.llm.ollama_provider import OllamaProvider
 from crossword_generator.models import PuzzleEnvelope, PuzzleType
 from crossword_generator.steps.base import PipelineStep
-from crossword_generator.steps.clue_step import ClueGenerationStep
+from crossword_generator.steps.clue_grading_step import ClueWithGradingStep
 from crossword_generator.steps.fill_step import FillWithGradingStep
 
 logger = logging.getLogger(__name__)
@@ -119,7 +120,15 @@ def create_pipeline(
     else:
         raise ValueError(f"Unknown LLM provider: {config.llm.provider}")
 
-    clue_step = ClueGenerationStep(llm_provider)
+    clue_grader = ClueGrader(
+        llm_provider, min_passing_score=config.grading.clue.min_score
+    )
+    clue_step = ClueWithGradingStep(
+        llm_provider,
+        clue_grader,
+        max_retries=3,
+        regenerate_on_fail=config.grading.clue.regenerate_on_fail,
+    )
 
     # Build steps
     steps: list[PipelineStep] = [fill_step, clue_step]

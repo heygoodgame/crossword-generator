@@ -6,7 +6,10 @@ import json
 
 import pytest
 
-from crossword_generator.exporters.numbering import NumberedEntry
+from crossword_generator.exporters.numbering import (
+    NumberedEntry,
+    compute_crossing_words,
+)
 from crossword_generator.llm.base import LLMProvider
 from crossword_generator.models import (
     ClueEntry,
@@ -14,10 +17,7 @@ from crossword_generator.models import (
     PuzzleEnvelope,
     PuzzleType,
 )
-from crossword_generator.steps.clue_step import (
-    ClueGenerationStep,
-    _compute_crossing_words,
-)
+from crossword_generator.steps.clue_step import ClueGenerationStep
 
 # A simple 5x5 grid with no black squares for testing
 MOCK_GRID = [
@@ -251,7 +251,7 @@ class TestComputeCrossingWords:
         from crossword_generator.exporters.numbering import compute_numbering
 
         entries = compute_numbering(MOCK_GRID)
-        crossings = _compute_crossing_words(entries, MOCK_GRID)
+        crossings = compute_crossing_words(entries, MOCK_GRID)
 
         # 1-Across (ABCDE) should cross 1-Down (AFKPU), 2-Down (BGLQV), etc.
         across_1_crossings = crossings[(1, "across")]
@@ -271,7 +271,7 @@ class TestComputeCrossingWords:
         from crossword_generator.exporters.numbering import compute_numbering
 
         entries = compute_numbering(grid)
-        crossings = _compute_crossing_words(entries, grid)
+        crossings = compute_crossing_words(entries, grid)
 
         # All entries should have crossings computed
         for entry in entries:
@@ -283,7 +283,7 @@ class TestComputeCrossingWords:
         from crossword_generator.exporters.numbering import compute_numbering
 
         entries = compute_numbering(MOCK_GRID)
-        crossings = _compute_crossing_words(entries, MOCK_GRID)
+        crossings = compute_crossing_words(entries, MOCK_GRID)
 
         # All crossing words should be strings of length > 1
         for words in crossings.values():
