@@ -14,8 +14,11 @@ from crossword_generator.exporters.puz_exporter import PuzExporter
 from crossword_generator.fillers.csp import CSPFiller
 from crossword_generator.fillers.go_crossword import GoCrosswordFiller
 from crossword_generator.graders.fill_grader import FillGrader
+from crossword_generator.llm.claude_provider import ClaudeProvider
+from crossword_generator.llm.ollama_provider import OllamaProvider
 from crossword_generator.models import PuzzleEnvelope, PuzzleType
 from crossword_generator.steps.base import PipelineStep
+from crossword_generator.steps.clue_step import ClueGenerationStep
 from crossword_generator.steps.fill_step import FillWithGradingStep
 
 logger = logging.getLogger(__name__)
@@ -108,8 +111,18 @@ def create_pipeline(
         retry_on_fail=config.grading.fill.retry_on_fail,
     )
 
+    # Build LLM provider
+    if config.llm.provider == "ollama":
+        llm_provider = OllamaProvider(config.llm.ollama)
+    elif config.llm.provider == "claude":
+        llm_provider = ClaudeProvider(config.llm.claude)
+    else:
+        raise ValueError(f"Unknown LLM provider: {config.llm.provider}")
+
+    clue_step = ClueGenerationStep(llm_provider)
+
     # Build steps
-    steps: list[PipelineStep] = [fill_step]
+    steps: list[PipelineStep] = [fill_step, clue_step]
 
     # Build exporters
     exporters: list[Exporter] = []

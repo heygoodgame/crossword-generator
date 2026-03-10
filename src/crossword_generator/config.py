@@ -96,11 +96,20 @@ class OllamaConfig(BaseModel):
     timeout: int = 120
 
 
+class ClaudeConfig(BaseModel):
+    """Claude (Anthropic API) LLM provider settings."""
+
+    model: str = "claude-haiku-4-5-20251001"
+    max_tokens: int = 4096
+    timeout: int = 120
+
+
 class LLMConfig(BaseModel):
     """LLM provider configuration."""
 
-    provider: str = "ollama"
+    provider: str = "ollama"  # "ollama" or "claude"
     ollama: OllamaConfig = OllamaConfig()
+    claude: ClaudeConfig = ClaudeConfig()
 
 
 class OutputConfig(BaseModel):

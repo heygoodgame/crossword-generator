@@ -30,10 +30,11 @@
 
 ## Phase 3 — Clue Generation
 
-- [ ] Ollama LLM provider implementation
-- [ ] Clue generation prompt design and templates
-- [ ] Structured output parsing (clue text, difficulty level)
-- [ ] Per-entry clue generation with context (crossing words, theme)
+- [x] Ollama LLM provider implementation
+- [x] Claude LLM provider implementation (optional, via `anthropic` package)
+- [x] Clue generation prompt design and templates
+- [x] Structured output parsing (JSON array → ClueEntry list with retry)
+- [x] Batch clue generation with context (crossing words, theme)
 
 ## Phase 4 — Clue Quality Grading
 

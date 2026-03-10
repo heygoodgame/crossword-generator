@@ -40,10 +40,14 @@ grading:
     regenerate_on_fail: true
 
 llm:
-  provider: ollama
+  provider: ollama  # "ollama" or "claude"
   ollama:
     base_url: "http://localhost:11434"
     model: llama3
+    timeout: 120
+  claude:
+    model: claude-haiku-4-5-20251001
+    max_tokens: 4096
     timeout: 120
 
 output:
