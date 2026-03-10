@@ -77,8 +77,8 @@ class FillGrader:
         if entry.length == 2:
             penalties["two_letter"] = 5.0
 
-        if entry.length == 3 and (dict_score is None or dict_score < 55):
-            penalties["short_glue"] = 5.0
+        # short_glue penalty removed: 3-letter words with score < 55 are
+        # structurally unavoidable in 5x5–11x11 grids.
 
         adjusted = max(0.0, min(100.0, base - sum(penalties.values())))
 
@@ -118,17 +118,8 @@ class FillGrader:
         if len(word_grades) > 0 and unknown_count / len(word_grades) > 0.2:
             grid_penalties["high_unknown_ratio"] = 10.0
 
-        # Excessive short glue — skip for mini grids (5x5, 7x7) where short
-        # words are structurally unavoidable
-        if grid_size > 7:
-            short_glue_count = sum(
-                1
-                for wg in word_grades
-                if wg.length == 3
-                and (wg.dictionary_score is None or wg.dictionary_score < 55)
-            )
-            if len(word_grades) > 0 and short_glue_count / len(word_grades) > 0.3:
-                grid_penalties["excessive_short_glue"] = 5.0
+        # excessive_short_glue penalty removed: 3-letter words are
+        # structurally unavoidable in 5x5–11x11 grids.
 
         overall = max(0.0, min(100.0, raw_score - sum(grid_penalties.values())))
         return overall, grid_penalties
