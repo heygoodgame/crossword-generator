@@ -66,6 +66,19 @@ Below are core guiding principles for how we think about attempting to create mi
 -   Black squares are present and follow conventional crossword placement, but the patterns may be more creative or irregular than the full crossword
 -   All white cells appear to be fully checked, following standard American crossword convention
 
+**Grid Layout**
+
+-   180-degree rotational symmetry is quite common. In most grids, if you rotate the black square pattern half a turn around the center, it maps onto itself. This is the single most dominant structural rule.
+-   No word shorter than 3 letters. Black squares are never placed such that only one or two white cells sit between a black square and the grid edge (or another black square) in the same row or column.
+-   Every white cell is reachable. Black squares never partition the grid into disconnected white regions — all white cells form one contiguous group.
+-   No entire row or column is blacked out. There's always at least one white cell in every row and column, preserving grid connectivity.
+-   Large solid blocks of black are avoided. You rarely see a 2×2 or larger solid block of black squares. Black cells are typically isolated or form thin lines/diagonals, maximizing interlock between across and down entries.
+-   Black square density stays roughly in the 15–22% range. None of the grids are overwhelmingly black or overwhelmingly open — there's a consistent balance.
+-   Corners are almost always white. The four corner cells are open in nearly every grid, giving long anchor entries along the edges.
+-   The top and bottom rows tend to be mostly open, with black squares more concentrated in the interior of the grid where they create the interlocking pattern.
+-   Black squares stagger across adjacent rows rather than lining up in vertical columns, which ensures that down entries cross through multiple across entries and vice versa.
+-   Entry points (numbered cells) cluster near black squares and edges, since a cell gets a number when it starts a new word — meaning black squares indirectly control clue count and distribution.
+
 **Themes and Content**
 
 -   Every Midi Crossword has a theme — this is a firm editorial commitment, not optional
