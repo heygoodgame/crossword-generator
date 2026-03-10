@@ -313,6 +313,11 @@ def get_grid_spec(
             black_cells = rng.choices(patterns, weights=weights, k=1)[0]
         else:
             black_cells = pattern_data[0][0]
+    elif pt == PuzzleType.MIDI:
+        from crossword_generator.grid_pattern_generator import generate_pattern
+
+        effective_seed = seed if seed is not None else 0
+        black_cells = generate_pattern(rows, cols, seed=effective_seed)
     else:
         black_cells = []
 

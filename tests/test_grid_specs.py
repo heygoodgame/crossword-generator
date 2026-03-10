@@ -45,9 +45,9 @@ class TestGetGridSpec:
         spec = get_grid_spec(PuzzleType.MINI, 7)
         assert len(spec.black_cells) > 0
 
-    def test_midi_has_no_black_cells(self) -> None:
+    def test_midi_has_black_cells(self) -> None:
         spec = get_grid_spec(PuzzleType.MIDI, 9)
-        assert spec.black_cells == []
+        assert len(spec.black_cells) > 0
 
     def test_seed_selects_pattern(self) -> None:
         """Different seeds can select different patterns."""
@@ -116,6 +116,19 @@ class TestGetGridSpec:
     def test_midi_5_raises(self) -> None:
         with pytest.raises(ValueError, match="Unsupported"):
             get_grid_spec(PuzzleType.MIDI, 5)
+
+    def test_midi_deterministic_default(self) -> None:
+        """No seed uses seed=0, so result is deterministic."""
+        spec1 = get_grid_spec(PuzzleType.MIDI, 9)
+        spec2 = get_grid_spec(PuzzleType.MIDI, 9)
+        assert spec1.black_cells == spec2.black_cells
+
+    @pytest.mark.parametrize("size", [9, 10, 11])
+    def test_midi_valid_structure(self, size: int) -> None:
+        """Midi patterns have valid structure across 100 seeds."""
+        for seed in range(100):
+            spec = get_grid_spec(PuzzleType.MIDI, size, seed=seed)
+            _assert_valid_grid_structure(spec)
 
 
 def _assert_valid_grid_structure(spec: "GridSpec") -> None:  # noqa: F821
