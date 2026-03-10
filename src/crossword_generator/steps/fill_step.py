@@ -5,10 +5,12 @@ from __future__ import annotations
 import logging
 
 from crossword_generator.fillers.base import GridFiller
+from crossword_generator.fillers.csp import extract_slots
 from crossword_generator.graders.fill_grader import FillGrader
 from crossword_generator.grid_specs import get_grid_spec
 from crossword_generator.models import FillResult, PuzzleEnvelope
 from crossword_generator.steps.base import PipelineStep
+from crossword_generator.steps.theme_slot_assigner import assign_seed_entries_to_slots
 
 logger = logging.getLogger(__name__)
 
@@ -31,6 +33,23 @@ class FillStep(PipelineStep):
 
         seed = envelope.metadata.get("seed")
         spec = get_grid_spec(envelope.puzzle_type, envelope.grid_size, seed=seed)
+
+        # Propagate theme seed entries as fill constraints
+        if envelope.theme and (envelope.theme.seed_entries or envelope.theme.revealer):
+            black = set(spec.black_cells)
+            slots = extract_slots(spec.rows, spec.cols, black)
+            assignments = assign_seed_entries_to_slots(
+                envelope.theme.seed_entries,
+                envelope.theme.revealer,
+                slots,
+            )
+            spec.seed_entries = {
+                f"{a.row},{a.col},{a.direction}": a.word.upper()
+                for a in assignments
+            }
+            logger.info(
+                "Assigned %d theme entries to grid slots", len(assignments)
+            )
 
         logger.info(
             "Running grid fill with %s (%dx%d, %d black cells)",
@@ -98,6 +117,24 @@ class FillWithGradingStep(PipelineStep):
 
         seed = envelope.metadata.get("seed")
         spec = get_grid_spec(envelope.puzzle_type, envelope.grid_size, seed=seed)
+
+        # Propagate theme seed entries as fill constraints
+        if envelope.theme and (envelope.theme.seed_entries or envelope.theme.revealer):
+            black = set(spec.black_cells)
+            slots = extract_slots(spec.rows, spec.cols, black)
+            assignments = assign_seed_entries_to_slots(
+                envelope.theme.seed_entries,
+                envelope.theme.revealer,
+                slots,
+            )
+            spec.seed_entries = {
+                f"{a.row},{a.col},{a.direction}": a.word.upper()
+                for a in assignments
+            }
+            logger.info(
+                "Assigned %d theme entries to grid slots", len(assignments)
+            )
+
         max_attempts = self._max_retries if self._retry_on_fail else 1
 
         best_result: FillResult | None = None

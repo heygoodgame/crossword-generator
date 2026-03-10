@@ -18,7 +18,7 @@ BLACK = "."
 
 
 @dataclass
-class _Slot:
+class Slot:
     """A word slot in the grid."""
 
     index: int
@@ -31,7 +31,11 @@ class _Slot:
     # crossings: (pos_in_this_slot, other_slot_index, pos_in_other_slot)
 
 
-def _extract_slots(rows: int, cols: int, black: set[tuple[int, int]]) -> list[_Slot]:
+# Backward-compatible alias
+_Slot = Slot
+
+
+def extract_slots(rows: int, cols: int, black: set[tuple[int, int]]) -> list[Slot]:
     """Extract word slots from grid dimensions and black cell positions."""
     slots: list[_Slot] = []
     idx = 0
@@ -89,6 +93,10 @@ def _extract_slots(rows: int, cols: int, black: set[tuple[int, int]]) -> list[_S
             slots[s2].crossings.append((p2, s1, p1))
 
     return slots
+
+
+# Backward-compatible alias
+_extract_slots = extract_slots
 
 
 def _build_letter_index_flat(
@@ -190,6 +198,50 @@ def _arc_revise(
     return supported
 
 
+def _map_seed_entries_to_slots(
+    seed_entries: dict[str, str],
+    slots: list[Slot],
+) -> dict[int, str]:
+    """Map seed entry specifications to slot indices.
+
+    Args:
+        seed_entries: Keys are "row,col,direction", values are uppercase words.
+        slots: Extracted grid slots.
+
+    Returns:
+        Dict mapping slot index to seed word.
+
+    Raises:
+        FillError: If a seed entry doesn't match any slot.
+    """
+    result: dict[int, str] = {}
+
+    for key, word in seed_entries.items():
+        parts = key.split(",")
+        if len(parts) != 3:
+            raise FillError(f"Invalid seed entry key format: {key!r}")
+        row, col, direction = int(parts[0]), int(parts[1]), parts[2]
+
+        matched = False
+        for slot in slots:
+            if slot.row == row and slot.col == col and slot.direction == direction:
+                if slot.length != len(word):
+                    raise FillError(
+                        f"Seed entry {word!r} length {len(word)} doesn't match "
+                        f"slot length {slot.length} at ({row},{col},{direction})"
+                    )
+                result[slot.index] = word
+                matched = True
+                break
+
+        if not matched:
+            raise FillError(
+                f"No slot found at ({row},{col},{direction}) for seed entry {word!r}"
+            )
+
+    return result
+
+
 class CSPFiller(GridFiller):
     """Grid filler using constraint satisfaction with backtracking."""
 
@@ -224,7 +276,7 @@ class CSPFiller(GridFiller):
         )
 
         black = set(spec.black_cells)
-        slots = _extract_slots(spec.rows, spec.cols, black)
+        slots = extract_slots(spec.rows, spec.cols, black)
 
         if not slots:
             grid = [
@@ -245,6 +297,15 @@ class CSPFiller(GridFiller):
         if time.monotonic() > deadline:
             raise FillError(f"CSP solver timed out after {timeout}s")
 
+        # Parse seed entries from spec
+        seed_assignments: dict[int, str] = {}
+        if spec.seed_entries:
+            seed_slot_map = _map_seed_entries_to_slots(spec.seed_entries, slots)
+            seed_assignments = seed_slot_map
+            logger.info(
+                "CSP: %d seed entries to place", len(seed_assignments)
+            )
+
         # Quality tier loop: try high-score words first, then fall back
         tiers = self._config.quality_tiers
         for tier_idx, tier_min_score in enumerate(tiers):
@@ -260,6 +321,12 @@ class CSPFiller(GridFiller):
             skip_tier = False
 
             for slot in slots:
+                # Seed-assigned slots get a single-word candidate list
+                if slot.index in seed_assignments:
+                    seed_word = seed_assignments[slot.index]
+                    candidates_by_slot.append([seed_word])
+                    continue
+
                 words = self._dictionary.words_by_length(
                     slot.length, min_score=tier_min_score
                 )
@@ -283,21 +350,37 @@ class CSPFiller(GridFiller):
             if skip_tier:
                 continue
 
-            # Per-slot flat array reference
-            slot_li: list[list[int]] = [
-                li_flat[slot.length] for slot in slots
-            ]
+            # Per-slot flat array reference — seed slots get their own arrays
+            slot_li: list[list[int]] = []
+            for slot in slots:
+                if slot.index in seed_assignments:
+                    slot_li.append(
+                        _build_letter_index_flat(
+                            candidates_by_slot[slot.index], slot.length
+                        )
+                    )
+                else:
+                    slot_li.append(li_flat[slot.length])
 
-            # Build prefix tries per word length
+            # Build prefix tries per word length (skip seed slots)
             tries: dict[int, _PrefixTrie] = {}
             for length in li_flat:
                 trie = _PrefixTrie()
                 for slot in slots:
-                    if slot.length == length:
+                    if (
+                        slot.length == length
+                        and slot.index not in seed_assignments
+                    ):
                         for w in candidates_by_slot[slot.index]:
                             trie.insert(w)
                         break
                 tries[length] = trie
+            # Ensure seed words are also in tries
+            for si, word in seed_assignments.items():
+                wlen = len(word)
+                if wlen not in tries:
+                    tries[wlen] = _PrefixTrie()
+                tries[wlen].insert(word)
 
             # Pre-compute word scores for value ordering
             scores_by_slot: list[list[int]] = []
@@ -335,7 +418,7 @@ class CSPFiller(GridFiller):
             result = self._solve_with_restarts(
                 spec, slots, candidates_by_slot, slot_li, tries,
                 scores_by_slot, initial_domains, black, seed, deadline,
-                timeout,
+                timeout, seed_assignments,
             )
             if result is not None:
                 return result
@@ -365,8 +448,11 @@ class CSPFiller(GridFiller):
         seed: int,
         deadline: float,
         timeout: int,
+        seed_assignments: dict[int, str] | None = None,
     ) -> FilledGrid | None:
         """Run the random-restart solve loop. Returns FilledGrid or None."""
+        if seed_assignments is None:
+            seed_assignments = {}
         rng = random.Random(seed)
 
         # Mutable state (reset per restart attempt)
@@ -540,6 +626,13 @@ class CSPFiller(GridFiller):
             placed.clear()
             backtracks = 0
             domains[:] = list(initial_domains)
+
+            # Pre-assign seed entry slots
+            for si, word in seed_assignments.items():
+                assignment[si] = 0  # index 0 in single-element candidate list
+                used_words.add(word)
+                for pos, cell in enumerate(slots[si].cells):
+                    placed[cell] = word[pos]
 
             try:
                 if solve():

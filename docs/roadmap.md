@@ -45,10 +45,10 @@
 
 ## Phase 5 — Theme Generation (midi)
 
-- [ ] LLM theme concept generation (topic, wordplay type)
-- [ ] Seed entry selection from dictionary matching theme
-- [ ] Revealer clue/entry generation
-- [ ] Theme constraint propagation to grid filler
+- [x] LLM theme concept generation (topic, wordplay type)
+- [x] Seed entry selection from dictionary matching theme
+- [x] Revealer clue/entry generation
+- [x] Theme constraint propagation to grid filler (CSP only; go-crossword degrades gracefully)
 
 ## Phase 6 — Full Pipeline Integration
 

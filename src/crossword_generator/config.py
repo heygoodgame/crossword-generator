@@ -112,6 +112,14 @@ class LLMConfig(BaseModel):
     claude: ClaudeConfig = ClaudeConfig()
 
 
+class ThemeConfig(BaseModel):
+    """Theme generation settings for midi puzzles."""
+
+    enabled: bool = True
+    max_retries: int = 3
+    num_seed_entries: int = 3
+
+
 class OutputConfig(BaseModel):
     """Output directory and format settings."""
 
@@ -127,6 +135,7 @@ class Config(BaseModel):
     fill: FillConfig = FillConfig()
     grading: GradingConfig = GradingConfig()
     llm: LLMConfig = LLMConfig()
+    theme: ThemeConfig = ThemeConfig()
     output: OutputConfig = OutputConfig()
 
 

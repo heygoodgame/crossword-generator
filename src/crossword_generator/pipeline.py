@@ -21,6 +21,7 @@ from crossword_generator.models import PuzzleEnvelope, PuzzleType
 from crossword_generator.steps.base import PipelineStep
 from crossword_generator.steps.clue_grading_step import ClueWithGradingStep
 from crossword_generator.steps.fill_step import FillWithGradingStep
+from crossword_generator.steps.theme_step import ThemeGenerationStep
 
 logger = logging.getLogger(__name__)
 
@@ -131,7 +132,20 @@ def create_pipeline(
     )
 
     # Build steps
-    steps: list[PipelineStep] = [fill_step, clue_step]
+    steps: list[PipelineStep] = []
+
+    # Theme generation for midi puzzles
+    if PuzzleType(config.puzzle.type) == PuzzleType.MIDI and config.theme.enabled:
+        theme_step = ThemeGenerationStep(
+            llm_provider,
+            dictionary,
+            grid_size=config.puzzle.grid_size,
+            max_retries=config.theme.max_retries,
+            num_seed_entries=config.theme.num_seed_entries,
+        )
+        steps.append(theme_step)
+
+    steps.extend([fill_step, clue_step])
 
     # Build exporters
     exporters: list[Exporter] = []

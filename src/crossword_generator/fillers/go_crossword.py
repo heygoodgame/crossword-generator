@@ -47,6 +47,12 @@ class GoCrosswordFiller(GridFiller):
         if seed is None:
             seed = random.randint(0, 2**31 - 1)
 
+        if spec.seed_entries:
+            logger.warning(
+                "go-crossword does not support seed entries; "
+                "theme words won't be placed"
+            )
+
         logger.info(
             "Filling %dx%d grid with go-crossword (seed=%d)", spec.rows, spec.cols, seed
         )
