@@ -181,6 +181,57 @@ class TestClueGenerationStep:
 
         assert len(result.clues) == len(entries)
 
+    def test_autocorrects_wrong_direction(self) -> None:
+        """LLM returns correct number but wrong direction for
+        entries that only exist in one direction."""
+        from crossword_generator.exporters.numbering import compute_numbering
+
+        entries = compute_numbering(MOCK_GRID)
+        # Build response with some directions flipped for
+        # entries that only exist in one direction
+        clues = []
+        for entry in entries:
+            d = entry.direction
+            # Entries 6,7,8,9 across → flip to "down" (only
+            # exist in one direction each, except 9 which has both)
+            if entry.number in (6, 7, 8) and d == "across":
+                d = "down"  # wrong, should be auto-corrected
+            clues.append(
+                {
+                    "number": entry.number,
+                    "direction": d,
+                    "clue": f"Clue for {entry.answer}",
+                }
+            )
+        mock_response = json.dumps(clues)
+
+        step = ClueGenerationStep(MockLLM(response=mock_response))
+        envelope = _make_envelope(grid=MOCK_GRID)
+        result = step.run(envelope)
+
+        assert len(result.clues) == len(entries)
+        # Verify the corrected entries have the right direction
+        clue_map = {
+            (c.number, c.direction): c for c in result.clues
+        }
+        assert (6, "across") in clue_map
+        assert (7, "across") in clue_map
+        assert (8, "across") in clue_map
+
+
+        """LLM adds preamble text before the JSON array."""
+        from crossword_generator.exporters.numbering import compute_numbering
+
+        entries = compute_numbering(MOCK_GRID)
+        raw_json = _build_mock_clue_json(entries)
+        preamble = f"Here are the clues:\n\n{raw_json}"
+
+        step = ClueGenerationStep(MockLLM(response=preamble))
+        envelope = _make_envelope(grid=MOCK_GRID)
+        result = step.run(envelope)
+
+        assert len(result.clues) == len(entries)
+
     def test_original_envelope_unchanged(self) -> None:
         from crossword_generator.exporters.numbering import compute_numbering
 

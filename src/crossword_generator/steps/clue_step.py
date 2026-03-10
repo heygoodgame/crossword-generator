@@ -62,6 +62,11 @@ class ClueGenerationStep(PipelineStep):
                 self._llm.name,
             )
             raw_response = self._llm.generate(prompt)
+            logger.debug(
+                "Raw LLM response (%d chars): %.200s",
+                len(raw_response),
+                raw_response,
+            )
             try:
                 clue_entries = _parse_clue_response(raw_response, entries)
                 break
@@ -146,14 +151,20 @@ def _parse_clue_response(
         ValueError: If the response doesn't contain the expected entries.
         KeyError: If required fields are missing.
     """
-    # Try to extract JSON from the response (LLM may wrap it in markdown)
+    # Extract the JSON array from the response.
+    # LLMs often add preamble text or markdown fences around the JSON.
     text = raw_response.strip()
-    if text.startswith("```"):
-        # Strip markdown code fence
-        lines = text.split("\n")
-        # Remove first line (```json or ```) and last line (```)
-        lines = [ln for ln in lines if not ln.strip().startswith("```")]
-        text = "\n".join(lines)
+
+    # Find the first '[' and last ']' to extract the JSON array
+    start = text.find("[")
+    end = text.rfind("]")
+    if start == -1 or end == -1 or end <= start:
+        raise json.JSONDecodeError(
+            "No JSON array found in response",
+            text,
+            0,
+        )
+    text = text[start : end + 1]
 
     parsed = json.loads(text)
 
@@ -164,6 +175,10 @@ def _parse_clue_response(
     entry_lookup: dict[tuple[int, str], str] = {
         (e.number, e.direction): e.answer for e in entries
     }
+    # Also build a number → directions map for auto-correction
+    number_dirs: dict[int, list[str]] = {}
+    for e in entries:
+        number_dirs.setdefault(e.number, []).append(e.direction)
 
     clue_entries: list[ClueEntry] = []
     for item in parsed:
@@ -173,9 +188,25 @@ def _parse_clue_response(
 
         key = (number, direction)
         if key not in entry_lookup:
-            raise ValueError(
-                f"LLM returned clue for {number}-{direction} which is not in the grid"
-            )
+            # Auto-correct: if this number exists in only one
+            # direction, the LLM just got the direction wrong
+            dirs = number_dirs.get(number, [])
+            if len(dirs) == 1 and dirs[0] != direction:
+                direction = dirs[0]
+                key = (number, direction)
+                logger.debug(
+                    "Auto-corrected %d-%s → %d-%s",
+                    number,
+                    item["direction"].lower(),
+                    number,
+                    direction,
+                )
+            else:
+                raise ValueError(
+                    f"LLM returned clue for {number}-"
+                    f"{item['direction'].lower()} "
+                    f"which is not in the grid"
+                )
 
         clue_entries.append(
             ClueEntry(
