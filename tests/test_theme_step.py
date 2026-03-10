@@ -8,6 +8,9 @@ import pytest
 
 from crossword_generator.dictionary import Dictionary
 from crossword_generator.llm.base import LLMProvider
+from crossword_generator.llm.prompts.theme_generation import (
+    build_theme_generation_prompt,
+)
 from crossword_generator.models import PuzzleEnvelope, PuzzleType, ThemeConcept
 from crossword_generator.steps.theme_step import (
     ThemeGenerationStep,
@@ -209,6 +212,16 @@ class TestParseThemeResponse:
         theme = _parse_theme_response(response)
         assert theme.topic == "Things that fly"
 
+    def test_json_with_trailing_text_and_braces(self) -> None:
+        """Handles extra text with braces after the JSON object."""
+        inner = _make_valid_response()
+        response = (
+            f"{inner}\n\nNote: you could also try "
+            '{"alternative": "theme"} for variety.'
+        )
+        theme = _parse_theme_response(response)
+        assert theme.topic == "Things that fly"
+
     def test_no_json_raises(self) -> None:
         with pytest.raises(json.JSONDecodeError):
             _parse_theme_response("No JSON here")
@@ -297,3 +310,32 @@ class TestValidateThemeEntries:
         # Only length 3 and 4 available, but EAGLE is 5
         errors = _validate_theme_entries(theme, theme_dictionary, 9, [3, 4])
         assert any("doesn't match any available" in e for e in errors)
+
+
+class TestBuildThemeGenerationPromptSlotCounts:
+    def test_slot_counts_included_in_prompt(self) -> None:
+        slot_counts = {3: 16, 5: 4, 9: 6}
+        prompt = build_theme_generation_prompt(
+            grid_size=9,
+            available_slot_lengths=[3, 5, 9],
+            slot_counts=slot_counts,
+        )
+        assert "3-letter: 16" in prompt
+        assert "5-letter: 4" in prompt
+        assert "9-letter: 6" in prompt
+        assert "Do not use more theme words" in prompt
+
+    def test_no_slot_counts_omits_availability(self) -> None:
+        prompt = build_theme_generation_prompt(
+            grid_size=9,
+            available_slot_lengths=[3, 5, 9],
+        )
+        assert "Available slots by length" not in prompt
+
+    def test_slot_counts_none_omits_availability(self) -> None:
+        prompt = build_theme_generation_prompt(
+            grid_size=9,
+            available_slot_lengths=[3, 5, 9],
+            slot_counts=None,
+        )
+        assert "Available slots by length" not in prompt

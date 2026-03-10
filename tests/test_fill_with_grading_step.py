@@ -5,9 +5,14 @@ from __future__ import annotations
 import pytest
 
 from crossword_generator.dictionary import Dictionary
-from crossword_generator.fillers.base import FilledGrid, GridFiller, GridSpec
+from crossword_generator.fillers.base import FilledGrid, FillError, GridFiller, GridSpec
 from crossword_generator.graders.fill_grader import FillGrader
-from crossword_generator.models import FillResult, PuzzleEnvelope, PuzzleType
+from crossword_generator.models import (
+    FillResult,
+    PuzzleEnvelope,
+    PuzzleType,
+    ThemeConcept,
+)
 from crossword_generator.steps.fill_step import FillWithGradingStep
 
 
@@ -252,3 +257,123 @@ class TestAttemptNumberTracking:
 
         assert result.fill is not None
         assert result.fill.attempt_number == 2
+
+
+class FillErrorThenSuccessFiller(GridFiller):
+    """Raises FillError for the first N calls, then returns a fixed grid."""
+
+    def __init__(
+        self, grid: list[list[str]], *, fail_count: int = 1
+    ) -> None:
+        self._grid = grid
+        self._fail_count = fail_count
+        self._call_count = 0
+
+    @property
+    def name(self) -> str:
+        return "fail-then-succeed"
+
+    def fill(self, spec: GridSpec) -> FilledGrid:
+        self._call_count += 1
+        if self._call_count <= self._fail_count:
+            raise FillError("AC-3 infeasible with seed entries")
+        return FilledGrid(grid=self._grid)
+
+    @property
+    def call_count(self) -> int:
+        return self._call_count
+
+
+class AlwaysFailFiller(GridFiller):
+    """Always raises FillError."""
+
+    def __init__(self) -> None:
+        self._call_count = 0
+
+    @property
+    def name(self) -> str:
+        return "always-fail"
+
+    def fill(self, spec: GridSpec) -> FilledGrid:
+        self._call_count += 1
+        raise FillError("Cannot fill")
+
+    @property
+    def call_count(self) -> int:
+        return self._call_count
+
+
+class TestGridPatternFallback:
+    """Tests for the grid pattern fallback when theme entries cause infeasibility."""
+
+    def _make_themed_envelope(self, seed: int = 42) -> PuzzleEnvelope:
+        """Create a midi envelope with theme data."""
+        return PuzzleEnvelope(
+            puzzle_type=PuzzleType.MIDI,
+            grid_size=9,
+            metadata={"seed": seed},
+            theme=ThemeConcept(
+                topic="Test theme",
+                seed_entries=["EAGLE", "HAWK", "KITE"],
+                revealer="SOAR",
+            ),
+        )
+
+    def test_fill_error_tries_next_grid_pattern(self) -> None:
+        """FillError with themed entries should try next grid pattern."""
+        dictionary = _make_dict(GOOD_WORDS)
+        grader = FillGrader(dictionary, min_passing_score=0)
+
+        # Fails once (first grid pattern), succeeds on second
+        filler = FillErrorThenSuccessFiller(HIGH_QUALITY_GRID, fail_count=1)
+        step = FillWithGradingStep(filler, grader, max_retries=3)
+
+        envelope = self._make_themed_envelope()
+        result = step.run(envelope)
+
+        assert result.fill is not None
+        assert filler.call_count >= 2  # Tried at least 2 grid patterns
+
+    def test_fill_error_exhausts_all_grid_patterns(self) -> None:
+        """When all grid patterns fail, should raise FillError."""
+        dictionary = _make_dict(GOOD_WORDS)
+        grader = FillGrader(dictionary, min_passing_score=0)
+
+        filler = AlwaysFailFiller()
+        step = FillWithGradingStep(filler, grader, max_retries=3)
+
+        envelope = self._make_themed_envelope()
+        with pytest.raises(FillError, match="All grid variants exhausted"):
+            step.run(envelope)
+
+    def test_no_theme_fill_error_retries_same_grid(self) -> None:
+        """Without theme, FillError should retry on the same grid pattern."""
+        dictionary = _make_dict(GOOD_WORDS)
+        grader = FillGrader(dictionary, min_passing_score=0)
+
+        # Fails once, then succeeds
+        filler = FillErrorThenSuccessFiller(HIGH_QUALITY_GRID, fail_count=1)
+        step = FillWithGradingStep(filler, grader, max_retries=3)
+
+        # No theme → mini puzzle without theme
+        envelope = PuzzleEnvelope(
+            puzzle_type=PuzzleType.MINI, grid_size=5, metadata={"seed": 1}
+        )
+        result = step.run(envelope)
+
+        assert result.fill is not None
+        assert filler.call_count == 2
+
+    def test_no_theme_all_fill_errors_raises(self) -> None:
+        """Without theme, if all retries raise FillError, should raise."""
+        dictionary = _make_dict(GOOD_WORDS)
+        grader = FillGrader(dictionary, min_passing_score=0)
+
+        filler = AlwaysFailFiller()
+        step = FillWithGradingStep(filler, grader, max_retries=3)
+
+        envelope = PuzzleEnvelope(
+            puzzle_type=PuzzleType.MINI, grid_size=5, metadata={"seed": 1}
+        )
+        with pytest.raises(FillError, match="All grid variants exhausted"):
+            step.run(envelope)

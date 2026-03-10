@@ -116,7 +116,7 @@ class ThemeConfig(BaseModel):
     """Theme generation settings for midi puzzles."""
 
     enabled: bool = True
-    max_retries: int = 3
+    max_retries: int = 5
     num_seed_entries: int = 3
 
 

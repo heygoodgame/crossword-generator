@@ -54,15 +54,20 @@ class ThemeGenerationStep(PipelineStep):
         black = set(spec.black_cells)
         slots = extract_slots(spec.rows, spec.cols, black)
         available_lengths = sorted({s.length for s in slots})
+        slot_counts: dict[int, int] = {}
+        for s in slots:
+            slot_counts[s.length] = slot_counts.get(s.length, 0) + 1
 
         prompt = build_theme_generation_prompt(
             grid_size=self._grid_size,
             available_slot_lengths=available_lengths,
             num_seed_entries=self._num_seed_entries,
+            slot_counts=slot_counts,
         )
 
         theme: ThemeConcept | None = None
         last_error = ""
+        current_prompt = prompt
 
         for attempt in range(1, self._max_retries + 1):
             logger.info(
@@ -71,7 +76,7 @@ class ThemeGenerationStep(PipelineStep):
                 self._max_retries,
                 self._llm.name,
             )
-            raw_response = self._llm.generate(prompt)
+            raw_response = self._llm.generate(current_prompt)
             logger.debug(
                 "Raw LLM response (%d chars): %.200s",
                 len(raw_response),
@@ -87,6 +92,7 @@ class ThemeGenerationStep(PipelineStep):
                     attempt,
                     last_error,
                 )
+                current_prompt = _retry_prompt(prompt, last_error)
                 continue
 
             validation_errors = _validate_theme_entries(
@@ -100,6 +106,7 @@ class ThemeGenerationStep(PipelineStep):
                     last_error,
                 )
                 theme = None
+                current_prompt = _retry_prompt(prompt, last_error)
                 continue
 
             break
@@ -157,16 +164,15 @@ def _parse_theme_response(raw_response: str) -> ThemeConcept:
             lines = lines[:-1]
         text = "\n".join(lines).strip()
 
-    # Find JSON object boundaries
+    # Find JSON object start and parse only the first object
     start = text.find("{")
-    end = text.rfind("}")
-    if start == -1 or end == -1 or end <= start:
+    if start == -1:
         raise json.JSONDecodeError(
             "No JSON object found in response", text, 0
         )
-    text = text[start : end + 1]
 
-    parsed = json.loads(text)
+    decoder = json.JSONDecoder()
+    parsed, _ = decoder.raw_decode(text, start)
 
     if not isinstance(parsed, dict):
         raise ValueError(f"Expected JSON object, got {type(parsed).__name__}")
@@ -190,6 +196,15 @@ def _parse_theme_response(raw_response: str) -> ThemeConcept:
         seed_entries=seed_entries,
         revealer=revealer,
         revealer_clue=revealer_clue,
+    )
+
+
+def _retry_prompt(original_prompt: str, error: str) -> str:
+    """Build a retry prompt that includes the error from the previous attempt."""
+    return (
+        f"{original_prompt}\n\n"
+        f"IMPORTANT: Your previous attempt was rejected because: {error}\n"
+        f"Please fix these issues. Count the letters in each word carefully."
     )
 
 
