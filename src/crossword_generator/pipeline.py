@@ -110,6 +110,7 @@ def create_pipeline(
         filler,
         grader,
         max_retries=config.fill.max_retries,
+        max_grid_variants=config.fill.max_grid_variants,
         retry_on_fail=config.grading.fill.retry_on_fail,
     )
 

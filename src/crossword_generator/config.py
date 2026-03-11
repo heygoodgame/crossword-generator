@@ -63,6 +63,7 @@ class FillConfig(BaseModel):
 
     provider: str = "go-crossword"
     max_retries: int = 5
+    max_grid_variants: int = 100
     go_crossword: GoCrosswordConfig = GoCrosswordConfig()
     csp: CSPFillerConfig = CSPFillerConfig()
 

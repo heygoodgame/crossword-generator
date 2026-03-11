@@ -117,19 +117,19 @@ class FillWithGradingStep(PipelineStep):
     giving up. The pipeline sees this as a single step.
     """
 
-    _MAX_GRID_VARIANTS = 5
-
     def __init__(
         self,
         filler: GridFiller,
         grader: FillGrader,
         *,
         max_retries: int = 5,
+        max_grid_variants: int = 100,
         retry_on_fail: bool = True,
     ) -> None:
         self._filler = filler
         self._grader = grader
         self._max_retries = max_retries
+        self._max_grid_variants = max_grid_variants
         self._retry_on_fail = retry_on_fail
 
     @property
@@ -151,7 +151,7 @@ class FillWithGradingStep(PipelineStep):
 
         base_seed = envelope.metadata.get("seed")
         has_theme = _has_theme(envelope)
-        max_grid_variants = self._MAX_GRID_VARIANTS if has_theme else 1
+        max_grid_variants = self._max_grid_variants if has_theme else 1
         max_fill_attempts = self._max_retries if self._retry_on_fail else 1
 
         best_result: FillResult | None = None
