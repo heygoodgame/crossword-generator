@@ -47,8 +47,8 @@ def build_theme_generation_prompt(
             "seed_entries": example_entries,
             "revealer": example_revealer,
             "revealer_clue": (
-                "Up in the sky, or what the theme entries "
-                "have in common"
+                "Soaring high above, or what the theme "
+                "entries can do"
             ),
         },
         indent=2,
@@ -84,7 +84,12 @@ def build_theme_generation_prompt(
         "theme), hidden word, homophones, double meanings, "
         "category members.\n"
         "- The revealer should work as both a standalone crossword "
-        "entry AND as the 'aha moment' for the theme."
+        "entry AND as the 'aha moment' for the theme.\n"
+        "- The revealer_clue MUST start with a real, standalone clue "
+        "for the revealer word (e.g., 'Completely destroyed' for "
+        "SHATTERED), then optionally add a theme hint after a comma "
+        "or 'or'. Never write a clue that ONLY describes the theme "
+        "connection (e.g., avoid 'Quality shared by all theme entries')."
     )
 
     avoid_section = ""
