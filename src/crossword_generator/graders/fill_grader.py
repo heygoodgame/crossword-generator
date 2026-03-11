@@ -23,7 +23,7 @@ class FillGrader:
         self,
         dictionary: Dictionary,
         *,
-        min_passing_score: int = 70,
+        min_passing_score: int = 51,
     ) -> None:
         self._dictionary = dictionary
         self._min_passing_score = min_passing_score

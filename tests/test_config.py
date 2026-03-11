@@ -29,7 +29,7 @@ class TestConfigDefaults:
 
     def test_default_grading(self) -> None:
         cfg = Config()
-        assert cfg.grading.fill.min_score == 70
+        assert cfg.grading.fill.min_score == 51
         assert cfg.grading.fill.retry_on_fail is True
         assert cfg.grading.clue.min_score == 70
         assert cfg.grading.clue.regenerate_on_fail is True

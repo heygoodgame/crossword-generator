@@ -212,6 +212,22 @@ class TestAggregateScoring:
         # Score = 50, above 40
         assert report.passing is True
 
+    def test_default_threshold_is_51(self) -> None:
+        """Default threshold of 51 is achievable with real dict scores."""
+        grader = FillGrader(_make_dict({"ABCDE": 60}))
+        grid = [["A", "B", "C", "D", "E"]]
+        report = grader.grade(grid)
+        # Score = 60, above default 51
+        assert report.passing is True
+
+    def test_default_threshold_fails_bare_minimum(self) -> None:
+        """All score-50 words should fail the default threshold of 51."""
+        grader = FillGrader(_make_dict({"ABCDE": 50}))
+        grid = [["A", "B", "C", "D", "E"]]
+        report = grader.grade(grid)
+        # Score = 50, below default 51
+        assert report.passing is False
+
 
 class TestEdgeCases:
     def test_empty_grid(self) -> None:

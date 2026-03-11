@@ -260,8 +260,7 @@ def _validate_theme_entries(
         errors.append(f"{revealer!r} is not in the dictionary")
     if len(revealer) not in available_lengths:
         errors.append(
-            f"{revealer!r} length {len(revealer)} doesn't match any "
-            f"available slot length ({available_lengths})"
+            f"{revealer!r} length {len(revealer)} doesn't fit any grid slot"
         )
 
     # Validate seed entries
@@ -279,8 +278,7 @@ def _validate_theme_entries(
         # handles filtering candidates by what fits each grid pattern.
         if min_valid_entries is None and len(word) not in available_lengths:
             word_errors.append(
-                f"{word!r} length {len(word)} doesn't match any available "
-                f"slot length ({available_lengths})"
+                f"{word!r} length {len(word)} doesn't fit any grid slot"
             )
         if word in seen:
             word_errors.append(f"Duplicate entry: {word!r}")

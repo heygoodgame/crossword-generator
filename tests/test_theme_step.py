@@ -331,7 +331,7 @@ class TestValidateThemeEntries:
         )
         # Only length 3 and 4 available, but EAGLE is 5
         errors = _validate_theme_entries(theme, theme_dictionary, 9, [3, 4])
-        assert any("doesn't match any available" in e for e in errors)
+        assert any("doesn't fit any grid slot" in e for e in errors)
 
     def test_length_not_in_available_slots_relaxed(
         self, theme_dictionary: Dictionary
@@ -369,6 +369,24 @@ class TestValidateThemeEntries:
         assert theme.seed_entries == ["EAGLE", "HAWK"]
 
 
+    def test_error_message_does_not_expose_slot_lengths(
+        self, theme_dictionary: Dictionary
+    ) -> None:
+        """Sanitized error messages should not leak available_lengths."""
+        theme = ThemeConcept(
+            topic="test",
+            seed_entries=["EAGLE"],
+            revealer="AIRBORNE",
+        )
+        # AIRBORNE is 8 letters, not in available_lengths [3, 4, 5]
+        errors = _validate_theme_entries(theme, theme_dictionary, 9, [3, 4, 5])
+        for e in errors:
+            assert "available_lengths" not in e
+            assert "[3, 4, 5]" not in e
+        # But should still report the issue
+        assert any("doesn't fit any grid slot" in e for e in errors)
+
+
 class TestBuildThemeGenerationPrompt:
     def test_prompt_has_length_constraints(self) -> None:
         prompt = build_theme_generation_prompt(
@@ -386,6 +404,12 @@ class TestBuildThemeGenerationPrompt:
         )
         # Should NOT have the old "ONLY allowed word lengths" wording
         assert "ONLY allowed word lengths" not in prompt
+
+    def test_prompt_has_length_diversity_guidance(self) -> None:
+        prompt = build_theme_generation_prompt(grid_size=9)
+        assert "3 DIFFERENT lengths" in prompt
+        assert "short words (3-4 letters)" in prompt
+        assert "7-9 letters" in prompt
 
     def test_prompt_requests_candidate_count(self) -> None:
         prompt = build_theme_generation_prompt(

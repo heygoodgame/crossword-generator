@@ -365,12 +365,21 @@ class FillWithGradingStep(PipelineStep):
         for target_size in range(max_seed_size, -1, -1):
             subsets_tried = 0
 
-            for group in sig_groups:
-                sig = group.signature
+            # Count eligible groups so we can distribute the budget
+            eligible_groups = [
+                g for g in sig_groups
+                if len(revealer) in g.signature.available_lengths
+            ]
+            num_eligible = len(eligible_groups)
+            if num_eligible == 0:
+                continue
+            per_group_budget = max(
+                1, self.MAX_SUBSETS_PER_SIZE // num_eligible
+            )
 
-                # Skip if revealer doesn't fit this signature
-                if len(revealer) not in sig.available_lengths:
-                    continue
+            for group in eligible_groups:
+                sig = group.signature
+                group_tried = 0
 
                 if target_size == 0:
                     subsets = [[]]
@@ -378,22 +387,26 @@ class FillWithGradingStep(PipelineStep):
                     subsets = _generate_subsets_for_signature(
                         ranked_words,
                         target_size,
-                        self.MAX_SUBSETS_PER_SIZE - subsets_tried,
+                        per_group_budget,
                         sig,
                         revealer,
                     )
 
                 logger.info(
-                    "Target size %d, signature %s: %d subsets, "
-                    "%d grid seeds",
+                    "Target size %d, signature %s: %d subsets "
+                    "(budget %d), %d grid seeds",
                     target_size,
                     dict(sig.length_counts),
                     len(subsets),
+                    per_group_budget,
                     len(group.grid_seeds),
                 )
 
                 for subset in subsets:
-                    if subsets_tried >= self.MAX_SUBSETS_PER_SIZE:
+                    if (
+                        group_tried >= per_group_budget
+                        or subsets_tried >= self.MAX_SUBSETS_PER_SIZE
+                    ):
                         break
 
                     trial_theme = theme.model_copy(
@@ -410,6 +423,7 @@ class FillWithGradingStep(PipelineStep):
                     )
                     total_attempts += attempts
                     subsets_tried += 1
+                    group_tried += 1
 
                     if result is not None:
                         if best_result is None or (

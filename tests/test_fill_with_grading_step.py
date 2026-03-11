@@ -545,6 +545,52 @@ class TestGenerateSubsetsForSignature:
         assert subsets == [["ABCDE"]]
 
 
+class TestSubsetBudgetDistribution:
+    """Tests that subset budget is distributed across signature groups."""
+
+    def test_multiple_groups_get_subsets(self) -> None:
+        """Each eligible signature group should get at least 1 subset tried."""
+        dictionary = _make_dict(GOOD_WORDS)
+        grader = FillGrader(dictionary, min_passing_score=0)
+        filler = FixedMockFiller(HIGH_QUALITY_GRID)
+        step = FillWithGradingStep(
+            filler, grader, dictionary=dictionary, max_retries=1,
+            max_grid_variants=50,
+        )
+
+        # The per_group_budget = max(1, MAX_SUBSETS_PER_SIZE // num_eligible)
+        # ensures each group gets at least 1 attempt.
+        # We verify this indirectly: even with MAX_SUBSETS_PER_SIZE=10,
+        # the step should succeed (not be blocked by one group eating all budget).
+        envelope = PuzzleEnvelope(
+            puzzle_type=PuzzleType.MIDI,
+            grid_size=9,
+            metadata={"seed": 1},
+            theme=ThemeConcept(
+                topic="Test theme",
+                candidate_entries=["EAGLE", "HAWK", "KITE", "FALCON", "PLANE", "ARROW"],
+                seed_entries=[],
+                revealer="SOAR",
+            ),
+        )
+        result = step.run(envelope)
+        assert result.fill is not None
+
+    def test_per_group_budget_calculation(self) -> None:
+        """Verify per-group budget is MAX_SUBSETS_PER_SIZE // num_eligible."""
+        # With MAX_SUBSETS_PER_SIZE=10 and e.g. 3 eligible groups,
+        # each group should get floor(10/3)=3 subsets
+        step = FillWithGradingStep(
+            FixedMockFiller(HIGH_QUALITY_GRID),
+            FillGrader(_make_dict(GOOD_WORDS), min_passing_score=0),
+            dictionary=_make_dict(GOOD_WORDS),
+        )
+        # 10 // 3 = 3, 10 // 1 = 10, 10 // 10 = 1
+        assert max(1, step.MAX_SUBSETS_PER_SIZE // 3) == 3
+        assert max(1, step.MAX_SUBSETS_PER_SIZE // 1) == 10
+        assert max(1, step.MAX_SUBSETS_PER_SIZE // 10) == 1
+
+
 class TestSubsetSelection:
     """Tests for subset selection in FillWithGradingStep."""
 

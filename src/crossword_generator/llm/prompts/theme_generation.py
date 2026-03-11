@@ -62,8 +62,9 @@ def build_theme_generation_prompt(
         f"- The revealer must be at most {revealer_max} letters long.\n"
         f"- Seed entries should be between 3 and {grid_size} letters long.\n"
         f"- Seed entries should generally be shorter than the revealer.\n"
-        f"- Vary the lengths of seed entries — don't make them all the "
-        f"same length."
+        f"- Include words of at least 3 DIFFERENT lengths. For example, mix\n"
+        f"  short words (3-4 letters), medium words (5-6 letters), and longer\n"
+        f"  words (7-{grid_size} letters)."
     )
 
     guidelines = (

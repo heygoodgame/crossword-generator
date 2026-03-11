@@ -71,7 +71,7 @@ class FillConfig(BaseModel):
 class FillGradingConfig(BaseModel):
     """Fill quality grading thresholds."""
 
-    min_score: int = 70
+    min_score: int = 51
     retry_on_fail: bool = True
 
 
