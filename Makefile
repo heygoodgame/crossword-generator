@@ -1,4 +1,4 @@
-.PHONY: setup install test lint format check-deps setup-ollama generate-mini generate-midi build-go-crossword clean
+.PHONY: setup install test lint format check-deps setup-ollama generate-mini generate-midi generate-themes build-go-crossword clean
 
 setup: install
 
@@ -34,6 +34,9 @@ generate-mini:
 
 generate-midi:
 	uv run crossword-generator generate --type midi
+
+generate-themes:
+	uv run crossword-generator generate-themes --count 10 --size 9
 
 clean:
 	rm -rf .pytest_cache htmlcov .coverage .ruff_cache

@@ -16,6 +16,7 @@ from crossword_generator.steps.theme_step import (
     ThemeGenerationStep,
     _parse_theme_response,
     _validate_theme_entries,
+    generate_single_theme,
 )
 
 
@@ -407,9 +408,14 @@ class TestBuildThemeGenerationPrompt:
 
     def test_prompt_has_length_diversity_guidance(self) -> None:
         prompt = build_theme_generation_prompt(grid_size=9)
-        assert "3 DIFFERENT lengths" in prompt
-        assert "short words (3-4 letters)" in prompt
-        assert "7-9 letters" in prompt
+        assert "exactly 3 letters" in prompt
+        assert "4-5 letters" in prompt
+        assert "6-9 letters" in prompt
+
+    def test_example_entries_include_3_letter_words(self) -> None:
+        prompt = build_theme_generation_prompt(grid_size=9)
+        # The example JSON should include 3-letter words like OWL, BAT, BEE
+        assert "OWL" in prompt or "BAT" in prompt or "FLY" in prompt
 
     def test_prompt_requests_candidate_count(self) -> None:
         prompt = build_theme_generation_prompt(
@@ -419,3 +425,76 @@ class TestBuildThemeGenerationPrompt:
         )
         assert "12" in prompt
         assert "seed entries" in prompt
+
+    def test_prompt_with_avoid_topics(self) -> None:
+        prompt = build_theme_generation_prompt(
+            grid_size=9,
+            avoid_topics=["Things that are red", "Things you can do with a ball"],
+        )
+        assert "Things that are red" in prompt
+        assert "Things you can do with a ball" in prompt
+        assert "AVOID THESE TOPICS" in prompt
+
+    def test_prompt_without_avoid_topics(self) -> None:
+        prompt = build_theme_generation_prompt(grid_size=9, avoid_topics=None)
+        assert "AVOID THESE TOPICS" not in prompt
+
+    def test_prompt_empty_avoid_topics(self) -> None:
+        prompt = build_theme_generation_prompt(grid_size=9, avoid_topics=[])
+        assert "AVOID THESE TOPICS" not in prompt
+
+
+class TestGenerateSingleTheme:
+    def test_generates_theme(self, theme_dictionary: Dictionary) -> None:
+        response = _make_valid_response()
+        llm = MockLLM([response])
+        theme = generate_single_theme(
+            llm=llm,
+            dictionary=theme_dictionary,
+            grid_size=9,
+            seed=1,
+            max_retries=3,
+            num_seed_entries=3,
+            num_candidates=3,
+        )
+        assert theme.topic == "Things that fly"
+        assert theme.revealer == "SOAR"
+
+    def test_surplus_mode(self, theme_dictionary: Dictionary) -> None:
+        response = _make_valid_response()
+        llm = MockLLM([response])
+        theme = generate_single_theme(
+            llm=llm,
+            dictionary=theme_dictionary,
+            grid_size=9,
+            seed=1,
+            num_candidates=6,
+            num_seed_entries=3,
+        )
+        # Surplus mode: entries go to candidate_entries
+        assert len(theme.candidate_entries) == 3
+        assert theme.seed_entries == []
+
+    def test_avoid_topics_passed_to_prompt(
+        self, theme_dictionary: Dictionary
+    ) -> None:
+        """Verify avoid_topics reaches the prompt builder."""
+        response = _make_valid_response()
+        prompts_seen: list[str] = []
+
+        class CaptureLLM(MockLLM):
+            def generate(self, prompt: str, **kwargs: object) -> str:
+                prompts_seen.append(prompt)
+                return super().generate(prompt, **kwargs)
+
+        llm = CaptureLLM([response])
+        generate_single_theme(
+            llm=llm,
+            dictionary=theme_dictionary,
+            grid_size=9,
+            seed=1,
+            num_candidates=3,
+            num_seed_entries=3,
+            avoid_topics=["Things that are red"],
+        )
+        assert any("Things that are red" in p for p in prompts_seen)

@@ -4,7 +4,12 @@ from pathlib import Path
 from unittest.mock import MagicMock
 
 from crossword_generator.exporters.base import Exporter
-from crossword_generator.models import FillResult, PuzzleEnvelope
+from crossword_generator.models import (
+    FillResult,
+    PuzzleEnvelope,
+    ThemeConcept,
+    ThemeFile,
+)
 from crossword_generator.pipeline import Pipeline
 from crossword_generator.steps.base import PipelineStep
 
@@ -121,3 +126,47 @@ class TestPipeline:
 
         pipeline.run(PuzzleEnvelope())
         assert output_dir.exists()
+
+    def test_preloaded_theme_skips_theme_step(self, tmp_path: Path) -> None:
+        """When a pre-loaded theme is in the envelope, theme step is skipped."""
+        theme = ThemeConcept(
+            topic="Pre-loaded topic",
+            seed_entries=["EAGLE", "HAWK"],
+            revealer="SOAR",
+        )
+
+        # Write a theme file
+        theme_file = ThemeFile(
+            theme=theme,
+            grid_size=9,
+            generated_at="2024-01-01T00:00:00Z",
+            generator_model="test",
+        )
+        theme_path = tmp_path / "test_theme.json"
+        theme_path.write_text(theme_file.model_dump_json(indent=2))
+
+        # Load it and verify the theme is injected
+        from crossword_generator.theme_io import load_theme
+
+        loaded = load_theme(theme_path)
+        assert loaded.theme.topic == "Pre-loaded topic"
+
+        # Build a pipeline with the pre-loaded theme in envelope
+        envelope = PuzzleEnvelope(theme=loaded.theme)
+
+        # A mock "theme step" that should NOT be called
+        theme_step = MagicMock(spec=PipelineStep)
+        theme_step.name = "theme-generation"
+
+        # A fill step that just passes through
+        fill_step = MockStep("fill-step")
+
+        pipeline = Pipeline(
+            steps=[fill_step], exporters=[], output_dir=tmp_path
+        )
+        result = pipeline.run(envelope)
+
+        # Theme step was not in the pipeline, theme is preserved
+        assert result.theme is not None
+        assert result.theme.topic == "Pre-loaded topic"
+        theme_step.run.assert_not_called()

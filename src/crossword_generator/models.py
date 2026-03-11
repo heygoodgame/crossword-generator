@@ -44,6 +44,15 @@ class ThemeConcept(BaseModel):
     revealer_clue: str = ""
 
 
+class ThemeFile(BaseModel):
+    """A standalone theme file for pre-generation and curation."""
+
+    theme: ThemeConcept
+    grid_size: int
+    generated_at: str = ""  # ISO timestamp
+    generator_model: str = ""  # LLM model name
+
+
 class WordGrade(BaseModel):
     """Quality grade for a single word in the grid."""
 

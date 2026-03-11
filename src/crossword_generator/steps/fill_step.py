@@ -272,7 +272,9 @@ class FillWithGradingStep(PipelineStep):
     """
 
     # Maximum subsets to try per target size
-    MAX_SUBSETS_PER_SIZE = 10
+    MAX_SUBSETS_PER_SIZE = 20
+    # Maximum number of signature groups to consider (top N by frequency)
+    MAX_ELIGIBLE_GROUPS = 5
     # Grid variant budget per subset (decreases as we try more subsets)
     GRID_VARIANTS_PER_SUBSET = 20
 
@@ -370,6 +372,13 @@ class FillWithGradingStep(PipelineStep):
                 g for g in sig_groups
                 if len(revealer) in g.signature.available_lengths
             ]
+            if len(eligible_groups) > self.MAX_ELIGIBLE_GROUPS:
+                logger.info(
+                    "Capping eligible groups from %d to %d",
+                    len(eligible_groups),
+                    self.MAX_ELIGIBLE_GROUPS,
+                )
+                eligible_groups = eligible_groups[:self.MAX_ELIGIBLE_GROUPS]
             num_eligible = len(eligible_groups)
             if num_eligible == 0:
                 continue

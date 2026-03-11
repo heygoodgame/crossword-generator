@@ -18,6 +18,130 @@ from crossword_generator.steps.base import PipelineStep
 logger = logging.getLogger(__name__)
 
 
+def generate_single_theme(
+    llm: LLMProvider,
+    dictionary: Dictionary,
+    grid_size: int,
+    seed: int | None = None,
+    max_retries: int = 5,
+    num_seed_entries: int = 3,
+    num_candidates: int = 12,
+    avoid_topics: list[str] | None = None,
+) -> ThemeConcept:
+    """Generate a single theme concept using the LLM.
+
+    This is the core theme generation logic, extracted for reuse by both
+    the pipeline step and the standalone generate-themes CLI command.
+
+    Args:
+        llm: LLM provider to use for generation.
+        dictionary: Word dictionary for validation.
+        grid_size: Grid dimension (e.g., 9 for 9x9).
+        seed: Optional seed for grid preview (slot length discovery).
+        max_retries: Maximum number of generation attempts.
+        num_seed_entries: Minimum number of valid entries needed.
+        num_candidates: Total number of candidate entries to request.
+        avoid_topics: List of topic strings to avoid (for dedup).
+
+    Returns:
+        A validated ThemeConcept.
+
+    Raises:
+        ValueError: If all retries are exhausted.
+    """
+    # Preview the grid to learn available slot lengths
+    spec = get_grid_spec(PuzzleType.MIDI, grid_size, seed=seed)
+    black = set(spec.black_cells)
+    slots = extract_slots(spec.rows, spec.cols, black)
+    available_lengths = sorted({s.length for s in slots})
+
+    prompt = build_theme_generation_prompt(
+        grid_size=grid_size,
+        available_slot_lengths=available_lengths,
+        num_seed_entries=num_seed_entries,
+        num_candidates=num_candidates,
+        avoid_topics=avoid_topics,
+    )
+
+    theme: ThemeConcept | None = None
+    last_error = ""
+    current_prompt = prompt
+    use_surplus = num_candidates > num_seed_entries
+
+    for attempt in range(1, max_retries + 1):
+        logger.info(
+            "Theme generation attempt %d/%d using %s",
+            attempt,
+            max_retries,
+            llm.name,
+        )
+        raw_response = llm.generate(current_prompt)
+        logger.debug(
+            "Raw LLM response (%d chars): %.200s",
+            len(raw_response),
+            raw_response,
+        )
+
+        try:
+            theme = _parse_theme_response(raw_response)
+        except (json.JSONDecodeError, ValueError, KeyError) as exc:
+            last_error = str(exc)
+            logger.warning(
+                "Attempt %d: failed to parse theme response: %s",
+                attempt,
+                last_error,
+            )
+            current_prompt = _retry_prompt(prompt, last_error)
+            continue
+
+        validation_errors = _validate_theme_entries(
+            theme,
+            dictionary,
+            grid_size,
+            available_lengths,
+            min_valid_entries=num_seed_entries if use_surplus else None,
+        )
+        if validation_errors:
+            last_error = "; ".join(validation_errors)
+            logger.warning(
+                "Attempt %d: theme validation failed: %s",
+                attempt,
+                last_error,
+            )
+            theme = None
+            current_prompt = _retry_prompt(prompt, last_error)
+            continue
+
+        # When generating surplus, move seed_entries → candidate_entries
+        if use_surplus:
+            theme = theme.model_copy(
+                update={
+                    "candidate_entries": list(theme.seed_entries),
+                    "seed_entries": [],
+                }
+            )
+
+        break
+
+    if theme is None:
+        raise ValueError(
+            f"Failed to generate valid theme after {max_retries} "
+            f"attempts. Last error: {last_error}"
+        )
+
+    candidate_count = len(theme.candidate_entries)
+    seed_count = len(theme.seed_entries)
+    logger.info(
+        "Theme generated: topic=%r, %d candidates, %d seeds, revealer=%r",
+        theme.topic,
+        candidate_count,
+        seed_count,
+        theme.revealer,
+    )
+
+    return theme
+
+
 class ThemeGenerationStep(PipelineStep):
     """Pipeline step that generates a theme concept for midi puzzles."""
 
@@ -50,99 +174,15 @@ class ThemeGenerationStep(PipelineStep):
                 f"ThemeGenerationStep validation failed: {'; '.join(errors)}"
             )
 
-        # Preview the grid to learn available slot lengths
         seed = envelope.metadata.get("seed")
-        spec = get_grid_spec(envelope.puzzle_type, envelope.grid_size, seed=seed)
-        black = set(spec.black_cells)
-        slots = extract_slots(spec.rows, spec.cols, black)
-        available_lengths = sorted({s.length for s in slots})
-        slot_counts: dict[int, int] = {}
-        for s in slots:
-            slot_counts[s.length] = slot_counts.get(s.length, 0) + 1
-
-        prompt = build_theme_generation_prompt(
+        theme = generate_single_theme(
+            llm=self._llm,
+            dictionary=self._dictionary,
             grid_size=self._grid_size,
-            available_slot_lengths=available_lengths,
+            seed=seed,
+            max_retries=self._max_retries,
             num_seed_entries=self._num_seed_entries,
-            slot_counts=slot_counts,
             num_candidates=self._num_candidates,
-        )
-
-        theme: ThemeConcept | None = None
-        last_error = ""
-        current_prompt = prompt
-
-        for attempt in range(1, self._max_retries + 1):
-            logger.info(
-                "Theme generation attempt %d/%d using %s",
-                attempt,
-                self._max_retries,
-                self._llm.name,
-            )
-            raw_response = self._llm.generate(current_prompt)
-            logger.debug(
-                "Raw LLM response (%d chars): %.200s",
-                len(raw_response),
-                raw_response,
-            )
-
-            try:
-                theme = _parse_theme_response(raw_response)
-            except (json.JSONDecodeError, ValueError, KeyError) as exc:
-                last_error = str(exc)
-                logger.warning(
-                    "Attempt %d: failed to parse theme response: %s",
-                    attempt,
-                    last_error,
-                )
-                current_prompt = _retry_prompt(prompt, last_error)
-                continue
-
-            use_surplus = self._num_candidates > self._num_seed_entries
-            validation_errors = _validate_theme_entries(
-                theme,
-                self._dictionary,
-                self._grid_size,
-                available_lengths,
-                min_valid_entries=self._num_seed_entries if use_surplus else None,
-            )
-            if validation_errors:
-                last_error = "; ".join(validation_errors)
-                logger.warning(
-                    "Attempt %d: theme validation failed: %s",
-                    attempt,
-                    last_error,
-                )
-                theme = None
-                current_prompt = _retry_prompt(prompt, last_error)
-                continue
-
-            # When generating surplus, move seed_entries → candidate_entries
-            # so the fill step can select the best subset.
-            if use_surplus:
-                theme = theme.model_copy(
-                    update={
-                        "candidate_entries": list(theme.seed_entries),
-                        "seed_entries": [],
-                    }
-                )
-
-            break
-
-        if theme is None:
-            raise ValueError(
-                f"Failed to generate valid theme after {self._max_retries} "
-                f"attempts. Last error: {last_error}"
-            )
-
-        candidate_count = len(theme.candidate_entries)
-        seed_count = len(theme.seed_entries)
-        logger.info(
-            "Theme generated: topic=%r, %d candidates, %d seeds, revealer=%r",
-            theme.topic,
-            candidate_count,
-            seed_count,
-            theme.revealer,
         )
 
         return envelope.model_copy(

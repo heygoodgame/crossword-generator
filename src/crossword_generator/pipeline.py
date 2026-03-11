@@ -77,12 +77,16 @@ def create_pipeline(
     config: Config,
     *,
     seed: int | None = None,
+    theme_file: Path | None = None,
 ) -> tuple[Pipeline, PuzzleEnvelope]:
     """Wire up a Pipeline and initial PuzzleEnvelope from config.
 
     Args:
         config: Loaded configuration.
         seed: Optional random seed for the filler.
+        theme_file: Optional path to a pre-generated theme file.
+            When provided, the theme is loaded and injected into the
+            envelope, and the ThemeGenerationStep is skipped.
 
     Returns:
         Tuple of (Pipeline, initial PuzzleEnvelope).
@@ -136,8 +140,19 @@ def create_pipeline(
     # Build steps
     steps: list[PipelineStep] = []
 
-    # Theme generation for midi puzzles
-    if PuzzleType(config.puzzle.type) == PuzzleType.MIDI and config.theme.enabled:
+    # Load pre-generated theme or add theme generation step
+    pre_loaded_theme = None
+    if theme_file is not None:
+        from crossword_generator.theme_io import load_theme
+
+        theme_data = load_theme(theme_file)
+        pre_loaded_theme = theme_data.theme
+        logger.info(
+            "Using pre-generated theme from %s: %r",
+            theme_file,
+            pre_loaded_theme.topic,
+        )
+    elif PuzzleType(config.puzzle.type) == PuzzleType.MIDI and config.theme.enabled:
         theme_step = ThemeGenerationStep(
             llm_provider,
             dictionary,
@@ -167,6 +182,7 @@ def create_pipeline(
     envelope = PuzzleEnvelope(
         puzzle_type=PuzzleType(config.puzzle.type),
         grid_size=config.puzzle.grid_size,
+        theme=pre_loaded_theme,
         metadata={"seed": seed} if seed is not None else {},
     )
 

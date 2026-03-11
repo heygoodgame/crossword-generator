@@ -578,17 +578,31 @@ class TestSubsetBudgetDistribution:
 
     def test_per_group_budget_calculation(self) -> None:
         """Verify per-group budget is MAX_SUBSETS_PER_SIZE // num_eligible."""
-        # With MAX_SUBSETS_PER_SIZE=10 and e.g. 3 eligible groups,
-        # each group should get floor(10/3)=3 subsets
+        # With MAX_SUBSETS_PER_SIZE=20 and MAX_ELIGIBLE_GROUPS=5,
+        # each group should get floor(20/5)=4 subsets
         step = FillWithGradingStep(
             FixedMockFiller(HIGH_QUALITY_GRID),
             FillGrader(_make_dict(GOOD_WORDS), min_passing_score=0),
             dictionary=_make_dict(GOOD_WORDS),
         )
-        # 10 // 3 = 3, 10 // 1 = 10, 10 // 10 = 1
-        assert max(1, step.MAX_SUBSETS_PER_SIZE // 3) == 3
-        assert max(1, step.MAX_SUBSETS_PER_SIZE // 1) == 10
-        assert max(1, step.MAX_SUBSETS_PER_SIZE // 10) == 1
+        assert step.MAX_SUBSETS_PER_SIZE == 20
+        assert step.MAX_ELIGIBLE_GROUPS == 5
+        # 20 // 5 = 4, 20 // 1 = 20, 20 // 20 = 1
+        assert max(1, step.MAX_SUBSETS_PER_SIZE // 5) == 4
+        assert max(1, step.MAX_SUBSETS_PER_SIZE // 1) == 20
+        assert max(1, step.MAX_SUBSETS_PER_SIZE // 20) == 1
+
+    def test_eligible_groups_capped(self) -> None:
+        """Verify eligible groups are capped at MAX_ELIGIBLE_GROUPS."""
+        step = FillWithGradingStep(
+            FixedMockFiller(HIGH_QUALITY_GRID),
+            FillGrader(_make_dict(GOOD_WORDS), min_passing_score=0),
+            dictionary=_make_dict(GOOD_WORDS),
+        )
+        # MAX_ELIGIBLE_GROUPS limits how many signature groups are tried
+        assert step.MAX_ELIGIBLE_GROUPS == 5
+        # If we had 32 eligible groups, only 5 would be used
+        assert min(32, step.MAX_ELIGIBLE_GROUPS) == 5
 
 
 class TestSubsetSelection:

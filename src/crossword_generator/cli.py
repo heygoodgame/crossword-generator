@@ -54,6 +54,12 @@ def main() -> None:
     help="LLM provider to use (overrides config).",
 )
 @click.option(
+    "--theme-file",
+    type=click.Path(exists=True),
+    default=None,
+    help="Pre-generated theme file (skips theme generation).",
+)
+@click.option(
     "-v",
     "--verbose",
     is_flag=True,
@@ -66,6 +72,7 @@ def generate(
     seed: int | None,
     config_path: str | None,
     llm_provider: str | None,
+    theme_file: str | None,
     verbose: bool,
 ) -> None:
     """Generate a crossword puzzle."""
@@ -81,6 +88,8 @@ def generate(
     if llm_provider is not None:
         config.llm.provider = llm_provider
 
+    theme_path = Path(theme_file) if theme_file else None
+
     logger.info(
         "Generating %s crossword (%dx%d)",
         config.puzzle.type,
@@ -89,7 +98,9 @@ def generate(
     )
 
     try:
-        pipeline, envelope = create_pipeline(config, seed=seed)
+        pipeline, envelope = create_pipeline(
+            config, seed=seed, theme_file=theme_path
+        )
         result = pipeline.run(envelope)
     except Exception as e:
         logger.error("Generation failed: %s", e)
@@ -112,6 +123,108 @@ def generate(
         # Print the grid
         for row in result.fill.grid:
             click.echo(" ".join(c if c != "." else "\u2588" for c in row))
+
+
+@main.command(name="generate-themes")
+@click.option("--count", type=int, default=5, help="Number of themes to generate.")
+@click.option("--size", type=int, default=9, help="Grid size for themes.")
+@click.option(
+    "--output-dir",
+    type=click.Path(),
+    default="themes/",
+    help="Directory to save theme files.",
+)
+@click.option(
+    "--config",
+    "config_path",
+    type=click.Path(exists=True),
+    default=None,
+    help="Path to config file.",
+)
+@click.option(
+    "--llm",
+    "llm_provider",
+    type=click.Choice(["ollama", "claude"]),
+    default=None,
+    help="LLM provider to use (overrides config).",
+)
+@click.option(
+    "-v",
+    "--verbose",
+    is_flag=True,
+    default=False,
+    help="Enable debug logging.",
+)
+def generate_themes(
+    count: int,
+    size: int,
+    output_dir: str,
+    config_path: str | None,
+    llm_provider: str | None,
+    verbose: bool,
+) -> None:
+    """Generate standalone theme files for later use."""
+    _setup_logging(verbose)
+    logger = logging.getLogger(__name__)
+
+    from crossword_generator.config import find_project_root
+    from crossword_generator.dictionary import Dictionary
+    from crossword_generator.llm.claude_provider import ClaudeProvider
+    from crossword_generator.llm.ollama_provider import OllamaProvider
+    from crossword_generator.steps.theme_step import generate_single_theme
+    from crossword_generator.theme_io import load_topic_set, save_theme
+
+    config = load_config(Path(config_path) if config_path else None)
+    if llm_provider is not None:
+        config.llm.provider = llm_provider
+
+    # Build LLM provider
+    if config.llm.provider == "ollama":
+        llm = OllamaProvider(config.llm.ollama)
+    elif config.llm.provider == "claude":
+        llm = ClaudeProvider(config.llm.claude)
+    else:
+        click.echo(f"Unknown LLM provider: {config.llm.provider}", err=True)
+        sys.exit(1)
+
+    # Load dictionary
+    project_root = find_project_root()
+    dictionary = Dictionary.load(
+        project_root / config.dictionary.path,
+        min_word_score=config.dictionary.min_word_score,
+        min_2letter_score=config.dictionary.min_2letter_score,
+    )
+
+    out_dir = Path(output_dir)
+    if not out_dir.is_absolute():
+        out_dir = project_root / out_dir
+
+    # Load existing topics for dedup
+    avoid_topics = list(load_topic_set(out_dir))
+    logger.info("Loaded %d existing topics to avoid", len(avoid_topics))
+
+    generated = 0
+    for i in range(count):
+        try:
+            theme = generate_single_theme(
+                llm=llm,
+                dictionary=dictionary,
+                grid_size=size,
+                seed=random.randint(0, 2**31 - 1),
+                max_retries=config.theme.max_retries,
+                num_seed_entries=config.theme.num_seed_entries,
+                num_candidates=config.theme.num_candidates,
+                avoid_topics=avoid_topics,
+            )
+            path = save_theme(theme, size, llm.name, out_dir)
+            avoid_topics.append(theme.topic)
+            generated += 1
+            click.echo(f"  [{i + 1}/{count}] {theme.topic} → {path.name}")
+        except Exception as e:
+            logger.error("Theme %d/%d failed: %s", i + 1, count, e)
+            click.echo(f"  [{i + 1}/{count}] FAILED: {e}", err=True)
+
+    click.echo(f"Generated {generated} themes in {out_dir}")
 
 
 @main.command()

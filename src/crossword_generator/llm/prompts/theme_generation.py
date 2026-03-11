@@ -11,6 +11,7 @@ def build_theme_generation_prompt(
     num_seed_entries: int = 3,
     slot_counts: dict[int, int] | None = None,
     num_candidates: int | None = None,
+    avoid_topics: list[str] | None = None,
 ) -> str:
     """Build a prompt that asks the LLM to generate a crossword theme concept.
 
@@ -24,6 +25,7 @@ def build_theme_generation_prompt(
             available in the grid. No longer used for constraining seeds.
         num_candidates: If set, ask for this many candidate entries instead
             of exactly num_seed_entries. Not all will be used in the grid.
+        avoid_topics: Previously-generated topics to avoid (for dedup).
 
     Returns:
         A prompt string ready to send to the LLM.
@@ -59,12 +61,14 @@ def build_theme_generation_prompt(
 
     length_constraint = (
         f"LENGTH CONSTRAINTS:\n"
-        f"- The revealer must be at most {revealer_max} letters long.\n"
+        f"- The revealer must be at most {revealer_max} letters long and should be\n"
+        f"  one of the longer entries.\n"
         f"- Seed entries should be between 3 and {grid_size} letters long.\n"
-        f"- Seed entries should generally be shorter than the revealer.\n"
-        f"- Include words of at least 3 DIFFERENT lengths. For example, mix\n"
-        f"  short words (3-4 letters), medium words (5-6 letters), and longer\n"
-        f"  words (7-{grid_size} letters)."
+        f"\n"
+        f"LENGTH DISTRIBUTION (critical — count letters carefully):\n"
+        f"- At least 3 entries MUST be exactly 3 letters long (e.g., OWL, BAT, FLY).\n"
+        f"- At least 2 entries should be 4-5 letters long.\n"
+        f"- Include 2-3 entries of 6-{grid_size} letters."
     )
 
     guidelines = (
@@ -82,6 +86,15 @@ def build_theme_generation_prompt(
         "- The revealer should work as both a standalone crossword "
         "entry AND as the 'aha moment' for the theme."
     )
+
+    avoid_section = ""
+    if avoid_topics:
+        topic_list = "\n".join(f"- {t}" for t in avoid_topics)
+        avoid_section = (
+            "\nAVOID THESE TOPICS (already generated — choose something "
+            "different):\n"
+            f"{topic_list}\n"
+        )
 
     surplus_note = ""
     if num_candidates and num_candidates > num_seed_entries:
@@ -104,7 +117,7 @@ def build_theme_generation_prompt(
 
     return (
         f"{role}\n\n{length_constraint}\n\n"
-        f"{guidelines}\n\n{output_section}"
+        f"{guidelines}\n{avoid_section}\n{output_section}"
     )
 
 
@@ -127,9 +140,9 @@ def _pick_example_entries(
 
     Returns words that demonstrate length variation in the example.
     """
-    # Pick seed entries with varied lengths
+    # Pick seed entries — lead with 3-letter words to model the distribution
     entries: list[str] = []
-    target_lengths = [3, 5, 4]  # varied lengths for the example
+    target_lengths = [3, 3, 3, 4, 5]  # emphasize 3-letter words in example
     for length in target_lengths:
         if length <= grid_size and length in _EXAMPLES_BY_LENGTH:
             words = _EXAMPLES_BY_LENGTH[length]
@@ -138,7 +151,7 @@ def _pick_example_entries(
                 entries.append(word)
 
     # Fill remaining if needed
-    while len(entries) < 3:
+    while len(entries) < 5:
         for length in sorted(_EXAMPLES_BY_LENGTH.keys()):
             if length <= grid_size:
                 words = _EXAMPLES_BY_LENGTH[length]
@@ -146,7 +159,7 @@ def _pick_example_entries(
                     if word not in entries:
                         entries.append(word)
                         break
-            if len(entries) >= 3:
+            if len(entries) >= 5:
                 break
         else:
             break
