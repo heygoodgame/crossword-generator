@@ -275,7 +275,9 @@ def _validate_theme_entries(
             )
         if not dictionary.contains(word):
             word_errors.append(f"{word!r} is not in the dictionary")
-        if len(word) not in available_lengths:
+        # In relaxed/surplus mode, skip slot-length check — the fill step
+        # handles filtering candidates by what fits each grid pattern.
+        if min_valid_entries is None and len(word) not in available_lengths:
             word_errors.append(
                 f"{word!r} length {len(word)} doesn't match any available "
                 f"slot length ({available_lengths})"

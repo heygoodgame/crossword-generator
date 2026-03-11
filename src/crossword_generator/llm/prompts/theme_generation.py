@@ -7,7 +7,7 @@ import json
 
 def build_theme_generation_prompt(
     grid_size: int,
-    available_slot_lengths: list[int],
+    available_slot_lengths: list[int] | None = None,
     num_seed_entries: int = 3,
     slot_counts: dict[int, int] | None = None,
     num_candidates: int | None = None,
@@ -17,9 +17,11 @@ def build_theme_generation_prompt(
     Args:
         grid_size: The grid dimension (e.g., 9 for a 9x9 grid).
         available_slot_lengths: Distinct slot lengths available in the grid.
+            Used only to constrain the revealer. Seed entries are no longer
+            constrained to specific slot lengths.
         num_seed_entries: How many themed seed entries to generate.
         slot_counts: Optional mapping of slot length to number of slots
-            available in the grid (e.g., {3: 16, 5: 4, 9: 6}).
+            available in the grid. No longer used for constraining seeds.
         num_candidates: If set, ask for this many candidate entries instead
             of exactly num_seed_entries. Not all will be used in the grid.
 
@@ -28,13 +30,14 @@ def build_theme_generation_prompt(
     """
     # When generating surplus candidates, ask for more
     effective_count = num_candidates if num_candidates else num_seed_entries
-    sorted_lengths = sorted(available_slot_lengths)
-    slot_lengths_str = ", ".join(str(n) for n in sorted_lengths)
 
-    # Build a dynamic example that uses the actual available lengths
-    example_entries, example_revealer = _pick_example_entries(
-        sorted_lengths
-    )
+    # Revealer is still constrained to available slot lengths
+    revealer_max = grid_size
+    if available_slot_lengths:
+        revealer_max = max(available_slot_lengths)
+
+    # Build a dynamic example
+    example_entries, example_revealer = _pick_example_entries(grid_size)
     example_output = json.dumps(
         {
             "topic": "Things that fly",
@@ -49,36 +52,18 @@ def build_theme_generation_prompt(
         indent=2,
     )
 
-    # Add letter-count verification to the example
-    entry_counts = ", ".join(
-        f"{w} ({len(w)} letters)" for w in example_entries
-    )
-    revealer_count = f"{example_revealer} ({len(example_revealer)} letters)"
-
     role = (
         "You are an expert crossword puzzle constructor designing a theme "
         "for a themed crossword puzzle."
     )
 
-    slot_availability = ""
-    if slot_counts:
-        counts_str = ", ".join(
-            f"{length}-letter: {count}"
-            for length, count in sorted(slot_counts.items())
-        )
-        slot_availability = (
-            f"\nAvailable slots by length: {counts_str}.\n"
-            f"Do not use more theme words of a given length than "
-            f"there are slots."
-        )
-
     length_constraint = (
-        f"CRITICAL LENGTH CONSTRAINT:\n"
-        f"The ONLY allowed word lengths are: {slot_lengths_str}.\n"
-        f"Every seed entry and the revealer MUST be exactly one of "
-        f"these lengths. Words of any other length will be rejected. "
-        f"Count the letters carefully before including a word."
-        f"{slot_availability}"
+        f"LENGTH CONSTRAINTS:\n"
+        f"- The revealer must be at most {revealer_max} letters long.\n"
+        f"- Seed entries should be between 3 and {grid_size} letters long.\n"
+        f"- Seed entries should generally be shorter than the revealer.\n"
+        f"- Vary the lengths of seed entries — don't make them all the "
+        f"same length."
     )
 
     guidelines = (
@@ -90,24 +75,11 @@ def build_theme_generation_prompt(
         "- Each seed entry must be a SINGLE WORD (no spaces, "
         "no hyphens) that fits in the grid.\n"
         "- The revealer must also be a single word.\n"
-        "- Vary the lengths of seed entries — don't make them "
-        "all the same length.\n"
-        f"- Allowed word lengths: {slot_lengths_str} "
-        "(NO other lengths).\n"
         "- Wordplay types include: literal (entries share a "
         "theme), hidden word, homophones, double meanings, "
         "category members.\n"
         "- The revealer should work as both a standalone crossword "
         "entry AND as the 'aha moment' for the theme."
-    )
-
-    verification = (
-        "VERIFICATION STEP:\n"
-        "Before responding, count the letters in EVERY word. "
-        "For example, the words above have these counts: "
-        f"{entry_counts}, {revealer_count}. "
-        f"If ANY word is not exactly {slot_lengths_str} letters, "
-        "replace it with a word that is."
     )
 
     surplus_note = ""
@@ -122,14 +94,11 @@ def build_theme_generation_prompt(
         "OUTPUT FORMAT:\n"
         "Return ONLY a JSON object with these fields. "
         "No other text before or after.\n"
-        f"\nExample (note: all words are {slot_lengths_str} "
-        f"letters long):\n{example_output}\n"
-        f"\n{verification}\n"
+        f"\nExample:\n{example_output}\n"
         f"\nGenerate a theme with exactly {effective_count} "
         f"seed entries for a {grid_size}x{grid_size} crossword "
-        f"grid.{surplus_note} Every word MUST be exactly "
-        f"{slot_lengths_str} letters long. Return ONLY the JSON "
-        f"object, no explanations."
+        f"grid.{surplus_note} Return ONLY the JSON object, "
+        f"no explanations."
     )
 
     return (
@@ -151,38 +120,40 @@ _EXAMPLES_BY_LENGTH: dict[int, list[str]] = {
 
 
 def _pick_example_entries(
-    available_lengths: list[int],
+    grid_size: int,
 ) -> tuple[list[str], str]:
-    """Pick example seed entries and revealer matching available lengths.
+    """Pick example seed entries and revealer for the prompt.
 
-    Returns words that demonstrate the length constraint in the example.
+    Returns words that demonstrate length variation in the example.
     """
-    # Pick seed entries from different available lengths
+    # Pick seed entries with varied lengths
     entries: list[str] = []
-    used_lengths: set[int] = set()
-    for length in available_lengths:
-        if length in _EXAMPLES_BY_LENGTH and len(entries) < 3:
+    target_lengths = [3, 5, 4]  # varied lengths for the example
+    for length in target_lengths:
+        if length <= grid_size and length in _EXAMPLES_BY_LENGTH:
             words = _EXAMPLES_BY_LENGTH[length]
             word = words[len(entries) % len(words)]
-            entries.append(word)
-            used_lengths.add(length)
+            if word not in entries:
+                entries.append(word)
 
-    # Fill remaining entries if needed
+    # Fill remaining if needed
     while len(entries) < 3:
-        for length in available_lengths:
-            if length in _EXAMPLES_BY_LENGTH:
+        for length in sorted(_EXAMPLES_BY_LENGTH.keys()):
+            if length <= grid_size:
                 words = _EXAMPLES_BY_LENGTH[length]
-                word = words[len(entries) % len(words)]
-                if word not in entries:
-                    entries.append(word)
-                    break
+                for word in words:
+                    if word not in entries:
+                        entries.append(word)
+                        break
+            if len(entries) >= 3:
+                break
         else:
             break
 
-    # Pick revealer from a different length than entries
+    # Pick revealer — prefer longer word
     revealer = "SOAR"  # fallback
-    for length in reversed(available_lengths):
-        if length in _EXAMPLES_BY_LENGTH:
+    for length in sorted(_EXAMPLES_BY_LENGTH.keys(), reverse=True):
+        if length <= grid_size and length in _EXAMPLES_BY_LENGTH:
             for word in _EXAMPLES_BY_LENGTH[length]:
                 if word not in entries:
                     revealer = word

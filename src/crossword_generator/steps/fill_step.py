@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import itertools
 import logging
+from collections import Counter
+from dataclasses import dataclass, field
 
 from crossword_generator.dictionary import Dictionary
 from crossword_generator.fillers.base import FillError, GridFiller, GridSpec
@@ -16,6 +18,143 @@ from crossword_generator.steps.crossing_scorer import rank_candidates
 from crossword_generator.steps.theme_slot_assigner import assign_seed_entries_to_slots
 
 logger = logging.getLogger(__name__)
+
+
+# ---------------------------------------------------------------------------
+# Slot-length signature data structures
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class SlotSignature:
+    """Fingerprint of a grid pattern's slot-length distribution.
+
+    Two grid variants with the same SlotSignature accept the same
+    sets of theme words, so we only need to filter candidates once
+    per signature.
+    """
+
+    length_counts: tuple[tuple[int, int], ...]
+
+    @property
+    def available_lengths(self) -> frozenset[int]:
+        """Distinct slot lengths present in this signature."""
+        return frozenset(length for length, _ in self.length_counts)
+
+    def can_accommodate(
+        self,
+        word_lengths: list[int],
+        revealer_length: int,
+    ) -> bool:
+        """Check if a set of words + revealer can fit this signature.
+
+        Each word (and the revealer) needs a slot of matching length.
+        We must not exceed the number of available slots per length.
+        """
+        needed = Counter(word_lengths)
+        needed[revealer_length] += 1
+        counts = dict(self.length_counts)
+        for length, count in needed.items():
+            if counts.get(length, 0) < count:
+                return False
+        return True
+
+
+@dataclass
+class SignatureGroup:
+    """A group of grid seeds that share the same slot-length signature."""
+
+    signature: SlotSignature
+    grid_seeds: list[int | None] = field(default_factory=list)
+
+
+def _prescan_grid_signatures(
+    puzzle_type: str,
+    grid_size: int,
+    base_seed: int | None,
+    num_variants: int,
+) -> list[SignatureGroup]:
+    """Scan grid variants and group them by slot-length signature.
+
+    Returns groups sorted by size descending (most common patterns first).
+    """
+    groups: dict[SlotSignature, SignatureGroup] = {}
+
+    for variant in range(num_variants):
+        grid_seed = (
+            base_seed + variant if base_seed is not None else None
+        )
+        spec = get_grid_spec(puzzle_type, grid_size, seed=grid_seed)
+        black = set(spec.black_cells)
+        slots = extract_slots(spec.rows, spec.cols, black)
+
+        counts = Counter(s.length for s in slots)
+        sig = SlotSignature(
+            length_counts=tuple(sorted(counts.items()))
+        )
+
+        if sig not in groups:
+            groups[sig] = SignatureGroup(signature=sig)
+        groups[sig].grid_seeds.append(grid_seed)
+
+    result = sorted(
+        groups.values(),
+        key=lambda g: len(g.grid_seeds),
+        reverse=True,
+    )
+
+    logger.info(
+        "Pre-scanned %d grid variants → %d signature groups: %s",
+        num_variants,
+        len(result),
+        [
+            (dict(g.signature.length_counts), len(g.grid_seeds))
+            for g in result
+        ],
+    )
+
+    return result
+
+
+def _generate_subsets_for_signature(
+    ranked_words: list[str],
+    target_size: int,
+    max_subsets: int,
+    signature: SlotSignature,
+    revealer: str,
+) -> list[list[str]]:
+    """Generate subsets filtered to those the signature can accommodate.
+
+    Like _generate_subsets but skips subsets whose word lengths
+    don't fit the signature's slot distribution.
+    """
+    if target_size == 0:
+        return [[]]
+    if target_size > len(ranked_words):
+        return []
+
+    # Pre-filter candidates to those whose length exists in the signature
+    available = signature.available_lengths
+    compatible = [w for w in ranked_words if len(w) in available]
+    if len(compatible) < target_size:
+        return []
+
+    subsets: list[list[str]] = []
+    rev_len = len(revealer)
+    for combo in itertools.combinations(range(len(compatible)), target_size):
+        subset = [compatible[i] for i in combo]
+        word_lengths = [len(w) for w in subset]
+        if signature.can_accommodate(word_lengths, rev_len):
+            subsets.append(subset)
+            if len(subsets) >= max_subsets:
+                break
+
+    return subsets
+
+
+# ---------------------------------------------------------------------------
+# Theme-to-spec assignment
+# ---------------------------------------------------------------------------
 
 
 def _assign_theme_to_spec(
@@ -54,6 +193,11 @@ def _has_theme(envelope: PuzzleEnvelope) -> bool:
         envelope.theme
         and (envelope.theme.seed_entries or envelope.theme.revealer)
     )
+
+
+# ---------------------------------------------------------------------------
+# Fill steps
+# ---------------------------------------------------------------------------
 
 
 class FillStep(PipelineStep):
@@ -119,9 +263,10 @@ class FillWithGradingStep(PipelineStep):
     (e.g. AC-3 infeasibility), tries alternative grid patterns before
     giving up.
 
-    When candidate_entries are available (surplus theme generation), selects
-    the most grid-friendly subsets and tries them with graceful degradation
-    from 3 seeds → 2 → 1 → revealer-only.
+    When candidate_entries are available (surplus theme generation), uses
+    slot-aware subset selection: pre-scans grid variants to group them
+    by slot-length signature, then tries subsets that are compatible with
+    each signature. This avoids wasting attempts on incompatible pairings.
 
     The pipeline sees this as a single step.
     """
@@ -182,7 +327,7 @@ class FillWithGradingStep(PipelineStep):
     def _run_with_subset_selection(
         self, envelope: PuzzleEnvelope
     ) -> PuzzleEnvelope:
-        """Fill using subset selection from candidate_entries."""
+        """Fill using slot-aware subset selection from candidate_entries."""
         theme = envelope.theme
         assert theme is not None
 
@@ -191,7 +336,7 @@ class FillWithGradingStep(PipelineStep):
         grid_size = envelope.grid_size
         assert self._dictionary is not None
 
-        # Score candidates for crossing friendliness
+        # 1. Rank candidates once globally by crossing friendliness
         ranked = rank_candidates(
             candidates, revealer, self._dictionary, grid_size
         )
@@ -202,64 +347,96 @@ class FillWithGradingStep(PipelineStep):
             [(w, f"{s:.2f}") for w, s in ranked],
         )
 
+        # 2. Pre-scan grid variants → signature groups
+        base_seed = envelope.metadata.get("seed")
+        sig_groups = _prescan_grid_signatures(
+            envelope.puzzle_type,
+            grid_size,
+            base_seed,
+            self._max_grid_variants,
+        )
+
         best_result: FillResult | None = None
         best_subset: list[str] = []
         total_attempts = 0
 
-        # Try subsets of decreasing size: 3 → 2 → 1 → 0 (revealer-only)
+        # 3. Try subsets of decreasing size: 3 → 2 → 1 → 0
         max_seed_size = min(len(ranked_words), 3)
         for target_size in range(max_seed_size, -1, -1):
-            subsets = _generate_subsets(
-                ranked_words, target_size, self.MAX_SUBSETS_PER_SIZE
-            )
+            subsets_tried = 0
 
-            if target_size == 0:
-                subsets = [[]]  # revealer-only
+            for group in sig_groups:
+                sig = group.signature
 
-            logger.info(
-                "Trying %d subsets of size %d", len(subsets), target_size
-            )
+                # Skip if revealer doesn't fit this signature
+                if len(revealer) not in sig.available_lengths:
+                    continue
 
-            for subset_idx, subset in enumerate(subsets):
-                # Build a temporary envelope with this subset as seed_entries
-                trial_theme = theme.model_copy(
-                    update={"seed_entries": list(subset)}
+                if target_size == 0:
+                    subsets = [[]]
+                else:
+                    subsets = _generate_subsets_for_signature(
+                        ranked_words,
+                        target_size,
+                        self.MAX_SUBSETS_PER_SIZE - subsets_tried,
+                        sig,
+                        revealer,
+                    )
+
+                logger.info(
+                    "Target size %d, signature %s: %d subsets, "
+                    "%d grid seeds",
+                    target_size,
+                    dict(sig.length_counts),
+                    len(subsets),
+                    len(group.grid_seeds),
                 )
-                trial_envelope = envelope.model_copy(
-                    update={"theme": trial_theme}
-                )
 
-                result, attempts = self._try_fill_with_grid_variants(
-                    trial_envelope,
-                    max_grid_variants=self.GRID_VARIANTS_PER_SUBSET,
-                )
-                total_attempts += attempts
+                for subset in subsets:
+                    if subsets_tried >= self.MAX_SUBSETS_PER_SIZE:
+                        break
 
-                if result is not None:
-                    if best_result is None or (result.quality_score or 0) > (
-                        best_result.quality_score or 0
-                    ):
-                        best_result = result
-                        best_subset = list(subset)
+                    trial_theme = theme.model_copy(
+                        update={"seed_entries": list(subset)}
+                    )
+                    trial_envelope = envelope.model_copy(
+                        update={"theme": trial_theme}
+                    )
 
-                    if (
-                        result.grade_report
-                        and result.grade_report.passing
-                    ):
-                        logger.info(
-                            "Passing fill found with subset %s "
-                            "(size %d, subset %d)",
-                            subset,
-                            target_size,
-                            subset_idx,
-                        )
-                        # Write back the placed subset to seed_entries
-                        return self._finalize(
-                            envelope,
-                            best_result,
-                            best_subset,
-                            total_attempts,
-                        )
+                    result, attempts = self._try_fill_with_grid_seeds(
+                        trial_envelope,
+                        group.grid_seeds,
+                        max_seeds=self.GRID_VARIANTS_PER_SUBSET,
+                    )
+                    total_attempts += attempts
+                    subsets_tried += 1
+
+                    if result is not None:
+                        if best_result is None or (
+                            result.quality_score or 0
+                        ) > (best_result.quality_score or 0):
+                            best_result = result
+                            best_subset = list(subset)
+
+                        if (
+                            result.grade_report
+                            and result.grade_report.passing
+                        ):
+                            logger.info(
+                                "Passing fill found with subset %s "
+                                "(size %d)",
+                                subset,
+                                target_size,
+                            )
+                            return self._finalize(
+                                envelope,
+                                best_result,
+                                best_subset,
+                                total_attempts,
+                            )
+
+                if subsets_tried >= self.MAX_SUBSETS_PER_SIZE:
+                    break
 
             # If we found a passing result at this size, stop degrading
             if (
@@ -310,29 +487,30 @@ class FillWithGradingStep(PipelineStep):
             }
         )
 
-    def _try_fill_with_grid_variants(
+    def _try_fill_with_grid_seeds(
         self,
         envelope: PuzzleEnvelope,
+        grid_seeds: list[int | None],
         *,
-        max_grid_variants: int,
+        max_seeds: int,
     ) -> tuple[FillResult | None, int]:
-        """Try filling with multiple grid variants for a given seed set.
+        """Try filling with an explicit list of grid seeds.
+
+        Args:
+            envelope: Envelope with theme seed_entries already set.
+            grid_seeds: Pre-computed grid seeds to try.
+            max_seeds: Maximum number of seeds to try from the list.
 
         Returns:
             Tuple of (best_result, total_attempts).
         """
-        base_seed = envelope.metadata.get("seed")
         has_theme = _has_theme(envelope)
-        effective_variants = max_grid_variants if has_theme else 1
         max_fill_attempts = self._max_retries if self._retry_on_fail else 1
 
         best_result: FillResult | None = None
         total_attempts = 0
 
-        for grid_variant in range(effective_variants):
-            grid_seed = (
-                base_seed + grid_variant if base_seed is not None else None
-            )
+        for grid_seed in grid_seeds[:max_seeds]:
             spec = get_grid_spec(
                 envelope.puzzle_type, envelope.grid_size, seed=grid_seed
             )
@@ -350,7 +528,7 @@ class FillWithGradingStep(PipelineStep):
                     filled = self._filler.fill(spec)
                 except FillError:
                     if has_theme:
-                        break  # try next grid pattern
+                        break  # try next grid seed
                     continue  # no theme -> retry
 
                 report = self._grader.grade(filled.grid)

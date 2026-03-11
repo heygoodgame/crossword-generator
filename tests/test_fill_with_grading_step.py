@@ -15,7 +15,10 @@ from crossword_generator.models import (
 )
 from crossword_generator.steps.fill_step import (
     FillWithGradingStep,
+    SlotSignature,
     _generate_subsets,
+    _generate_subsets_for_signature,
+    _prescan_grid_signatures,
 )
 
 
@@ -404,6 +407,142 @@ class TestGenerateSubsets:
     def test_subsets_when_not_enough_words(self) -> None:
         subsets = _generate_subsets(["A"], target_size=3, max_subsets=10)
         assert subsets == []
+
+
+class TestSlotSignature:
+    """Tests for the SlotSignature data structure."""
+
+    def test_available_lengths(self) -> None:
+        sig = SlotSignature(length_counts=((3, 10), (5, 4), (9, 2)))
+        assert sig.available_lengths == frozenset({3, 5, 9})
+
+    def test_can_accommodate_simple(self) -> None:
+        sig = SlotSignature(length_counts=((3, 10), (5, 4), (9, 2)))
+        # 2 words of length 5 + revealer of length 9 → needs 5:2, 9:1
+        assert sig.can_accommodate([5, 5], revealer_length=9) is True
+
+    def test_can_accommodate_exceeds_slots(self) -> None:
+        sig = SlotSignature(length_counts=((3, 10), (5, 2), (9, 1)))
+        # 3 words of length 5 → needs 5:3 but only 2 available
+        assert sig.can_accommodate([5, 5, 5], revealer_length=9) is False
+
+    def test_can_accommodate_missing_length(self) -> None:
+        sig = SlotSignature(length_counts=((3, 10), (5, 4)))
+        # Revealer needs length 9 but no 9-letter slots
+        assert sig.can_accommodate([3, 5], revealer_length=9) is False
+
+    def test_can_accommodate_empty_words(self) -> None:
+        sig = SlotSignature(length_counts=((4, 5), (9, 2)))
+        # No seed words, just revealer
+        assert sig.can_accommodate([], revealer_length=9) is True
+
+    def test_frozen(self) -> None:
+        sig = SlotSignature(length_counts=((3, 10),))
+        # Should be hashable (frozen)
+        assert hash(sig) is not None
+        d = {sig: "test"}
+        assert d[sig] == "test"
+
+    def test_revealer_and_word_share_length(self) -> None:
+        sig = SlotSignature(length_counts=((5, 3),))
+        # 2 words of length 5 + revealer of length 5 → needs 5:3
+        assert sig.can_accommodate([5, 5], revealer_length=5) is True
+        # 3 words + revealer = 4 needed, only 3 available
+        assert sig.can_accommodate([5, 5, 5], revealer_length=5) is False
+
+
+class TestPrescanGridSignatures:
+    """Tests for _prescan_grid_signatures."""
+
+    def test_returns_signature_groups(self) -> None:
+        groups = _prescan_grid_signatures(
+            PuzzleType.MIDI, 9, base_seed=1, num_variants=10
+        )
+        assert len(groups) > 0
+        # Each group should have at least one grid seed
+        for group in groups:
+            assert len(group.grid_seeds) > 0
+            assert isinstance(group.signature, SlotSignature)
+
+    def test_sorted_by_size_descending(self) -> None:
+        groups = _prescan_grid_signatures(
+            PuzzleType.MIDI, 9, base_seed=1, num_variants=50
+        )
+        sizes = [len(g.grid_seeds) for g in groups]
+        assert sizes == sorted(sizes, reverse=True)
+
+    def test_total_seeds_matches_variants(self) -> None:
+        num_variants = 20
+        groups = _prescan_grid_signatures(
+            PuzzleType.MIDI, 9, base_seed=1, num_variants=num_variants
+        )
+        total = sum(len(g.grid_seeds) for g in groups)
+        assert total == num_variants
+
+    def test_single_variant(self) -> None:
+        groups = _prescan_grid_signatures(
+            PuzzleType.MIDI, 9, base_seed=42, num_variants=1
+        )
+        assert len(groups) == 1
+        assert len(groups[0].grid_seeds) == 1
+
+
+class TestGenerateSubsetsForSignature:
+    """Tests for _generate_subsets_for_signature."""
+
+    def test_filters_by_available_lengths(self) -> None:
+        sig = SlotSignature(length_counts=((3, 10), (5, 4), (9, 2)))
+        # Only 3- and 5-letter words should be used (9 reserved for revealer)
+        words = ["ABC", "DEFGH", "IJKLM", "NOPQR", "WXYZ"]  # 3,5,5,5,4
+        subsets = _generate_subsets_for_signature(
+            words, target_size=2, max_subsets=10, signature=sig, revealer="REVEALER9"
+        )
+        # WXYZ (4 letters) should be filtered out since 4 not in signature
+        for subset in subsets:
+            for word in subset:
+                assert len(word) in sig.available_lengths
+
+    def test_respects_max_subsets(self) -> None:
+        sig = SlotSignature(length_counts=((3, 10), (5, 10)))
+        words = ["ABC", "DEF", "GHI", "JKL", "MNO"]  # all 3-letter
+        subsets = _generate_subsets_for_signature(
+            words, target_size=2, max_subsets=3, signature=sig, revealer="ABCDE"
+        )
+        assert len(subsets) <= 3
+
+    def test_empty_when_incompatible(self) -> None:
+        sig = SlotSignature(length_counts=((3, 10),))
+        words = ["ABCDE", "FGHIJ"]  # 5-letter words, no 5-letter slots
+        subsets = _generate_subsets_for_signature(
+            words, target_size=1, max_subsets=10, signature=sig, revealer="ABC"
+        )
+        assert subsets == []
+
+    def test_target_size_0_returns_empty_subset(self) -> None:
+        sig = SlotSignature(length_counts=((5, 4),))
+        subsets = _generate_subsets_for_signature(
+            ["ABCDE"], target_size=0, max_subsets=10, signature=sig, revealer="FGHIJ"
+        )
+        assert subsets == [[]]
+
+    def test_accounts_for_revealer_slot(self) -> None:
+        # Only 1 slot of length 5 — revealer takes it, so no room for a
+        # 5-letter seed word
+        sig = SlotSignature(length_counts=((3, 10), (5, 1)))
+        words = ["ABCDE"]  # 5-letter word
+        subsets = _generate_subsets_for_signature(
+            words, target_size=1, max_subsets=10, signature=sig, revealer="FGHIJ"
+        )
+        assert subsets == []
+
+    def test_revealer_plus_word_fit(self) -> None:
+        # 2 slots of length 5 — one for revealer, one for seed word
+        sig = SlotSignature(length_counts=((3, 10), (5, 2)))
+        words = ["ABCDE"]  # 5-letter word
+        subsets = _generate_subsets_for_signature(
+            words, target_size=1, max_subsets=10, signature=sig, revealer="FGHIJ"
+        )
+        assert subsets == [["ABCDE"]]
 
 
 class TestSubsetSelection:

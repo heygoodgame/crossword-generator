@@ -320,9 +320,10 @@ class TestValidateThemeEntries:
         errors = _validate_theme_entries(theme, theme_dictionary, 9, [4, 5])
         assert any("Duplicate" in e for e in errors)
 
-    def test_length_not_in_available_slots(
+    def test_length_not_in_available_slots_strict(
         self, theme_dictionary: Dictionary
     ) -> None:
+        """In strict mode, seed entries must match available slot lengths."""
         theme = ThemeConcept(
             topic="test",
             seed_entries=["EAGLE"],
@@ -332,31 +333,65 @@ class TestValidateThemeEntries:
         errors = _validate_theme_entries(theme, theme_dictionary, 9, [3, 4])
         assert any("doesn't match any available" in e for e in errors)
 
+    def test_length_not_in_available_slots_relaxed(
+        self, theme_dictionary: Dictionary
+    ) -> None:
+        """In relaxed mode, seed entry slot-length mismatch is accepted."""
+        theme = ThemeConcept(
+            topic="test",
+            seed_entries=["EAGLE", "KITE", "HAWK"],
+            revealer="SOAR",
+        )
+        # Only length 3 and 4 available — EAGLE is 5, but relaxed mode
+        # skips the slot-length check for candidates. All are in dict
+        # and within 3-9 range.
+        errors = _validate_theme_entries(
+            theme, theme_dictionary, 9, [3, 4], min_valid_entries=2
+        )
+        assert errors == []
+        # All 3 should be valid (no slot-length filtering)
+        assert theme.seed_entries == ["EAGLE", "KITE", "HAWK"]
 
-class TestBuildThemeGenerationPromptSlotCounts:
-    def test_slot_counts_included_in_prompt(self) -> None:
-        slot_counts = {3: 16, 5: 4, 9: 6}
+    def test_relaxed_still_checks_dictionary(
+        self, theme_dictionary: Dictionary
+    ) -> None:
+        """In relaxed mode, words not in dictionary are still filtered."""
+        theme = ThemeConcept(
+            topic="test",
+            seed_entries=["EAGLE", "XYZZY", "HAWK"],
+            revealer="SOAR",
+        )
+        errors = _validate_theme_entries(
+            theme, theme_dictionary, 9, [3, 4], min_valid_entries=2
+        )
+        assert errors == []
+        # XYZZY filtered out, EAGLE and HAWK remain
+        assert theme.seed_entries == ["EAGLE", "HAWK"]
+
+
+class TestBuildThemeGenerationPrompt:
+    def test_prompt_has_length_constraints(self) -> None:
         prompt = build_theme_generation_prompt(
             grid_size=9,
             available_slot_lengths=[3, 5, 9],
-            slot_counts=slot_counts,
         )
-        assert "3-letter: 16" in prompt
-        assert "5-letter: 4" in prompt
-        assert "9-letter: 6" in prompt
-        assert "Do not use more theme words" in prompt
+        # Relaxed prompt should mention 3-9 range, not strict slot lengths
+        assert "between 3 and 9" in prompt
+        assert "revealer" in prompt.lower()
 
-    def test_no_slot_counts_omits_availability(self) -> None:
+    def test_prompt_no_strict_slot_constraint(self) -> None:
         prompt = build_theme_generation_prompt(
             grid_size=9,
             available_slot_lengths=[3, 5, 9],
         )
-        assert "Available slots by length" not in prompt
+        # Should NOT have the old "ONLY allowed word lengths" wording
+        assert "ONLY allowed word lengths" not in prompt
 
-    def test_slot_counts_none_omits_availability(self) -> None:
+    def test_prompt_requests_candidate_count(self) -> None:
         prompt = build_theme_generation_prompt(
             grid_size=9,
-            available_slot_lengths=[3, 5, 9],
-            slot_counts=None,
+            num_candidates=12,
+            num_seed_entries=3,
         )
-        assert "Available slots by length" not in prompt
+        assert "12" in prompt
+        assert "seed entries" in prompt
