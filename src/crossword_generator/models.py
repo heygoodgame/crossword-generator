@@ -39,6 +39,7 @@ class ThemeConcept(BaseModel):
     topic: str = ""
     wordplay_type: str = ""
     seed_entries: list[str] = Field(default_factory=list)
+    candidate_entries: list[str] = Field(default_factory=list)
     revealer: str = ""
     revealer_clue: str = ""
 

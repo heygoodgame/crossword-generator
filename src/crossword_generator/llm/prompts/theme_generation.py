@@ -10,6 +10,7 @@ def build_theme_generation_prompt(
     available_slot_lengths: list[int],
     num_seed_entries: int = 3,
     slot_counts: dict[int, int] | None = None,
+    num_candidates: int | None = None,
 ) -> str:
     """Build a prompt that asks the LLM to generate a crossword theme concept.
 
@@ -19,10 +20,14 @@ def build_theme_generation_prompt(
         num_seed_entries: How many themed seed entries to generate.
         slot_counts: Optional mapping of slot length to number of slots
             available in the grid (e.g., {3: 16, 5: 4, 9: 6}).
+        num_candidates: If set, ask for this many candidate entries instead
+            of exactly num_seed_entries. Not all will be used in the grid.
 
     Returns:
         A prompt string ready to send to the LLM.
     """
+    # When generating surplus candidates, ask for more
+    effective_count = num_candidates if num_candidates else num_seed_entries
     sorted_lengths = sorted(available_slot_lengths)
     slot_lengths_str = ", ".join(str(n) for n in sorted_lengths)
 
@@ -105,6 +110,14 @@ def build_theme_generation_prompt(
         "replace it with a word that is."
     )
 
+    surplus_note = ""
+    if num_candidates and num_candidates > num_seed_entries:
+        surplus_note = (
+            f" Generate {effective_count} seed entries (not all will "
+            f"be used — we'll select the best {num_seed_entries} "
+            f"for the grid)."
+        )
+
     output_section = (
         "OUTPUT FORMAT:\n"
         "Return ONLY a JSON object with these fields. "
@@ -112,11 +125,11 @@ def build_theme_generation_prompt(
         f"\nExample (note: all words are {slot_lengths_str} "
         f"letters long):\n{example_output}\n"
         f"\n{verification}\n"
-        f"\nGenerate a theme with exactly {num_seed_entries} "
+        f"\nGenerate a theme with exactly {effective_count} "
         f"seed entries for a {grid_size}x{grid_size} crossword "
-        f"grid. Every word MUST be exactly {slot_lengths_str} "
-        f"letters long. Return ONLY the JSON object, "
-        f"no explanations."
+        f"grid.{surplus_note} Every word MUST be exactly "
+        f"{slot_lengths_str} letters long. Return ONLY the JSON "
+        f"object, no explanations."
     )
 
     return (

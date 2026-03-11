@@ -109,6 +109,7 @@ def create_pipeline(
     fill_step = FillWithGradingStep(
         filler,
         grader,
+        dictionary=dictionary,
         max_retries=config.fill.max_retries,
         max_grid_variants=config.fill.max_grid_variants,
         retry_on_fail=config.grading.fill.retry_on_fail,
@@ -143,6 +144,7 @@ def create_pipeline(
             grid_size=config.puzzle.grid_size,
             max_retries=config.theme.max_retries,
             num_seed_entries=config.theme.num_seed_entries,
+            num_candidates=config.theme.num_candidates,
         )
         steps.append(theme_step)
 

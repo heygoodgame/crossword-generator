@@ -97,7 +97,28 @@ class TestThemeGenerationStep:
 
         assert result.theme is not None
         assert result.theme.topic == "Things that fly"
+        # With default num_candidates=6 > num_seed_entries=3,
+        # entries go to candidate_entries and seed_entries is empty
+        assert len(result.theme.candidate_entries) == 3
+        assert result.theme.seed_entries == []
+        assert result.theme.revealer == "SOAR"
+
+    def test_happy_path_no_surplus(self, theme_dictionary: Dictionary) -> None:
+        """When num_candidates == num_seed_entries, seed_entries is populated."""
+        response = _make_valid_response()
+        llm = MockLLM([response])
+        step = ThemeGenerationStep(
+            llm, theme_dictionary, grid_size=9, max_retries=3,
+            num_candidates=3,  # same as num_seed_entries
+        )
+        envelope = PuzzleEnvelope(
+            puzzle_type=PuzzleType.MIDI, grid_size=9, metadata={"seed": 1}
+        )
+        result = step.run(envelope)
+
+        assert result.theme is not None
         assert len(result.theme.seed_entries) == 3
+        assert result.theme.candidate_entries == []
         assert result.theme.revealer == "SOAR"
 
     def test_step_name(self, theme_dictionary: Dictionary) -> None:

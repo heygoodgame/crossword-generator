@@ -29,12 +29,14 @@ class ThemeGenerationStep(PipelineStep):
         grid_size: int = 9,
         max_retries: int = 3,
         num_seed_entries: int = 3,
+        num_candidates: int = 6,
     ) -> None:
         self._llm = llm
         self._dictionary = dictionary
         self._grid_size = grid_size
         self._max_retries = max_retries
         self._num_seed_entries = num_seed_entries
+        self._num_candidates = num_candidates
 
     @property
     def name(self) -> str:
@@ -63,6 +65,7 @@ class ThemeGenerationStep(PipelineStep):
             available_slot_lengths=available_lengths,
             num_seed_entries=self._num_seed_entries,
             slot_counts=slot_counts,
+            num_candidates=self._num_candidates,
         )
 
         theme: ThemeConcept | None = None
@@ -95,8 +98,13 @@ class ThemeGenerationStep(PipelineStep):
                 current_prompt = _retry_prompt(prompt, last_error)
                 continue
 
+            use_surplus = self._num_candidates > self._num_seed_entries
             validation_errors = _validate_theme_entries(
-                theme, self._dictionary, self._grid_size, available_lengths,
+                theme,
+                self._dictionary,
+                self._grid_size,
+                available_lengths,
+                min_valid_entries=self._num_seed_entries if use_surplus else None,
             )
             if validation_errors:
                 last_error = "; ".join(validation_errors)
@@ -109,6 +117,16 @@ class ThemeGenerationStep(PipelineStep):
                 current_prompt = _retry_prompt(prompt, last_error)
                 continue
 
+            # When generating surplus, move seed_entries → candidate_entries
+            # so the fill step can select the best subset.
+            if use_surplus:
+                theme = theme.model_copy(
+                    update={
+                        "candidate_entries": list(theme.seed_entries),
+                        "seed_entries": [],
+                    }
+                )
+
             break
 
         if theme is None:
@@ -117,10 +135,13 @@ class ThemeGenerationStep(PipelineStep):
                 f"attempts. Last error: {last_error}"
             )
 
+        candidate_count = len(theme.candidate_entries)
+        seed_count = len(theme.seed_entries)
         logger.info(
-            "Theme generated: topic=%r, %d seed entries, revealer=%r",
+            "Theme generated: topic=%r, %d candidates, %d seeds, revealer=%r",
             theme.topic,
-            len(theme.seed_entries),
+            candidate_count,
+            seed_count,
             theme.revealer,
         )
 
@@ -213,33 +234,78 @@ def _validate_theme_entries(
     dictionary: Dictionary,
     grid_size: int,
     available_lengths: list[int],
+    *,
+    min_valid_entries: int | None = None,
 ) -> list[str]:
-    """Validate that all theme entries meet requirements.
+    """Validate that theme entries meet requirements.
+
+    When min_valid_entries is None, ALL seed entries must be valid (strict).
+    When min_valid_entries is set, at least that many seed entries must be
+    valid (relaxed — for surplus candidate generation). Invalid entries are
+    filtered out rather than causing an error.
 
     Returns:
         A list of validation error messages. Empty list means valid.
     """
     errors: list[str] = []
-    all_words = list(theme.seed_entries) + [theme.revealer]
 
-    for word in all_words:
+    # Always validate revealer strictly
+    revealer = theme.revealer
+    if len(revealer) < 3 or len(revealer) > grid_size:
+        errors.append(
+            f"{revealer!r} length {len(revealer)} is outside range "
+            f"3-{grid_size}"
+        )
+    if not dictionary.contains(revealer):
+        errors.append(f"{revealer!r} is not in the dictionary")
+    if len(revealer) not in available_lengths:
+        errors.append(
+            f"{revealer!r} length {len(revealer)} doesn't match any "
+            f"available slot length ({available_lengths})"
+        )
+
+    # Validate seed entries
+    valid_entries: list[str] = []
+    seen: set[str] = {revealer}
+    for word in theme.seed_entries:
+        word_errors: list[str] = []
         if len(word) < 3 or len(word) > grid_size:
-            errors.append(
+            word_errors.append(
                 f"{word!r} length {len(word)} is outside range 3-{grid_size}"
             )
         if not dictionary.contains(word):
-            errors.append(f"{word!r} is not in the dictionary")
+            word_errors.append(f"{word!r} is not in the dictionary")
         if len(word) not in available_lengths:
-            errors.append(
+            word_errors.append(
                 f"{word!r} length {len(word)} doesn't match any available "
                 f"slot length ({available_lengths})"
             )
-
-    # Check for duplicates
-    seen: set[str] = set()
-    for word in all_words:
         if word in seen:
-            errors.append(f"Duplicate entry: {word!r}")
+            word_errors.append(f"Duplicate entry: {word!r}")
         seen.add(word)
+
+        if word_errors:
+            if min_valid_entries is not None:
+                # Relaxed mode: log but don't block on individual entries
+                logger.debug(
+                    "Candidate %s invalid (will be filtered): %s",
+                    word,
+                    "; ".join(word_errors),
+                )
+            else:
+                errors.extend(word_errors)
+        else:
+            valid_entries.append(word)
+
+    # In relaxed mode, check we have enough valid entries
+    if min_valid_entries is not None:
+        if len(valid_entries) < min_valid_entries:
+            errors.append(
+                f"Only {len(valid_entries)} valid candidates, need at "
+                f"least {min_valid_entries}"
+            )
+        else:
+            # Replace seed_entries with only the valid ones
+            theme.seed_entries[:] = valid_entries
 
     return errors

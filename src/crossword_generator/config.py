@@ -119,6 +119,7 @@ class ThemeConfig(BaseModel):
     enabled: bool = True
     max_retries: int = 5
     num_seed_entries: int = 3
+    num_candidates: int = 6
 
 
 class OutputConfig(BaseModel):

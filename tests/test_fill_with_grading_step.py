@@ -13,7 +13,10 @@ from crossword_generator.models import (
     PuzzleType,
     ThemeConcept,
 )
-from crossword_generator.steps.fill_step import FillWithGradingStep
+from crossword_generator.steps.fill_step import (
+    FillWithGradingStep,
+    _generate_subsets,
+)
 
 
 def _make_dict(words: dict[str, int]) -> Dictionary:
@@ -377,3 +380,140 @@ class TestGridPatternFallback:
         )
         with pytest.raises(FillError, match="All grid variants exhausted"):
             step.run(envelope)
+
+
+class TestGenerateSubsets:
+    """Tests for the _generate_subsets helper."""
+
+    def test_subsets_of_size_3(self) -> None:
+        words = ["A", "B", "C", "D"]
+        subsets = _generate_subsets(words, target_size=3, max_subsets=10)
+        assert len(subsets) == 4  # C(4,3) = 4
+        # First subset should include the highest-ranked words
+        assert subsets[0] == ["A", "B", "C"]
+
+    def test_subsets_capped_at_max(self) -> None:
+        words = ["A", "B", "C", "D", "E"]
+        subsets = _generate_subsets(words, target_size=2, max_subsets=3)
+        assert len(subsets) == 3  # C(5,2)=10 but capped at 3
+
+    def test_subsets_of_size_0(self) -> None:
+        subsets = _generate_subsets(["A", "B"], target_size=0, max_subsets=10)
+        assert subsets == [[]]
+
+    def test_subsets_when_not_enough_words(self) -> None:
+        subsets = _generate_subsets(["A"], target_size=3, max_subsets=10)
+        assert subsets == []
+
+
+class TestSubsetSelection:
+    """Tests for subset selection in FillWithGradingStep."""
+
+    def _make_candidate_envelope(
+        self,
+        candidates: list[str],
+        seed: int = 42,
+    ) -> PuzzleEnvelope:
+        """Create a midi envelope with candidate_entries (surplus mode)."""
+        return PuzzleEnvelope(
+            puzzle_type=PuzzleType.MIDI,
+            grid_size=9,
+            metadata={"seed": seed},
+            theme=ThemeConcept(
+                topic="Test theme",
+                candidate_entries=candidates,
+                seed_entries=[],
+                revealer="SOAR",
+            ),
+        )
+
+    def test_subset_selection_succeeds(self) -> None:
+        """With candidates and dictionary, subset selection path is used."""
+        dictionary = _make_dict(GOOD_WORDS)
+        grader = FillGrader(dictionary, min_passing_score=0)
+        filler = FixedMockFiller(HIGH_QUALITY_GRID)
+        step = FillWithGradingStep(
+            filler, grader, dictionary=dictionary, max_retries=1,
+        )
+
+        envelope = self._make_candidate_envelope(
+            ["EAGLE", "HAWK", "KITE", "FALCON", "PLANE", "ARROW"]
+        )
+        result = step.run(envelope)
+
+        assert result.fill is not None
+        assert result.theme is not None
+        # seed_entries should be populated with the placed subset
+        assert isinstance(result.theme.seed_entries, list)
+
+    def test_backward_compat_no_candidates(self) -> None:
+        """Without candidate_entries, falls back to direct seed_entries path."""
+        dictionary = _make_dict(GOOD_WORDS)
+        grader = FillGrader(dictionary, min_passing_score=0)
+        filler = FixedMockFiller(HIGH_QUALITY_GRID)
+        step = FillWithGradingStep(
+            filler, grader, dictionary=dictionary, max_retries=1,
+        )
+
+        # Old-style: seed_entries directly, no candidates
+        envelope = PuzzleEnvelope(
+            puzzle_type=PuzzleType.MIDI,
+            grid_size=9,
+            metadata={"seed": 42},
+            theme=ThemeConcept(
+                topic="Test theme",
+                seed_entries=["EAGLE", "HAWK", "KITE"],
+                revealer="SOAR",
+            ),
+        )
+        result = step.run(envelope)
+        assert result.fill is not None
+
+    def test_backward_compat_no_dictionary(self) -> None:
+        """Without dictionary param, falls back to direct path."""
+        dictionary = _make_dict(GOOD_WORDS)
+        grader = FillGrader(dictionary, min_passing_score=0)
+        filler = FixedMockFiller(HIGH_QUALITY_GRID)
+        # No dictionary param
+        step = FillWithGradingStep(filler, grader, max_retries=1)
+
+        envelope = self._make_candidate_envelope(
+            ["EAGLE", "HAWK", "KITE", "FALCON"]
+        )
+        # Should fall back to direct path (no candidates used as seeds)
+        # since there's no dictionary for scoring
+        result = step.run(envelope)
+        assert result.fill is not None
+
+    def test_graceful_degradation_all_fail(self) -> None:
+        """When all subsets fail, should raise FillError."""
+        dictionary = _make_dict(GOOD_WORDS)
+        grader = FillGrader(dictionary, min_passing_score=0)
+        filler = AlwaysFailFiller()
+        step = FillWithGradingStep(
+            filler, grader, dictionary=dictionary, max_retries=1,
+        )
+
+        envelope = self._make_candidate_envelope(
+            ["EAGLE", "HAWK", "KITE", "FALCON"]
+        )
+        with pytest.raises(FillError, match="All subsets exhausted"):
+            step.run(envelope)
+
+    def test_seed_entries_populated_after_fill(self) -> None:
+        """After subset selection, seed_entries should contain placed words."""
+        dictionary = _make_dict(GOOD_WORDS)
+        grader = FillGrader(dictionary, min_passing_score=0)
+        filler = FixedMockFiller(HIGH_QUALITY_GRID)
+        step = FillWithGradingStep(
+            filler, grader, dictionary=dictionary, max_retries=1,
+        )
+
+        candidates = ["EAGLE", "HAWK", "KITE", "FALCON"]
+        envelope = self._make_candidate_envelope(candidates)
+        result = step.run(envelope)
+
+        assert result.theme is not None
+        # Placed subset should be a subset of candidates
+        for word in result.theme.seed_entries:
+            assert word in candidates
