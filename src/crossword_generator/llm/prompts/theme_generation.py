@@ -3,6 +3,23 @@
 from __future__ import annotations
 
 import json
+import random
+
+# Category hints for rotating diversity suggestions
+_CATEGORY_HINTS: list[str] = [
+    "professions or jobs",
+    "activities or hobbies",
+    "places or locations",
+    "emotions or feelings",
+    "seasons or weather",
+    "food or cooking",
+    "music or sounds",
+    "animals or nature",
+    "sports or games",
+    "clothing or fashion",
+    "science or technology",
+    "wordplay or puns",
+]
 
 
 def build_theme_generation_prompt(
@@ -12,6 +29,7 @@ def build_theme_generation_prompt(
     slot_counts: dict[int, int] | None = None,
     num_candidates: int | None = None,
     avoid_topics: list[str] | None = None,
+    max_avoid_in_prompt: int = 30,
 ) -> str:
     """Build a prompt that asks the LLM to generate a crossword theme concept.
 
@@ -26,6 +44,8 @@ def build_theme_generation_prompt(
         num_candidates: If set, ask for this many candidate entries instead
             of exactly num_seed_entries. Not all will be used in the grid.
         avoid_topics: Previously-generated topics to avoid (for dedup).
+        max_avoid_in_prompt: Maximum number of avoid topics to include in
+            the prompt. When exceeded, shows a sample with a note.
 
     Returns:
         A prompt string ready to send to the LLM.
@@ -94,11 +114,39 @@ def build_theme_generation_prompt(
 
     avoid_section = ""
     if avoid_topics:
-        topic_list = "\n".join(f"- {t}" for t in avoid_topics)
+        shown_topics = avoid_topics
+        cap_note = ""
+        total = len(avoid_topics)
+        if total > max_avoid_in_prompt:
+            # Show recent + random sample of older topics
+            recent = avoid_topics[-15:]
+            older = avoid_topics[:-15]
+            sampled = random.sample(older, min(15, len(older)))
+            shown_topics = sampled + recent
+            cap_note = (
+                f"\n(Showing {len(shown_topics)} of {total} existing "
+                f"topics. There are many more — be highly original.)\n"
+            )
+        topic_list = "\n".join(f"- {t}" for t in shown_topics)
         avoid_section = (
             "\nAVOID THESE TOPICS (already generated — choose something "
-            "different):\n"
+            "fundamentally different):\n"
             f"{topic_list}\n"
+            f"{cap_note}"
+        )
+
+        # Anti-pattern warning
+        avoid_section += (
+            "\nDo NOT use 'Things that are [adjective]' or "
+            "'Things that can be [past participle]' — those patterns "
+            "have been heavily overused. Be creative and specific.\n"
+        )
+
+        # Rotating category hint
+        hint_index = len(avoid_topics) % len(_CATEGORY_HINTS)
+        category = _CATEGORY_HINTS[hint_index]
+        avoid_section += (
+            f"\nSuggestion: consider a theme related to {category}.\n"
         )
 
     surplus_note = ""

@@ -120,6 +120,8 @@ class ThemeConfig(BaseModel):
     max_retries: int = 5
     num_seed_entries: int = 3
     num_candidates: int = 12
+    similarity_threshold: float = 0.6
+    max_avoid_in_prompt: int = 30
 
 
 class OutputConfig(BaseModel):

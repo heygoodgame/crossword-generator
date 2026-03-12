@@ -14,6 +14,11 @@ from crossword_generator.llm.prompts.theme_generation import (
 )
 from crossword_generator.models import PuzzleEnvelope, PuzzleType, ThemeConcept
 from crossword_generator.steps.base import PipelineStep
+from crossword_generator.topic_dedup import (
+    build_normalized_topic_set,
+    is_topic_duplicate,
+    is_topic_similar,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +32,8 @@ def generate_single_theme(
     num_seed_entries: int = 3,
     num_candidates: int = 12,
     avoid_topics: list[str] | None = None,
+    similarity_threshold: float = 0.6,
+    max_avoid_in_prompt: int = 30,
 ) -> ThemeConcept:
     """Generate a single theme concept using the LLM.
 
@@ -42,6 +49,8 @@ def generate_single_theme(
         num_seed_entries: Minimum number of valid entries needed.
         num_candidates: Total number of candidate entries to request.
         avoid_topics: List of topic strings to avoid (for dedup).
+        similarity_threshold: Jaccard threshold for fuzzy topic dedup.
+        max_avoid_in_prompt: Max avoid topics to include in prompt text.
 
     Returns:
         A validated ThemeConcept.
@@ -61,7 +70,11 @@ def generate_single_theme(
         num_seed_entries=num_seed_entries,
         num_candidates=num_candidates,
         avoid_topics=avoid_topics,
+        max_avoid_in_prompt=max_avoid_in_prompt,
     )
+
+    # Build normalized set for O(1) exact-duplicate lookup
+    existing_normalized = build_normalized_topic_set(avoid_topics or [])
 
     theme: ThemeConcept | None = None
     last_error = ""
@@ -93,6 +106,35 @@ def generate_single_theme(
             )
             current_prompt = _retry_prompt(prompt, last_error)
             continue
+
+        # Hard dedup: reject exact normalized duplicates
+        if avoid_topics and is_topic_duplicate(
+            theme.topic, existing_normalized
+        ):
+            last_error = (
+                f"Topic {theme.topic!r} is a duplicate of an existing "
+                f"topic. Choose a completely different concept."
+            )
+            logger.warning("Attempt %d: %s", attempt, last_error)
+            theme = None
+            current_prompt = _retry_prompt(prompt, last_error)
+            continue
+
+        # Fuzzy dedup: reject topics with high word-overlap
+        if avoid_topics:
+            similar, closest = is_topic_similar(
+                theme.topic, avoid_topics, threshold=similarity_threshold
+            )
+            if similar:
+                last_error = (
+                    f"Topic {theme.topic!r} is too similar to existing "
+                    f"topic {closest!r}. Choose a fundamentally different "
+                    f"concept."
+                )
+                logger.warning("Attempt %d: %s", attempt, last_error)
+                theme = None
+                current_prompt = _retry_prompt(prompt, last_error)
+                continue
 
         validation_errors = _validate_theme_entries(
             theme,

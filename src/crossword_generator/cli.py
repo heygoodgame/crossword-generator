@@ -215,6 +215,8 @@ def generate_themes(
                 num_seed_entries=config.theme.num_seed_entries,
                 num_candidates=config.theme.num_candidates,
                 avoid_topics=avoid_topics,
+                similarity_threshold=config.theme.similarity_threshold,
+                max_avoid_in_prompt=config.theme.max_avoid_in_prompt,
             )
             path = save_theme(theme, size, llm.name, out_dir)
             avoid_topics.append(theme.topic)

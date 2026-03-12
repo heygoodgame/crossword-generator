@@ -514,3 +514,120 @@ class TestGenerateSingleTheme:
             avoid_topics=["Things that are red"],
         )
         assert any("Things that are red" in p for p in prompts_seen)
+
+    def test_rejects_duplicate_topic(
+        self, theme_dictionary: Dictionary
+    ) -> None:
+        """Duplicate topic triggers retry, second attempt with unique topic succeeds."""
+        dup_response = _make_valid_response(topic="Things that fly")
+        unique_response = _make_valid_response(
+            topic="Things that swim",
+            seed_entries=["EAGLE", "KITE", "HAWK"],
+        )
+        llm = MockLLM([dup_response, unique_response])
+        theme = generate_single_theme(
+            llm=llm,
+            dictionary=theme_dictionary,
+            grid_size=9,
+            seed=1,
+            num_candidates=3,
+            num_seed_entries=3,
+            avoid_topics=["Things that fly"],
+        )
+        assert theme.topic == "Things that swim"
+        assert llm._call_count == 2
+
+    def test_rejects_similar_topic(
+        self, theme_dictionary: Dictionary
+    ) -> None:
+        """Fuzzy-similar topic triggers retry."""
+        similar_response = _make_valid_response(
+            topic="Things that are twisted"
+        )
+        unique_response = _make_valid_response(
+            topic="Pizza toppings",
+            seed_entries=["EAGLE", "KITE", "HAWK"],
+        )
+        llm = MockLLM([similar_response, unique_response])
+        theme = generate_single_theme(
+            llm=llm,
+            dictionary=theme_dictionary,
+            grid_size=9,
+            seed=1,
+            num_candidates=3,
+            num_seed_entries=3,
+            avoid_topics=["Things that can be twisted"],
+            similarity_threshold=0.6,
+        )
+        assert theme.topic == "Pizza toppings"
+        assert llm._call_count == 2
+
+
+class TestPromptDiversity:
+    def test_prompt_caps_avoid_topics(self) -> None:
+        """100 avoid topics are truncated in the prompt."""
+        # Use unique prefixes to avoid substring collisions
+        topics = [f"UniqueXTopic{i:04d}X" for i in range(100)]
+        prompt = build_theme_generation_prompt(
+            grid_size=9,
+            avoid_topics=topics,
+            max_avoid_in_prompt=30,
+        )
+        # Should mention the cap
+        assert "Showing" in prompt
+        assert "100" in prompt
+        # Should not contain all 100 topics
+        count = sum(1 for t in topics if t in prompt)
+        assert count <= 30
+
+    def test_prompt_no_cap_when_under_limit(self) -> None:
+        """Small avoid list is shown in full."""
+        topics = ["Topic A", "Topic B", "Topic C"]
+        prompt = build_theme_generation_prompt(
+            grid_size=9,
+            avoid_topics=topics,
+        )
+        assert "Showing" not in prompt
+        for t in topics:
+            assert t in prompt
+
+    def test_prompt_has_category_suggestion(self) -> None:
+        """Category hint is present when avoid_topics is provided."""
+        prompt = build_theme_generation_prompt(
+            grid_size=9,
+            avoid_topics=["Topic A"],
+        )
+        assert "Suggestion: consider a theme related to" in prompt
+
+    def test_prompt_no_category_without_avoid(self) -> None:
+        """No category hint when avoid_topics is empty."""
+        prompt = build_theme_generation_prompt(grid_size=9, avoid_topics=None)
+        assert "Suggestion: consider a theme related to" not in prompt
+
+    def test_prompt_has_anti_pattern_warning(self) -> None:
+        """Anti-pattern warning is present when avoid_topics is provided."""
+        prompt = build_theme_generation_prompt(
+            grid_size=9,
+            avoid_topics=["Topic A"],
+        )
+        assert "Things that are [adjective]" in prompt
+        assert "heavily overused" in prompt
+
+    def test_category_hint_rotates(self) -> None:
+        """Different avoid_topics lengths produce different category hints."""
+        hints_seen: set[str] = set()
+        for n in range(12):
+            topics = [f"Topic {i}" for i in range(n)]
+            prompt = build_theme_generation_prompt(
+                grid_size=9,
+                avoid_topics=topics,
+            )
+            # Extract the category from the prompt
+            marker = "consider a theme related to "
+            idx = prompt.find(marker)
+            if idx >= 0:
+                rest = prompt[idx + len(marker):]
+                category = rest.split(".")[0]
+                hints_seen.add(category)
+        # Should see multiple different categories
+        assert len(hints_seen) >= 6
