@@ -229,6 +229,130 @@ def generate_themes(
     click.echo(f"Generated {generated} themes in {out_dir}")
 
 
+@main.command(name="dedup-themes")
+@click.option(
+    "--theme-dir",
+    type=click.Path(),
+    default="themes/",
+    help="Directory containing theme files.",
+)
+@click.option(
+    "--threshold",
+    type=float,
+    default=0.6,
+    help="Jaccard similarity threshold for fuzzy matching (0.0-1.0).",
+)
+@click.option(
+    "--dry-run",
+    is_flag=True,
+    default=True,
+    help="Preview duplicates without deleting (default).",
+)
+@click.option(
+    "--delete",
+    is_flag=True,
+    default=False,
+    help="Actually delete duplicate theme files.",
+)
+@click.option(
+    "-v",
+    "--verbose",
+    is_flag=True,
+    default=False,
+    help="Enable debug logging.",
+)
+def dedup_themes(
+    theme_dir: str,
+    threshold: float,
+    dry_run: bool,
+    delete: bool,
+    verbose: bool,
+) -> None:
+    """Find and remove duplicate/similar themes from the theme directory."""
+    _setup_logging(verbose)
+
+    from crossword_generator.theme_io import load_theme
+    from crossword_generator.topic_dedup import (
+        build_normalized_topic_set,
+        is_topic_duplicate,
+        is_topic_similar,
+    )
+
+    project_root = find_project_root()
+    theme_path = Path(theme_dir)
+    if not theme_path.is_absolute():
+        theme_path = project_root / theme_path
+
+    if not theme_path.exists():
+        click.echo(f"Theme directory not found: {theme_path}", err=True)
+        sys.exit(1)
+
+    # Load all theme files, sorted by name (keeps earliest)
+    files = sorted(theme_path.glob("*.json"))
+    if not files:
+        click.echo("No theme files found.")
+        return
+
+    kept_topics: list[str] = []
+    kept_normalized: set[str] = set()
+    kept_files: list[Path] = []
+    duplicates: list[tuple[Path, str, str]] = []  # (path, topic, reason)
+
+    for path in files:
+        try:
+            tf = load_theme(path)
+        except Exception:
+            click.echo(f"  SKIP (invalid): {path.name}")
+            continue
+
+        topic = tf.theme.topic
+
+        # Check exact duplicate
+        if is_topic_duplicate(topic, kept_normalized):
+            duplicates.append((path, topic, "exact duplicate"))
+            continue
+
+        # Check fuzzy similarity
+        similar, closest = is_topic_similar(
+            topic, kept_topics, threshold=threshold
+        )
+        if similar:
+            duplicates.append(
+                (path, topic, f"similar to {closest!r}")
+            )
+            continue
+
+        kept_topics.append(topic)
+        kept_normalized = build_normalized_topic_set(kept_topics)
+        kept_files.append(path)
+
+    if not duplicates:
+        click.echo(
+            f"No duplicates found among {len(files)} theme files "
+            f"(threshold={threshold})."
+        )
+        return
+
+    click.echo(
+        f"Found {len(duplicates)} duplicate(s) among {len(files)} "
+        f"theme files (threshold={threshold}):\n"
+    )
+    for path, topic, reason in duplicates:
+        click.echo(f"  {path.name}: {topic!r} ({reason})")
+
+    if delete:
+        for path, _, _ in duplicates:
+            path.unlink()
+        click.echo(
+            f"\nDeleted {len(duplicates)} duplicate theme files. "
+            f"{len(kept_files)} unique themes remain."
+        )
+    else:
+        click.echo(
+            "\nDry run — no files deleted. Use --delete to remove them."
+        )
+
+
 @main.command()
 @click.option(
     "--sizes",
