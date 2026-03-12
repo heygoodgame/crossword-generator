@@ -545,6 +545,65 @@ class TestGenerateSubsetsForSignature:
         assert subsets == [["ABCDE"]]
 
 
+class TestThemeWordInjection:
+    """Tests that theme words are injected into dictionary at score 60."""
+
+    def test_theme_words_injected_into_dictionary(self) -> None:
+        """Theme words not in dictionary should be added at score 60."""
+        # Dictionary without theme words
+        dictionary = _make_dict(GOOD_WORDS)
+        assert not dictionary.contains("MUCUS")
+
+        grader = FillGrader(dictionary, min_passing_score=0)
+        filler = FixedMockFiller(HIGH_QUALITY_GRID)
+        step = FillWithGradingStep(
+            filler, grader, dictionary=dictionary, max_retries=1,
+        )
+
+        envelope = PuzzleEnvelope(
+            puzzle_type=PuzzleType.MIDI,
+            grid_size=9,
+            metadata={"seed": 42},
+            theme=ThemeConcept(
+                topic="Gross things",
+                candidate_entries=["MUCUS", "SLIME"],
+                seed_entries=[],
+                revealer="GROSS",
+            ),
+        )
+        step.run(envelope)
+
+        # After run, theme words should be in dictionary
+        assert dictionary.contains("MUCUS")
+        assert dictionary.score("MUCUS") == 60
+        assert dictionary.contains("SLIME")
+        assert dictionary.contains("GROSS")
+
+    def test_existing_words_not_overwritten(self) -> None:
+        """Theme words already in dictionary keep their original score."""
+        dictionary = _make_dict({"EAGLE": 80, **GOOD_WORDS})
+        grader = FillGrader(dictionary, min_passing_score=0)
+        filler = FixedMockFiller(HIGH_QUALITY_GRID)
+        step = FillWithGradingStep(
+            filler, grader, dictionary=dictionary, max_retries=1,
+        )
+
+        envelope = PuzzleEnvelope(
+            puzzle_type=PuzzleType.MIDI,
+            grid_size=9,
+            metadata={"seed": 42},
+            theme=ThemeConcept(
+                topic="Birds",
+                seed_entries=["EAGLE"],
+                revealer="SOAR",
+            ),
+        )
+        step.run(envelope)
+
+        # EAGLE keeps original score of 80, not overwritten to 60
+        assert dictionary.score("EAGLE") == 80
+
+
 class TestSubsetBudgetDistribution:
     """Tests that subset budget is distributed across signature groups."""
 

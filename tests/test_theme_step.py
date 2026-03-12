@@ -172,12 +172,12 @@ class TestThemeGenerationStep:
         assert result.theme is not None
         assert llm._call_count == 2
 
-    def test_retry_on_entries_not_in_dictionary(
+    def test_entries_not_in_dictionary_accepted(
         self, theme_dictionary: Dictionary
     ) -> None:
-        bad = _make_valid_response(seed_entries=["XYZZY", "PLUGH", "ZORK"])
-        valid = _make_valid_response()
-        llm = MockLLM([bad, valid])
+        """Theme words not in dictionary are accepted (auto-allowed later)."""
+        response = _make_valid_response(seed_entries=["XYZZY", "PLUGH", "ZORK"])
+        llm = MockLLM([response])
         step = ThemeGenerationStep(
             llm, theme_dictionary, grid_size=9, max_retries=3
         )
@@ -186,7 +186,7 @@ class TestThemeGenerationStep:
         )
         result = step.run(envelope)
         assert result.theme is not None
-        assert llm._call_count == 2
+        assert llm._call_count == 1  # No retry needed
 
     def test_all_retries_exhausted(self, theme_dictionary: Dictionary) -> None:
         llm = MockLLM(["bad json"] * 3)
@@ -199,10 +199,12 @@ class TestThemeGenerationStep:
         with pytest.raises(ValueError, match="Failed to generate valid theme"):
             step.run(envelope)
 
-    def test_revealer_validated(self, theme_dictionary: Dictionary) -> None:
-        bad = _make_valid_response(revealer="NOTINDICT")
-        valid = _make_valid_response()
-        llm = MockLLM([bad, valid])
+    def test_revealer_not_in_dictionary_accepted(
+        self, theme_dictionary: Dictionary
+    ) -> None:
+        """Revealer not in dictionary is accepted (auto-allowed later)."""
+        response = _make_valid_response(revealer="NOTINDICT")
+        llm = MockLLM([response])
         step = ThemeGenerationStep(
             llm, theme_dictionary, grid_size=9, max_retries=3
         )
@@ -211,7 +213,7 @@ class TestThemeGenerationStep:
         )
         result = step.run(envelope)
         assert result.theme is not None
-        assert llm._call_count == 2
+        assert llm._call_count == 1  # No retry needed
 
 
 class TestParseThemeResponse:
@@ -283,14 +285,17 @@ class TestValidateThemeEntries:
         errors = _validate_theme_entries(theme, theme_dictionary, 9, [3, 4, 5])
         assert errors == []
 
-    def test_word_not_in_dictionary(self, theme_dictionary: Dictionary) -> None:
+    def test_word_not_in_dictionary_accepted(
+        self, theme_dictionary: Dictionary
+    ) -> None:
+        """Words not in dictionary pass validation (auto-allowed later)."""
         theme = ThemeConcept(
             topic="test",
             seed_entries=["XYZZY"],
             revealer="SOAR",
         )
         errors = _validate_theme_entries(theme, theme_dictionary, 9, [4, 5])
-        assert any("not in the dictionary" in e for e in errors)
+        assert not any("not in the dictionary" in e for e in errors)
 
     def test_word_too_long(self, theme_dictionary: Dictionary) -> None:
         theme = ThemeConcept(
@@ -353,10 +358,10 @@ class TestValidateThemeEntries:
         # All 3 should be valid (no slot-length filtering)
         assert theme.seed_entries == ["EAGLE", "KITE", "HAWK"]
 
-    def test_relaxed_still_checks_dictionary(
+    def test_relaxed_accepts_unknown_words(
         self, theme_dictionary: Dictionary
     ) -> None:
-        """In relaxed mode, words not in dictionary are still filtered."""
+        """In relaxed mode, words not in dictionary are accepted."""
         theme = ThemeConcept(
             topic="test",
             seed_entries=["EAGLE", "XYZZY", "HAWK"],
@@ -366,26 +371,37 @@ class TestValidateThemeEntries:
             theme, theme_dictionary, 9, [3, 4], min_valid_entries=2
         )
         assert errors == []
-        # XYZZY filtered out, EAGLE and HAWK remain
-        assert theme.seed_entries == ["EAGLE", "HAWK"]
+        # All 3 should be valid (no dictionary filtering)
+        assert theme.seed_entries == ["EAGLE", "XYZZY", "HAWK"]
 
 
-    def test_error_message_does_not_expose_slot_lengths(
+    def test_revealer_passes_when_within_range_but_not_in_available_lengths(
         self, theme_dictionary: Dictionary
     ) -> None:
-        """Sanitized error messages should not leak available_lengths."""
+        """Revealer within grid_size range passes even if not in available_lengths."""
         theme = ThemeConcept(
             topic="test",
             seed_entries=["EAGLE"],
             revealer="AIRBORNE",
         )
-        # AIRBORNE is 8 letters, not in available_lengths [3, 4, 5]
+        # AIRBORNE is 8 letters, not in available_lengths [3, 4, 5],
+        # but within range 3-9. Slot-length check removed for revealer.
         errors = _validate_theme_entries(theme, theme_dictionary, 9, [3, 4, 5])
-        for e in errors:
-            assert "available_lengths" not in e
-            assert "[3, 4, 5]" not in e
-        # But should still report the issue
-        assert any("doesn't fit any grid slot" in e for e in errors)
+        assert not any("doesn't fit any grid slot" in e for e in errors)
+        assert errors == []
+
+    def test_revealer_too_long_still_rejected(
+        self, theme_dictionary: Dictionary
+    ) -> None:
+        """Revealer exceeding grid_size is still rejected."""
+        theme = ThemeConcept(
+            topic="test",
+            seed_entries=["EAGLE"],
+            revealer="LONGREVEALER",
+        )
+        # 12 letters > grid_size=9
+        errors = _validate_theme_entries(theme, theme_dictionary, 9, [3, 4, 5])
+        assert any("outside range" in e for e in errors)
 
 
 class TestBuildThemeGenerationPrompt:

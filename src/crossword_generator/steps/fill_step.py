@@ -312,6 +312,15 @@ class FillWithGradingStep(PipelineStep):
                 f"FillWithGradingStep validation failed: {'; '.join(errors)}"
             )
 
+        # Auto-allow theme words in dictionary at score 60
+        if envelope.theme and self._dictionary is not None:
+            theme_words: dict[str, int] = {}
+            for w in envelope.theme.seed_entries + envelope.theme.candidate_entries:
+                theme_words[w] = 60
+            if envelope.theme.revealer:
+                theme_words[envelope.theme.revealer] = 60
+            self._dictionary.add_words(theme_words)
+
         has_theme = _has_theme_or_candidates(envelope)
 
         # If we have candidates, use subset selection

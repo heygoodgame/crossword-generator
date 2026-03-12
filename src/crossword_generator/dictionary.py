@@ -146,6 +146,14 @@ class Dictionary:
         )
         return len(words)
 
+    def add_words(self, words: dict[str, int]) -> None:
+        """Add words to the dictionary (does not overwrite existing scores)."""
+        for word, score in words.items():
+            upper = word.upper()
+            if upper not in self._words:
+                self._words[upper] = score
+                self._by_length[len(upper)].append(upper)
+
     def __contains__(self, word: str) -> bool:
         return self.contains(word)
 

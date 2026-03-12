@@ -289,18 +289,12 @@ def _validate_theme_entries(
     """
     errors: list[str] = []
 
-    # Always validate revealer strictly
+    # Always validate revealer range (hard constraint)
     revealer = theme.revealer
     if len(revealer) < 3 or len(revealer) > grid_size:
         errors.append(
             f"{revealer!r} length {len(revealer)} is outside range "
             f"3-{grid_size}"
-        )
-    if not dictionary.contains(revealer):
-        errors.append(f"{revealer!r} is not in the dictionary")
-    if len(revealer) not in available_lengths:
-        errors.append(
-            f"{revealer!r} length {len(revealer)} doesn't fit any grid slot"
         )
 
     # Validate seed entries
@@ -312,8 +306,6 @@ def _validate_theme_entries(
             word_errors.append(
                 f"{word!r} length {len(word)} is outside range 3-{grid_size}"
             )
-        if not dictionary.contains(word):
-            word_errors.append(f"{word!r} is not in the dictionary")
         # In relaxed/surplus mode, skip slot-length check — the fill step
         # handles filtering candidates by what fits each grid pattern.
         if min_valid_entries is None and len(word) not in available_lengths:

@@ -147,6 +147,36 @@ class TestExportPlain:
         assert "ocean" not in lines
 
 
+class TestAddWords:
+    """Test Dictionary.add_words()."""
+
+    def test_adds_new_words(self) -> None:
+        d = Dictionary({"CAT": 60})
+        d.add_words({"MUCUS": 60, "SLIME": 55})
+        assert d.contains("MUCUS")
+        assert d.score("MUCUS") == 60
+        assert d.contains("SLIME")
+        assert d.score("SLIME") == 55
+        assert len(d) == 3
+
+    def test_does_not_overwrite_existing(self) -> None:
+        d = Dictionary({"CAT": 60})
+        d.add_words({"CAT": 99})
+        assert d.score("CAT") == 60
+
+    def test_case_insensitive_add(self) -> None:
+        d = Dictionary({"CAT": 60})
+        d.add_words({"mucus": 60})
+        assert d.contains("MUCUS")
+        assert d.contains("mucus")
+
+    def test_indexed_by_length(self) -> None:
+        d = Dictionary({"CAT": 60})
+        d.add_words({"MUCUS": 60})
+        fives = d.words_by_length(5)
+        assert "MUCUS" in fives
+
+
 class TestRealDictionary:
     """Tests against the actual Jeff Chen word list."""
 
