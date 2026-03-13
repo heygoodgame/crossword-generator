@@ -874,10 +874,12 @@ def _generate_subsets(
     target_size: int,
     max_subsets: int,
 ) -> list[list[str]]:
-    """Generate subsets of ranked words, ordered by aggregate rank.
+    """Generate subsets of ranked words, ordered by total entry length.
 
-    Words are already sorted by crossing score (best first), so
-    combinations that include earlier words are preferred.
+    Shorter total length means fewer constrained cells in the grid,
+    giving the CSP filler more freedom to produce quality fills.
+    Among equal-length subsets, prefer those with higher crossing
+    scores (lower rank-index sum).
 
     Args:
         ranked_words: Words sorted by crossing score descending.
@@ -885,19 +887,22 @@ def _generate_subsets(
         max_subsets: Maximum number of subsets to return.
 
     Returns:
-        List of word subsets, best first.
+        List of word subsets, shortest total length first.
     """
     if target_size == 0:
         return [[]]
     if target_size > len(ranked_words):
         return []
 
-    # itertools.combinations preserves input order, so subsets with
-    # earlier (higher-scored) words come first naturally.
-    subsets: list[list[str]] = []
+    # Build all subsets, then sort by total entry length (ascending)
+    # with sum of rank indices as tiebreaker (lower = higher-ranked).
+    # For n≤12, k≤3 this produces at most 220 items — trivial cost.
+    all_combos: list[tuple[int, int, list[str]]] = []
     for combo in itertools.combinations(range(len(ranked_words)), target_size):
-        subsets.append([ranked_words[i] for i in combo])
-        if len(subsets) >= max_subsets:
-            break
+        words = [ranked_words[i] for i in combo]
+        total_len = sum(len(w) for w in words)
+        rank_sum = sum(combo)
+        all_combos.append((total_len, rank_sum, words))
 
-    return subsets
+    all_combos.sort()
+    return [words for _, _, words in all_combos[:max_subsets]]

@@ -14,7 +14,11 @@ from crossword_generator.models import (
     PuzzleType,
     ThemeConcept,
 )
-from crossword_generator.steps.fill_step import FillStep, FillWithGradingStep
+from crossword_generator.steps.fill_step import (
+    FillStep,
+    FillWithGradingStep,
+    _generate_subsets,
+)
 
 
 class MockFiller(GridFiller):
@@ -212,3 +216,41 @@ class _MockDictionary:
 
     def lookup(self, word: str) -> int | None:
         return 50
+
+
+class TestGenerateSubsets:
+    """Tests for _generate_subsets ordering."""
+
+    def test_sorted_by_total_length_ascending(self) -> None:
+        # Ranked by crossing score: ORE best, RETRIEVER worst
+        ranked = ["ORE", "RATIO", "COIN", "SUNSET", "BAR"]
+        subsets = _generate_subsets(ranked, target_size=3, max_subsets=50)
+
+        total_lengths = [sum(len(w) for w in s) for s in subsets]
+        assert total_lengths == sorted(total_lengths)
+
+    def test_tiebreaker_prefers_higher_ranked_words(self) -> None:
+        # All 3-letter words so total length is always 9
+        ranked = ["ABC", "DEF", "GHI", "JKL"]
+        subsets = _generate_subsets(ranked, target_size=3, max_subsets=50)
+
+        # First subset should use the three highest-ranked words
+        assert subsets[0] == ["ABC", "DEF", "GHI"]
+        # Last should use the three lowest-ranked
+        assert subsets[-1] == ["DEF", "GHI", "JKL"]
+
+    def test_shortest_subset_comes_first(self) -> None:
+        ranked = ["ORE", "RATIO", "COIN", "BAR"]
+        subsets = _generate_subsets(ranked, target_size=3, max_subsets=10)
+
+        # ORE+COIN+BAR = 10 letters is shortest possible
+        assert set(subsets[0]) == {"ORE", "COIN", "BAR"}
+
+    def test_max_subsets_limits_output(self) -> None:
+        ranked = ["A", "BB", "CCC", "DDDD", "EEEEE"]
+        subsets = _generate_subsets(ranked, target_size=2, max_subsets=3)
+        assert len(subsets) == 3
+
+    def test_empty_cases(self) -> None:
+        assert _generate_subsets(["A", "B"], target_size=0, max_subsets=10) == [[]]
+        assert _generate_subsets(["A"], target_size=3, max_subsets=10) == []
