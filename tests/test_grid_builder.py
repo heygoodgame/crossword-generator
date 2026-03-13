@@ -70,20 +70,24 @@ class TestBuildThemedGrids:
 
     def test_multiple_entries_placed(self) -> None:
         """Multiple entries + revealer all present in output GridSpec."""
-        entries = ["SUNSET", "ARCHES", "FLEECE"]
+        # Mix of lengths: 6+6+3 letter entries + 9-letter revealer.
+        # Three 6-letter entries in 9x9 is geometrically infeasible
+        # (adjacent rows create 2x2 blocks; non-adjacent create
+        # unsealable column gaps), so we use a mix.
+        entries = ["SUNSET", "ARCHES", "ORE"]
         revealer = "GOLDRATIO"
         results = build_themed_grids(
-            9, entries, revealer, seed=42, count=10
+            9, entries, revealer, seed=0, count=100
         )
-        # At least some should succeed
-        if results:
-            spec = results[0]
-            placed_words = set(spec.seed_entries.values())
-            # Revealer (9 letters) and entries (6 letters each) should be placed
-            assert revealer in placed_words
-            # At least some entries should be placed
-            placed_entries = placed_words - {revealer}
-            assert len(placed_entries) > 0
+        assert len(results) > 0, "Expected at least one valid grid"
+        spec = results[0]
+        placed_words = set(spec.seed_entries.values())
+        assert revealer in placed_words
+        placed_entries = placed_words - {revealer}
+        assert len(placed_entries) == len(entries), (
+            f"Expected all {len(entries)} entries placed, "
+            f"got {len(placed_entries)}: {placed_entries}"
+        )
 
     def test_symmetry_maintained(self) -> None:
         """Black cells are 180-degree symmetric."""
@@ -208,3 +212,24 @@ class TestBuildThemedGrids:
             # Symmetry
             for r, c in spec.black_cells:
                 assert (8 - r, 8 - c) in blacks
+
+    def test_backtracking_places_five_entries(self) -> None:
+        """Backtracking places 5 entries that a greedy pass would struggle with.
+
+        Two 6-letter + two 3-letter entries + 9-letter revealer = 5 words.
+        The 6-letter entries have very few valid row partitions, so a greedy
+        pass often paints itself into a corner. Backtracking revises earlier
+        placements to find a valid arrangement.
+        """
+        entries = ["SUNSET", "ARCHES", "ORE", "BAR"]
+        revealer = "GOLDRATIO"
+        results = build_themed_grids(
+            9, entries, revealer, seed=0, count=100
+        )
+        assert len(results) > 0, "Expected at least one valid grid"
+        spec = results[0]
+        placed = set(spec.seed_entries.values())
+        assert revealer in placed
+        assert len(placed) == 5, (
+            f"Expected all 5 words placed, got {len(placed)}: {placed}"
+        )

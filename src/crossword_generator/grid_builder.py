@@ -24,6 +24,8 @@ from crossword_generator.grid_pattern_generator import (
 
 logger = logging.getLogger(__name__)
 
+_MAX_PLACEMENT_NODES = 50_000
+
 
 @dataclass
 class LinePartition:
@@ -204,6 +206,84 @@ def build_themed_grids(
     return results
 
 
+def _has_unsealable_gap(
+    grid_size: int,
+    locked_white: set[tuple[int, int]],
+    locked_black: set[tuple[int, int]],
+) -> bool:
+    """Quick check: any 1-2 cell gap between blacks has a locked-white cell.
+
+    If a short gap contains a cell that is locked white (or whose 180-degree
+    mirror is locked white), the gap cannot be sealed by _seal_short_gaps.
+    Used as a forward-pruning check during backtracking.
+    """
+    for axis in ("row", "col"):
+        for idx in range(grid_size):
+            cells = (
+                [(idx, c) for c in range(grid_size)]
+                if axis == "row"
+                else [(r, idx) for r in range(grid_size)]
+            )
+            i = 0
+            while i < grid_size:
+                if cells[i] in locked_black:
+                    i += 1
+                    continue
+                run_start = i
+                while i < grid_size and cells[i] not in locked_black:
+                    i += 1
+                if 1 <= (i - run_start) <= 2:
+                    for j in range(run_start, i):
+                        cell = cells[j]
+                        mir = (
+                            grid_size - 1 - cell[0],
+                            grid_size - 1 - cell[1],
+                        )
+                        if cell in locked_white or mir in locked_white:
+                            return True
+    return False
+
+
+def _compute_placement_cells(
+    direction: str,
+    line_a: int,
+    line_b: int,
+    part: LinePartition,
+    wlen: int,
+    grid_size: int,
+) -> tuple[set[tuple[int, int]], set[tuple[int, int]]]:
+    """Compute the white and black cells for a candidate placement.
+
+    Returns (all_whites, all_blacks) including 180-degree mirror cells.
+    """
+    if direction == "across":
+        blacks_a = {(line_a, c) for c in part.black_positions}
+        whites_a = {
+            (line_a, c) for c in range(part.start, part.start + wlen)
+        }
+        blacks_b: set[tuple[int, int]] = set()
+        whites_b: set[tuple[int, int]] = set()
+        if line_a != line_b:
+            for _, c in blacks_a:
+                blacks_b.add((line_b, grid_size - 1 - c))
+            for _, c in whites_a:
+                whites_b.add((line_b, grid_size - 1 - c))
+    else:
+        blacks_a = {(r, line_a) for r in part.black_positions}
+        whites_a = {
+            (part.start + i, line_a) for i in range(wlen)
+        }
+        blacks_b = set()
+        whites_b = set()
+        if line_a != line_b:
+            for r, _ in blacks_a:
+                blacks_b.add((grid_size - 1 - r, line_b))
+            for r, _ in whites_a:
+                whites_b.add((grid_size - 1 - r, line_b))
+
+    return whites_a | whites_b, blacks_a | blacks_b
+
+
 def _try_place_entries(
     grid_size: int,
     words: list[str],
@@ -211,174 +291,143 @@ def _try_place_entries(
     partition_cache: dict[int, list[LinePartition]],
     rng: random.Random,
 ) -> GridSpec | None:
-    """Try to place all words in across or down slots and build a valid grid.
+    """Try to place all words using backtracking search.
 
-    Across placements are attempted first (conventional for theme entries),
-    with down as a fallback when no across slot works for a word.
+    Uses recursive backtracking to explore placement combinations.
+    Across placements are tried before down (preserving convention),
+    but if a later word can't be placed, earlier choices are revised.
 
     Returns a GridSpec on success, None on failure.
     """
     locked_white: set[tuple[int, int]] = set()
     locked_black: set[tuple[int, int]] = set()
     seed_entries: dict[str, str] = {}
-
-    # Shuffle symmetric pairs for variety
-    available_pairs = list(sym_pairs)
-    rng.shuffle(available_pairs)
-
-    # Track which rows/columns have been claimed by across/down entries
     used_rows: set[int] = set()
     used_cols: set[int] = set()
-    words_to_place = list(words)
 
-    for word in words_to_place:
-        placed = False
+    # Pre-build shuffled candidate lists for each word.
+    # Across candidates come first (convention preference), then down.
+    candidates_per_word: list[
+        list[tuple[str, int, int, LinePartition]]
+    ] = []
+    for word in words:
+        partitions = partition_cache[len(word)]
+        shuffled_pairs = list(sym_pairs)
+        rng.shuffle(shuffled_pairs)
+        shuffled_parts = list(partitions)
+        rng.shuffle(shuffled_parts)
+
+        candidates: list[tuple[str, int, int, LinePartition]] = []
+        for pair in shuffled_pairs:
+            for part in shuffled_parts:
+                candidates.append(("across", pair[0], pair[1], part))
+        for pair in shuffled_pairs:
+            for part in shuffled_parts:
+                candidates.append(("down", pair[0], pair[1], part))
+        candidates_per_word.append(candidates)
+
+    nodes = [0]
+    # Holds (sealed_white, sealed_black) on successful placement + seal
+    sealed_state: list[
+        tuple[set[tuple[int, int]], set[tuple[int, int]]] | None
+    ] = [None]
+
+    def _backtrack(word_idx: int) -> bool:
+        if word_idx == len(words):
+            # All words placed — try to seal gaps on a copy
+            lw_copy = set(locked_white)
+            lb_copy = set(locked_black)
+            if _seal_short_gaps(grid_size, lw_copy, lb_copy):
+                sealed_state[0] = (lw_copy, lb_copy)
+                return True
+            return False  # Keep searching for another arrangement
+
+        nodes[0] += 1
+        if nodes[0] > _MAX_PLACEMENT_NODES:
+            return False
+
+        word = words[word_idx]
         wlen = len(word)
-        partitions = partition_cache[wlen]
 
-        # --- Try across placements first (convention) ---
-        for line_a, line_b in available_pairs:
-            if line_a in used_rows:
+        for direction, line_a, line_b, part in candidates_per_word[word_idx]:
+            if direction == "across" and line_a in used_rows:
+                continue
+            if direction == "down" and line_a in used_cols:
                 continue
 
-            shuffled_parts = list(partitions)
-            rng.shuffle(shuffled_parts)
+            all_whites, all_blacks = _compute_placement_cells(
+                direction, line_a, line_b, part, wlen, grid_size,
+            )
 
-            for part in shuffled_parts:
-                new_blacks_a = {(line_a, c) for c in part.black_positions}
-                new_whites_a = {
-                    (line_a, c)
-                    for c in range(part.start, part.start + wlen)
-                }
+            # Conflict checks
+            if all_blacks & locked_white:
+                continue
+            if all_whites & locked_black:
+                continue
+            if all_blacks & all_whites:
+                continue
 
-                # Mirror for symmetric row
-                new_blacks_b: set[tuple[int, int]] = set()
-                new_whites_mirror: set[tuple[int, int]] = set()
-                if line_a != line_b:
-                    for _, c in new_blacks_a:
-                        new_blacks_b.add((line_b, grid_size - 1 - c))
-                    for _, c in new_whites_a:
-                        new_whites_mirror.add((line_b, grid_size - 1 - c))
+            trial_black = locked_black | all_blacks
+            if any(
+                _has_2x2_block(trial_black, r, c) for r, c in all_blacks
+            ):
+                continue
 
-                all_new_blacks = new_blacks_a | new_blacks_b
-                all_new_whites = new_whites_a | new_whites_mirror
+            # Apply — track only the cells this placement actually adds
+            added_w = all_whites - locked_white
+            added_b = all_blacks - locked_black
+            locked_white.update(added_w)
+            locked_black.update(added_b)
 
-                # Conflict checks
-                if all_new_blacks & locked_white:
-                    continue
-                if all_new_whites & locked_black:
-                    continue
-                if all_new_blacks & all_new_whites:
-                    continue
+            # Forward check: prune if any short gap is unsealable
+            if _has_unsealable_gap(grid_size, locked_white, locked_black):
+                locked_white.difference_update(added_w)
+                locked_black.difference_update(added_b)
+                continue
 
-                # Check 2x2 blocks with existing locked blacks
-                trial_black = locked_black | all_new_blacks
-                has_block = False
-                for r, c in all_new_blacks:
-                    if _has_2x2_block(trial_black, r, c):
-                        has_block = True
-                        break
-                if has_block:
-                    continue
-
-                # Accept across placement
-                locked_white |= all_new_whites
-                locked_black |= all_new_blacks
+            if direction == "across":
                 used_rows.add(line_a)
                 if line_a != line_b:
                     used_rows.add(line_b)
-
                 key = f"{line_a},{part.start},across"
-                seed_entries[key] = word.upper()
-                placed = True
-                break
+            else:
+                used_cols.add(line_a)
+                if line_a != line_b:
+                    used_cols.add(line_b)
+                key = f"{part.start},{line_a},down"
+            seed_entries[key] = word.upper()
 
-            if placed:
-                break
+            if _backtrack(word_idx + 1):
+                return True
 
-        # --- If across failed, try down placements ---
-        if not placed:
-            for line_a, line_b in available_pairs:
-                if line_a in used_cols:
-                    continue
+            # Undo
+            locked_white.difference_update(added_w)
+            locked_black.difference_update(added_b)
+            if direction == "across":
+                used_rows.discard(line_a)
+                if line_a != line_b:
+                    used_rows.discard(line_b)
+            else:
+                used_cols.discard(line_a)
+                if line_a != line_b:
+                    used_cols.discard(line_b)
+            del seed_entries[key]
 
-                shuffled_parts = list(partitions)
-                rng.shuffle(shuffled_parts)
+        return False
 
-                for part in shuffled_parts:
-                    new_blacks_a = {
-                        (r, line_a) for r in part.black_positions
-                    }
-                    new_whites_a = {
-                        (part.start + i, line_a) for i in range(wlen)
-                    }
-
-                    # Mirror for symmetric column
-                    new_blacks_b: set[tuple[int, int]] = set()
-                    new_whites_mirror: set[tuple[int, int]] = set()
-                    if line_a != line_b:
-                        for r, _ in new_blacks_a:
-                            new_blacks_b.add(
-                                (grid_size - 1 - r, line_b)
-                            )
-                        for r, _ in new_whites_a:
-                            new_whites_mirror.add(
-                                (grid_size - 1 - r, line_b)
-                            )
-
-                    all_new_blacks = new_blacks_a | new_blacks_b
-                    all_new_whites = new_whites_a | new_whites_mirror
-
-                    # Conflict checks
-                    if all_new_blacks & locked_white:
-                        continue
-                    if all_new_whites & locked_black:
-                        continue
-                    if all_new_blacks & all_new_whites:
-                        continue
-
-                    # Check 2x2 blocks with existing locked blacks
-                    trial_black = locked_black | all_new_blacks
-                    has_block = False
-                    for r, c in all_new_blacks:
-                        if _has_2x2_block(trial_black, r, c):
-                            has_block = True
-                            break
-                    if has_block:
-                        continue
-
-                    # Accept down placement
-                    locked_white |= all_new_whites
-                    locked_black |= all_new_blacks
-                    used_cols.add(line_a)
-                    if line_a != line_b:
-                        used_cols.add(line_b)
-
-                    key = f"{part.start},{line_a},down"
-                    seed_entries[key] = word.upper()
-                    placed = True
-                    break
-
-                if placed:
-                    break
-
-        if not placed:
-            logger.debug(
-                "Could not place word %r (len %d) in any row or column",
-                word, wlen,
-            )
-            return None
-
-    # Phase A.5: Seal short gaps created by locked blacks.
-    # When blacks in nearby rows/cols leave 1- or 2-cell white gaps,
-    # those gaps must become black to avoid illegal slot lengths.
-    if not _seal_short_gaps(grid_size, locked_white, locked_black):
-        logger.debug("Cannot seal all short gaps without 2x2 blocks")
+    if not _backtrack(0):
+        logger.debug(
+            "Backtracking exhausted (%d nodes) for %d words in %dx%d grid",
+            nodes[0], len(words), grid_size, grid_size,
+        )
         return None
+
+    # Use the sealed locked cells from backtracking
+    final_white, final_black = sealed_state[0]  # type: ignore[misc]
 
     # Phase B: Generate black cells around the placements
     black_cells = _generate_constrained_pattern(
-        grid_size, locked_white, locked_black, rng
+        grid_size, final_white, final_black, rng
     )
     if black_cells is None:
         return None
