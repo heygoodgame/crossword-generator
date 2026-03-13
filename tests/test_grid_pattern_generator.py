@@ -176,6 +176,70 @@ class TestPatternGeneration:
 
 
 # ---------------------------------------------------------------------------
+# Locked cells tests
+# ---------------------------------------------------------------------------
+
+
+class TestLockedCells:
+    def test_locked_white_never_black(self) -> None:
+        """Locked-white cells must never become black."""
+        locked_white = {(1, 1), (1, 2), (1, 3), (7, 5), (7, 6), (7, 7)}
+        for seed in range(50):
+            black = generate_pattern(
+                9, 9, seed=seed, locked_white=locked_white
+            )
+            black_set = set(black)
+            assert black_set.isdisjoint(locked_white), (
+                f"seed={seed}: locked-white cell became black"
+            )
+
+    def test_locked_black_always_present(self) -> None:
+        """Locked-black cells must always be in the output."""
+        locked_black = {(0, 3), (8, 5)}
+        for seed in range(50):
+            black = generate_pattern(
+                9, 9, seed=seed, locked_black=locked_black
+            )
+            black_set = set(black)
+            assert locked_black.issubset(black_set), (
+                f"seed={seed}: locked-black cell missing from output"
+            )
+
+    def test_locked_pattern_still_valid(self) -> None:
+        """Output with locked cells passes all constraint checks."""
+        locked_white = {(2, 0), (2, 1), (2, 2), (2, 3), (2, 4)}
+        locked_black = {(0, 4), (8, 4)}
+        for seed in range(50):
+            black = generate_pattern(
+                9, 9,
+                seed=seed,
+                locked_white=locked_white,
+                locked_black=locked_black,
+            )
+            black_set = set(black)
+            report = analyze_pattern(9, 9, black)
+            # Pattern should be symmetric and connected
+            assert report.is_symmetric, f"seed={seed}: not symmetric"
+            assert report.is_connected, f"seed={seed}: not connected"
+            assert report.min_word_length_found >= 3, (
+                f"seed={seed}: min word length {report.min_word_length_found}"
+            )
+            assert not report.has_2x2_block, f"seed={seed}: has 2x2 block"
+            # Locked constraints respected
+            assert black_set.isdisjoint(locked_white)
+            assert locked_black.issubset(black_set)
+
+    def test_locked_cells_with_no_locked(self) -> None:
+        """Passing empty locked sets produces same result as no args."""
+        for seed in range(10):
+            p1 = generate_pattern(9, 9, seed=seed)
+            p2 = generate_pattern(
+                9, 9, seed=seed, locked_white=set(), locked_black=set()
+            )
+            assert p1 == p2
+
+
+# ---------------------------------------------------------------------------
 # Diversity / statistical tests
 # ---------------------------------------------------------------------------
 

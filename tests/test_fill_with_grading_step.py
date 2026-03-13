@@ -755,7 +755,7 @@ class TestSubsetSelection:
         envelope = self._make_candidate_envelope(
             ["EAGLE", "HAWK", "KITE", "FALCON"]
         )
-        with pytest.raises(FillError, match="All subsets exhausted"):
+        with pytest.raises(FillError, match="could not fill grid"):
             step.run(envelope)
 
     def test_seed_entries_populated_after_fill(self) -> None:

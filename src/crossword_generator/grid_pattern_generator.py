@@ -44,6 +44,8 @@ def generate_pattern(
     *,
     seed: int = 0,
     config: PatternConfig | None = None,
+    locked_white: set[tuple[int, int]] | None = None,
+    locked_black: set[tuple[int, int]] | None = None,
 ) -> list[tuple[int, int]]:
     """Generate a black-cell pattern for a grid.
 
@@ -55,6 +57,8 @@ def generate_pattern(
         cols: Grid width.
         seed: RNG seed for reproducibility.
         config: Optional generation parameters.
+        locked_white: Positions that must remain white (e.g. theme entry cells).
+        locked_black: Positions that must be black (e.g. theme delimiters).
 
     Returns:
         List of (row, col) positions of black cells.
@@ -62,11 +66,16 @@ def generate_pattern(
     if config is None:
         config = PatternConfig()
 
+    locked_white = locked_white or set()
+    locked_black = locked_black or set()
+
     rng = random.Random(seed)
     total_cells = rows * cols
     max_black = int(total_cells * config.max_density)
 
-    half_positions = _get_half_positions(rows, cols)
+    half_positions = _get_half_positions(
+        rows, cols, locked_white=locked_white, locked_black=locked_black
+    )
     n_pos = len(half_positions)
 
     # Step 1: Per-cell independent inclusion decision.
@@ -85,8 +94,9 @@ def generate_pattern(
     rng.shuffle(desired)
     rng.shuffle(remainder)
 
-    # Step 2: Build pattern from desired cells, then fill from remainder
-    black: set[tuple[int, int]] = set()
+    # Step 2: Build pattern from desired cells, then fill from remainder.
+    # Start with locked-black cells already placed.
+    black: set[tuple[int, int]] = set(locked_black)
 
     for candidates in (desired, remainder):
         for r, c in candidates:
@@ -337,21 +347,31 @@ def _all_rows_cols_have_white(
 
 
 def _get_half_positions(
-    rows: int, cols: int
+    rows: int,
+    cols: int,
+    *,
+    locked_white: set[tuple[int, int]] | None = None,
+    locked_black: set[tuple[int, int]] | None = None,
 ) -> list[tuple[int, int]]:
-    """Get all candidate half-positions (excluding corners).
+    """Get all candidate half-positions (excluding corners and locked cells).
 
     Returns one of each symmetric pair (lexicographically smaller),
-    plus the center cell for odd grids.
+    plus the center cell for odd grids. Skips positions that are locked
+    (either white or black) since they cannot be toggled.
     """
     corners = {(0, 0), (0, cols - 1), (rows - 1, 0), (rows - 1, cols - 1)}
+    locked = (locked_white or set()) | (locked_black or set())
     positions: list[tuple[int, int]] = []
 
     for r in range(rows):
         for c in range(cols):
             if (r, c) in corners:
                 continue
+            if (r, c) in locked:
+                continue
             mirror_r, mirror_c = rows - 1 - r, cols - 1 - c
+            if (mirror_r, mirror_c) in locked:
+                continue
             # Center cell
             if (r, c) == (mirror_r, mirror_c):
                 positions.append((r, c))

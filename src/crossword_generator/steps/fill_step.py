@@ -11,6 +11,7 @@ from crossword_generator.dictionary import Dictionary
 from crossword_generator.fillers.base import FillError, GridFiller, GridSpec
 from crossword_generator.fillers.csp import extract_slots
 from crossword_generator.graders.fill_grader import FillGrader
+from crossword_generator.grid_builder import build_themed_grids
 from crossword_generator.grid_specs import get_grid_spec
 from crossword_generator.models import FillResult, PuzzleEnvelope
 from crossword_generator.steps.base import PipelineStep
@@ -277,6 +278,8 @@ class FillWithGradingStep(PipelineStep):
     MAX_ELIGIBLE_GROUPS = 5
     # Grid variant budget per subset (decreases as we try more subsets)
     GRID_VARIANTS_PER_SUBSET = 20
+    # Number of themed grid variants to build per subset in theme-first mode
+    THEME_FIRST_GRID_COUNT = 10
 
     def __init__(
         self,
@@ -338,7 +341,7 @@ class FillWithGradingStep(PipelineStep):
     def _run_with_subset_selection(
         self, envelope: PuzzleEnvelope
     ) -> PuzzleEnvelope:
-        """Fill using slot-aware subset selection from candidate_entries."""
+        """Fill using theme-first construction, then random-grid fallback."""
         theme = envelope.theme
         assert theme is not None
 
@@ -358,7 +361,157 @@ class FillWithGradingStep(PipelineStep):
             [(w, f"{s:.2f}") for w, s in ranked],
         )
 
-        # 2. Pre-scan grid variants → signature groups
+        # Phase 1: Theme-first construction (primary strategy)
+        result, subset, attempts = self._try_theme_first_fill(
+            envelope, ranked_words, revealer
+        )
+        if result and result.grade_report and result.grade_report.passing:
+            logger.info(
+                "Theme-first strategy succeeded with subset %s "
+                "(%d attempts)",
+                subset, attempts,
+            )
+            return self._finalize(envelope, result, subset, attempts)
+
+        best_result = result
+        best_subset = subset
+        total_attempts = attempts
+
+        if best_result:
+            logger.info(
+                "Theme-first best score: %.1f (not passing), "
+                "falling back to random-grid search",
+                best_result.quality_score or 0,
+            )
+        else:
+            logger.info(
+                "Theme-first produced no results, falling back to "
+                "random-grid search"
+            )
+
+        # Phase 2: Random-grid search (fallback — existing signature-based)
+        fallback_result, fallback_subset, fallback_attempts = (
+            self._try_random_grid_fill(
+                envelope, ranked_words, revealer
+            )
+        )
+        total_attempts += fallback_attempts
+
+        if fallback_result is not None:
+            if best_result is None or (
+                fallback_result.quality_score or 0
+            ) > (best_result.quality_score or 0):
+                best_result = fallback_result
+                best_subset = fallback_subset
+
+        if best_result is None:
+            raise FillError(
+                f"All strategies exhausted: could not fill grid after "
+                f"{total_attempts} total attempt(s)"
+            )
+
+        return self._finalize(
+            envelope, best_result, best_subset, total_attempts
+        )
+
+    def _try_theme_first_fill(
+        self,
+        envelope: PuzzleEnvelope,
+        ranked_words: list[str],
+        revealer: str,
+    ) -> tuple[FillResult | None, list[str], int]:
+        """Try building grids around theme entries (theme-first strategy).
+
+        For each subset of candidates (size 3 → 2 → 1):
+          - build_themed_grids() → multiple GridSpecs with entries pre-placed
+          - CSP fill each
+          - Grade and keep best
+
+        Returns (best_result, placed_subset, total_attempts).
+        """
+        theme = envelope.theme
+        assert theme is not None
+        grid_size = envelope.grid_size
+        base_seed = envelope.metadata.get("seed", 0) or 0
+
+        best_result: FillResult | None = None
+        best_subset: list[str] = []
+        total_attempts = 0
+
+        max_seed_size = min(len(ranked_words), 3)
+
+        for target_size in range(max_seed_size, 0, -1):
+            subsets = _generate_subsets(
+                ranked_words, target_size, self.MAX_SUBSETS_PER_SIZE
+            )
+
+            for subset in subsets:
+                # Build themed grids for this subset
+                specs = build_themed_grids(
+                    grid_size,
+                    list(subset),
+                    revealer,
+                    seed=base_seed,
+                    count=self.THEME_FIRST_GRID_COUNT,
+                )
+
+                if not specs:
+                    logger.debug(
+                        "Theme-first: no valid grids for subset %s",
+                        subset,
+                    )
+                    continue
+
+                for spec in specs:
+                    total_attempts += 1
+
+                    try:
+                        filled = self._filler.fill(spec)
+                    except FillError:
+                        continue
+
+                    report = self._grader.grade(filled.grid)
+
+                    result = FillResult(
+                        grid=filled.grid,
+                        filler_used=self._filler.name,
+                        quality_score=report.overall_score,
+                        grade_report=report,
+                        attempt_number=total_attempts,
+                    )
+
+                    if best_result is None or report.overall_score > (
+                        best_result.quality_score or 0.0
+                    ):
+                        best_result = result
+                        best_subset = list(subset)
+
+                    if report.passing:
+                        logger.info(
+                            "Theme-first passing fill: subset %s, "
+                            "score %.1f",
+                            subset, report.overall_score,
+                        )
+                        return best_result, best_subset, total_attempts
+
+        return best_result, best_subset, total_attempts
+
+    def _try_random_grid_fill(
+        self,
+        envelope: PuzzleEnvelope,
+        ranked_words: list[str],
+        revealer: str,
+    ) -> tuple[FillResult | None, list[str], int]:
+        """Try filling using random grid patterns (signature-based).
+
+        This is the original slot-aware subset selection strategy.
+        Returns (best_result, placed_subset, total_attempts).
+        """
+        theme = envelope.theme
+        assert theme is not None
+        grid_size = envelope.grid_size
+
+        # Pre-scan grid variants → signature groups
         base_seed = envelope.metadata.get("seed")
         sig_groups = _prescan_grid_signatures(
             envelope.puzzle_type,
@@ -371,12 +524,10 @@ class FillWithGradingStep(PipelineStep):
         best_subset: list[str] = []
         total_attempts = 0
 
-        # 3. Try subsets of decreasing size: 3 → 2 → 1 → 0
         max_seed_size = min(len(ranked_words), 3)
         for target_size in range(max_seed_size, -1, -1):
             subsets_tried = 0
 
-            # Count eligible groups so we can distribute the budget
             eligible_groups = [
                 g for g in sig_groups
                 if len(revealer) in g.signature.available_lengths
@@ -411,7 +562,7 @@ class FillWithGradingStep(PipelineStep):
                     )
 
                 logger.info(
-                    "Target size %d, signature %s: %d subsets "
+                    "Random-grid: target size %d, signature %s: %d subsets "
                     "(budget %d), %d grid seeds",
                     target_size,
                     dict(sig.length_counts),
@@ -455,22 +606,16 @@ class FillWithGradingStep(PipelineStep):
                             and result.grade_report.passing
                         ):
                             logger.info(
-                                "Passing fill found with subset %s "
+                                "Random-grid passing fill with subset %s "
                                 "(size %d)",
                                 subset,
                                 target_size,
                             )
-                            return self._finalize(
-                                envelope,
-                                best_result,
-                                best_subset,
-                                total_attempts,
-                            )
+                            return best_result, best_subset, total_attempts
 
                 if subsets_tried >= self.MAX_SUBSETS_PER_SIZE:
                     break
 
-            # If we found a passing result at this size, stop degrading
             if (
                 best_result
                 and best_result.grade_report
@@ -478,15 +623,7 @@ class FillWithGradingStep(PipelineStep):
             ):
                 break
 
-        if best_result is None:
-            raise FillError(
-                f"All subsets exhausted: could not fill grid after "
-                f"{total_attempts} total attempt(s)"
-            )
-
-        return self._finalize(
-            envelope, best_result, best_subset, total_attempts
-        )
+        return best_result, best_subset, total_attempts
 
     def _finalize(
         self,

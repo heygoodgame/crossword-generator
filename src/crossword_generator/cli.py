@@ -60,6 +60,12 @@ def main() -> None:
     help="Pre-generated theme file (skips theme generation).",
 )
 @click.option(
+    "--no-theme",
+    is_flag=True,
+    default=False,
+    help="Skip theme generation (themeless midi).",
+)
+@click.option(
     "-v",
     "--verbose",
     is_flag=True,
@@ -73,6 +79,7 @@ def generate(
     config_path: str | None,
     llm_provider: str | None,
     theme_file: str | None,
+    no_theme: bool,
     verbose: bool,
 ) -> None:
     """Generate a crossword puzzle."""
@@ -87,6 +94,9 @@ def generate(
         config.puzzle.grid_size = size
     if llm_provider is not None:
         config.llm.provider = llm_provider
+
+    if no_theme:
+        config.theme.enabled = False
 
     theme_path = Path(theme_file) if theme_file else None
 
