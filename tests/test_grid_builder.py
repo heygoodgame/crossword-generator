@@ -261,8 +261,32 @@ class TestBuildThemedGrids:
             assert _check_min_word_length(9, 9, blacks, 3)
             assert _all_rows_cols_have_white(9, 9, blacks)
 
-    def test_crossing_depth_limits_fixed_letters(self) -> None:
-        """Grids with 4+ entries respect max crossing depth of 2."""
+    def test_crossing_depth_short_entries_allow_depth_3(self) -> None:
+        """Short entries (<=4 letters) get adaptive depth 3."""
+        entries = ["ORE", "BAR", "COIN", "RING"]
+        revealer = "GOLDMINES"
+        results = build_themed_grids(9, entries, revealer, seed=0, count=20)
+        for spec in results:
+            across_per_col = [0] * 9
+            down_per_row = [0] * 9
+            for key, word in spec.seed_entries.items():
+                parts = key.split(",")
+                row, col, direction = int(parts[0]), int(parts[1]), parts[2]
+                if direction == "across":
+                    for c in range(col, col + len(word)):
+                        across_per_col[c] += 1
+                else:
+                    for r in range(row, row + len(word)):
+                        down_per_row[r] += 1
+            assert max(across_per_col) <= 3, (
+                f"across_per_col {across_per_col} exceeds depth 3"
+            )
+            assert max(down_per_row) <= 3, (
+                f"down_per_row {down_per_row} exceeds depth 3"
+            )
+
+    def test_crossing_depth_mixed_entries_cap_at_2(self) -> None:
+        """Mixed entries (some >4 letters) keep max crossing depth of 2."""
         entries = ["SUNSET", "ARCHES", "ORE", "BAR"]
         revealer = "GOLDRATIO"
         results = build_themed_grids(9, entries, revealer, seed=0, count=20)
@@ -279,10 +303,10 @@ class TestBuildThemedGrids:
                     for r in range(row, row + len(word)):
                         down_per_row[r] += 1
             assert max(across_per_col) <= 2, (
-                f"across_per_col {across_per_col} exceeds max crossing depth"
+                f"across_per_col {across_per_col} exceeds depth 2"
             )
             assert max(down_per_row) <= 2, (
-                f"down_per_row {down_per_row} exceeds max crossing depth"
+                f"down_per_row {down_per_row} exceeds depth 2"
             )
 
     def test_four_entries_use_mixed_directions(self) -> None:

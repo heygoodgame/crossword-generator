@@ -337,6 +337,12 @@ def _try_place_entries(
     across_per_col: list[int] = [0] * grid_size
     down_per_row: list[int] = [0] * grid_size
 
+    # Adaptive crossing depth: short entries (≤4 letters) each fix only
+    # 1 letter per perpendicular slot, so depth 3 is survivable.
+    non_full = [w for w in words if len(w) < grid_size]
+    all_short = all(len(w) <= 4 for w in non_full)
+    max_crossing_depth = 3 if all_short else _MAX_CROSSING_DEPTH
+
     # Pre-build shuffled candidate lists for each word.
     # Interleave across/down for each (pair, partition) combo so
     # backtracking explores mixed-direction placements early.
@@ -410,13 +416,13 @@ def _try_place_entries(
             # single perpendicular line to keep the CSP feasible.
             if direction == "across":
                 if any(
-                    across_per_col[c] >= _MAX_CROSSING_DEPTH
+                    across_per_col[c] >= max_crossing_depth
                     for c in range(part.start, part.start + wlen)
                 ):
                     continue
             else:
                 if any(
-                    down_per_row[r] >= _MAX_CROSSING_DEPTH
+                    down_per_row[r] >= max_crossing_depth
                     for r in range(part.start, part.start + wlen)
                 ):
                     continue
