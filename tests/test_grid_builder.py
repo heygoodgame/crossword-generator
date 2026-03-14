@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import pytest
+
 from crossword_generator.grid_builder import (
     _valid_line_partitions,
     build_themed_grids,
@@ -190,6 +192,7 @@ class TestBuildThemedGrids:
             "Expected at least one valid grid for 6-letter entries"
         )
 
+    @pytest.mark.slow
     def test_down_entries_can_be_placed(self) -> None:
         """Down placement is used when across row pairs are exhausted."""
         # 5 three-letter entries + 9-letter revealer = 6 words total.
@@ -209,6 +212,7 @@ class TestBuildThemedGrids:
         )
         assert has_down, "Expected at least one down entry placement"
 
+    @pytest.mark.slow
     def test_down_entries_maintain_constraints(self) -> None:
         """Grids with down entries still satisfy all constraints."""
         entries = ["CAT", "DOG", "BAT", "FOX", "OWL"]

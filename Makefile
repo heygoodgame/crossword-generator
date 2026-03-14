@@ -1,4 +1,4 @@
-.PHONY: setup install test lint format check-deps setup-ollama generate-mini generate-midi generate-themes build-go-crossword clean
+.PHONY: setup install test test-all lint format check-deps setup-ollama generate-mini generate-midi generate-themes build-go-crossword clean
 
 setup: install
 
@@ -7,6 +7,9 @@ install:
 
 test:
 	uv run pytest
+
+test-all:
+	uv run pytest -m ""
 
 lint:
 	uv run ruff check src/ tests/

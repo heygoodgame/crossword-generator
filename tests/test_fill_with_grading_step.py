@@ -607,6 +607,7 @@ class TestThemeWordInjection:
 class TestSubsetBudgetDistribution:
     """Tests that subset budget is distributed across signature groups."""
 
+    @pytest.mark.slow
     def test_multiple_groups_get_subsets(self) -> None:
         """Each eligible signature group should get at least 1 subset tried."""
         dictionary = _make_dict(GOOD_WORDS)
@@ -685,6 +686,7 @@ class TestSubsetSelection:
             ),
         )
 
+    @pytest.mark.slow
     def test_subset_selection_succeeds(self) -> None:
         """With candidates and dictionary, subset selection path is used."""
         dictionary = _make_dict(GOOD_WORDS)
@@ -743,6 +745,7 @@ class TestSubsetSelection:
         result = step.run(envelope)
         assert result.fill is not None
 
+    @pytest.mark.slow
     def test_graceful_degradation_all_fail(self) -> None:
         """When all subsets fail, should raise FillError."""
         dictionary = _make_dict(GOOD_WORDS)
@@ -758,6 +761,7 @@ class TestSubsetSelection:
         with pytest.raises(FillError, match="could not fill grid"):
             step.run(envelope)
 
+    @pytest.mark.slow
     def test_seed_entries_populated_after_fill(self) -> None:
         """After subset selection, seed_entries should contain placed words."""
         dictionary = _make_dict(GOOD_WORDS)
