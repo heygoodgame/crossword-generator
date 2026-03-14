@@ -404,6 +404,20 @@ class CSPFiller(GridFiller):
                     infeasible = True
                     break
             if infeasible:
+                s = slots[si]
+                logger.debug(
+                    "AC-3 infeasible: slot %d (%s at %d,%d, len=%d) "
+                    "has empty domain",
+                    si, s.direction, s.row, s.col, s.length,
+                )
+                if seed_assignments and logger.isEnabledFor(logging.DEBUG):
+                    for seed_si, seed_word in seed_assignments.items():
+                        ss = slots[seed_si]
+                        logger.debug(
+                            "  Seed: slot %d (%s at %d,%d) = %s",
+                            seed_si, ss.direction, ss.row, ss.col,
+                            seed_word,
+                        )
                 if is_last_tier:
                     raise FillError(
                         f"CSP solver: infeasible after initial AC-3 "
@@ -720,6 +734,17 @@ class CSPFiller(GridFiller):
             if supported != domains[other_si]:
                 domains[other_si] = supported
                 if not domains[other_si]:
+                    s = slots[other_si]
+                    cause = slots[si]
+                    logger.debug(
+                        "AC-3 wipeout: slot %d (%s %d,%d len=%d) "
+                        "emptied by arc from slot %d (%s %d,%d len=%d) "
+                        "at crossing pos %d->%d",
+                        other_si, s.direction, s.row, s.col, s.length,
+                        si, cause.direction, cause.row, cause.col,
+                        cause.length,
+                        pos_in_this, pos_in_other,
+                    )
                     return
                 for pos_o, neighbor_si, pos_n in slots[other_si].crossings:
                     if neighbor_si != si:

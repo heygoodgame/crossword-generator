@@ -187,14 +187,29 @@ def build_themed_grids(
     if grid_size % 2 == 1:
         sym_pairs.append((grid_size // 2, grid_size // 2))
 
+    # Individual indices for asymmetric fallback — each row/column
+    # is independent (no forced mirror placement).
+    individual_pairs = [(idx, idx) for idx in range(grid_size)]
+
     results: list[GridSpec] = []
 
     for variant in range(count):
         rng = random.Random(seed + variant)
 
+        # Phase 1: Try symmetric placement
         spec = _try_place_entries(
-            grid_size, all_words, sym_pairs, partition_cache, rng
+            grid_size, all_words, sym_pairs, partition_cache, rng,
+            symmetric=True,
         )
+        # Phase 2: Asymmetric fallback — entries placed on individual
+        # rows without forcing mirror cells, giving the CSP filler
+        # more degrees of freedom.
+        if spec is None:
+            rng2 = random.Random(seed + variant)
+            spec = _try_place_entries(
+                grid_size, all_words, individual_pairs, partition_cache,
+                rng2, symmetric=False,
+            )
         if spec is not None:
             results.append(spec)
 
@@ -210,12 +225,14 @@ def _has_unsealable_gap(
     grid_size: int,
     locked_white: set[tuple[int, int]],
     locked_black: set[tuple[int, int]],
+    *,
+    symmetric: bool = True,
 ) -> bool:
     """Quick check: any 1-2 cell gap between blacks has a locked-white cell.
 
-    If a short gap contains a cell that is locked white (or whose 180-degree
-    mirror is locked white), the gap cannot be sealed by _seal_short_gaps.
-    Used as a forward-pruning check during backtracking.
+    If a short gap contains a cell that is locked white (or, when symmetric,
+    whose 180-degree mirror is locked white), the gap cannot be sealed by
+    _seal_short_gaps.  Used as a forward-pruning check during backtracking.
     """
     for axis in ("row", "col"):
         for idx in range(grid_size):
@@ -235,12 +252,15 @@ def _has_unsealable_gap(
                 if 1 <= (i - run_start) <= 2:
                     for j in range(run_start, i):
                         cell = cells[j]
-                        mir = (
-                            grid_size - 1 - cell[0],
-                            grid_size - 1 - cell[1],
-                        )
-                        if cell in locked_white or mir in locked_white:
+                        if cell in locked_white:
                             return True
+                        if symmetric:
+                            mir = (
+                                grid_size - 1 - cell[0],
+                                grid_size - 1 - cell[1],
+                            )
+                            if mir in locked_white:
+                                return True
     return False
 
 
@@ -287,15 +307,24 @@ def _compute_placement_cells(
 def _try_place_entries(
     grid_size: int,
     words: list[str],
-    sym_pairs: list[tuple[int, int]],
+    line_pairs: list[tuple[int, int]],
     partition_cache: dict[int, list[LinePartition]],
     rng: random.Random,
+    *,
+    symmetric: bool = True,
 ) -> GridSpec | None:
     """Try to place all words using backtracking search.
 
     Uses recursive backtracking to explore placement combinations.
     Across placements are tried before down (preserving convention),
     but if a later word can't be placed, earlier choices are revised.
+
+    Args:
+        line_pairs: Row/column pairs for placement. In symmetric mode
+            these are (i, grid_size-1-i) pairs; in asymmetric mode
+            they are (i, i) so _compute_placement_cells skips mirroring.
+        symmetric: Whether to enforce symmetric gap sealing and pattern
+            generation. Asymmetric mode gives the CSP filler more freedom.
 
     Returns a GridSpec on success, None on failure.
     """
@@ -306,13 +335,14 @@ def _try_place_entries(
     used_cols: set[int] = set()
 
     # Pre-build shuffled candidate lists for each word.
-    # Across candidates come first (convention preference), then down.
+    # Interleave across/down for each (pair, partition) combo so
+    # backtracking explores mixed-direction placements early.
     candidates_per_word: list[
         list[tuple[str, int, int, LinePartition]]
     ] = []
     for word in words:
         partitions = partition_cache[len(word)]
-        shuffled_pairs = list(sym_pairs)
+        shuffled_pairs = list(line_pairs)
         rng.shuffle(shuffled_pairs)
         shuffled_parts = list(partitions)
         rng.shuffle(shuffled_parts)
@@ -321,8 +351,6 @@ def _try_place_entries(
         for pair in shuffled_pairs:
             for part in shuffled_parts:
                 candidates.append(("across", pair[0], pair[1], part))
-        for pair in shuffled_pairs:
-            for part in shuffled_parts:
                 candidates.append(("down", pair[0], pair[1], part))
         candidates_per_word.append(candidates)
 
@@ -337,7 +365,9 @@ def _try_place_entries(
             # All words placed — try to seal gaps on a copy
             lw_copy = set(locked_white)
             lb_copy = set(locked_black)
-            if _seal_short_gaps(grid_size, lw_copy, lb_copy):
+            if _seal_short_gaps(
+                grid_size, lw_copy, lb_copy, symmetric=symmetric
+            ):
                 sealed_state[0] = (lw_copy, lb_copy)
                 return True
             return False  # Keep searching for another arrangement
@@ -380,7 +410,10 @@ def _try_place_entries(
             locked_black.update(added_b)
 
             # Forward check: prune if any short gap is unsealable
-            if _has_unsealable_gap(grid_size, locked_white, locked_black):
+            if _has_unsealable_gap(
+                grid_size, locked_white, locked_black,
+                symmetric=symmetric,
+            ):
                 locked_white.difference_update(added_w)
                 locked_black.difference_update(added_b)
                 continue
@@ -427,7 +460,7 @@ def _try_place_entries(
 
     # Phase B: Generate black cells around the placements
     black_cells = _generate_constrained_pattern(
-        grid_size, final_white, final_black, rng
+        grid_size, final_white, final_black, rng, symmetric=symmetric
     )
     if black_cells is None:
         return None
@@ -445,10 +478,13 @@ def _seal_short_gaps(
     grid_size: int,
     locked_white: set[tuple[int, int]],
     locked_black: set[tuple[int, int]],
+    *,
+    symmetric: bool = True,
 ) -> bool:
     """Seal 1- and 2-cell gaps in rows/columns between locked blacks.
 
     Only seals a gap if doing so does not create a 2x2 all-black block.
+    When symmetric, seals both the gap cell and its 180-degree mirror.
     Returns True if all gaps were sealed successfully, False if any
     gap remains that cannot be sealed without creating 2x2 blocks.
 
@@ -480,13 +516,16 @@ def _seal_short_gaps(
                         to_seal: list[tuple[int, int]] = []
                         for j in range(run_start, i):
                             cell = cells[j]
-                            mir = (
-                                grid_size - 1 - cell[0],
-                                grid_size - 1 - cell[1],
-                            )
-                            for c in (cell, mir):
+                            if symmetric:
+                                mir = (
+                                    grid_size - 1 - cell[0],
+                                    grid_size - 1 - cell[1],
+                                )
+                                targets = [cell, mir]
+                            else:
+                                targets = [cell]
+                            for c in targets:
                                 if c in locked_white:
-                                    # Can't make a locked-white cell black
                                     can_seal = False
                                     break
                                 trial = locked_black | set(to_seal) | {c}
@@ -529,6 +568,8 @@ def _generate_constrained_pattern(
     locked_white: set[tuple[int, int]],
     locked_black: set[tuple[int, int]],
     rng: random.Random,
+    *,
+    symmetric: bool = True,
 ) -> list[tuple[int, int]] | None:
     """Generate a black-cell pattern respecting locked cells.
 
@@ -546,6 +587,7 @@ def _generate_constrained_pattern(
         config=config,
         locked_white=locked_white,
         locked_black=locked_black,
+        symmetric=symmetric,
     )
 
     black = set(pattern)
@@ -573,9 +615,10 @@ def _generate_constrained_pattern(
     if density < config.min_density or density > config.max_density:
         return None
 
-    # Check 180-degree symmetry
-    for r, c in black:
-        if (grid_size - 1 - r, grid_size - 1 - c) not in black:
-            return None
+    # Check 180-degree symmetry (only when symmetric mode is requested)
+    if symmetric:
+        for r, c in black:
+            if (grid_size - 1 - r, grid_size - 1 - c) not in black:
+                return None
 
     return sorted(black)
