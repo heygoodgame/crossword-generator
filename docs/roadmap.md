@@ -91,10 +91,9 @@ Completed:
 
 - [x] Raise `max_seed_size` cap from 3 → 4 in fill step subset selection (`fill_step.py`). Size-4 subsets are now attempted; grid builder succeeds but CSP fails.
 - [x] Add `_MAX_CROSSING_DEPTH` constraint to grid builder backtracking. Limits seed entries crossing any perpendicular line to 2, preventing structurally impossible grids.
+- [x] Prefer short entries for size-4 subsets — filter to entries ≤ `(grid_size+1)//2` letters (5 for 9x9). Reduces wasted attempts on long-entry subsets but all-short subsets still fail AC-3.
 
 CSP feasibility (highest priority — the current bottleneck):
-
-- [ ] Prefer short entries for size-4 subsets — 3-letter words (ORE, BAR) fix fewer perpendicular letters than 6-letter words (SUNSET, ARCHES). A subset like `[ORE, BAR, COIN, RING]` constrains far less than `[ORE, SUNSET, ARCHES, RING]`.
 - [ ] Make `_MAX_CROSSING_DEPTH` adaptive based on entry lengths in the subset — depth 3 is survivable for mostly 3-letter entries (a 5-letter down slot with 3 fixed letters from short across words still has viable dictionary patterns).
 - [ ] Try 10x10 or 11x11 grids for themes with many/long entries — longer perpendicular slots have exponentially more dictionary matches per fixed-letter pattern.
 - [ ] CSP solver improvements: try relaxing AC-3 to AC-1 or forward checking only for highly-seeded grids, trading pruning strength for domain preservation.
