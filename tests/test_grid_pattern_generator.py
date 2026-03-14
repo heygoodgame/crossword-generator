@@ -310,3 +310,59 @@ class TestDiversity:
             assert not report.has_2x2_block, (
                 f"size={size} seed={seed}: has 2x2 block"
             )
+
+
+class TestAsymmetricPattern:
+    """Tests for asymmetric pattern generation (symmetric=False)."""
+
+    @pytest.mark.parametrize("size", [9, 10, 11])
+    def test_valid_patterns(self, size: int) -> None:
+        """Asymmetric patterns satisfy all hard constraints."""
+        for seed in range(50):
+            black = generate_pattern(size, size, seed=seed, symmetric=False)
+            black_set = set(black)
+            assert _is_connected(size, size, black_set)
+            assert _check_min_word_length(size, size, black_set, 3)
+            assert _all_rows_cols_have_white(size, size, black_set)
+
+    @pytest.mark.parametrize("size", [9, 10, 11])
+    def test_corners_white(self, size: int) -> None:
+        """Corners remain white in asymmetric patterns."""
+        corners = {(0, 0), (0, size - 1), (size - 1, 0), (size - 1, size - 1)}
+        for seed in range(50):
+            black = set(
+                generate_pattern(size, size, seed=seed, symmetric=False)
+            )
+            assert black.isdisjoint(corners)
+
+    @pytest.mark.parametrize("size", [9, 10, 11])
+    def test_density_in_range(self, size: int) -> None:
+        """Asymmetric patterns have density within bounds."""
+        for seed in range(50):
+            black = generate_pattern(size, size, seed=seed, symmetric=False)
+            density = len(black) / (size * size)
+            assert density <= 0.26  # max_density + margin
+
+    def test_locked_cells_respected(self) -> None:
+        """Asymmetric mode respects locked cells without mirrors."""
+        locked_white = {(2, c) for c in range(5)}
+        locked_black = {(0, 4)}  # No mirror required
+        for seed in range(50):
+            black = generate_pattern(
+                9, 9,
+                seed=seed,
+                locked_white=locked_white,
+                locked_black=locked_black,
+                symmetric=False,
+            )
+            black_set = set(black)
+            assert black_set.isdisjoint(locked_white)
+            assert locked_black.issubset(black_set)
+            assert _is_connected(9, 9, black_set)
+            assert _check_min_word_length(9, 9, black_set, 3)
+
+    def test_symmetric_default_backward_compatible(self) -> None:
+        """Default symmetric=True produces same results as before."""
+        p1 = generate_pattern(9, 9, seed=42)
+        p2 = generate_pattern(9, 9, seed=42, symmetric=True)
+        assert p1 == p2

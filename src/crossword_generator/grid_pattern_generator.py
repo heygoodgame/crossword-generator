@@ -46,6 +46,7 @@ def generate_pattern(
     config: PatternConfig | None = None,
     locked_white: set[tuple[int, int]] | None = None,
     locked_black: set[tuple[int, int]] | None = None,
+    symmetric: bool = True,
 ) -> list[tuple[int, int]]:
     """Generate a black-cell pattern for a grid.
 
@@ -59,6 +60,10 @@ def generate_pattern(
         config: Optional generation parameters.
         locked_white: Positions that must remain white (e.g. theme entry cells).
         locked_black: Positions that must be black (e.g. theme delimiters).
+        symmetric: If True, enforce 180-degree rotational symmetry by
+            placing black cells in mirror pairs. If False, place cells
+            individually (used for theme-first grids where symmetry is
+            relaxed to give the CSP filler more freedom).
 
     Returns:
         List of (row, col) positions of black cells.
@@ -73,10 +78,15 @@ def generate_pattern(
     total_cells = rows * cols
     max_black = int(total_cells * config.max_density)
 
-    half_positions = _get_half_positions(
-        rows, cols, locked_white=locked_white, locked_black=locked_black
-    )
-    n_pos = len(half_positions)
+    if symmetric:
+        positions = _get_half_positions(
+            rows, cols, locked_white=locked_white, locked_black=locked_black
+        )
+    else:
+        positions = _get_all_positions(
+            rows, cols, locked_white=locked_white, locked_black=locked_black
+        )
+    n_pos = len(positions)
 
     # Step 1: Per-cell independent inclusion decision.
     # Each cell uses its own RNG keyed by (seed, position_index)
@@ -84,7 +94,7 @@ def generate_pattern(
     target_factor = rng.uniform(0.25, 0.65)
     desired: list[tuple[int, int]] = []
     remainder: list[tuple[int, int]] = []
-    for i, pos in enumerate(half_positions):
+    for i, pos in enumerate(positions):
         cell_rng = random.Random(seed * n_pos + i)
         if cell_rng.random() < target_factor:
             desired.append(pos)
@@ -103,14 +113,19 @@ def generate_pattern(
             if len(black) >= max_black:
                 break
 
-            mirror_r, mirror_c = rows - 1 - r, cols - 1 - c
             if (r, c) in black:
                 continue
 
-            is_center = (r, c) == (mirror_r, mirror_c)
-            new_cells = (
-                [(r, c)] if is_center else [(r, c), (mirror_r, mirror_c)]
-            )
+            if symmetric:
+                mirror_r, mirror_c = rows - 1 - r, cols - 1 - c
+                is_center = (r, c) == (mirror_r, mirror_c)
+                new_cells = (
+                    [(r, c)]
+                    if is_center
+                    else [(r, c), (mirror_r, mirror_c)]
+                )
+            else:
+                new_cells = [(r, c)]
 
             if len(black) + len(new_cells) > max_black:
                 continue
@@ -378,6 +393,34 @@ def _get_half_positions(
             # Only the lexicographically smaller of the pair
             elif (r, c) < (mirror_r, mirror_c):
                 positions.append((r, c))
+
+    return positions
+
+
+def _get_all_positions(
+    rows: int,
+    cols: int,
+    *,
+    locked_white: set[tuple[int, int]] | None = None,
+    locked_black: set[tuple[int, int]] | None = None,
+) -> list[tuple[int, int]]:
+    """Get all candidate positions (excluding corners and locked cells).
+
+    Unlike _get_half_positions, returns every eligible cell independently
+    rather than one per symmetric pair. Used when symmetric placement is
+    not required (e.g. theme-first grids with relaxed symmetry).
+    """
+    corners = {(0, 0), (0, cols - 1), (rows - 1, 0), (rows - 1, cols - 1)}
+    locked = (locked_white or set()) | (locked_black or set())
+    positions: list[tuple[int, int]] = []
+
+    for r in range(rows):
+        for c in range(cols):
+            if (r, c) in corners:
+                continue
+            if (r, c) in locked:
+                continue
+            positions.append((r, c))
 
     return positions
 
