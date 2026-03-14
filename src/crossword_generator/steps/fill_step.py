@@ -438,7 +438,7 @@ class FillWithGradingStep(PipelineStep):
         best_subset: list[str] = []
         total_attempts = 0
 
-        max_seed_size = min(len(ranked_words), 3)
+        max_seed_size = min(len(ranked_words), 4)
 
         for target_size in range(max_seed_size, 0, -1):
             subsets = _generate_subsets(
@@ -524,7 +524,7 @@ class FillWithGradingStep(PipelineStep):
         best_subset: list[str] = []
         total_attempts = 0
 
-        max_seed_size = min(len(ranked_words), 3)
+        max_seed_size = min(len(ranked_words), 4)
         for target_size in range(max_seed_size, -1, -1):
             subsets_tried = 0
 

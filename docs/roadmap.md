@@ -81,6 +81,17 @@ Findings from running the evaluation framework (100 seeds × 5/7/9/10 grids):
 - [x] `GoCrosswordFiller.is_available()`: check that the Docker image actually exists locally, not just that Docker is running.
 - [x] Evaluation framework: add early abort option — skip remaining seeds for a filler×size combo after N consecutive failures (e.g., 5 timeouts in a row) to avoid wasting hours on known-broken configurations.
 
+### Phase 7b — Theme-Fill Improvements (midi)
+
+Avenues to increase theme density (4+ seed entries + revealer in 9x9 grids):
+
+- [ ] Raise `max_seed_size` cap from 3 → 4 in fill step subset selection (`fill_step.py`). Currently size-4 subsets are never attempted.
+- [ ] Prefer short entries for size-4 subsets — 3-letter words (ORE, BAR) constrain fewer perpendicular slots than 6-letter words (SUNSET, ARCHES).
+- [ ] Increase `_MAX_PLACEMENT_NODES` for 5-word placements (grid builder backtracking budget). 50K may be too small for the larger search tree.
+- [ ] Increase grid variant count for size-4 subsets (currently 10 per subset; size-4 has lower success rate per variant).
+- [ ] Make `_MAX_CROSSING_DEPTH` adaptive based on entry lengths in the subset — depth 3 is survivable for mostly 3-letter entries.
+- [ ] Raise `max_density` ceiling (0.25 → 0.28–0.30) to give gap-sealing logic more room with highly-seeded grids.
+
 ## Phase 8 — Polish
 
 - [ ] CI pipeline (GitHub Actions: test, lint, type check)
