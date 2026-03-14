@@ -83,13 +83,26 @@ Findings from running the evaluation framework (100 seeds × 5/7/9/10 grids):
 
 ### Phase 7b — Theme-Fill Improvements (midi)
 
-Avenues to increase theme density (4+ seed entries + revealer in 9x9 grids):
+Avenues to increase theme density (4+ seed entries + revealer in 9x9 grids).
 
-- [ ] Raise `max_seed_size` cap from 3 → 4 in fill step subset selection (`fill_step.py`). Currently size-4 subsets are never attempted.
-- [ ] Prefer short entries for size-4 subsets — 3-letter words (ORE, BAR) constrain fewer perpendicular slots than 6-letter words (SUNSET, ARCHES).
-- [ ] Increase `_MAX_PLACEMENT_NODES` for 5-word placements (grid builder backtracking budget). 50K may be too small for the larger search tree.
-- [ ] Increase grid variant count for size-4 subsets (currently 10 per subset; size-4 has lower success rate per variant).
-- [ ] Make `_MAX_CROSSING_DEPTH` adaptive based on entry lengths in the subset — depth 3 is survivable for mostly 3-letter entries.
+**Bottleneck status** (established in runs 7-9): Grid builder produces valid grids for size-4 subsets (93.5% success rate, 187/200 specs). The bottleneck is now the **CSP filler** — AC-3 wipes out perpendicular slot domains when too many letters are fixed by crossing seed entries.
+
+Completed:
+
+- [x] Raise `max_seed_size` cap from 3 → 4 in fill step subset selection (`fill_step.py`). Size-4 subsets are now attempted; grid builder succeeds but CSP fails.
+- [x] Add `_MAX_CROSSING_DEPTH` constraint to grid builder backtracking. Limits seed entries crossing any perpendicular line to 2, preventing structurally impossible grids.
+
+CSP feasibility (highest priority — the current bottleneck):
+
+- [ ] Prefer short entries for size-4 subsets — 3-letter words (ORE, BAR) fix fewer perpendicular letters than 6-letter words (SUNSET, ARCHES). A subset like `[ORE, BAR, COIN, RING]` constrains far less than `[ORE, SUNSET, ARCHES, RING]`.
+- [ ] Make `_MAX_CROSSING_DEPTH` adaptive based on entry lengths in the subset — depth 3 is survivable for mostly 3-letter entries (a 5-letter down slot with 3 fixed letters from short across words still has viable dictionary patterns).
+- [ ] Try 10x10 or 11x11 grids for themes with many/long entries — longer perpendicular slots have exponentially more dictionary matches per fixed-letter pattern.
+- [ ] CSP solver improvements: try relaxing AC-3 to AC-1 or forward checking only for highly-seeded grids, trading pruning strength for domain preservation.
+
+Grid builder (no longer the bottleneck, but still useful):
+
+- [ ] Increase `_MAX_PLACEMENT_NODES` for 5-word placements (grid builder backtracking budget). 50K is sufficient now (93.5% success) but may matter for harder subsets.
+- [ ] Increase grid variant count for size-4 subsets (currently 10 per subset; more variants give the CSP more grid layouts to try).
 - [ ] Raise `max_density` ceiling (0.25 → 0.28–0.30) to give gap-sealing logic more room with highly-seeded grids.
 
 ## Phase 8 — Polish

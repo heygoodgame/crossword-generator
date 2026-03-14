@@ -441,8 +441,26 @@ class FillWithGradingStep(PipelineStep):
         max_seed_size = min(len(ranked_words), 4)
 
         for target_size in range(max_seed_size, 0, -1):
+            # For large subsets, exclude long entries that over-constrain
+            # perpendicular slots.  A 5-letter entry spans 5 of 9 columns
+            # (56%), which is manageable; 6+ letters (67%+) combined with
+            # a full-row revealer creates too much overlap for the CSP.
+            words_for_size = ranked_words
+            if target_size >= 4:
+                max_entry_len = (grid_size + 1) // 2  # 5 for 9x9
+                words_for_size = [
+                    w for w in ranked_words if len(w) <= max_entry_len
+                ]
+                if len(words_for_size) < target_size:
+                    logger.debug(
+                        "Skipping target_size=%d: only %d entries ≤ %d "
+                        "letters",
+                        target_size, len(words_for_size), max_entry_len,
+                    )
+                    continue
+
             subsets = _generate_subsets(
-                ranked_words, target_size, self.MAX_SUBSETS_PER_SIZE
+                words_for_size, target_size, self.MAX_SUBSETS_PER_SIZE
             )
 
             for subset in subsets:
@@ -526,6 +544,17 @@ class FillWithGradingStep(PipelineStep):
 
         max_seed_size = min(len(ranked_words), 4)
         for target_size in range(max_seed_size, -1, -1):
+            # For large subsets, exclude long entries (same filter as
+            # theme-first) to keep perpendicular slots CSP-feasible.
+            words_for_size = ranked_words
+            if target_size >= 4:
+                max_entry_len = (grid_size + 1) // 2  # 5 for 9x9
+                words_for_size = [
+                    w for w in ranked_words if len(w) <= max_entry_len
+                ]
+                if len(words_for_size) < target_size:
+                    continue
+
             subsets_tried = 0
 
             eligible_groups = [
@@ -554,7 +583,7 @@ class FillWithGradingStep(PipelineStep):
                     subsets = [[]]
                 else:
                     subsets = _generate_subsets_for_signature(
-                        ranked_words,
+                        words_for_size,
                         target_size,
                         per_group_budget,
                         sig,
