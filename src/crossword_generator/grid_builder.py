@@ -25,6 +25,7 @@ from crossword_generator.grid_pattern_generator import (
 logger = logging.getLogger(__name__)
 
 _MAX_PLACEMENT_NODES = 50_000
+_MAX_CROSSING_DEPTH = 2
 
 
 @dataclass
@@ -333,6 +334,8 @@ def _try_place_entries(
     seed_entries: dict[str, str] = {}
     used_rows: set[int] = set()
     used_cols: set[int] = set()
+    across_per_col: list[int] = [0] * grid_size
+    down_per_row: list[int] = [0] * grid_size
 
     # Pre-build shuffled candidate lists for each word.
     # Interleave across/down for each (pair, partition) combo so
@@ -403,17 +406,45 @@ def _try_place_entries(
             ):
                 continue
 
+            # Crossing depth: limit how many seed entries cross any
+            # single perpendicular line to keep the CSP feasible.
+            if direction == "across":
+                if any(
+                    across_per_col[c] >= _MAX_CROSSING_DEPTH
+                    for c in range(part.start, part.start + wlen)
+                ):
+                    continue
+            else:
+                if any(
+                    down_per_row[r] >= _MAX_CROSSING_DEPTH
+                    for r in range(part.start, part.start + wlen)
+                ):
+                    continue
+
             # Apply — track only the cells this placement actually adds
             added_w = all_whites - locked_white
             added_b = all_blacks - locked_black
             locked_white.update(added_w)
             locked_black.update(added_b)
 
+            if direction == "across":
+                for c in range(part.start, part.start + wlen):
+                    across_per_col[c] += 1
+            else:
+                for r in range(part.start, part.start + wlen):
+                    down_per_row[r] += 1
+
             # Forward check: prune if any short gap is unsealable
             if _has_unsealable_gap(
                 grid_size, locked_white, locked_black,
                 symmetric=symmetric,
             ):
+                if direction == "across":
+                    for c in range(part.start, part.start + wlen):
+                        across_per_col[c] -= 1
+                else:
+                    for r in range(part.start, part.start + wlen):
+                        down_per_row[r] -= 1
                 locked_white.difference_update(added_w)
                 locked_black.difference_update(added_b)
                 continue
@@ -437,10 +468,14 @@ def _try_place_entries(
             locked_white.difference_update(added_w)
             locked_black.difference_update(added_b)
             if direction == "across":
+                for c in range(part.start, part.start + wlen):
+                    across_per_col[c] -= 1
                 used_rows.discard(line_a)
                 if line_a != line_b:
                     used_rows.discard(line_b)
             else:
+                for r in range(part.start, part.start + wlen):
+                    down_per_row[r] -= 1
                 used_cols.discard(line_a)
                 if line_a != line_b:
                     used_cols.discard(line_b)
