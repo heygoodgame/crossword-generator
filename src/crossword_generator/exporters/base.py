@@ -27,3 +27,20 @@ class Exporter(ABC):
         Returns:
             Path to the written file.
         """
+
+    def export_to_file(self, envelope: PuzzleEnvelope, filepath: Path) -> Path:
+        """Export a puzzle to an exact file path.
+
+        Args:
+            envelope: The completed puzzle data.
+            filepath: Exact path to write the output file.
+
+        Returns:
+            Path to the written file.
+        """
+        filepath.parent.mkdir(parents=True, exist_ok=True)
+        return self._write(envelope, filepath)
+
+    def _write(self, envelope: PuzzleEnvelope, filepath: Path) -> Path:
+        """Write the puzzle to a specific filepath. Override in subclasses."""
+        raise NotImplementedError

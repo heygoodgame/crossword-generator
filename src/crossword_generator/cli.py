@@ -66,6 +66,18 @@ def main() -> None:
     help="Skip theme generation (themeless midi).",
 )
 @click.option(
+    "--output-dir",
+    type=click.Path(),
+    default=None,
+    help="Output directory for generated puzzle files (overrides config).",
+)
+@click.option(
+    "--output-file",
+    type=click.Path(),
+    default=None,
+    help="Exact output file path (extension determines format, e.g. .puz or .ipuz).",
+)
+@click.option(
     "-v",
     "--verbose",
     is_flag=True,
@@ -80,6 +92,8 @@ def generate(
     llm_provider: str | None,
     theme_file: str | None,
     no_theme: bool,
+    output_dir: str | None,
+    output_file: str | None,
     verbose: bool,
 ) -> None:
     """Generate a crossword puzzle."""
@@ -97,8 +111,11 @@ def generate(
 
     if no_theme:
         config.theme.enabled = False
+    if output_dir is not None:
+        config.output.directory = output_dir
 
     theme_path = Path(theme_file) if theme_file else None
+    output_file_path = Path(output_file) if output_file else None
 
     logger.info(
         "Generating %s crossword (%dx%d)",
@@ -109,7 +126,7 @@ def generate(
 
     try:
         pipeline, envelope = create_pipeline(
-            config, seed=seed, theme_file=theme_path
+            config, seed=seed, theme_file=theme_path, output_file=output_file_path
         )
         result = pipeline.run(envelope)
     except Exception as e:

@@ -34,10 +34,12 @@ class Pipeline:
         steps: list[PipelineStep],
         exporters: list[Exporter],
         output_dir: Path,
+        output_file: Path | None = None,
     ) -> None:
         self._steps = steps
         self._exporters = exporters
         self._output_dir = output_dir
+        self._output_file = output_file
 
     def run(self, envelope: PuzzleEnvelope) -> PuzzleEnvelope:
         """Execute all steps sequentially, saving intermediates and exporting."""
@@ -50,12 +52,34 @@ class Pipeline:
 
         # Export
         exported: list[Path] = []
-        for exporter in self._exporters:
-            try:
-                path = exporter.export(envelope, self._output_dir)
-                exported.append(path)
-            except Exception:
-                logger.exception("Export failed for format %s", exporter.file_extension)
+        if self._output_file is not None:
+            # Write to exact file path; pick exporter by extension
+            ext = self._output_file.suffix
+            exporter = next(
+                (e for e in self._exporters if e.file_extension == ext), None
+            )
+            if exporter is None:
+                logger.error(
+                    "No exporter for extension %s (available: %s)",
+                    ext,
+                    [e.file_extension for e in self._exporters],
+                )
+            else:
+                try:
+                    path = exporter.export_to_file(envelope, self._output_file)
+                    exported.append(path)
+                except Exception:
+                    logger.exception("Export failed for %s", self._output_file)
+        else:
+            for exporter in self._exporters:
+                try:
+                    path = exporter.export(envelope, self._output_dir)
+                    exported.append(path)
+                except Exception:
+                    logger.exception(
+                        "Export failed for format %s",
+                        exporter.file_extension,
+                    )
 
         if exported:
             logger.info("Exported files: %s", [str(p) for p in exported])
@@ -78,6 +102,7 @@ def create_pipeline(
     *,
     seed: int | None = None,
     theme_file: Path | None = None,
+    output_file: Path | None = None,
 ) -> tuple[Pipeline, PuzzleEnvelope]:
     """Wire up a Pipeline and initial PuzzleEnvelope from config.
 
@@ -177,7 +202,9 @@ def create_pipeline(
 
     output_dir = Path(config.output.directory)
 
-    pipeline = Pipeline(steps=steps, exporters=exporters, output_dir=output_dir)
+    pipeline = Pipeline(
+        steps=steps, exporters=exporters, output_dir=output_dir, output_file=output_file
+    )
 
     envelope = PuzzleEnvelope(
         puzzle_type=PuzzleType(config.puzzle.type),

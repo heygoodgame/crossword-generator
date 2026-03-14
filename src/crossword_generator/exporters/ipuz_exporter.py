@@ -24,15 +24,18 @@ class IpuzExporter(Exporter):
         return ".ipuz"
 
     def export(self, envelope: PuzzleEnvelope, output_path: Path) -> Path:
-        """Export the puzzle to an .ipuz file.
+        """Export the puzzle to an .ipuz file in output_path directory."""
+        if envelope.fill is None:
+            raise ValueError("Cannot export: envelope has no fill result")
+        output_path.mkdir(parents=True, exist_ok=True)
+        grid = envelope.fill.grid
+        rows = len(grid)
+        cols = len(grid[0])
+        timestamp = datetime.now(tz=UTC).strftime("%Y%m%d_%H%M%S")
+        filename = f"{envelope.puzzle_type.value}_{rows}x{cols}_{timestamp}.ipuz"
+        return self._write(envelope, output_path / filename)
 
-        Args:
-            envelope: The puzzle envelope with at least a filled grid.
-            output_path: Directory to write the file to.
-
-        Returns:
-            Path to the written .ipuz file.
-        """
+    def _write(self, envelope: PuzzleEnvelope, filepath: Path) -> Path:
         if envelope.fill is None:
             raise ValueError("Cannot export: envelope has no fill result")
 
@@ -42,12 +45,10 @@ class IpuzExporter(Exporter):
 
         numbered = compute_numbering(grid)
 
-        # Build a number lookup: (row, col) → cell_number
         number_map: dict[tuple[int, int], int] = {}
         for entry in numbered:
             number_map.setdefault((entry.row, entry.col), entry.number)
 
-        # puzzle grid: cell numbers or "#" for black squares, 0 for unnumbered
         puzzle_grid: list[list[int | str]] = []
         for r in range(rows):
             row_data: list[int | str] = []
@@ -59,7 +60,6 @@ class IpuzExporter(Exporter):
                     row_data.append(num)
             puzzle_grid.append(row_data)
 
-        # solution grid: letters or "#" for black squares
         solution_grid: list[list[str]] = []
         for r in range(rows):
             row_data_str: list[str] = []
@@ -70,7 +70,6 @@ class IpuzExporter(Exporter):
                     row_data_str.append(grid[r][c])
             solution_grid.append(row_data_str)
 
-        # Build clues
         clue_map: dict[tuple[int, str], str] = {}
         for clue_entry in envelope.clues:
             clue_map[(clue_entry.number, clue_entry.direction)] = clue_entry.clue
@@ -99,14 +98,8 @@ class IpuzExporter(Exporter):
             },
         }
 
-        # Validate via ipuz library
         validated = ipuz.read(json.dumps(ipuz_dict))
 
-        # Write file
-        output_path.mkdir(parents=True, exist_ok=True)
-        timestamp = datetime.now(tz=UTC).strftime("%Y%m%d_%H%M%S")
-        filename = f"{envelope.puzzle_type.value}_{rows}x{cols}_{timestamp}.ipuz"
-        filepath = output_path / filename
         filepath.write_text(ipuz.write(validated))
         logger.info("Exported .ipuz to %s", filepath)
         return filepath

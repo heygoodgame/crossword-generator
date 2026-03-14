@@ -23,15 +23,18 @@ class PuzExporter(Exporter):
         return ".puz"
 
     def export(self, envelope: PuzzleEnvelope, output_path: Path) -> Path:
-        """Export the puzzle to a .puz file.
+        """Export the puzzle to a .puz file in output_path directory."""
+        if envelope.fill is None:
+            raise ValueError("Cannot export: envelope has no fill result")
+        output_path.mkdir(parents=True, exist_ok=True)
+        grid = envelope.fill.grid
+        rows = len(grid)
+        cols = len(grid[0])
+        timestamp = datetime.now(tz=UTC).strftime("%Y%m%d_%H%M%S")
+        filename = f"{envelope.puzzle_type.value}_{rows}x{cols}_{timestamp}.puz"
+        return self._write(envelope, output_path / filename)
 
-        Args:
-            envelope: The puzzle envelope with at least a filled grid.
-            output_path: Directory to write the file to.
-
-        Returns:
-            Path to the written .puz file.
-        """
+    def _write(self, envelope: PuzzleEnvelope, filepath: Path) -> Path:
         if envelope.fill is None:
             raise ValueError("Cannot export: envelope has no fill result")
 
@@ -45,19 +48,13 @@ class PuzExporter(Exporter):
         p.title = f"{envelope.puzzle_type.value.title()} Crossword"
         p.author = "Crossword Generator"
 
-        # Solution: flat string, "." for black squares
         p.solution = "".join(
             cell if cell != "." else "." for row in grid for cell in row
         )
-
-        # Fill: "-" for unsolved letter cells, "." for black squares
         p.fill = "".join("." if cell == "." else "-" for row in grid for cell in row)
 
-        # Build clues in standard .puz order:
-        # sorted by number, across before down at the same number
         numbered = compute_numbering(grid)
 
-        # Map existing clues from envelope
         clue_map: dict[tuple[int, str], str] = {}
         for clue_entry in envelope.clues:
             clue_map[(clue_entry.number, clue_entry.direction)] = clue_entry.clue
@@ -69,11 +66,6 @@ class PuzExporter(Exporter):
 
         p.clues = clue_list
 
-        # Write file
-        output_path.mkdir(parents=True, exist_ok=True)
-        timestamp = datetime.now(tz=UTC).strftime("%Y%m%d_%H%M%S")
-        filename = f"{envelope.puzzle_type.value}_{rows}x{cols}_{timestamp}.puz"
-        filepath = output_path / filename
         p.save(str(filepath))
         logger.info("Exported .puz to %s", filepath)
         return filepath
