@@ -665,6 +665,17 @@ class TestSubsetBudgetDistribution:
         assert min(32, step.MAX_ELIGIBLE_GROUPS) == 5
 
 
+class TestThemeFirstGridCountLarge:
+    """Tests for the increased grid variant budget for large subsets."""
+
+    def test_large_count_exceeds_default(self) -> None:
+        step = FillWithGradingStep(
+            FixedMockFiller(HIGH_QUALITY_GRID),
+            FillGrader(_make_dict(GOOD_WORDS), min_passing_score=0),
+        )
+        assert step.THEME_FIRST_GRID_COUNT_LARGE > step.THEME_FIRST_GRID_COUNT
+
+
 class TestSubsetSelection:
     """Tests for subset selection in FillWithGradingStep."""
 

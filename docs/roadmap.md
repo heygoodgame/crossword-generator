@@ -101,7 +101,7 @@ CSP feasibility (highest priority — the current bottleneck):
 Grid builder (no longer the bottleneck, but still useful):
 
 - [ ] Increase `_MAX_PLACEMENT_NODES` for 5-word placements (grid builder backtracking budget). 50K is sufficient now (93.5% success) but may matter for harder subsets.
-- [ ] Increase grid variant count for size-4 subsets (currently 10 per subset; more variants give the CSP more grid layouts to try).
+- [x] Increase grid variant count for size-4 subsets (`THEME_FIRST_GRID_COUNT_LARGE = 50`). Run 12 confirmed: 5x more variants didn't help — 923 CSP attempts at 5-seed level all failed AC-3. The bottleneck is CSP feasibility, not layout variety.
 - [ ] Raise `max_density` ceiling (0.25 → 0.28–0.30) to give gap-sealing logic more room with highly-seeded grids.
 
 ## Phase 8 — Polish

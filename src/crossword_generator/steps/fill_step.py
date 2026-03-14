@@ -280,6 +280,8 @@ class FillWithGradingStep(PipelineStep):
     GRID_VARIANTS_PER_SUBSET = 20
     # Number of themed grid variants to build per subset in theme-first mode
     THEME_FIRST_GRID_COUNT = 10
+    # Larger budget for size-4+ subsets (more constrained placements)
+    THEME_FIRST_GRID_COUNT_LARGE = 50
 
     def __init__(
         self,
@@ -465,12 +467,17 @@ class FillWithGradingStep(PipelineStep):
 
             for subset in subsets:
                 # Build themed grids for this subset
+                grid_count = (
+                    self.THEME_FIRST_GRID_COUNT_LARGE
+                    if target_size >= 4
+                    else self.THEME_FIRST_GRID_COUNT
+                )
                 specs = build_themed_grids(
                     grid_size,
                     list(subset),
                     revealer,
                     seed=base_seed,
-                    count=self.THEME_FIRST_GRID_COUNT,
+                    count=grid_count,
                 )
 
                 if not specs:
