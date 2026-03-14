@@ -133,6 +133,7 @@ def build_themed_grids(
     *,
     seed: int = 0,
     count: int = 10,
+    config: PatternConfig | None = None,
 ) -> list[GridSpec]:
     """Build grid patterns with theme entries pre-placed.
 
@@ -200,7 +201,7 @@ def build_themed_grids(
         # Phase 1: Try symmetric placement
         spec = _try_place_entries(
             grid_size, all_words, sym_pairs, partition_cache, rng,
-            symmetric=True,
+            symmetric=True, config=config,
         )
         # Phase 2: Asymmetric fallback — entries placed on individual
         # rows without forcing mirror cells, giving the CSP filler
@@ -209,7 +210,7 @@ def build_themed_grids(
             rng2 = random.Random(seed + variant)
             spec = _try_place_entries(
                 grid_size, all_words, individual_pairs, partition_cache,
-                rng2, symmetric=False,
+                rng2, symmetric=False, config=config,
             )
         if spec is not None:
             results.append(spec)
@@ -313,6 +314,7 @@ def _try_place_entries(
     rng: random.Random,
     *,
     symmetric: bool = True,
+    config: PatternConfig | None = None,
 ) -> GridSpec | None:
     """Try to place all words using backtracking search.
 
@@ -501,7 +503,8 @@ def _try_place_entries(
 
     # Phase B: Generate black cells around the placements
     black_cells = _generate_constrained_pattern(
-        grid_size, final_white, final_black, rng, symmetric=symmetric
+        grid_size, final_white, final_black, rng,
+        symmetric=symmetric, config=config,
     )
     if black_cells is None:
         return None
@@ -611,6 +614,7 @@ def _generate_constrained_pattern(
     rng: random.Random,
     *,
     symmetric: bool = True,
+    config: PatternConfig | None = None,
 ) -> list[tuple[int, int]] | None:
     """Generate a black-cell pattern respecting locked cells.
 
@@ -619,7 +623,8 @@ def _generate_constrained_pattern(
 
     Returns sorted list of black cell positions, or None if invalid.
     """
-    config = PatternConfig()
+    if config is None:
+        config = PatternConfig()
 
     pattern = generate_pattern(
         grid_size,

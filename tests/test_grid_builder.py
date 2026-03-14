@@ -9,6 +9,7 @@ from crossword_generator.grid_builder import (
     build_themed_grids,
 )
 from crossword_generator.grid_pattern_generator import (
+    PatternConfig,
     _all_rows_cols_have_white,
     _check_min_word_length,
     _has_any_2x2_block,
@@ -321,6 +322,23 @@ class TestBuildThemedGrids:
             for key in spec.seed_entries
         )
         assert has_down, "Expected mixed across/down with 4 entries"
+
+    def test_custom_config_higher_density(self) -> None:
+        """build_themed_grids with max_density=0.30 accepts denser grids."""
+        config = PatternConfig(max_density=0.30)
+        results = build_themed_grids(
+            9, ["SUNSET", "ARCHES", "ORE"], "GOLDRATIO",
+            seed=0, count=20, config=config,
+        )
+        assert len(results) > 0, "Expected grids with higher density cap"
+        for spec in results:
+            blacks = set(spec.black_cells)
+            density = len(blacks) / (9 * 9)
+            assert density <= 0.30, f"Density {density:.2f} exceeds 0.30"
+            assert _is_connected(9, 9, blacks)
+            assert not _has_any_2x2_block(9, 9, blacks)
+            assert _check_min_word_length(9, 9, blacks, 3)
+            assert _all_rows_cols_have_white(9, 9, blacks)
 
     def test_asymmetric_fallback_produces_grids(self) -> None:
         """Asymmetric fallback produces grids for highly constrained entries.

@@ -12,6 +12,7 @@ from crossword_generator.fillers.base import FillError, GridFiller, GridSpec
 from crossword_generator.fillers.csp import extract_slots
 from crossword_generator.graders.fill_grader import FillGrader
 from crossword_generator.grid_builder import build_themed_grids
+from crossword_generator.grid_pattern_generator import PatternConfig
 from crossword_generator.grid_specs import get_grid_spec
 from crossword_generator.models import FillResult, PuzzleEnvelope
 from crossword_generator.steps.base import PipelineStep
@@ -472,12 +473,14 @@ class FillWithGradingStep(PipelineStep):
                     if target_size >= 4
                     else self.THEME_FIRST_GRID_COUNT
                 )
+                theme_pattern_config = PatternConfig(max_density=0.30)
                 specs = build_themed_grids(
                     grid_size,
                     list(subset),
                     revealer,
                     seed=base_seed,
                     count=grid_count,
+                    config=theme_pattern_config,
                 )
 
                 if not specs:
