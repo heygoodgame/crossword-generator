@@ -53,9 +53,11 @@ class Pipeline:
         exported: list[Path] = []
         if self._output_file is not None:
             # Write to exact file path; pick exporter by extension
+            # Treat .json as .ipuz (ipuz is JSON-based)
             ext = self._output_file.suffix
+            lookup_ext = ".ipuz" if ext == ".json" else ext
             exporter = next(
-                (e for e in self._exporters if e.file_extension == ext), None
+                (e for e in self._exporters if e.file_extension == lookup_ext), None
             )
             if exporter is None:
                 logger.error(
