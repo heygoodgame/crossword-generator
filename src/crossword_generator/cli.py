@@ -427,7 +427,6 @@ def evaluate(
     from crossword_generator.evaluation import FillerEvaluator
     from crossword_generator.fillers.base import GridFiller
     from crossword_generator.fillers.csp import CSPFiller
-    from crossword_generator.fillers.go_crossword import GoCrosswordFiller
     from crossword_generator.graders.fill_grader import FillGrader
 
     config = load_config(Path(config_path) if config_path else None)
@@ -443,27 +442,6 @@ def evaluate(
 
     # Build all available fillers
     fillers: list[GridFiller] = []
-
-    # go-crossword (without external dictionary)
-    go_config_default = config.fill.go_crossword.model_copy(
-        update={"dictionary_path": None}
-    )
-    go_filler_default = GoCrosswordFiller(
-        go_config_default, name="go-xword"
-    )
-    if go_filler_default.is_available():
-        fillers.append(go_filler_default)
-        logger.info("go-xword (embedded dict): available")
-    else:
-        logger.warning("go-crossword: not available (Docker not running?)")
-
-    # go-crossword with Jeff Chen dictionary
-    go_filler_jchen = GoCrosswordFiller(
-        config.fill.go_crossword, name="go-xword-jc"
-    )
-    if go_filler_jchen.is_available():
-        fillers.append(go_filler_jchen)
-        logger.info("go-xword-jc (Jeff Chen dict): available")
 
     # CSP filler (always available)
     csp_filler = CSPFiller(config.fill.csp, dictionary)

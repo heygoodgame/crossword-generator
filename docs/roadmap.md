@@ -10,8 +10,6 @@
 
 ## Phase 1 — Grid Fill Pipeline
 
-- [x] go-crossword Docker wrapper (pull image, invoke, parse output)
-- [x] go-crossword compact output parser
 - [x] `GridSpec` catalog for mini (5x5, 7x7) and midi (9x9–11x11)
 - [x] Clue numbering utility (standard American crossword numbering)
 - [x] `.puz` exporter via puzpy
@@ -48,7 +46,7 @@
 - [x] LLM theme concept generation (topic, wordplay type)
 - [x] Seed entry selection from dictionary matching theme
 - [x] Revealer clue/entry generation
-- [x] Theme constraint propagation to grid filler (CSP only; go-crossword degrades gracefully)
+- [x] Theme constraint propagation to grid filler
 
 ## Phase 6 — Full Pipeline Integration
 
@@ -57,28 +55,16 @@
 - [ ] Batch generation (N puzzles per run)
 - [ ] Pipeline resumption from intermediate envelopes on disk
 
-## Phase 7 — Alternative Fillers
+## Phase 7 — CSP Filler
 
-- N/A genxword integration (not suitable — freeform word placer, not grid autofill)
 - [x] Native Python CSP solver (constraint satisfaction with backtracking + forward checking)
 - [x] Filler evaluation framework (`evaluate` CLI command, markdown report)
 - [x] Filler-specific dictionary preprocessing
 
-### go-crossword Enhancements (fork in `tools/go-crossword/`)
-
-- [x] `-format json` flag: structured JSON output instead of text rendering
-- [ ] `-skip-clues` flag: N/A — go-crossword has no clue generation (purely a grid filler)
-- [x] `-dictionary <path>` flag: use custom word list (Jeff Chen) instead of embedded dictionary
-- [ ] `-grid-template <path>` flag: accept pre-built grid with black-square pattern
-
 ### Phase 7a — Evaluation-Driven Improvements
 
-Findings from running the evaluation framework (100 seeds × 5/7/9/10 grids):
-
-- [x] Preprocessed Jeff Chen dictionary for go-crossword: export a plain word-per-line file with all words below score 50 removed (~24K words vs 280K). go-crossword's algorithm can't handle the full 280K-word Jeff Chen list (90%+ timeout rate on 5x5), but a pre-filtered subset closer to its embedded dict size should fill fast while improving quality scores.
 - [x] CSP solver: improve algorithm for 7x7+ grids. Added score-based value ordering, degree heuristic for MRV ties, and AC-3 arc consistency propagation.
 - [x] CSP solver: configurable timeout per grid size. Added `timeout_by_size` config option (e.g., `{5: 30, 7: 120, 9: 300}`).
-- [x] `GoCrosswordFiller.is_available()`: check that the Docker image actually exists locally, not just that Docker is running.
 - [x] Evaluation framework: add early abort option — skip remaining seeds for a filler×size combo after N consecutive failures (e.g., 5 timeouts in a row) to avoid wasting hours on known-broken configurations.
 
 ### Phase 7b — Theme-Fill Improvements (midi)

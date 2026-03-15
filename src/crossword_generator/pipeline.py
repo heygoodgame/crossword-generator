@@ -12,7 +12,6 @@ from crossword_generator.exporters.base import Exporter
 from crossword_generator.exporters.ipuz_exporter import IpuzExporter
 from crossword_generator.exporters.puz_exporter import PuzExporter
 from crossword_generator.fillers.csp import CSPFiller
-from crossword_generator.fillers.go_crossword import GoCrosswordFiller
 from crossword_generator.graders.clue_grader import ClueGrader
 from crossword_generator.graders.fill_grader import FillGrader
 from crossword_generator.llm.claude_provider import ClaudeProvider
@@ -180,9 +179,7 @@ def create_pipeline(
         raise ValueError(f"Unknown LLM provider: {config.llm.provider}")
 
     # Build filler
-    if config.fill.provider == "go-crossword":
-        filler = GoCrosswordFiller(config.fill.go_crossword)
-    elif config.fill.provider == "csp":
+    if config.fill.provider == "csp":
         filler = CSPFiller(config.fill.csp, dictionary)
     else:
         raise ValueError(f"Unknown fill provider: {config.fill.provider}")

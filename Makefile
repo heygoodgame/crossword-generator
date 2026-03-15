@@ -1,4 +1,4 @@
-.PHONY: setup install test test-all lint format check-deps setup-ollama generate-mini generate-midi generate-themes build-go-crossword clean
+.PHONY: setup install test test-all lint format check-deps setup-ollama generate-mini generate-midi generate-themes clean
 
 setup: install
 
@@ -22,15 +22,10 @@ check-deps:
 	@echo "Checking dependencies..."
 	@printf "Python: " && python3 --version 2>/dev/null || echo "NOT FOUND"
 	@printf "uv: " && uv --version 2>/dev/null || echo "NOT FOUND"
-	@printf "Docker: " && docker --version 2>/dev/null || echo "NOT FOUND"
 	@printf "Ollama: " && ollama --version 2>/dev/null || echo "NOT FOUND"
 
 setup-ollama:
 	bash scripts/setup_ollama.sh
-
-build-go-crossword:
-	docker build -t crossword-generator/go-crossword-cli:latest \
-		-f tools/go-crossword/cli/Dockerfile tools/go-crossword/
 
 generate-mini:
 	uv run crossword-generator generate --type mini

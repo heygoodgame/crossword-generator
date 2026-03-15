@@ -44,17 +44,6 @@ class DictionaryConfig(BaseModel):
     themed_min_2letter_score: int = 30
 
 
-class GoCrosswordConfig(BaseModel):
-    """Settings for the go-crossword Docker filler."""
-
-    docker_image: str = "crossword-generator/go-crossword-cli:latest"
-    timeout: int = 60
-    threads: int = 100
-    output_format: str = "json"
-    dictionary_path: str | None = "dictionaries/HggScoredCrosswordList.txt"
-    min_dictionary_score: int = 50
-
-
 class CSPFillerConfig(BaseModel):
     """Settings for the native Python CSP filler."""
 
@@ -69,10 +58,9 @@ class CSPFillerConfig(BaseModel):
 class FillConfig(BaseModel):
     """Grid filler configuration."""
 
-    provider: str = "go-crossword"
+    provider: str = "csp"
     max_retries: int = 5
     max_grid_variants: int = 100
-    go_crossword: GoCrosswordConfig = GoCrosswordConfig()
     csp: CSPFillerConfig = CSPFillerConfig()
 
 

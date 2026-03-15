@@ -125,8 +125,7 @@ class Dictionary:
     def export_plain(self, output_path: Path | str, *, min_score: int = 50) -> int:
         """Write words to a plain text file (one lowercase word per line).
 
-        Useful for creating a pre-filtered dictionary that external tools
-        like go-crossword can ingest via their ``-dictionary`` flag.
+        Useful for creating a pre-filtered dictionary for external tools.
 
         Args:
             output_path: Where to write the file.

@@ -13,7 +13,7 @@ make lint           # Lint with ruff
 make format         # Auto-format with ruff
 make generate-mini  # Generate a mini crossword
 make generate-midi  # Generate a midi crossword
-make check-deps     # Verify Python, Docker, Ollama, uv are available
+make check-deps     # Verify Python, Ollama, uv are available
 ```
 
 ## Architecture
@@ -32,7 +32,7 @@ Each step is stateless: reads a PuzzleEnvelope, adds its output, writes it back.
 
 ### Pluggable Backends (all behind abstract interfaces)
 
-- **Fillers**: `fillers/base.py` — `GridFiller` ABC. Implementations: go-crossword (Docker), genxword, future built-in CSP
+- **Fillers**: `fillers/base.py` — `GridFiller` ABC. Implementation: CSP (native Python constraint solver)
 - **LLM Providers**: `llm/base.py` — `LLMProvider` ABC. Implementation: Ollama
 - **Exporters**: `exporters/base.py` — `Exporter` ABC. Formats: .puz (puzpy), .ipuz
 
@@ -91,7 +91,6 @@ src/crossword_generator/
 
 ## External Tools
 
-- **go-crossword**: Grid filler, run via Docker. Uses its own dictionary (not Jeff Chen). Fill grading step acts as quality gate.
 - **puzpy**: .puz file I/O
 - **ipuz + crossword**: .ipuz file I/O
 

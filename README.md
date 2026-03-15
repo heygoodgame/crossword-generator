@@ -20,7 +20,6 @@ Each step is independently runnable and improvable. A `PuzzleEnvelope` JSON docu
 
 - Python 3.11+
 - [uv](https://docs.astral.sh/uv/) (Python package manager)
-- [Docker](https://www.docker.com/) (for go-crossword grid filler)
 - [Ollama](https://ollama.ai/) (local LLM for clue generation)
 
 ### Setup
@@ -47,20 +46,14 @@ cp config.example.yaml config.yaml
 
 Key settings:
 - `puzzle_type` / `grid_size` — mini (5x5, 7x7) or midi (9x9–11x11)
-- `fill.provider` — grid filler backend (`go-crossword`, `genxword`, `built-in`)
+- `fill.provider` — grid filler backend (`csp`)
 - `dictionary.min_word_score` — minimum Jeff Chen score threshold (default: 50)
 - `llm.model` — Ollama model for clue/theme generation (default: `llama3`)
 - `output.formats` — export formats (`.puz`, `.ipuz`)
 
-## Grid Fillers
+## Grid Filler
 
-| Filler | Status | Notes |
-|--------|--------|-------|
-| [go-crossword](https://github.com/ccz-crossmatics/go-crossword) | Primary | Docker-wrapped, uses its own dictionary |
-| [genxword](https://github.com/riverrun/genxword) | Planned | Python-native alternative |
-| Built-in CSP | Future | Native Python constraint solver |
-
-go-crossword uses its own internal dictionary. The fill quality grading step validates the output against the Jeff Chen list and triggers retries if needed.
+The CSP (constraint satisfaction problem) filler is a native Python constraint solver with backtracking, forward checking, and AC-3 arc consistency. It uses the Jeff Chen scored word list directly and supports configurable quality tiers and per-size timeouts.
 
 ## Dictionary
 

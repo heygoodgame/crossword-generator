@@ -26,7 +26,7 @@ class TestConfigDefaults:
 
     def test_default_fill(self) -> None:
         cfg = Config()
-        assert cfg.fill.provider == "go-crossword"
+        assert cfg.fill.provider == "csp"
         assert cfg.fill.max_retries == 5
 
     def test_default_grading(self) -> None:
@@ -50,16 +50,8 @@ class TestConfigDefaults:
 
     def test_nested_defaults(self) -> None:
         fill = FillConfig()
-        assert (
-            fill.go_crossword.docker_image
-            == "crossword-generator/go-crossword-cli:latest"
-        )
-        assert fill.go_crossword.output_format == "json"
-        assert (
-            fill.go_crossword.dictionary_path
-            == "dictionaries/HggScoredCrosswordList.txt"
-        )
-        assert fill.go_crossword.min_dictionary_score == 50
+        assert fill.csp.timeout == 30
+        assert fill.csp.min_word_score == 50
 
 
 class TestLoadConfig:
@@ -69,7 +61,7 @@ class TestLoadConfig:
         cfg = load_config(project_root / "config.example.yaml")
         assert cfg.puzzle.type == "mini"
         assert cfg.puzzle.grid_size == 5
-        assert cfg.fill.provider == "go-crossword"
+        assert cfg.fill.provider == "csp"
         assert cfg.llm.ollama.model == "llama3"
 
     def test_load_explicit_path_custom_values(self, tmp_path: Path) -> None:
@@ -82,7 +74,7 @@ class TestLoadConfig:
         assert cfg.puzzle.grid_size == 9
         assert cfg.dictionary.min_word_score == 40
         # Unspecified sections get defaults
-        assert cfg.fill.provider == "go-crossword"
+        assert cfg.fill.provider == "csp"
         assert cfg.llm.provider == "ollama"
 
     def test_partial_yaml_fills_defaults(self, tmp_path: Path) -> None:
