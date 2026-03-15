@@ -18,9 +18,11 @@ class TestConfigDefaults:
 
     def test_default_dictionary(self) -> None:
         cfg = Config()
-        assert cfg.dictionary.path == "dictionaries/HggScoredCrosswordList.txt"
-        assert cfg.dictionary.min_word_score == 45
+        assert cfg.dictionary.path == "dictionaries/HggCuratedCrosswordList.txt"
+        assert cfg.dictionary.min_word_score == 50
         assert cfg.dictionary.min_2letter_score == 30
+        assert cfg.dictionary.themed_path == "dictionaries/HggScoredCrosswordList.txt"
+        assert cfg.dictionary.themed_min_word_score == 45
 
     def test_default_fill(self) -> None:
         cfg = Config()

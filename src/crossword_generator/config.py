@@ -29,11 +29,19 @@ class PuzzleConfig(BaseModel):
 
 
 class DictionaryConfig(BaseModel):
-    """Dictionary file path and score thresholds."""
+    """Dictionary file path and score thresholds.
 
-    path: str = "dictionaries/HggScoredCrosswordList.txt"
-    min_word_score: int = 45
+    ``path`` / ``min_word_score`` are used for non-themed (mini) puzzles.
+    ``themed_path`` / ``themed_min_word_score`` are used when a theme is
+    present, falling back to the non-themed values when empty / zero.
+    """
+
+    path: str = "dictionaries/HggCuratedCrosswordList.txt"
+    min_word_score: int = 50
     min_2letter_score: int = 30
+    themed_path: str = "dictionaries/HggScoredCrosswordList.txt"
+    themed_min_word_score: int = 45
+    themed_min_2letter_score: int = 30
 
 
 class GoCrosswordConfig(BaseModel):
@@ -50,8 +58,8 @@ class GoCrosswordConfig(BaseModel):
 class CSPFillerConfig(BaseModel):
     """Settings for the native Python CSP filler."""
 
-    dictionary_path: str = "dictionaries/HggScoredCrosswordList.txt"
-    min_word_score: int = 45
+    dictionary_path: str = "dictionaries/HggCuratedCrosswordList.txt"
+    min_word_score: int = 50
     min_2letter_score: int = 30
     timeout: int = 30
     timeout_by_size: dict[int, int] | None = None

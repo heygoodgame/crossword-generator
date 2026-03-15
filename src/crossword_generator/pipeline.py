@@ -116,12 +116,40 @@ def create_pipeline(
     Returns:
         Tuple of (Pipeline, initial PuzzleEnvelope).
     """
-    # Build fill grader dictionary (shared with CSP filler if selected)
+    # Select dictionary based on whether the puzzle is themed
     project_root = find_project_root()
+    is_themed = (
+        theme_file is not None
+        or (
+            PuzzleType(config.puzzle.type) == PuzzleType.MIDI
+            and config.theme.enabled
+        )
+    )
+    if is_themed and config.dictionary.themed_path:
+        dict_path = config.dictionary.themed_path
+        dict_min_score = (
+            config.dictionary.themed_min_word_score
+            or config.dictionary.min_word_score
+        )
+        dict_min_2letter = (
+            config.dictionary.themed_min_2letter_score
+            or config.dictionary.min_2letter_score
+        )
+    else:
+        dict_path = config.dictionary.path
+        dict_min_score = config.dictionary.min_word_score
+        dict_min_2letter = config.dictionary.min_2letter_score
+
     dictionary = Dictionary.load(
-        project_root / config.dictionary.path,
-        min_word_score=config.dictionary.min_word_score,
-        min_2letter_score=config.dictionary.min_2letter_score,
+        project_root / dict_path,
+        min_word_score=dict_min_score,
+        min_2letter_score=dict_min_2letter,
+    )
+    logger.info(
+        "Loaded dictionary %s (%s, min_score=%d)",
+        dict_path,
+        "themed" if is_themed else "non-themed",
+        dict_min_score,
     )
 
     # Build LLM providers — one per pipeline step so each can use a
