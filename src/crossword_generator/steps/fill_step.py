@@ -984,12 +984,8 @@ class FillWithGradingStep(PipelineStep):
         assert self._llm_provider is not None
 
         grids = [r.grid for r, _ in candidates]
-        reports = [r.grade_report for r, _ in candidates]
-        assert all(rpt is not None for rpt in reports)
 
-        prompt = build_fill_selection_prompt(
-            grids, reports  # type: ignore[arg-type]
-        )
+        prompt = build_fill_selection_prompt(grids)
 
         max_retries = 3
         for attempt in range(1, max_retries + 1):

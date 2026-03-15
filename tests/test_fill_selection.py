@@ -240,22 +240,19 @@ class TestParseSelectionResponse:
 class TestBuildFillSelectionPrompt:
     def test_includes_all_boards(self) -> None:
         grids = [HIGH_QUALITY_GRID, ALT_GRID]
-        reports = [
-            FillGradeReport(overall_score=75.0, word_count=10, passing=True),
-            FillGradeReport(overall_score=80.0, word_count=10, passing=True),
-        ]
-        prompt = build_fill_selection_prompt(grids, reports)
+        prompt = build_fill_selection_prompt(grids)
         assert "BOARD 1" in prompt
         assert "BOARD 2" in prompt
-        assert "75.0" in prompt
-        assert "80.0" in prompt
+
+    def test_no_numeric_scores(self) -> None:
+        grids = [HIGH_QUALITY_GRID, ALT_GRID]
+        prompt = build_fill_selection_prompt(grids)
+        assert "numeric score" not in prompt
+        assert "score:" not in prompt.lower().split("scoring")[0]
 
     def test_includes_criteria(self) -> None:
         grids = [HIGH_QUALITY_GRID]
-        reports = [
-            FillGradeReport(overall_score=75.0, word_count=10, passing=True),
-        ]
-        prompt = build_fill_selection_prompt(grids, reports)
+        prompt = build_fill_selection_prompt(grids)
         assert "VOCABULARY QUALITY" in prompt
         assert "LIVELINESS" in prompt
         assert "CLUE POTENTIAL" in prompt

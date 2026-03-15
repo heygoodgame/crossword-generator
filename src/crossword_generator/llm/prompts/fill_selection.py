@@ -4,8 +4,6 @@ from __future__ import annotations
 
 import json
 
-from crossword_generator.models import FillGradeReport
-
 
 def _render_grid(grid: list[list[str]]) -> str:
     """Render a grid as a text block."""
@@ -51,24 +49,22 @@ def _extract_words(grid: list[list[str]]) -> list[str]:
 
 def build_fill_selection_prompt(
     grids: list[list[list[str]]],
-    grade_reports: list[FillGradeReport],
 ) -> str:
     """Build a prompt asking the LLM to select the best fill board.
 
     Args:
         grids: List of filled grids (each is a 2D list of letters).
-        grade_reports: Corresponding grade reports for each grid.
 
     Returns:
         A prompt string ready to send to the LLM.
     """
     boards_section_parts: list[str] = []
-    for i, (grid, report) in enumerate(zip(grids, grade_reports), start=1):
+    for i, grid in enumerate(grids, start=1):
         rendered = _render_grid(grid)
         words = _extract_words(grid)
         word_list = ", ".join(words)
         boards_section_parts.append(
-            f"BOARD {i} (numeric score: {report.overall_score:.1f}):\n"
+            f"BOARD {i}:\n"
             f"{rendered}\n"
             f"Words: {word_list}"
         )
