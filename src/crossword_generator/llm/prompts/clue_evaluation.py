@@ -24,15 +24,27 @@ def build_clue_evaluation_prompt(
     Returns:
         A prompt string ready to send to the LLM.
     """
+    # Identify theme entries and revealer for annotation
+    revealer_answer = ""
+    seed_answers: set[str] = set()
+    if theme and theme.topic:
+        revealer_answer = theme.revealer.upper()
+        seed_answers = {s.upper() for s in theme.seed_entries}
+
     # Build the clue list section
     clue_lines: list[str] = []
     for clue in clues:
         key = (clue.number, clue.direction)
         crossings = crossing_words.get(key, [])
         crossing_str = ", ".join(crossings) if crossings else "none"
+        tag = ""
+        if clue.answer.upper() in seed_answers:
+            tag = " [THEME ENTRY]"
+        elif clue.answer.upper() == revealer_answer:
+            tag = " [REVEALER]"
         clue_lines.append(
             f"- {clue.number}-{clue.direction.upper()}: "
-            f"Answer={clue.answer}, Clue=\"{clue.clue}\" "
+            f"Answer={clue.answer}{tag}, Clue=\"{clue.clue}\" "
             f"(crossing words: {crossing_str})"
         )
     clues_block = "\n".join(clue_lines)
@@ -56,19 +68,24 @@ def build_clue_evaluation_prompt(
             "\nTHEME CONTEXT:\n"
             f"- Topic: {theme.topic}\n"
             f"- Wordplay type: {theme.wordplay_type}\n"
-            f"- Seed entries: {', '.join(theme.seed_entries)}\n"
             f"- Revealer: {theme.revealer}\n"
-            "\nTheme entries should have clues that echo each other "
-            "and build toward the revealer.\n"
+            "\n[THEME ENTRY] clues should tie back to the revealer — "
+            "either by cross-referencing the revealer's clue number or "
+            "by connecting to the theme concept. Score FRESHNESS higher "
+            "when theme entries make this connection, lower when they "
+            "ignore the theme entirely.\n"
         )
 
-    # JSON format example
+    # JSON format example — sub-scores only, we compute the total
     example_output = json.dumps(
         [
             {
                 "number": 1,
                 "direction": "across",
-                "score": 75,
+                "accuracy": 22,
+                "freshness": 18,
+                "craft": 20,
+                "fairness": 15,
                 "feedback": "Good misdirection but slightly vague.",
             },
         ],
@@ -77,8 +94,7 @@ def build_clue_evaluation_prompt(
 
     role = (
         "You are an expert crossword puzzle editor evaluating clue quality. "
-        "Score each clue on a 0-100 scale using these four rubric dimensions "
-        "(25 points each):"
+        "Score each clue on four rubric dimensions (0-25 points each):"
     )
 
     rubric = (
@@ -100,6 +116,8 @@ def build_clue_evaluation_prompt(
     output_section = (
         "OUTPUT FORMAT:\n"
         "Return ONLY a JSON array with one object per clue. "
+        "Return the four sub-scores (accuracy, freshness, craft, fairness — "
+        "each 0-25), NOT a total score. "
         "No other text before or after.\n"
         f"\n{example_output}\n"
         f"\nNow evaluate all {len(clues)} clues listed above. "

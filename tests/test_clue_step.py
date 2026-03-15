@@ -11,11 +11,15 @@ from crossword_generator.exporters.numbering import (
     compute_crossing_words,
 )
 from crossword_generator.llm.base import LLMProvider
+from crossword_generator.llm.prompts.clue_generation import (
+    build_clue_generation_prompt,
+)
 from crossword_generator.models import (
     ClueEntry,
     FillResult,
     PuzzleEnvelope,
     PuzzleType,
+    ThemeConcept,
 )
 from crossword_generator.steps.clue_step import ClueGenerationStep
 
@@ -290,3 +294,80 @@ class TestComputeCrossingWords:
             for word in words:
                 assert len(word) > 1
                 assert word.isalpha()
+
+
+class TestThemeAnnotationsInPrompt:
+    """Verify that theme entries are tagged in the clue generation prompt."""
+
+    def test_theme_entries_tagged(self) -> None:
+        """Seed entries in the grid get [THEME ENTRY] tags."""
+        from crossword_generator.exporters.numbering import compute_numbering
+
+        entries = compute_numbering(MOCK_GRID)
+        crossing_words = compute_crossing_words(entries, MOCK_GRID)
+        # ABCDE is 1-Across, FGHIJ is 6-Across — use them as seeds
+        theme = ThemeConcept(
+            topic="Test theme",
+            wordplay_type="hidden",
+            revealer="KLMNO",  # 7-Across
+            seed_entries=["ABCDE", "FGHIJ"],
+        )
+
+        prompt = build_clue_generation_prompt(
+            entries, crossing_words, PuzzleType.MIDI, theme
+        )
+
+        assert "ABCDE [THEME ENTRY]" in prompt
+        assert "FGHIJ [THEME ENTRY]" in prompt
+
+    def test_revealer_tagged(self) -> None:
+        """The revealer entry gets a [REVEALER] tag."""
+        from crossword_generator.exporters.numbering import compute_numbering
+
+        entries = compute_numbering(MOCK_GRID)
+        crossing_words = compute_crossing_words(entries, MOCK_GRID)
+        theme = ThemeConcept(
+            topic="Test theme",
+            wordplay_type="hidden",
+            revealer="KLMNO",  # 7-Across
+            seed_entries=["ABCDE"],
+        )
+
+        prompt = build_clue_generation_prompt(
+            entries, crossing_words, PuzzleType.MIDI, theme
+        )
+
+        assert "KLMNO [REVEALER]" in prompt
+
+    def test_revealer_position_in_guidance(self) -> None:
+        """Theme block includes the revealer's number and direction."""
+        from crossword_generator.exporters.numbering import compute_numbering
+
+        entries = compute_numbering(MOCK_GRID)
+        crossing_words = compute_crossing_words(entries, MOCK_GRID)
+        theme = ThemeConcept(
+            topic="Test theme",
+            wordplay_type="hidden",
+            revealer="KLMNO",  # 7-Across
+            seed_entries=["ABCDE"],
+        )
+
+        prompt = build_clue_generation_prompt(
+            entries, crossing_words, PuzzleType.MIDI, theme
+        )
+
+        assert "7-Across" in prompt
+
+    def test_no_theme_no_tags(self) -> None:
+        """Without a theme, no entries are tagged."""
+        from crossword_generator.exporters.numbering import compute_numbering
+
+        entries = compute_numbering(MOCK_GRID)
+        crossing_words = compute_crossing_words(entries, MOCK_GRID)
+
+        prompt = build_clue_generation_prompt(
+            entries, crossing_words, PuzzleType.MINI
+        )
+
+        assert "[THEME ENTRY]" not in prompt
+        assert "[REVEALER]" not in prompt
