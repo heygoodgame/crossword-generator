@@ -46,7 +46,7 @@ class PuzExporter(Exporter):
         p.height = rows
         p.width = cols
         p.title = f"{envelope.puzzle_type.value.title()} Crossword"
-        p.author = "Crossword Generator"
+        p.author = "Hey Good Game, Inc."
 
         p.solution = "".join(
             cell if cell != "." else "." for row in grid for cell in row
