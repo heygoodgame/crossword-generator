@@ -45,7 +45,7 @@ class PuzExporter(Exporter):
         p = puz.Puzzle()
         p.height = rows
         p.width = cols
-        p.title = f"{envelope.puzzle_type.value.title()} Crossword"
+        p.title = envelope.title or f"{envelope.puzzle_type.value.title()} Crossword"
         p.author = "Hey Good Game, Inc."
 
         p.solution = "".join(

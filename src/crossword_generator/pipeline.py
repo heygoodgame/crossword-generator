@@ -20,6 +20,7 @@ from crossword_generator.models import PuzzleEnvelope, PuzzleType
 from crossword_generator.steps.base import PipelineStep
 from crossword_generator.steps.clue_grading_step import ClueWithGradingStep
 from crossword_generator.steps.fill_step import FillWithGradingStep
+from crossword_generator.steps.puzzle_naming_step import PuzzleNamingStep
 from crossword_generator.steps.theme_step import ThemeGenerationStep
 
 logger = logging.getLogger(__name__)
@@ -238,7 +239,9 @@ def create_pipeline(
         )
         steps.append(theme_step)
 
-    steps.extend([fill_step, clue_step])
+    naming_step = PuzzleNamingStep(clue_gen_llm)
+
+    steps.extend([fill_step, clue_step, naming_step])
 
     # Build exporters
     exporters: list[Exporter] = []

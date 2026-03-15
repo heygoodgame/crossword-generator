@@ -134,6 +134,7 @@ class PuzzleEnvelope(BaseModel):
     fill: FillResult | None = None
     clues: list[ClueEntry] = Field(default_factory=list)
     clue_grade_report: ClueGradeReport | None = None
+    title: str = ""
 
     # Metadata
     step_history: list[str] = Field(default_factory=list)

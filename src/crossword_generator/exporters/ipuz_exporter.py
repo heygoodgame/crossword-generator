@@ -89,7 +89,10 @@ class IpuzExporter(Exporter):
             "version": "http://ipuz.org/v2",
             "kind": ["http://ipuz.org/crossword#1"],
             "dimensions": {"width": cols, "height": rows},
-            "title": f"{envelope.puzzle_type.value.title()} Crossword",
+            "title": (
+                envelope.title
+                or f"{envelope.puzzle_type.value.title()} Crossword"
+            ),
             "author": "Hey Good Game, Inc.",
             "puzzle": puzzle_grid,
             "solution": solution_grid,
