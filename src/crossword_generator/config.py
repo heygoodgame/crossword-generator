@@ -82,6 +82,7 @@ class ClueGradingConfig(BaseModel):
 
     min_score: int = 70
     regenerate_on_fail: bool = True
+    accuracy_repair_threshold: int = 12  # repair clues below this accuracy sub-score
 
 
 class GradingConfig(BaseModel):
@@ -100,11 +101,34 @@ class OllamaConfig(BaseModel):
 
 
 class ClaudeConfig(BaseModel):
-    """Claude (Anthropic API) LLM provider settings."""
+    """Claude (Anthropic API) LLM provider settings.
+
+    ``model`` is the default for any step without its own override.
+    Per-step fields (``theme_model``, ``fill_selection_model``, etc.)
+    fall back to ``model`` when set to the empty string.
+    """
 
     model: str = "claude-haiku-4-5-20251001"
+    theme_model: str = ""
+    fill_selection_model: str = ""
+    clue_generation_model: str = "claude-sonnet-4-5-20241022"
+    clue_grading_model: str = "claude-sonnet-4-5-20241022"
     max_tokens: int = 4096
     timeout: int = 120
+
+    def model_for(self, step: str) -> str:
+        """Return the resolved model ID for a pipeline step.
+
+        Args:
+            step: One of "theme", "fill_selection", "clue_generation",
+                  "clue_grading".
+
+        Returns:
+            The per-step model if set, otherwise the default ``model``.
+        """
+        field = f"{step}_model"
+        value = getattr(self, field, "")
+        return value or self.model
 
 
 class LLMConfig(BaseModel):

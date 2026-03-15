@@ -124,11 +124,30 @@ def create_pipeline(
         min_2letter_score=config.dictionary.min_2letter_score,
     )
 
-    # Build LLM provider
+    # Build LLM providers — one per pipeline step so each can use a
+    # different model.  For Claude, per-step model overrides are read
+    # from ClaudeConfig; for Ollama a single provider is shared.
     if config.llm.provider == "ollama":
         llm_provider = OllamaProvider(config.llm.ollama)
+        theme_llm = llm_provider
+        fill_select_llm = llm_provider
+        clue_gen_llm = llm_provider
+        clue_grade_llm = llm_provider
     elif config.llm.provider == "claude":
-        llm_provider = ClaudeProvider(config.llm.claude)
+        cc = config.llm.claude
+
+        def _claude_for(step: str) -> ClaudeProvider:
+            model = cc.model_for(step)
+            if model == cc.model:
+                return _base_claude
+            return ClaudeProvider(cc.model_copy(update={"model": model}))
+
+        _base_claude = ClaudeProvider(cc)
+        llm_provider = _base_claude
+        theme_llm = _claude_for("theme")
+        fill_select_llm = _claude_for("fill_selection")
+        clue_gen_llm = _claude_for("clue_generation")
+        clue_grade_llm = _claude_for("clue_grading")
     else:
         raise ValueError(f"Unknown LLM provider: {config.llm.provider}")
 
@@ -152,17 +171,18 @@ def create_pipeline(
         retry_on_fail=config.grading.fill.retry_on_fail,
         collect_boards=config.grading.fill.collect_boards,
         llm_select=config.grading.fill.llm_select,
-        llm_provider=llm_provider if config.grading.fill.llm_select else None,
+        llm_provider=fill_select_llm if config.grading.fill.llm_select else None,
     )
 
     clue_grader = ClueGrader(
-        llm_provider, min_passing_score=config.grading.clue.min_score
+        clue_grade_llm, min_passing_score=config.grading.clue.min_score
     )
     clue_step = ClueWithGradingStep(
-        llm_provider,
+        clue_gen_llm,
         clue_grader,
         max_retries=3,
         regenerate_on_fail=config.grading.clue.regenerate_on_fail,
+        accuracy_repair_threshold=config.grading.clue.accuracy_repair_threshold,
     )
 
     # Build steps
@@ -182,7 +202,7 @@ def create_pipeline(
         )
     elif PuzzleType(config.puzzle.type) == PuzzleType.MIDI and config.theme.enabled:
         theme_step = ThemeGenerationStep(
-            llm_provider,
+            theme_llm,
             dictionary,
             grid_size=config.puzzle.grid_size,
             max_retries=config.theme.max_retries,
