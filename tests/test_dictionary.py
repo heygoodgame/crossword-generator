@@ -182,7 +182,7 @@ class TestRealDictionary:
 
     def test_ocean_score(self, dictionary_path: Path) -> None:
         d = Dictionary.load(dictionary_path)
-        assert d.score("OCEAN") == 50
+        assert d.score("OCEAN") == 58
         assert d.contains("ocean")
 
     def test_no_2letter_words_at_default_threshold(self, dictionary_path: Path) -> None:

@@ -97,7 +97,7 @@ class TestBuildCommand:
         idx = cmd.index("-v")
         mount = cmd[idx + 1]
         assert mount.endswith(":/data/dictionary.txt:ro")
-        assert "HggCuratedCrosswordList.txt" in mount
+        assert "HggScoredCrosswordList.txt" in mount
 
     def test_volume_mount_before_image(
         self, filler: GoCrosswordFiller, spec: GridSpec

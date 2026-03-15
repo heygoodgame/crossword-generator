@@ -14,4 +14,4 @@ def project_root() -> Path:
 @pytest.fixture
 def dictionary_path(project_root: Path) -> Path:
     """Return the path to the HGG curated crossword word list."""
-    return project_root / "dictionaries" / "HggCuratedCrosswordList.txt"
+    return project_root / "dictionaries" / "HggScoredCrosswordList.txt"

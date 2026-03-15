@@ -5,7 +5,7 @@ puzzle:
   grid_size: 5      # 5, 7 for mini; 9, 11 for midi
 
 dictionary:
-  path: dictionaries/HggCuratedCrosswordList.txt
+  path: dictionaries/HggScoredCrosswordList.txt
   min_word_score: 50
   # For midi grids, 2-letter words may need a lower threshold
   min_2letter_score: 30
@@ -18,10 +18,10 @@ fill:
     timeout: 60
     threads: 100
     output_format: json
-    dictionary_path: dictionaries/HggCuratedCrosswordList.txt  # null to use embedded dictionary
+    dictionary_path: dictionaries/HggScoredCrosswordList.txt  # null to use embedded dictionary
     min_dictionary_score: 50
   csp:
-    dictionary_path: dictionaries/HggCuratedCrosswordList.txt
+    dictionary_path: dictionaries/HggScoredCrosswordList.txt
     min_word_score: 50
     min_2letter_score: 30
     timeout: 30

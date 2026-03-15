@@ -31,8 +31,8 @@ class PuzzleConfig(BaseModel):
 class DictionaryConfig(BaseModel):
     """Dictionary file path and score thresholds."""
 
-    path: str = "dictionaries/HggCuratedCrosswordList.txt"
-    min_word_score: int = 50
+    path: str = "dictionaries/HggScoredCrosswordList.txt"
+    min_word_score: int = 45
     min_2letter_score: int = 30
 
 
@@ -43,19 +43,19 @@ class GoCrosswordConfig(BaseModel):
     timeout: int = 60
     threads: int = 100
     output_format: str = "json"
-    dictionary_path: str | None = "dictionaries/HggCuratedCrosswordList.txt"
+    dictionary_path: str | None = "dictionaries/HggScoredCrosswordList.txt"
     min_dictionary_score: int = 50
 
 
 class CSPFillerConfig(BaseModel):
     """Settings for the native Python CSP filler."""
 
-    dictionary_path: str = "dictionaries/HggCuratedCrosswordList.txt"
-    min_word_score: int = 50
+    dictionary_path: str = "dictionaries/HggScoredCrosswordList.txt"
+    min_word_score: int = 45
     min_2letter_score: int = 30
     timeout: int = 30
     timeout_by_size: dict[int, int] | None = None
-    quality_tiers: list[int] = [60, 50]
+    quality_tiers: list[int] = [58, 52, 45]
 
 
 class FillConfig(BaseModel):

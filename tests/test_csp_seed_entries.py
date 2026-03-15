@@ -14,8 +14,8 @@ from crossword_generator.fillers.csp import CSPFiller, extract_slots
 def real_dictionary(project_root) -> Dictionary:
     """Load the real Jeff Chen dictionary."""
     return Dictionary.load(
-        project_root / "dictionaries" / "HggCuratedCrosswordList.txt",
-        min_word_score=50,
+        project_root / "dictionaries" / "HggScoredCrosswordList.txt",
+        min_word_score=45,
     )
 
 
