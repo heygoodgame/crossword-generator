@@ -7,7 +7,13 @@ import ipuz
 import pytest
 
 from crossword_generator.exporters.ipuz_exporter import IpuzExporter
-from crossword_generator.models import ClueEntry, FillResult, PuzzleEnvelope, PuzzleType
+from crossword_generator.models import (
+    ClueEntry,
+    FillResult,
+    PuzzleEnvelope,
+    PuzzleType,
+    ThemeConcept,
+)
 
 
 @pytest.fixture
@@ -132,3 +138,118 @@ class TestIpuzExporter:
         data = json.loads(path.read_text())
         assert "version" in data
         assert "kind" in data
+
+
+@pytest.fixture
+def themed_envelope(sample_grid: list[list[str]]) -> PuzzleEnvelope:
+    """Envelope with theme, fill, and clues for reference testing.
+
+    Sample grid words: 1-Across OH, 1-Down OF, 2-Down POSE, 3-Down FLIP,
+    4-Across HOWL, 5-Down AS, 6-Across SLEEP.
+    """
+    clues = [
+        ClueEntry(number=1, direction="across", answer="OH", clue="Surprise!"),
+        ClueEntry(number=1, direction="down", answer="OF", clue="Belonging to"),
+        ClueEntry(number=2, direction="down", answer="POSE", clue="Strike a ___"),
+        ClueEntry(number=3, direction="down", answer="FLIP", clue="Turn over"),
+        ClueEntry(number=4, direction="across", answer="HOWL", clue="Wolf cry"),
+        ClueEntry(number=5, direction="down", answer="AS", clue="Like"),
+        ClueEntry(number=6, direction="across", answer="SLEEP", clue="Rest"),
+    ]
+    theme = ThemeConcept(
+        topic="Night time",
+        revealer="SLEEP",
+        seed_entries=["HOWL", "FLIP"],
+    )
+    return PuzzleEnvelope(
+        puzzle_type=PuzzleType.MIDI,
+        grid_size=5,
+        fill=FillResult(grid=sample_grid, filler_used="test"),
+        clues=clues,
+        theme=theme,
+    )
+
+
+class TestClueReferences:
+    def test_themed_puzzle_has_references(
+        self, themed_envelope: PuzzleEnvelope, tmp_path: Path
+    ) -> None:
+        exporter = IpuzExporter()
+        path = exporter.export(themed_envelope, tmp_path)
+        data = json.loads(path.read_text())
+
+        assert "hgg.references" in data
+        refs = data["hgg.references"]
+        assert len(refs) == 3  # 1 revealer + 2 theme entries
+
+    def test_no_theme_no_references(
+        self, envelope_with_fill: PuzzleEnvelope, tmp_path: Path
+    ) -> None:
+        exporter = IpuzExporter()
+        path = exporter.export(envelope_with_fill, tmp_path)
+        data = json.loads(path.read_text())
+
+        assert "hgg.references" not in data
+
+    def test_partial_seed_placement(
+        self, sample_grid: list[list[str]], tmp_path: Path
+    ) -> None:
+        """Seeds not in the grid are excluded from references."""
+        clues = [
+            ClueEntry(number=4, direction="across", answer="HOWL", clue="Wolf cry"),
+            ClueEntry(number=6, direction="across", answer="SLEEP", clue="Rest"),
+        ]
+        theme = ThemeConcept(
+            topic="Night time",
+            revealer="SLEEP",
+            # HOWL is in the grid, MOON and STARS are not
+            seed_entries=["HOWL", "MOON", "STARS"],
+        )
+        envelope = PuzzleEnvelope(
+            puzzle_type=PuzzleType.MIDI,
+            grid_size=5,
+            fill=FillResult(grid=sample_grid, filler_used="test"),
+            clues=clues,
+            theme=theme,
+        )
+        exporter = IpuzExporter()
+        path = exporter.export(envelope, tmp_path)
+        data = json.loads(path.read_text())
+
+        refs = data["hgg.references"]
+        revealer = refs[0]
+        assert revealer["role"] == "revealer"
+        # Only HOWL should appear, not MOON or STARS
+        assert len(revealer["references"]) == 1
+        assert revealer["references"][0] == [4, "Across"]
+
+    def test_references_are_bidirectional(
+        self, themed_envelope: PuzzleEnvelope, tmp_path: Path
+    ) -> None:
+        exporter = IpuzExporter()
+        path = exporter.export(themed_envelope, tmp_path)
+        data = json.loads(path.read_text())
+
+        refs = data["hgg.references"]
+        revealer = next(r for r in refs if r["role"] == "revealer")
+        theme_entries = [r for r in refs if r["role"] == "theme_entry"]
+
+        # Revealer references both theme entries
+        assert [4, "Across"] in revealer["references"]
+        assert [3, "Down"] in revealer["references"]
+
+        # Each theme entry references the revealer
+        for entry in theme_entries:
+            assert entry["references"] == [[6, "Across"]]
+
+    def test_revealer_clue_format(
+        self, themed_envelope: PuzzleEnvelope, tmp_path: Path
+    ) -> None:
+        exporter = IpuzExporter()
+        path = exporter.export(themed_envelope, tmp_path)
+        data = json.loads(path.read_text())
+
+        refs = data["hgg.references"]
+        revealer = refs[0]
+        assert revealer["clue"] == [6, "Across"]
+        assert revealer["role"] == "revealer"

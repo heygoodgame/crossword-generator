@@ -6,6 +6,7 @@ import json
 import logging
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import Any
 
 import ipuz
 
@@ -98,8 +99,68 @@ class IpuzExporter(Exporter):
             },
         }
 
+        refs = self._build_clue_references(envelope)
+        if refs:
+            ipuz_dict["hgg.references"] = refs
+
         validated = ipuz.read(json.dumps(ipuz_dict))
 
         filepath.write_text(ipuz.write(validated))
         logger.info("Exported .ipuz to %s", filepath)
         return filepath
+
+    def _build_clue_references(
+        self, envelope: PuzzleEnvelope
+    ) -> list[dict[str, Any]] | None:
+        """Build clue cross-reference data for themed puzzles.
+
+        Returns None if the envelope has no theme, no revealer, or no
+        matching seed entries in the clue list.
+        """
+        if envelope.theme is None or not envelope.theme.revealer:
+            return None
+
+        theme = envelope.theme
+
+        # Build answer -> (number, direction) lookup from clue list
+        answer_to_clue: dict[str, tuple[int, str]] = {}
+        for clue in envelope.clues:
+            answer_to_clue[clue.answer.upper()] = (clue.number, clue.direction)
+
+        # Find revealer clue
+        revealer_key = theme.revealer.upper()
+        if revealer_key not in answer_to_clue:
+            return None
+        revealer_num, revealer_dir = answer_to_clue[revealer_key]
+
+        # Find theme entry clues (only seeds that appear in the grid)
+        theme_clues: list[tuple[int, str]] = []
+        for seed in theme.seed_entries:
+            key = seed.upper()
+            if key in answer_to_clue and key != revealer_key:
+                theme_clues.append(answer_to_clue[key])
+
+        if not theme_clues:
+            return None
+
+        def _fmt(number: int, direction: str) -> list[int | str]:
+            return [number, direction.capitalize()]
+
+        refs: list[dict[str, Any]] = []
+
+        # Revealer → all theme entries
+        refs.append({
+            "clue": _fmt(revealer_num, revealer_dir),
+            "role": "revealer",
+            "references": [_fmt(n, d) for n, d in theme_clues],
+        })
+
+        # Each theme entry → revealer
+        for num, d in theme_clues:
+            refs.append({
+                "clue": _fmt(num, d),
+                "role": "theme_entry",
+                "references": [_fmt(revealer_num, revealer_dir)],
+            })
+
+        return refs

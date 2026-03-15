@@ -446,3 +446,4 @@ For crosswords and sudoku, the solution string for checksumming is formed by con
 - ipuz Python library: https://pypi.org/project/ipuz/
 - libipuz (C library + extensions): https://libipuz.org
 - puzpy (Python .puz library): https://github.com/alexdej/puzpy
+- [Custom ipuz extensions used by this project](ipuz-extensions.md)
