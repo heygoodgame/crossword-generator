@@ -84,6 +84,11 @@ class ClueGrade(BaseModel):
     answer: str
     score: float  # 0-100
     feedback: str = ""
+    # Per-dimension sub-scores (0-25 each)
+    accuracy: float | None = None
+    freshness: float | None = None
+    craft: float | None = None
+    fairness: float | None = None
 
 
 class ClueGradeReport(BaseModel):

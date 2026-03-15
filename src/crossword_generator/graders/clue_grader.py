@@ -159,9 +159,12 @@ def _parse_evaluation_response(
 
     grades: list[ClueGrade] = []
     for item in parsed:
-        score = float(item["score"])
-        # Clamp to 0-100
-        score = max(0.0, min(100.0, score))
+        # Extract per-dimension sub-scores (0-25 each)
+        accuracy = max(0.0, min(25.0, float(item.get("accuracy", 0))))
+        freshness = max(0.0, min(25.0, float(item.get("freshness", 0))))
+        craft = max(0.0, min(25.0, float(item.get("craft", 0))))
+        fairness = max(0.0, min(25.0, float(item.get("fairness", 0))))
+        score = accuracy + freshness + craft + fairness
 
         grades.append(
             ClueGrade(
@@ -170,6 +173,10 @@ def _parse_evaluation_response(
                 answer=item.get("answer", ""),
                 score=score,
                 feedback=str(item.get("feedback", "")),
+                accuracy=accuracy,
+                freshness=freshness,
+                craft=craft,
+                fairness=fairness,
             )
         )
 
