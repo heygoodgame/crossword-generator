@@ -124,6 +124,14 @@ def create_pipeline(
         min_2letter_score=config.dictionary.min_2letter_score,
     )
 
+    # Build LLM provider
+    if config.llm.provider == "ollama":
+        llm_provider = OllamaProvider(config.llm.ollama)
+    elif config.llm.provider == "claude":
+        llm_provider = ClaudeProvider(config.llm.claude)
+    else:
+        raise ValueError(f"Unknown LLM provider: {config.llm.provider}")
+
     # Build filler
     if config.fill.provider == "go-crossword":
         filler = GoCrosswordFiller(config.fill.go_crossword)
@@ -142,15 +150,10 @@ def create_pipeline(
         max_retries=config.fill.max_retries,
         max_grid_variants=config.fill.max_grid_variants,
         retry_on_fail=config.grading.fill.retry_on_fail,
+        collect_boards=config.grading.fill.collect_boards,
+        llm_select=config.grading.fill.llm_select,
+        llm_provider=llm_provider if config.grading.fill.llm_select else None,
     )
-
-    # Build LLM provider
-    if config.llm.provider == "ollama":
-        llm_provider = OllamaProvider(config.llm.ollama)
-    elif config.llm.provider == "claude":
-        llm_provider = ClaudeProvider(config.llm.claude)
-    else:
-        raise ValueError(f"Unknown LLM provider: {config.llm.provider}")
 
     clue_grader = ClueGrader(
         llm_provider, min_passing_score=config.grading.clue.min_score

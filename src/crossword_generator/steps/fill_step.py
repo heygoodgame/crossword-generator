@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import itertools
+import json
 import logging
 from collections import Counter
 from dataclasses import dataclass, field
@@ -14,7 +15,9 @@ from crossword_generator.graders.fill_grader import FillGrader
 from crossword_generator.grid_builder import build_themed_grids
 from crossword_generator.grid_pattern_generator import PatternConfig
 from crossword_generator.grid_specs import get_grid_spec
-from crossword_generator.models import FillResult, PuzzleEnvelope
+from crossword_generator.llm.base import LLMProvider
+from crossword_generator.llm.prompts.fill_selection import build_fill_selection_prompt
+from crossword_generator.models import FillResult, FillSelectionMetadata, PuzzleEnvelope
 from crossword_generator.steps.base import PipelineStep
 from crossword_generator.steps.crossing_scorer import rank_candidates
 from crossword_generator.steps.theme_slot_assigner import assign_seed_entries_to_slots
@@ -198,6 +201,51 @@ def _has_theme(envelope: PuzzleEnvelope) -> bool:
 
 
 # ---------------------------------------------------------------------------
+# Candidate collector for multi-board selection
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class _CandidateCollector:
+    """Collects unique passing fill results up to a target count."""
+
+    target: int
+    passing_results: list[tuple[FillResult, list[str]]] = field(
+        default_factory=list
+    )
+    best_result: FillResult | None = None
+    best_subset: list[str] = field(default_factory=list)
+    total_attempts: int = 0
+    _seen_grids: set[str] = field(default_factory=set)
+
+    def _grid_key(self, grid: list[list[str]]) -> str:
+        return "|".join("".join(row) for row in grid)
+
+    def add(self, result: FillResult, subset: list[str]) -> None:
+        """Add a result. Tracks best overall; adds to passing if unique."""
+        if self.best_result is None or (result.quality_score or 0) > (
+            self.best_result.quality_score or 0
+        ):
+            self.best_result = result
+            self.best_subset = list(subset)
+
+        if result.grade_report and result.grade_report.passing:
+            key = self._grid_key(result.grid)
+            if key not in self._seen_grids:
+                self._seen_grids.add(key)
+                self.passing_results.append((result, list(subset)))
+                logger.info(
+                    "Collected passing board %d/%d (score %.1f)",
+                    len(self.passing_results),
+                    self.target,
+                    result.quality_score or 0,
+                )
+
+    def is_full(self) -> bool:
+        return len(self.passing_results) >= self.target
+
+
+# ---------------------------------------------------------------------------
 # Fill steps
 # ---------------------------------------------------------------------------
 
@@ -293,6 +341,9 @@ class FillWithGradingStep(PipelineStep):
         max_retries: int = 5,
         max_grid_variants: int = 100,
         retry_on_fail: bool = True,
+        collect_boards: int = 1,
+        llm_select: bool = False,
+        llm_provider: LLMProvider | None = None,
     ) -> None:
         self._filler = filler
         self._grader = grader
@@ -300,6 +351,9 @@ class FillWithGradingStep(PipelineStep):
         self._max_retries = max_retries
         self._max_grid_variants = max_grid_variants
         self._retry_on_fail = retry_on_fail
+        self._collect_boards = collect_boards
+        self._llm_select = llm_select
+        self._llm_provider = llm_provider
 
     @property
     def name(self) -> str:
@@ -364,57 +418,56 @@ class FillWithGradingStep(PipelineStep):
             [(w, f"{s:.2f}") for w, s in ranked],
         )
 
+        collector = _CandidateCollector(target=self._collect_boards)
+
         # Phase 1: Theme-first construction (primary strategy)
-        result, subset, attempts = self._try_theme_first_fill(
-            envelope, ranked_words, revealer
+        self._try_theme_first_fill(
+            envelope, ranked_words, revealer, collector
         )
-        if result and result.grade_report and result.grade_report.passing:
+
+        if collector.is_full():
             logger.info(
-                "Theme-first strategy succeeded with subset %s "
-                "(%d attempts)",
-                subset, attempts,
+                "Theme-first collected %d/%d boards",
+                len(collector.passing_results),
+                collector.target,
             )
-            return self._finalize(envelope, result, subset, attempts)
-
-        best_result = result
-        best_subset = subset
-        total_attempts = attempts
-
-        if best_result:
+        elif collector.passing_results:
             logger.info(
-                "Theme-first best score: %.1f (not passing), "
+                "Theme-first collected %d/%d boards (not full), "
                 "falling back to random-grid search",
-                best_result.quality_score or 0,
+                len(collector.passing_results),
+                collector.target,
             )
         else:
-            logger.info(
-                "Theme-first produced no results, falling back to "
-                "random-grid search"
-            )
+            if collector.best_result:
+                logger.info(
+                    "Theme-first best score: %.1f (not passing), "
+                    "falling back to random-grid search",
+                    collector.best_result.quality_score or 0,
+                )
+            else:
+                logger.info(
+                    "Theme-first produced no results, falling back to "
+                    "random-grid search"
+                )
 
         # Phase 2: Random-grid search (fallback — existing signature-based)
-        fallback_result, fallback_subset, fallback_attempts = (
+        if not collector.is_full():
             self._try_random_grid_fill(
-                envelope, ranked_words, revealer
+                envelope, ranked_words, revealer, collector
             )
-        )
-        total_attempts += fallback_attempts
 
-        if fallback_result is not None:
-            if best_result is None or (
-                fallback_result.quality_score or 0
-            ) > (best_result.quality_score or 0):
-                best_result = fallback_result
-                best_subset = fallback_subset
-
-        if best_result is None:
+        if collector.best_result is None:
             raise FillError(
                 f"All strategies exhausted: could not fill grid after "
-                f"{total_attempts} total attempt(s)"
+                f"{collector.total_attempts} total attempt(s)"
             )
 
+        # Select the best board from collected candidates
+        best_result, best_subset = self._select_best(collector)
+
         return self._finalize(
-            envelope, best_result, best_subset, total_attempts
+            envelope, best_result, best_subset, collector.total_attempts
         )
 
     def _try_theme_first_fill(
@@ -422,28 +475,28 @@ class FillWithGradingStep(PipelineStep):
         envelope: PuzzleEnvelope,
         ranked_words: list[str],
         revealer: str,
-    ) -> tuple[FillResult | None, list[str], int]:
+        collector: _CandidateCollector,
+    ) -> None:
         """Try building grids around theme entries (theme-first strategy).
 
         For each subset of candidates (size 3 → 2 → 1):
           - build_themed_grids() → multiple GridSpecs with entries pre-placed
           - CSP fill each
-          - Grade and keep best
+          - Grade and add to collector
 
-        Returns (best_result, placed_subset, total_attempts).
+        Stops early when collector is full.
         """
         theme = envelope.theme
         assert theme is not None
         grid_size = envelope.grid_size
         base_seed = envelope.metadata.get("seed", 0) or 0
 
-        best_result: FillResult | None = None
-        best_subset: list[str] = []
-        total_attempts = 0
-
         max_seed_size = min(len(ranked_words), 4)
 
         for target_size in range(max_seed_size, 0, -1):
+            if collector.is_full():
+                return
+
             # For large subsets, exclude long entries that over-constrain
             # perpendicular slots.  A 5-letter entry spans 5 of 9 columns
             # (56%), which is manageable; 6+ letters (67%+) combined with
@@ -467,6 +520,9 @@ class FillWithGradingStep(PipelineStep):
             )
 
             for subset in subsets:
+                if collector.is_full():
+                    return
+
                 # Build themed grids for this subset
                 grid_count = (
                     self.THEME_FIRST_GRID_COUNT_LARGE
@@ -491,7 +547,10 @@ class FillWithGradingStep(PipelineStep):
                     continue
 
                 for spec in specs:
-                    total_attempts += 1
+                    if collector.is_full():
+                        return
+
+                    collector.total_attempts += 1
 
                     try:
                         filled = self._filler.fill(spec)
@@ -505,14 +564,10 @@ class FillWithGradingStep(PipelineStep):
                         filler_used=self._filler.name,
                         quality_score=report.overall_score,
                         grade_report=report,
-                        attempt_number=total_attempts,
+                        attempt_number=collector.total_attempts,
                     )
 
-                    if best_result is None or report.overall_score > (
-                        best_result.quality_score or 0.0
-                    ):
-                        best_result = result
-                        best_subset = list(subset)
+                    collector.add(result, list(subset))
 
                     if report.passing:
                         logger.info(
@@ -520,20 +575,18 @@ class FillWithGradingStep(PipelineStep):
                             "score %.1f",
                             subset, report.overall_score,
                         )
-                        return best_result, best_subset, total_attempts
-
-        return best_result, best_subset, total_attempts
 
     def _try_random_grid_fill(
         self,
         envelope: PuzzleEnvelope,
         ranked_words: list[str],
         revealer: str,
-    ) -> tuple[FillResult | None, list[str], int]:
+        collector: _CandidateCollector,
+    ) -> None:
         """Try filling using random grid patterns (signature-based).
 
         This is the original slot-aware subset selection strategy.
-        Returns (best_result, placed_subset, total_attempts).
+        Adds results to the collector; stops when collector is full.
         """
         theme = envelope.theme
         assert theme is not None
@@ -548,12 +601,11 @@ class FillWithGradingStep(PipelineStep):
             self._max_grid_variants,
         )
 
-        best_result: FillResult | None = None
-        best_subset: list[str] = []
-        total_attempts = 0
-
         max_seed_size = min(len(ranked_words), 4)
         for target_size in range(max_seed_size, -1, -1):
+            if collector.is_full():
+                return
+
             # For large subsets, exclude long entries (same filter as
             # theme-first) to keep perpendicular slots CSP-feasible.
             words_for_size = ranked_words
@@ -586,6 +638,9 @@ class FillWithGradingStep(PipelineStep):
             )
 
             for group in eligible_groups:
+                if collector.is_full():
+                    return
+
                 sig = group.signature
                 group_tried = 0
 
@@ -611,6 +666,9 @@ class FillWithGradingStep(PipelineStep):
                 )
 
                 for subset in subsets:
+                    if collector.is_full():
+                        return
+
                     if (
                         group_tried >= per_group_budget
                         or subsets_tried >= self.MAX_SUBSETS_PER_SIZE
@@ -629,16 +687,12 @@ class FillWithGradingStep(PipelineStep):
                         group.grid_seeds,
                         max_seeds=self.GRID_VARIANTS_PER_SUBSET,
                     )
-                    total_attempts += attempts
+                    collector.total_attempts += attempts
                     subsets_tried += 1
                     group_tried += 1
 
                     if result is not None:
-                        if best_result is None or (
-                            result.quality_score or 0
-                        ) > (best_result.quality_score or 0):
-                            best_result = result
-                            best_subset = list(subset)
+                        collector.add(result, list(subset))
 
                         if (
                             result.grade_report
@@ -650,19 +704,9 @@ class FillWithGradingStep(PipelineStep):
                                 subset,
                                 target_size,
                             )
-                            return best_result, best_subset, total_attempts
 
                 if subsets_tried >= self.MAX_SUBSETS_PER_SIZE:
                     break
-
-            if (
-                best_result
-                and best_result.grade_report
-                and best_result.grade_report.passing
-            ):
-                break
-
-        return best_result, best_subset, total_attempts
 
     def _finalize(
         self,
@@ -769,10 +813,12 @@ class FillWithGradingStep(PipelineStep):
         max_grid_variants = self._max_grid_variants if has_theme else 1
         max_fill_attempts = self._max_retries if self._retry_on_fail else 1
 
-        best_result: FillResult | None = None
-        total_attempts = 0
+        collector = _CandidateCollector(target=self._collect_boards)
 
         for grid_variant in range(max_grid_variants):
+            if collector.is_full():
+                break
+
             grid_seed = (
                 base_seed + grid_variant if base_seed is not None else None
             )
@@ -800,7 +846,10 @@ class FillWithGradingStep(PipelineStep):
                 )
 
             for attempt in range(1, max_fill_attempts + 1):
-                total_attempts += 1
+                if collector.is_full():
+                    break
+
+                collector.total_attempts += 1
                 logger.info(
                     "Fill attempt %d/%d (grid variant %d) with %s (%dx%d)",
                     attempt,
@@ -831,7 +880,7 @@ class FillWithGradingStep(PipelineStep):
 
                 logger.info(
                     "Attempt %d score: %.1f/100 (%s)",
-                    total_attempts,
+                    collector.total_attempts,
                     report.overall_score,
                     "PASS" if report.passing else "FAIL",
                 )
@@ -841,40 +890,40 @@ class FillWithGradingStep(PipelineStep):
                     filler_used=self._filler.name,
                     quality_score=report.overall_score,
                     grade_report=report,
-                    attempt_number=total_attempts,
+                    attempt_number=collector.total_attempts,
                 )
 
-                if best_result is None or report.overall_score > (
-                    best_result.quality_score or 0.0
-                ):
-                    best_result = result
+                collector.add(result, [])
 
-                if report.passing:
+                if not report.passing:
+                    continue
+                # Passing result — check if collector is full
+                if collector.is_full():
                     break
             else:
                 # All fill attempts exhausted for this grid variant;
                 # continue to next variant if available
                 continue
 
-            # If we broke out of the fill loop with a passing result, stop
-            if (
-                best_result
-                and best_result.grade_report
-                and best_result.grade_report.passing
-            ):
+            # If we broke out of the fill loop, check collector
+            if collector.is_full():
                 break
 
-        if best_result is None:
+        if collector.best_result is None:
             raise FillError(
                 f"All grid variants exhausted: could not fill grid after "
                 f"trying {max_grid_variants} pattern(s) with "
-                f"{total_attempts} total attempt(s)"
+                f"{collector.total_attempts} total attempt(s)"
             )
+
+        # Select the best board from collected candidates
+        best_result, _ = self._select_best(collector)
 
         new_errors = list(envelope.errors)
         if not best_result.grade_report or not best_result.grade_report.passing:
             new_errors.append(
-                f"Fill quality below threshold after {total_attempts} "
+                f"Fill quality below threshold after "
+                f"{collector.total_attempts} "
                 f"attempt(s): best score {best_result.quality_score:.1f}"
             )
 
@@ -886,6 +935,116 @@ class FillWithGradingStep(PipelineStep):
             }
         )
 
+    def _select_best(
+        self, collector: _CandidateCollector
+    ) -> tuple[FillResult, list[str]]:
+        """Select the best board from collected candidates."""
+        if not collector.passing_results:
+            # No passing boards — return best non-passing
+            assert collector.best_result is not None
+            return collector.best_result, collector.best_subset
+
+        if len(collector.passing_results) == 1:
+            result, subset = collector.passing_results[0]
+            result = result.model_copy(
+                update={
+                    "selection_metadata": FillSelectionMetadata(
+                        candidates_collected=1,
+                        selection_method="single",
+                    )
+                }
+            )
+            return result, subset
+
+        # Multiple passing boards
+        if self._llm_select and self._llm_provider is not None:
+            return self._llm_select_best(collector.passing_results)
+
+        # Numeric best: pick highest score
+        best_idx = max(
+            range(len(collector.passing_results)),
+            key=lambda i: collector.passing_results[i][0].quality_score or 0,
+        )
+        result, subset = collector.passing_results[best_idx]
+        result = result.model_copy(
+            update={
+                "selection_metadata": FillSelectionMetadata(
+                    candidates_collected=len(collector.passing_results),
+                    selection_method="numeric_best",
+                )
+            }
+        )
+        return result, subset
+
+    def _llm_select_best(
+        self,
+        candidates: list[tuple[FillResult, list[str]]],
+    ) -> tuple[FillResult, list[str]]:
+        """Use LLM to select the best board from candidates."""
+        assert self._llm_provider is not None
+
+        grids = [r.grid for r, _ in candidates]
+        reports = [r.grade_report for r, _ in candidates]
+        assert all(rpt is not None for rpt in reports)
+
+        prompt = build_fill_selection_prompt(
+            grids, reports  # type: ignore[arg-type]
+        )
+
+        max_retries = 3
+        for attempt in range(1, max_retries + 1):
+            try:
+                raw = self._llm_provider.generate(prompt)
+                idx, rationale = _parse_selection_response(
+                    raw, len(candidates)
+                )
+
+                result, subset = candidates[idx]
+                result = result.model_copy(
+                    update={
+                        "selection_metadata": FillSelectionMetadata(
+                            candidates_collected=len(candidates),
+                            selection_method="llm",
+                            llm_rationale=rationale,
+                        )
+                    }
+                )
+                logger.info(
+                    "LLM selected board %d/%d: %s",
+                    idx + 1,
+                    len(candidates),
+                    rationale,
+                )
+                return result, subset
+            except (ValueError, KeyError, json.JSONDecodeError) as exc:
+                logger.warning(
+                    "LLM selection parse attempt %d/%d failed: %s",
+                    attempt,
+                    max_retries,
+                    exc,
+                )
+
+        # Fallback to numeric best
+        logger.warning(
+            "LLM selection failed after %d attempts, falling back to "
+            "numeric best",
+            max_retries,
+        )
+        best_idx = max(
+            range(len(candidates)),
+            key=lambda i: candidates[i][0].quality_score or 0,
+        )
+        result, subset = candidates[best_idx]
+        result = result.model_copy(
+            update={
+                "selection_metadata": FillSelectionMetadata(
+                    candidates_collected=len(candidates),
+                    selection_method="numeric_best",
+                )
+            }
+        )
+        return result, subset
+
     def validate_input(self, envelope: PuzzleEnvelope) -> list[str]:
         """Validate that the envelope is ready for filling."""
         errors: list[str] = []
@@ -894,6 +1053,44 @@ class FillWithGradingStep(PipelineStep):
         if not self._filler.is_available():
             errors.append(f"Filler '{self._filler.name}' is not available")
         return errors
+
+
+def _parse_selection_response(
+    raw: str, num_candidates: int
+) -> tuple[int, str]:
+    """Parse LLM fill selection response.
+
+    Args:
+        raw: Raw LLM response text.
+        num_candidates: Number of candidate boards.
+
+    Returns:
+        Tuple of (zero_based_index, rationale).
+
+    Raises:
+        ValueError: If parsing fails or index is out of range.
+    """
+    # Try to extract JSON from the response
+    text = raw.strip()
+    # Find JSON object boundaries
+    start = text.find("{")
+    end = text.rfind("}") + 1
+    if start == -1 or end == 0:
+        raise ValueError(f"No JSON object found in response: {text[:200]}")
+
+    data = json.loads(text[start:end])
+    selected = data["selected_board"]
+    rationale = data.get("rationale", "")
+
+    # Convert 1-based to 0-based
+    idx = int(selected) - 1
+    if idx < 0 or idx >= num_candidates:
+        raise ValueError(
+            f"selected_board {selected} out of range "
+            f"(1-{num_candidates})"
+        )
+
+    return idx, rationale
 
 
 def _has_theme_or_candidates(envelope: PuzzleEnvelope) -> bool:

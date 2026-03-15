@@ -96,6 +96,14 @@ class ClueGradeReport(BaseModel):
     summary: str = ""
 
 
+class FillSelectionMetadata(BaseModel):
+    """Metadata about how the winning fill was selected from candidates."""
+
+    candidates_collected: int
+    selection_method: str  # "llm" | "numeric_best" | "single"
+    llm_rationale: str = ""
+
+
 class FillResult(BaseModel):
     """Result of grid filling."""
 
@@ -104,6 +112,7 @@ class FillResult(BaseModel):
     filler_used: str = ""
     attempt_number: int = 1
     grade_report: FillGradeReport | None = None
+    selection_metadata: FillSelectionMetadata | None = None
 
 
 class PuzzleEnvelope(BaseModel):

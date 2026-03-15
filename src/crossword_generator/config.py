@@ -73,6 +73,8 @@ class FillGradingConfig(BaseModel):
 
     min_score: int = 51
     retry_on_fail: bool = True
+    collect_boards: int = 1  # 1 = stop at first passing board
+    llm_select: bool = False  # requires collect_boards > 1
 
 
 class ClueGradingConfig(BaseModel):

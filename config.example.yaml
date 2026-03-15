@@ -35,6 +35,8 @@ grading:
   fill:
     min_score: 70           # Minimum overall fill quality score (0-100)
     retry_on_fail: true
+    collect_boards: 1       # Collect up to N unique passing boards (1 = stop at first)
+    llm_select: false       # Use LLM to pick best board (requires collect_boards > 1)
   clue:
     min_score: 70           # Minimum clue quality score (0-100)
     regenerate_on_fail: true
