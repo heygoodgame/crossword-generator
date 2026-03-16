@@ -441,7 +441,7 @@ def run_batch_api_classification(
 
 def write_dictionaries(output_dir: Path) -> None:
     """Read run results and write family-friendly / not-family-friendly dictionaries."""
-    # Collect verdicts from all runs
+    # Collect verdicts from all runs — FLAGGED in any run → FLAGGED
     verdicts: dict[str, str] = {}
 
     for path in sorted(output_dir.glob("safe-*.txt")):
@@ -451,8 +451,7 @@ def write_dictionaries(output_dir: Path) -> None:
 
     for path in sorted(output_dir.glob("flagged-*.txt")):
         for word, _score, _reason in read_output_file(path):
-            if word not in verdicts:
-                verdicts[word] = "FLAGGED"
+            verdicts[word] = "FLAGGED"
 
     if not verdicts:
         print("No run output files found in", output_dir)
