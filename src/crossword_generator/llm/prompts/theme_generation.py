@@ -67,8 +67,8 @@ def build_theme_generation_prompt(
             "seed_entries": example_entries,
             "revealer": example_revealer,
             "revealer_clue": (
-                "Soaring high above, or what the theme "
-                "entries can do"
+                "Soaring high above, or a hint to some "
+                "other answers in this puzzle"
             ),
         },
         indent=2,
@@ -108,8 +108,9 @@ def build_theme_generation_prompt(
         "- The revealer_clue MUST start with a real, standalone clue "
         "for the revealer word (e.g., 'Completely destroyed' for "
         "SHATTERED), then optionally add a theme hint after a comma "
-        "or 'or'. Never write a clue that ONLY describes the theme "
-        "connection (e.g., avoid 'Quality shared by all theme entries')."
+        "or 'or'. Use natural phrasing like 'a hint to some other "
+        "answers in this puzzle' — never use the phrase 'theme entries.' "
+        "Never write a clue that ONLY describes the theme connection."
     )
 
     avoid_section = ""

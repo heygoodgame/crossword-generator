@@ -88,17 +88,6 @@ class ClueGenerationStep(PipelineStep):
                 f"attempts. Last error: {last_error}"
             )
 
-        # Substitute the theme's pre-generated revealer clue if available
-        if envelope.theme and envelope.theme.revealer_clue:
-            revealer = envelope.theme.revealer.upper()
-            for entry in clue_entries:
-                if entry.answer == revealer:
-                    logger.info(
-                        "Substituting theme revealer clue for %s", revealer
-                    )
-                    entry.clue = envelope.theme.revealer_clue
-                    break
-
         return envelope.model_copy(
             update={
                 "clues": clue_entries,

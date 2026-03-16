@@ -74,25 +74,47 @@ def build_clue_generation_prompt(
             rev_label = f"{revealer_info[0]}-{revealer_info[1].capitalize()}"
         else:
             rev_label = theme.revealer
+        revealer_clue_draft = ""
+        if theme.revealer_clue:
+            revealer_clue_draft = (
+                f"- Revealer clue draft: \"{theme.revealer_clue}\" "
+                f"(use as inspiration — rewrite to fit the grid context)\n"
+            )
         theme_block = (
             f"\nTHEME CONTEXT:\n"
             f"- Topic: {theme.topic}\n"
             f"- Wordplay type: {theme.wordplay_type}\n"
             f"- Revealer: {theme.revealer} ({rev_label})\n"
+            f"{revealer_clue_draft}"
             f"- Theme entries are marked [THEME ENTRY] above\n"
             f"\nTHEME CLUE INSTRUCTIONS:\n"
-            f"Each [THEME ENTRY] clue must tie back to the revealer. "
-            f"Two good approaches:\n"
-            f"1. Direct cross-reference: mention the revealer by number\n"
-            f'   (e.g., "Title for many of {rev_label}\'s assassins" '
-            f"for HITMAN)\n"
-            f"2. Thematic angle: a standard clue that also nods to the\n"
-            f"   revealer's concept (e.g., for theme \"things that are "
-            f'golden,"\n'
-            f'   clue GATE as "Entrance to a park, or a gilded one '
-            f'in San Francisco")\n'
-            f"\nMix both styles across the theme entries — "
-            f"don't use the same approach for all of them.\n"
+            f"For each [THEME ENTRY], choose ONE of these three styles — "
+            f"and VARY the style across theme entries:\n"
+            f"\n"
+            f"1. STANDALONE: A clean clue with no reference to the theme.\n"
+            f"   Example (theme: 'gold ___'): BAR → \"Watering hole\"\n"
+            f"\n"
+            f"2. INDIRECT ALLUSION: A standalone clue that subtly nods to\n"
+            f"   the theme concept without being heavy-handed.\n"
+            f"   Example: BAR → \"Where you might find a 24-karat ingot\"\n"
+            f"\n"
+            f"3. POSITIONAL CROSS-REFERENCE: Reference the revealer by\n"
+            f"   number. Use sparingly — at most ONE theme entry should\n"
+            f"   use this style.\n"
+            f"   Example: BAR → \"See {rev_label}\" or "
+            f"\"Pub fixture, per {rev_label}\"\n"
+            f"\n"
+            f"IMPORTANT:\n"
+            f"- Vary the style across theme entries. Do NOT use the same "
+            f"approach for all of them.\n"
+            f"- Do NOT write \"one of [REVEALER ANSWER]\" — this is "
+            f"grammatically unnatural for most theme types.\n"
+            f"\n"
+            f"For the [REVEALER] entry: write a standalone definition "
+            f"first, then add a theme hint using natural phrasing like "
+            f"\"a hint to some other answers in this puzzle\" or \"a word "
+            f"that can precede some other answers.\" Never use the phrase "
+            f"\"theme entries.\"\n"
         )
 
     # Build the JSON format example
@@ -233,9 +255,17 @@ def build_clue_repair_prompt(
             f"- Wordplay type: {theme.wordplay_type}\n"
             f"- Revealer: {theme.revealer} ({revealer_label})\n"
             f"\nIf any entries above are marked [THEME ENTRY], their "
-            f"replacement clues must tie back to the revealer — either "
-            f"by referencing {revealer_label} directly or by connecting "
-            f"to the theme concept.\n"
+            f"replacement clues can use any of these styles:\n"
+            f"1. Standalone clue (no theme reference)\n"
+            f"2. Indirect allusion to the theme concept\n"
+            f"3. Cross-reference to {revealer_label} (use sparingly)\n"
+            f"\nDo NOT write \"one of [REVEALER ANSWER]\" — this is "
+            f"grammatically unnatural. Vary the style if multiple theme "
+            f"entries need repair.\n"
+            f"\nIf the [REVEALER] entry needs repair, write a standalone "
+            f"definition first, then optionally add a theme hint using "
+            f"natural phrasing (e.g., \"a hint to some other answers in "
+            f"this puzzle\"). Never use \"theme entries.\"\n"
         )
 
     # JSON format example

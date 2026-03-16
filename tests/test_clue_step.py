@@ -371,3 +371,101 @@ class TestThemeAnnotationsInPrompt:
 
         assert "[THEME ENTRY]" not in prompt
         assert "[REVEALER]" not in prompt
+
+    def test_theme_prompt_includes_revealer_clue_as_guidance(self) -> None:
+        """revealer_clue from theme is passed as context, not substituted."""
+        from crossword_generator.exporters.numbering import compute_numbering
+
+        entries = compute_numbering(MOCK_GRID)
+        crossing_words = compute_crossing_words(entries, MOCK_GRID)
+        theme = ThemeConcept(
+            topic="Things that fly",
+            wordplay_type="literal",
+            revealer="KLMNO",
+            seed_entries=["ABCDE"],
+            revealer_clue="Soaring high above, or a hint to some other answers",
+        )
+
+        prompt = build_clue_generation_prompt(
+            entries, crossing_words, PuzzleType.MIDI, theme
+        )
+
+        assert "Revealer clue draft" in prompt
+        assert "Soaring high above" in prompt
+
+    def test_theme_prompt_variety_instructions(self) -> None:
+        """Prompt instructs variety across theme entry clue styles."""
+        from crossword_generator.exporters.numbering import compute_numbering
+
+        entries = compute_numbering(MOCK_GRID)
+        crossing_words = compute_crossing_words(entries, MOCK_GRID)
+        theme = ThemeConcept(
+            topic="Things that fly",
+            wordplay_type="literal",
+            revealer="KLMNO",
+            seed_entries=["ABCDE"],
+        )
+
+        prompt = build_clue_generation_prompt(
+            entries, crossing_words, PuzzleType.MIDI, theme
+        )
+
+        assert "STANDALONE" in prompt
+        assert "INDIRECT ALLUSION" in prompt
+        assert "POSITIONAL CROSS-REFERENCE" in prompt
+        assert "Vary the style" in prompt
+
+    def test_theme_prompt_prohibits_one_of_revealer(self) -> None:
+        """Prompt explicitly prohibits 'one of [REVEALER ANSWER]' formula."""
+        from crossword_generator.exporters.numbering import compute_numbering
+
+        entries = compute_numbering(MOCK_GRID)
+        crossing_words = compute_crossing_words(entries, MOCK_GRID)
+        theme = ThemeConcept(
+            topic="Things that fly",
+            wordplay_type="literal",
+            revealer="KLMNO",
+            seed_entries=["ABCDE"],
+        )
+
+        prompt = build_clue_generation_prompt(
+            entries, crossing_words, PuzzleType.MIDI, theme
+        )
+
+        assert "one of [REVEALER ANSWER]" in prompt
+        assert "grammatically unnatural" in prompt
+
+
+class TestRevealerClueNotSubstituted:
+    """Verify the revealer clue from theme is NOT hard-substituted over LLM output."""
+
+    def test_llm_revealer_clue_preserved(self) -> None:
+        """The LLM's generated revealer clue is kept, not overwritten."""
+        from crossword_generator.exporters.numbering import compute_numbering
+
+        entries = compute_numbering(MOCK_GRID)
+        mock_response = _build_mock_clue_json(entries)
+
+        theme = ThemeConcept(
+            topic="Things that fly",
+            wordplay_type="literal",
+            revealer="KLMNO",  # 7-Across
+            seed_entries=["ABCDE"],
+            revealer_clue="Pre-generated revealer clue that should NOT appear",
+        )
+
+        step = ClueGenerationStep(MockLLM(response=mock_response))
+        envelope = PuzzleEnvelope(
+            puzzle_type=PuzzleType.MIDI,
+            grid_size=5,
+            fill=FillResult(grid=MOCK_GRID, filler_used="mock"),
+            theme=theme,
+        )
+        result = step.run(envelope)
+
+        # Find the revealer's clue — should be the LLM-generated one
+        revealer_clue = next(
+            c for c in result.clues if c.answer == "KLMNO"
+        )
+        assert revealer_clue.clue == "Clue for KLMNO"
+        assert revealer_clue.clue != theme.revealer_clue
