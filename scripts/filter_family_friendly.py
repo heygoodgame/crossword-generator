@@ -233,7 +233,7 @@ def _build_batch_request(
             model=model,
             system=SYSTEM_PROMPT,
             messages=[{"role": "user", "content": user_msg}],
-            max_tokens=4096,
+            max_tokens=8192,
             temperature=0.1,
             output_config={
                 "format": {
