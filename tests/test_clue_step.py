@@ -415,6 +415,47 @@ class TestThemeAnnotationsInPrompt:
         assert "POSITIONAL CROSS-REFERENCE" in prompt
         assert "Vary the style" in prompt
 
+    def test_theme_prompt_prohibits_bare_see_crossref(self) -> None:
+        """Prompt warns against bare 'See X-Across' cross-references."""
+        from crossword_generator.exporters.numbering import compute_numbering
+
+        entries = compute_numbering(MOCK_GRID)
+        crossing_words = compute_crossing_words(entries, MOCK_GRID)
+        theme = ThemeConcept(
+            topic="Test theme",
+            wordplay_type="hidden",
+            revealer="KLMNO",
+            seed_entries=["ABCDE"],
+        )
+
+        prompt = build_clue_generation_prompt(
+            entries, crossing_words, PuzzleType.MIDI, theme
+        )
+
+        assert "See X-Across" in prompt
+        assert "no solving context" in prompt
+
+    def test_theme_prompt_revealer_accuracy_warning(self) -> None:
+        """Prompt warns about connecting element vs full revealer word."""
+        from crossword_generator.exporters.numbering import compute_numbering
+
+        entries = compute_numbering(MOCK_GRID)
+        crossing_words = compute_crossing_words(entries, MOCK_GRID)
+        theme = ThemeConcept(
+            topic="Test theme",
+            wordplay_type="hidden",
+            revealer="KLMNO",
+            seed_entries=["ABCDE"],
+        )
+
+        prompt = build_clue_generation_prompt(
+            entries, crossing_words, PuzzleType.MIDI, theme
+        )
+
+        assert "connecting element" in prompt
+        assert "component" in prompt
+        assert "factually accurate" in prompt
+
     def test_theme_prompt_prohibits_one_of_revealer(self) -> None:
         """Prompt explicitly prohibits 'one of [REVEALER ANSWER]' formula."""
         from crossword_generator.exporters.numbering import compute_numbering
