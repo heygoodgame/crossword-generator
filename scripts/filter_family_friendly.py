@@ -551,6 +551,11 @@ def main() -> None:
         help="Clear checkpoint and output files, start over",
     )
     parser.add_argument(
+        "--retry-errors",
+        action="store_true",
+        help="Re-process words from errors file for the given run",
+    )
+    parser.add_argument(
         "--write-dictionaries",
         action="store_true",
         help="Read results and write final family-friendly dictionary files",
@@ -617,6 +622,28 @@ def main() -> None:
         if cp:
             print(f"\nCheckpoint found: batch {cp.get('batch_id', '?')}, "
                   f"status: {cp.get('status', '?')}")
+        return
+
+    if args.retry_errors:
+        writer = OutputWriter(args.output_dir, run=run_num)
+        if not writer.errors_path.exists():
+            print(f"No errors file for run {run_num}.")
+            return
+        error_words: list[tuple[str, int]] = []
+        for word, score, _reason in read_output_file(writer.errors_path):
+            error_words.append((word, score))
+        if not error_words:
+            print(f"No errors to retry for run {run_num}.")
+            return
+        print(f"Retrying {len(error_words):,} errored words (run {run_num})...")
+        writer.errors_path.unlink()
+        run_batch_api_classification(
+            error_words,
+            args.batch_size,
+            args.model,
+            args.output_dir,
+            run=run_num,
+        )
         return
 
     if args.reset:
