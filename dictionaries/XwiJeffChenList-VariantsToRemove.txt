@@ -24,6 +24,8 @@ advertized;50
 advertizement;50
 advertizes;50
 advertizing;50
+advisor;50
+advisors;50
 adz;50
 aec;25
 aeneid;50
@@ -42,6 +44,7 @@ aestivate;50
 aestivated;50
 aestivates;50
 aestivating;50
+afterward;50
 ageing;50
 ageings;50
 agism;20
@@ -52,6 +55,7 @@ alines;50
 alining;50
 almanack;50
 altho;50
+ambience;50
 ameba;20
 amebae;30
 amebas;30
@@ -68,6 +72,7 @@ amphitheatres;50
 ampoule;50
 ampoules;50
 ampuls;10
+amuck;50
 anaemia;50
 anaemic;50
 analyse;50
@@ -102,9 +107,13 @@ aureola;30
 avises;30
 awestricken;50
 awol;50
+axe;50
+backwards;50
 baddy;50
 bandana;50
 bandanas;50
+bandolier;50
+bandoliers;50
 bannister;50
 bannisters;50
 barbeque;50
@@ -114,6 +123,8 @@ barques;50
 barrelled;50
 barrelling;50
 bastinadoes;50
+bathyscaph;50
+bathyscaphs;50
 battleax;50
 bedevilled;50
 bedevilling;50
@@ -161,6 +172,7 @@ burqas;50
 byelaw;10
 cabala;50
 cabbala;10
+cabbie;50
 caesar;50
 caesarean;50
 caesareans;50
@@ -168,6 +180,8 @@ caesarian;50
 caesural;50
 cageyness;50
 cagy;50
+caldron;50
+caldrons;50
 calibre;50
 calibres;50
 calif;20
@@ -542,6 +556,7 @@ hah;50
 hallo;50
 hallos;30
 handselling;50
+hanky;50
 hasheesh;50
 hatchelled;50
 hiccupped;50
@@ -572,6 +587,7 @@ hoorays;50
 hootch;50
 hootches;50
 horae;50
+horsy;50
 humungous;50
 hurray;50
 hutzpah;50
@@ -671,6 +687,8 @@ kinaesthesia;50
 kinaesthetic;50
 kindergartener;50
 kindergarteners;50
+knackwurst;50
+knackwursts;50
 kookie;50
 kopek;20
 kopeks;50
@@ -688,6 +706,7 @@ lasagne;50
 lasagnes;50
 laundrette;50
 laurelled;50
+leapt;50
 learnt;50
 leftie;50
 levelled;50
@@ -854,6 +873,8 @@ palaestra;50
 panelled;50
 pangaea;50
 panty;50
+papaw;50
+papaws;50
 parcelled;50
 parcelling;50
 parlour;50
@@ -883,8 +904,10 @@ pigmy;50
 pilau;20
 pinky;50
 pinocle;50
+piny;25
 pirozhki;50
 pixy;50
+pizazz;50
 plough;50
 poe;50
 pollock;50
@@ -901,6 +924,7 @@ prejudgement;50
 premiss;50
 premisses;50
 preppie;50
+presidia;50
 preterite;50
 prev;25
 prevue;50
@@ -1071,6 +1095,7 @@ stencilled;50
 stencilling;50
 stockinet;50
 stockinets;50
+stogy;50
 stoney;50
 storey;50
 storeys;30
@@ -1137,6 +1162,7 @@ tormenter;50
 tormenters;50
 totalled;50
 totalling;50
+towards;50
 towelled;50
 tranquillity;50
 tranquillize;50
@@ -1144,6 +1170,7 @@ tranquillized;50
 tranquillizer;30
 tranquillizers;30
 tranquillizing;50
+transgendered;50
 traveller;50
 travelog;50
 travelogs;50
@@ -1170,6 +1197,7 @@ tzarina;50
 tzars;20
 ukelele;10
 ukeleles;10
+unbeknown;50
 undersize;50
 undreamt;50
 unequalled;50

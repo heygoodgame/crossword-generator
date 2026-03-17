@@ -25,12 +25,7 @@ VARCON_PATH = REPO_ROOT / "dictionaries" / "varcon.txt"
 DICTIONARY_PATH = REPO_ROOT / "dictionaries" / "XwiJeffChenList.txt"
 OUTPUT_PATH = REPO_ROOT / "dictionaries" / "XwiJeffChenList-VariantsToRemove.txt"
 
-# Tags that mean "preferred in this region" (no variant modifier)
-# A bare region tag or A. (disputed/equal) means preferred — do NOT flag.
-AMERICAN_PREFERRED_RE = re.compile(r"^A[.\s]?$|^A$")
-NONREGIONAL_PREFERRED_RE = re.compile(r"^_[.\s]?$|^_$")
-
-# Tags that mean "variant" — flag these words
+# Variant modifiers — words with these are not preferred
 VARIANT_MODIFIERS = {"v", "V", "-", "x"}
 
 
@@ -59,20 +54,69 @@ def parse_tags(tag_str: str) -> list[tuple[str, str]]:
     return pairs
 
 
+def _has_bare_preferred(tags: list[tuple[str, str]]) -> bool:
+    """Check if tags include a bare A or _ (unambiguously preferred)."""
+    return any(
+        region in ("A", "_") and modifier == ""
+        for region, modifier in tags
+    )
+
+
 def is_american_preferred(tags: list[tuple[str, str]]) -> bool:
-    """Check if any tag marks this word as American or non-regional preferred."""
+    """Check if any tag marks this word as American or non-regional preferred.
+
+    A bare A/_ tag is always preferred. A. or _. (disputed/equal) is
+    only treated as preferred if it was NOT demoted by a line-level
+    sibling with a bare A/_ tag (demoted tags have modifier ".*").
+    """
     for region, modifier in tags:
-        if region == "A" and modifier in ("", "."):
-            return True
-        if region == "_" and modifier in ("", "."):
+        if region in ("A", "_") and modifier in ("", "."):
             return True
     return False
 
 
-def parse_varcon(varcon_path: Path) -> dict[str, list[tuple[str, str]]]:
-    """Parse varcon.txt and return a dict of {word: [(region, modifier), ...]}.
+def _parse_line_entries(
+    line: str,
+) -> list[tuple[str, list[tuple[str, str]]]]:
+    """Parse a single varcon data line into [(word, tags), ...].
 
-    Each word maps to all the tags it appears with across all lines.
+    Returns only lowercase, non-proper-noun, non-empty entries.
+    """
+    entries = line.split(" / ")
+    results = []
+    for entry in entries:
+        entry = entry.strip()
+        if ": " not in entry:
+            continue
+        tag_str, raw_word = entry.split(": ", 1)
+        raw_word = raw_word.strip()
+
+        # Skip proper nouns (capitalized words)
+        if raw_word[0].isupper():
+            continue
+
+        # Normalize: lowercase, strip non-alpha chars
+        word = re.sub(r"[^a-z]", "", raw_word.lower())
+        if not word:
+            continue
+
+        tags = parse_tags(tag_str.strip())
+        if not tags:
+            continue
+
+        results.append((word, tags))
+    return results
+
+
+def parse_varcon(
+    varcon_path: Path,
+) -> dict[str, list[tuple[str, str]]]:
+    """Parse varcon.txt into {word: [(region, modifier), ...]}.
+
+    When a line has an entry with bare A/_ (truly preferred), any
+    sibling entries with only A./_.  (disputed) are demoted: their
+    "." modifier is replaced with ".*" so they are no longer treated
+    as preferred.
     """
     word_tags: dict[str, list[tuple[str, str]]] = {}
 
@@ -92,27 +136,23 @@ def parse_varcon(varcon_path: Path) -> dict[str, list[tuple[str, str]]]:
             if "'s" in line:
                 continue
 
-            # Slash-separated entries: "TAGS: word / TAGS: word"
-            entries = line.split(" / ")
-            for entry in entries:
-                entry = entry.strip()
-                if ": " not in entry:
-                    continue
-                tag_str, raw_word = entry.split(": ", 1)
-                raw_word = raw_word.strip()
+            parsed = _parse_line_entries(line)
+            if not parsed:
+                continue
 
-                # Skip proper nouns (capitalized words)
-                if raw_word[0].isupper():
-                    continue
+            # Check if any entry on this line is truly preferred
+            line_has_preferred = any(
+                _has_bare_preferred(tags) for _, tags in parsed
+            )
 
-                # Normalize: lowercase, strip non-alpha chars
-                word = re.sub(r"[^a-z]", "", raw_word.lower())
-                if not word:
-                    continue
-
-                tags = parse_tags(tag_str.strip())
-                if not tags:
-                    continue
+            for word, tags in parsed:
+                if line_has_preferred:
+                    # Demote disputed (.) to non-preferred when a
+                    # sibling is truly preferred
+                    tags = [
+                        (r, ".*" if m == "." else m)
+                        for r, m in tags
+                    ]
 
                 if word not in word_tags:
                     word_tags[word] = []
@@ -121,7 +161,9 @@ def parse_varcon(varcon_path: Path) -> dict[str, list[tuple[str, str]]]:
     return word_tags
 
 
-def find_variants(word_tags: dict[str, list[tuple[str, str]]]) -> set[str]:
+def find_variants(
+    word_tags: dict[str, list[tuple[str, str]]],
+) -> set[str]:
     """Identify words that are NOT American-preferred spellings."""
     variants = set()
     for word, tags in word_tags.items():
