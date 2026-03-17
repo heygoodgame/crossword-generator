@@ -105,10 +105,9 @@ def parse_varcon(varcon_path: Path) -> dict[str, list[tuple[str, str]]]:
                 if raw_word[0].isupper():
                     continue
 
-                word = raw_word.lower()
-
-                # Skip multi-word entries (spaces or underscores)
-                if " " in word or "_" in word:
+                # Normalize: lowercase, strip non-alpha chars
+                word = re.sub(r"[^a-z]", "", raw_word.lower())
+                if not word:
                     continue
 
                 tags = parse_tags(tag_str.strip())

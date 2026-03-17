@@ -45,8 +45,6 @@ aestivating;50
 ageing;50
 ageings;50
 agism;20
-airgun;50
-airletter;50
 aline;50
 alined;10
 alinement;50
@@ -138,8 +136,6 @@ bocce;50
 bocci;50
 bogy;25
 bonnie;50
-booboo;50
-booboos;50
 bootie;50
 borises;10
 borsch;10
@@ -339,8 +335,6 @@ doggoned;50
 dognapped;50
 dognapping;50
 dogy;25
-doh;50
-dohs;25
 donut;50
 donuts;50
 dopy;25
@@ -819,10 +813,6 @@ moveable;50
 mujaheddin;50
 mums;50
 mynah;50
-namedrop;60
-namedropped;60
-namedropping;60
-namedrops;60
 nan;50
 nans;25
 neuronic;50
@@ -1072,8 +1062,6 @@ spiraeas;50
 spiralled;50
 spirochaete;50
 spoilt;50
-spongecake;50
-spongecakes;50
 spumone;50
 squirrelled;50
 squirrelling;50
@@ -1215,8 +1203,6 @@ waggons;50
 wainscotted;50
 wainscotting;50
 walla;20
-warmup;50
-warmups;50
 welch;50
 welched;50
 welches;50
