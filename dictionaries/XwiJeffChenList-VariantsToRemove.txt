@@ -13,7 +13,6 @@ accoutring;50;American variant, British preferred; preferred: accoutering
 accurst;50;American seldom-used variant, British possible; preferred: accursed
 acknowledgement;50;American variant, British preferred, Canadian preferred; preferred: acknowledgment
 acknowledgements;50;American variant, British preferred, Canadian preferred; preferred: acknowledgments
-acre;50;[proper] British preferred; preferred: Acer (proper)
 adaptor;50;American seldom-used variant, British preferred, Canadian variant; preferred: adapter
 adaptors;50;American seldom-used variant, British preferred, Canadian variant; preferred: adapters
 adjustor;50;non-regional seldom-used variant; preferred: adjuster
@@ -119,7 +118,6 @@ bannister;50;American seldom-used variant, British variant; preferred: banister
 bannisters;50;American seldom-used variant, British variant; preferred: banisters
 barbeque;50;American seldom-used variant, British variant; preferred: barbecue
 barcarolle;50;non-regional seldom-used variant; preferred: barcarole
-bare;50;[proper] British preferred; preferred: Baer (proper)
 barque;10;American variant, British preferred; preferred: bark
 barques;50;American variant, British preferred; preferred: barks
 barrelled;50;American variant, British preferred; preferred: barreled
@@ -516,7 +514,6 @@ glueing;50;American seldom-used variant, British variant; preferred: gluing
 glycerine;50;American variant, British preferred; preferred: glycerin
 gobbledegook;50;American seldom-used variant, British preferred, Canadian variant; preferred: gobbledygook
 goddam;30;non-regional variant; preferred: goddamn
-goes;50;[proper] British preferred; preferred: Ges (proper)
 goetz;20;[proper] British preferred; preferred: Getz (proper)
 goitre;10;British preferred; preferred: goiter
 goodby;50;American variant; preferred: goodbye
@@ -656,7 +653,6 @@ intrusting;50;non-regional seldom-used variant; preferred: entrusting
 intrusts;50;non-regional seldom-used variant; preferred: entrusts
 inwards;50;non-regional variant; preferred: inward
 ionise;50;British preferred; preferred: ionize
-ire;50;[proper] British preferred; preferred: Ier (proper)
 ischaemia;50;British preferred, Australian preferred; preferred: ischemia
 ising;20;British preferred; preferred: izing
 jailor;50;American seldom-used variant, Canadian variant; preferred: jailer
@@ -861,7 +857,6 @@ nought;50;American variant, British preferred; preferred: naught
 noughts;50;American variant, British preferred; preferred: naughts
 numbskull;50;American variant, British preferred; preferred: numskull
 numbskulls;50;American variant, British preferred; preferred: numskulls
-oboe;50;[proper] British preferred; preferred: Obe (proper)
 ochre;50;British preferred; preferred: ocher
 ochreous;50;American variant, British preferred; preferred: ocherous
 ochres;50;British preferred; preferred: ochers
@@ -871,10 +866,6 @@ odour;20;British preferred, Canadian preferred, Australian preferred; preferred:
 odours;50;British preferred, Canadian preferred, Australian preferred; preferred: odors
 oenologist;60;British preferred; preferred: enologist
 oenologists;60;British preferred; preferred: enologists
-okay;50;American disputed (demoted), British disputed (demoted), Canadian preferred; preferred: OK (proper)
-okayed;50;American disputed (demoted), British disputed (demoted), Canadian preferred; preferred: OKed (proper)
-okaying;50;American disputed (demoted), British disputed (demoted), Canadian preferred; preferred: OKing (proper)
-okays;50;American disputed (demoted), British disputed (demoted), Canadian preferred; preferred: OKs (proper)
 ombre;20;British preferred; preferred: omber
 ombres;50;British preferred; preferred: ombers
 omelette;50;American variant, British preferred, Canadian preferred; preferred: omelet
@@ -1100,11 +1091,9 @@ spilt;50;American seldom-used variant, British preferred, Canadian variant; pref
 spiraea;50;American variant, British preferred, Canadian variant; preferred: spirea
 spiraeas;50;American variant, British preferred, Canadian variant; preferred: spireas
 spiralled;50;British preferred, Canadian preferred; preferred: spiraled
-spires;50;[proper] British preferred; preferred: Spiers (proper)
 spirochaete;50;British preferred; preferred: spirochete
 spoilt;50;British preferred, British -ize variant; preferred: spoiled
 spumone;50;non-regional seldom-used variant; preferred: spumoni
-squire;50;[proper] British preferred; preferred: Squier (proper)
 squirrelled;50;British preferred, Canadian preferred; preferred: squirreled
 squirrelling;50;British preferred, Canadian preferred; preferred: squirreling
 stagey;50;non-regional variant; preferred: stagy
