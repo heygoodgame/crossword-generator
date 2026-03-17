@@ -1,0 +1,1467 @@
+abetter;50;American variant, British preferred
+abetters;50;American variant, British preferred
+abridgement;50;British preferred, Canadian preferred, Australian preferred
+abridgements;50;British preferred, Canadian preferred, Australian preferred
+absinth;50;American seldom-used variant, British preferred
+absinths;50;American seldom-used variant, British preferred
+accoutre;50;American variant, British preferred
+accoutred;50;American variant, British preferred
+accoutrement;50;American variant, British preferred
+accoutrements;50;American variant, British preferred
+accoutres;50;American variant, British preferred
+accoutring;50;American variant, British preferred
+acidheads;50;not-family-friendly
+acidqueen;50;not-family-friendly
+acidtrip;50;not-family-friendly
+acidtrips;50;not-family-friendly
+acknowledgement;50;American variant, British preferred, Canadian preferred
+acknowledgements;50;American variant, British preferred, Canadian preferred
+adaptor;50;American seldom-used variant, British preferred, Canadian variant
+adaptors;50;American seldom-used variant, British preferred, Canadian variant
+adjustor;50;non-regional seldom-used variant
+adjustors;50;non-regional seldom-used variant
+adonises;50;British preferred
+adrenalin;50;non-regional seldom-used variant
+advisor;50;American disputed (demoted), British variant, Canadian disputed (demoted)
+advisors;50;American disputed (demoted), British variant, Canadian disputed (demoted)
+adz;50;American variant
+aeneid;50;British preferred
+aeon;50;American variant, British preferred, Canadian variant, Australian preferred
+aeons;50;American variant, British preferred, Canadian variant, Australian preferred
+aerofoil;50;British preferred
+aerogel;50;British preferred
+aerogramme;50;non-regional variant
+aeroplane;50;British preferred, Australian preferred
+aerosolbomb;50;not-family-friendly
+aesop;50;British preferred, Australian preferred
+aestivate;50;British preferred, Canadian preferred
+aestivates;50;British preferred, Canadian preferred
+aestivating;50;British preferred, Canadian preferred
+afterward;50;American disputed (demoted), Canadian variant
+ageing;50;American variant, British preferred, Canadian variant
+ageings;50;American variant, British preferred, Canadian variant
+aline;50;American seldom-used variant
+alinement;50;American seldom-used variant
+almanack;50;British variant
+ambience;50;American disputed (demoted), British preferred
+ameboid;50;American variant, Australian variant
+amidst;50;American variant, British variant, British preferred
+amoebae;50;American variant, British variant, Australian variant
+amongst;50;American seldom-used variant, British preferred, British -ize variant
+amphitheatres;50;British preferred, Canadian preferred
+ampoule;50;non-regional variant
+ampoules;50;non-regional variant
+amuck;50;American disputed (demoted), British variant
+anaemia;50;British preferred, Australian preferred
+anaemic;50;British preferred, Australian preferred
+analyse;50;British preferred, Canadian variant
+aneurism;50;non-regional seldom-used variant
+aneurisms;50;non-regional seldom-used variant
+angeldust;50;not-family-friendly
+apparelled;50;British preferred
+apparelling;50;British preferred
+aquiculture;50;non-regional seldom-used variant
+archeological;50;American variant, Canadian variant, Australian variant
+archeologies;50;American variant, Canadian variant, Australian variant
+archeologist;50;American variant, Canadian variant, Australian variant
+archeologists;50;American variant, Canadian variant, Australian variant
+archeology;50;American variant, Canadian variant, Australian variant
+archetypical;50;non-regional seldom-used variant
+areolae;50;British preferred
+armour;50;British preferred, Canadian preferred, Australian preferred
+armoury;50;British preferred, Canadian preferred, Australian preferred
+ascendence;50;non-regional seldom-used variant
+ascendency;50;American seldom-used variant, Canadian variant
+ascendent;50;American seldom-used variant, British variant
+ass;50;not-family-friendly
+assbackward;50;not-family-friendly
+assbackwards;50;not-family-friendly
+asses;50;not-family-friendly
+asshat;50;not-family-friendly
+asskisser;50;not-family-friendly
+aunty;50;American seldom-used variant, British variant
+awestricken;50;non-regional seldom-used variant
+axe;50;American disputed (demoted), British preferred
+backwards;50;American disputed (demoted), British preferred
+badass;50;not-family-friendly
+badassery;60;not-family-friendly
+badasses;50;not-family-friendly
+baddy;50;non-regional variant
+balls;50;not-family-friendly
+bandana;50;American variant, British variant, Canadian preferred
+bandanas;50;American variant, British variant, Canadian preferred
+bandolier;50;non-regional disputed (demoted)
+bandoliers;50;non-regional disputed (demoted)
+bannister;50;American seldom-used variant, British variant
+bannisters;50;American seldom-used variant, British variant
+barbeque;50;American seldom-used variant, British variant
+barcarolle;50;non-regional seldom-used variant
+bareback;50;not-family-friendly
+barenaked;50;not-family-friendly
+barques;50;American variant, British preferred
+barrelled;50;American variant, British preferred
+barrelling;50;American variant, British preferred
+bastinado;50;not-family-friendly
+bastinadoes;50;British preferred
+bathyscaph;50;non-regional disputed (demoted)
+bathyscaphs;50;non-regional disputed (demoted)
+battleax;50;American variant
+bawdier;50;not-family-friendly
+bawdiest;50;not-family-friendly
+bawdily;50;not-family-friendly
+bawdiness;50;not-family-friendly
+bawdry;50;not-family-friendly
+bawdy;50;not-family-friendly
+bawdylanguage;60;not-family-friendly
+beavercleaver;60;not-family-friendly
+bedevilled;50;British preferred
+bedevilling;50;British preferred
+bejewelling;50;British preferred
+bestial;50;not-family-friendly
+bevelled;50;British preferred, Canadian preferred
+bevelling;50;British preferred, Canadian preferred
+bimbo;50;not-family-friendly
+binging;50;American variant
+bitched;50;not-family-friendly
+bitchery;50;not-family-friendly
+bitches;50;not-family-friendly
+bitchier;50;not-family-friendly
+bitchiest;50;not-family-friendly
+bitchin;50;not-family-friendly
+bitchiness;50;not-family-friendly
+bitching;50;not-family-friendly
+blackface;60;not-family-friendly
+blameable;50;American variant, British preferred, Canadian preferred
+bloody;50;not-family-friendly
+blowsier;50;American variant, British preferred
+blowsiest;50;American variant, British preferred
+blueing;50;non-regional variant
+bluemovie;50;not-family-friendly
+bocce;50;non-regional variant
+bocci;50;non-regional variant
+boink;50;not-family-friendly
+boinked;50;not-family-friendly
+boinking;50;not-family-friendly
+boinks;50;not-family-friendly
+bondage;50;not-family-friendly
+boner;50;not-family-friendly
+boners;50;not-family-friendly
+bong;50;not-family-friendly
+bonged;50;not-family-friendly
+bonging;50;not-family-friendly
+bongs;50;not-family-friendly
+bonnie;50;non-regional seldom-used variant
+boob;50;not-family-friendly
+boobjob;50;not-family-friendly
+boobs;50;not-family-friendly
+boobtube;50;not-family-friendly
+boobtubes;50;not-family-friendly
+bootie;50;non-regional variant, non-regional seldom-used variant
+bootycall;60;not-family-friendly
+bootycalls;60;not-family-friendly
+bootylicious;50;not-family-friendly
+bordello;50;not-family-friendly
+bordellos;50;not-family-friendly
+breasts;50;not-family-friendly
+briar;50;American variant, British preferred, Canadian variant
+briars;50;American variant, British preferred, Canadian variant
+brinksmanship;50;non-regional seldom-used variant
+briquet;50;non-regional variant
+briquets;50;non-regional variant
+bum;50;not-family-friendly
+buncombe;50;non-regional variant
+bunghole;50;not-family-friendly
+bunko;50;non-regional variant
+burnouses;50;non-regional variant
+burqa;50;British disputed (demoted), Australian preferred
+burqas;50;British disputed (demoted), Australian preferred
+busty;50;not-family-friendly
+butt;50;not-family-friendly
+butthurt;50;not-family-friendly
+buttsheadswith;60;not-family-friendly
+cabala;50;non-regional variant
+cabbie;50;non-regional disputed (demoted)
+caesar;50;British preferred
+caesarean;50;non-regional variant
+caesareans;50;non-regional variant
+caesarian;50;non-regional seldom-used variant
+cageyness;50;American seldom-used variant, British variant
+cagy;50;American seldom-used variant, British variant
+caldron;50;American disputed (demoted), British variant
+caldrons;50;American disputed (demoted), British variant
+calibre;50;British preferred
+calibres;50;British preferred
+callipers;50;British variant
+camomile;50;non-regional variant
+camomiles;50;non-regional variant
+cancellate;50;American variant, British preferred
+cancelled;50;American variant, British preferred
+caravanserai;50;non-regional variant
+carney;50;non-regional variant
+carneys;50;non-regional variant
+carnie;50;non-regional variant
+carolled;50;British preferred
+carolling;50;British preferred
+carrousel;50;non-regional seldom-used variant
+carrousels;50;non-regional seldom-used variant
+catalogued;50;American variant, British preferred
+catchup;60;non-regional seldom-used variant
+catsup;50;non-regional variant
+catsups;50;non-regional variant
+caulkings;50;American seldom-used variant, British variant
+cavilled;50;British preferred, Canadian preferred
+caviller;50;British preferred
+cavilling;50;British preferred, Canadian preferred
+cayman;50;non-regional seldom-used variant
+caymans;50;non-regional seldom-used variant
+centre;50;British preferred, Canadian preferred
+centrefolds;50;British preferred
+centres;50;British preferred, Canadian preferred
+cesarian;50;non-regional seldom-used variant
+cesarians;50;non-regional seldom-used variant
+channelled;50;British preferred
+channelling;50;British preferred
+chaperone;50;American variant, British preferred
+chaperones;50;American variant, British preferred
+cheque;50;British preferred, Canadian preferred
+cheques;50;British preferred, Canadian preferred
+chile;50;American seldom-used variant, Canadian variant
+chiles;50;American seldom-used variant, Canadian variant
+chilis;50;American seldom-used variant
+chillies;50;American seldom-used variant, British preferred
+chimaeras;50;American variant, British variant
+chink;50;not-family-friendly
+chinking;50;not-family-friendly
+chiselled;50;American variant, British preferred
+chiseller;50;American variant, British preferred
+chisellers;50;American variant, British preferred
+chitlings;50;non-regional seldom-used variant
+chitlins;50;non-regional variant
+chivvied;50;non-regional variant
+chivvies;50;non-regional variant
+chivvying;50;non-regional variant
+chocaholic;50;non-regional seldom-used variant
+chocaholics;50;non-regional seldom-used variant
+chocolatey;50;American variant, British preferred
+choosey;50;non-regional seldom-used variant
+chutzpa;50;non-regional seldom-used variant
+chutzpas;50;non-regional seldom-used variant
+cicatrice;50;American seldom-used variant, British variant, Canadian preferred
+cocaine;50;not-family-friendly
+cocaleaf;50;not-family-friendly
+cocaleaves;50;not-family-friendly
+cocaplant;60;not-family-friendly
+cock;50;not-family-friendly
+cocks;50;not-family-friendly
+coeliac;50;British preferred, Australian preferred
+coldcock;50;not-family-friendly
+coldcocked;50;not-family-friendly
+coldcocking;50;not-family-friendly
+coldcocks;50;not-family-friendly
+collectable;50;American variant, British preferred
+collectables;50;American variant, British preferred
+colours;50;British preferred, Canadian preferred, Australian preferred
+commie;50;not-family-friendly
+commies;50;not-family-friendly
+coney;50;non-regional variant
+conies;50;non-regional variant
+conjuror;50;non-regional variant
+conjurors;50;non-regional variant
+connecter;50;American seldom-used variant
+connecters;50;American seldom-used variant
+convenors;50;non-regional variant
+convertor;50;British variant, American variant
+convertors;50;British variant, American variant
+conveyer;50;non-regional seldom-used variant
+conveyers;50;non-regional seldom-used variant
+coolies;50;not-family-friendly
+copecks;50;non-regional seldom-used variant
+cornhole;50;not-family-friendly
+cosies;50;British preferred, Canadian variant
+cosily;50;British preferred
+councillor;50;British preferred
+councillors;50;British preferred
+cox;50;not-family-friendly
+crap;50;not-family-friendly
+crapload;50;not-family-friendly
+craploads;50;not-family-friendly
+creampie;50;not-family-friendly
+cree;50;British preferred
+crees;50;British preferred
+crenellations;50;British preferred
+cretin;50;not-family-friendly
+cretinous;50;not-family-friendly
+cretins;50;not-family-friendly
+crozier;50;American variant, British preferred
+croziers;50;American variant, British preferred
+crueller;50;British preferred, Canadian preferred
+cudgelled;50;British preferred
+cudgelling;50;British preferred
+cullender;50;non-regional variant
+cum;50;not-family-friendly
+cumquat;50;non-regional seldom-used variant
+curtsey;50;American seldom-used variant, British variant
+curtseyed;50;American seldom-used variant, British variant
+curtseying;50;American seldom-used variant, British variant
+curtseys;50;American seldom-used variant, British variant
+cybersex;50;not-family-friendly
+cypher;60;British variant
+cyphered;50;British variant
+cyphers;60;British variant
+dammit;50;not-family-friendly
+damn;50;not-family-friendly
+damnable;50;not-family-friendly
+damnably;50;not-family-friendly
+damnation;50;not-family-friendly
+damnations;50;not-family-friendly
+damndest;50;not-family-friendly
+damned;50;not-family-friendly
+damnedest;50;not-family-friendly
+damnedifido;60;not-family-friendly
+damnedwithfaintpraise;60;not-family-friendly
+damnify;50;not-family-friendly
+damnifying;50;not-family-friendly
+damning;50;not-family-friendly
+damningwithfaintpraise;50;not-family-friendly
+damnitall;50;not-family-friendly
+damnright;50;not-family-friendly
+damns;50;not-family-friendly
+damnstraight;50;not-family-friendly
+damnswithfaintpraise;60;not-family-friendly
+damnthetorpedoes;60;not-family-friendly
+damnwithfaintpraise;60;not-family-friendly
+damnyankees;50;not-family-friendly
+dearie;50;non-regional variant
+decagram;50;American variant, British preferred
+decaliter;50;American variant
+decaliters;50;American variant
+decameter;50;American variant, Canadian variant
+decameters;50;American variant, Canadian variant
+deepthroat;60;not-family-friendly
+demagog;50;American seldom-used variant
+demagogs;50;American seldom-used variant
+dentine;50;American variant, British preferred
+dependance;50;American seldom-used variant
+dependant;50;British preferred
+dependants;50;British preferred
+descendent;50;American seldom-used variant, British preferred
+designerdrug;50;not-family-friendly
+designerdrugs;50;not-family-friendly
+despatched;50;American seldom-used variant, British variant
+despatches;50;American seldom-used variant, British variant
+despatching;50;American seldom-used variant, British variant
+dextrous;50;non-regional seldom-used variant
+dextrously;50;non-regional seldom-used variant
+dialled;50;British preferred, Canadian variant
+dialling;50;British preferred, Canadian variant
+dialogs;50;American seldom-used variant
+diarrhoeic;50;British preferred, Australian preferred
+dick;50;not-family-friendly
+dickies;50;non-regional variant, non-regional seldom-used variant
+dietician;50;American variant, British variant
+dieticians;50;American variant, British variant
+dike;50;not-family-friendly
+dink;50;not-family-friendly
+dinks;50;not-family-friendly
+disembowelled;50;British preferred
+disembowelling;50;British preferred
+diss;50;American seldom-used variant, British variant
+ditzier;50;non-regional variant
+ditzy;50;non-regional variant
+djinn;50;non-regional seldom-used variant
+djinni;50;non-regional seldom-used variant
+djinns;50;non-regional seldom-used variant
+doesntgivearip;60;not-family-friendly
+doggie;50;non-regional variant
+dogging;50;not-family-friendly
+doggoned;50;non-regional variant
+doggystyle;50;not-family-friendly
+dognapped;50;British preferred
+dognapping;50;British preferred
+domination;50;not-family-friendly
+dominatrices;50;not-family-friendly
+dominatrix;50;not-family-friendly
+dominatrixes;50;not-family-friendly
+donut;50;American seldom-used variant
+donuts;50;American seldom-used variant
+doobie;50;not-family-friendly
+doobies;50;not-family-friendly
+dopefiend;50;not-family-friendly
+downwards;50;non-regional variant
+dox;50;not-family-friendly
+doxed;50;not-family-friendly
+doxing;50;not-family-friendly
+doxxed;50;not-family-friendly
+doxxes;50;not-family-friendly
+doxxing;50;not-family-friendly
+draftboard;50;American possible, Canadian possible
+dreamt;50;British disputed (demoted), Canadian preferred, British -ize variant
+drily;50;American variant, British preferred, Canadian variant
+drivelled;50;British preferred
+driveller;50;British preferred
+drivellers;50;British preferred
+drivelling;50;British preferred
+droppedthefbomb;60;not-family-friendly
+droppedthelbomb;50;not-family-friendly
+droppingtrou;60;not-family-friendly
+dropsthefbomb;60;not-family-friendly
+dropthefbomb;60;not-family-friendly
+dryest;50;non-regional seldom-used variant
+duelled;50;British preferred
+dueller;50;British preferred
+duellers;50;British preferred
+duelling;50;British preferred
+duellists;50;British preferred
+dumb;50;not-family-friendly
+dumbass;50;not-family-friendly
+dumbasses;50;not-family-friendly
+dumfound;50;non-regional seldom-used variant
+dumfounded;50;non-regional seldom-used variant
+dumfounding;50;non-regional seldom-used variant
+dumfounds;50;non-regional seldom-used variant
+dyke;50;not-family-friendly
+edgelord;50;not-family-friendly
+edgelords;50;not-family-friendly
+empanel;50;American variant, British variant, Canadian preferred
+empaneled;50;American variant
+empaneling;50;American variant
+empanelled;50;British variant, Canadian preferred
+enamelled;50;British preferred, Canadian preferred
+enameller;50;British preferred
+enamelling;50;British preferred, Canadian preferred
+enamour;50;British preferred, Canadian preferred, Australian preferred
+encyclopaedic;50;American seldom-used variant, British disputed (demoted), Canadian variant, Australian variant
+endeavour;50;British preferred, Canadian preferred, Australian preferred
+enquire;50;British preferred, Canadian variant, Australian disputed (demoted)
+enquired;50;British preferred, Canadian variant, Australian disputed (demoted)
+enquiry;50;British preferred, Canadian variant, Australian disputed (demoted)
+entendre;50;British preferred
+epaulette;50;American seldom-used variant, British preferred, Canadian preferred
+epaulettes;50;American seldom-used variant, British preferred, Canadian preferred
+epilog;50;American seldom-used variant
+epilogs;50;American seldom-used variant
+erotic;50;not-family-friendly
+escort;50;not-family-friendly
+esthete;50;American seldom-used variant
+esthetes;50;American seldom-used variant
+esthetic;50;American variant, Canadian variant, Australian variant
+esthetics;50;American variant, Canadian variant, Australian variant
+eunuch;50;not-family-friendly
+exorciser;50;British preferred
+exorcisers;50;British preferred
+exorcize;50;American seldom-used variant, Canadian variant, British -ize preferred
+exorcized;50;American seldom-used variant, Canadian variant, British -ize preferred
+exorcizes;50;American seldom-used variant, Canadian variant, British -ize preferred
+exorcizing;50;American seldom-used variant, Canadian variant, British -ize preferred
+extendible;50;non-regional variant
+extolls;50;American seldom-used variant
+extravert;50;American seldom-used variant, British seldom-used variant
+extraverts;50;American seldom-used variant, British seldom-used variant
+eying;50;American variant, British variant
+fanny;50;not-family-friendly
+fart;50;not-family-friendly
+fbomb;50;not-family-friendly
+fbombs;50;not-family-friendly
+fellate;50;not-family-friendly
+fellated;50;not-family-friendly
+fellating;50;not-family-friendly
+fellations;50;not-family-friendly
+fellatios;50;not-family-friendly
+filets;50;non-regional seldom-used variant, non-regional possible
+fingering;50;not-family-friendly
+fivefingerdiscount;60;not-family-friendly
+fivefingerdiscounts;60;not-family-friendly
+flamer;50;not-family-friendly
+flamers;50;not-family-friendly
+flange;50;not-family-friendly
+flasher;50;not-family-friendly
+flashers;50;not-family-friendly
+flautist;50;British preferred, Canadian disputed (demoted)
+flautists;50;British preferred, Canadian disputed (demoted)
+fledgeling;50;American seldom-used variant, British variant
+flexitime;50;non-regional seldom-used variant
+flippedthebird;50;not-family-friendly
+flippingoff;50;not-family-friendly
+flippingthebird;50;not-family-friendly
+flipsoff;50;not-family-friendly
+flipsthebird;50;not-family-friendly
+flipthebird;50;not-family-friendly
+floatations;50;non-regional seldom-used variant
+floosie;50;not-family-friendly
+floosies;50;not-family-friendly
+floozie;50;non-regional variant
+flunkey;50;non-regional seldom-used variant
+flunkeys;50;non-regional seldom-used variant
+flyer;50;American seldom-used variant, British preferred
+flyers;50;American seldom-used variant, British preferred
+focussed;50;American seldom-used variant, British variant
+focussing;50;American seldom-used variant, British variant
+fogey;50;British preferred
+fogeys;50;British preferred
+fontanelle;50;American variant, British preferred
+fool;50;not-family-friendly
+footfetish;50;not-family-friendly
+footfetishes;50;not-family-friendly
+foregather;50;American variant, British preferred
+foregathered;50;American variant, British preferred
+foregathering;50;American variant, British preferred
+foregathers;50;American variant, British preferred
+foreswore;50;non-regional seldom-used variant
+formulae;50;American variant, British preferred
+freebase;50;not-family-friendly
+freebased;50;not-family-friendly
+freebases;50;not-family-friendly
+freebasing;50;not-family-friendly
+frowsier;50;American variant, British variant
+fubar;50;not-family-friendly
+fuelled;50;British preferred
+fuelling;50;British preferred
+funnelled;50;British preferred
+funnelling;50;British preferred
+furores;50;British preferred, Australian preferred
+gambolled;50;British preferred
+gambolling;50;British preferred
+ganja;50;not-family-friendly
+gaolbreak;50;British possible
+garotte;50;non-regional variant
+garotted;50;non-regional variant
+garottes;50;non-regional variant
+garotting;50;non-regional variant
+gasses;50;American seldom-used variant
+gaylord;50;not-family-friendly
+gayly;50;non-regional seldom-used variant
+geez;50;non-regional seldom-used variant
+gelatine;50;American seldom-used variant, British variant
+gessoes;50;British preferred
+gethookedup;50;not-family-friendly
+getiton;50;not-family-friendly
+getsbiblicalon;50;not-family-friendly
+getsdownanddirty;60;not-family-friendly
+gettingfrisky;50;not-family-friendly
+gettinghot;50;not-family-friendly
+gettingit;50;not-family-friendly
+gettingiton;50;not-family-friendly
+gettingoff;50;not-family-friendly
+gettingturnedon;50;not-family-friendly
+gettoit;50;not-family-friendly
+gettosecondbase;50;not-family-friendly
+getwasted;50;not-family-friendly
+gingko;50;non-regional seldom-used variant
+glamor;50;American variant, Canadian variant, Australian seldom-used variant
+glamors;50;American variant, Canadian variant, Australian seldom-used variant
+glamourize;50;American seldom-used variant, British -ize variant
+glycerine;50;American variant, British preferred
+gobbledegook;50;American seldom-used variant, British preferred, Canadian variant
+goddamn;50;not-family-friendly
+goddamned;50;not-family-friendly
+goodby;50;American variant
+goodie;50;American variant, British variant
+gospeller;50;British preferred
+gospellers;50;British preferred
+grammarnazi;50;not-family-friendly
+grandad;50;non-regional variant
+grandads;50;non-regional variant
+grannie;50;non-regional variant
+gravelled;50;British preferred
+gravelling;50;British preferred
+greaser;50;not-family-friendly
+greasers;50;not-family-friendly
+grey;50;American seldom-used variant, British preferred, Canadian preferred
+greyed;50;American seldom-used variant, British preferred, Canadian preferred
+greyer;50;American seldom-used variant, British preferred, Canadian preferred
+greyest;50;American seldom-used variant, British preferred, Canadian preferred
+greyness;50;British preferred
+greys;50;American seldom-used variant, British preferred, Canadian preferred
+gringo;50;not-family-friendly
+grope;50;not-family-friendly
+gryphon;50;non-regional seldom-used variant
+gryphons;50;non-regional seldom-used variant
+gspot;50;not-family-friendly
+gulley;50;non-regional seldom-used variant
+gulleys;50;non-regional possible
+gynaecological;50;British preferred, Australian preferred
+hadj;50;non-regional seldom-used variant
+hadji;50;non-regional seldom-used variant
+hadjis;50;non-regional seldom-used variant
+haematological;50;British preferred, Australian preferred
+haematologist;50;British preferred, Australian preferred
+haematology;50;British preferred, Australian preferred
+hah;50;American variant, British variant
+hanky;50;American disputed (demoted), British preferred
+hardcore;50;not-family-friendly
+harddrug;50;not-family-friendly
+harddrugs;50;not-family-friendly
+hashish;50;not-family-friendly
+hatesex;50;not-family-friendly
+heavypetting;50;not-family-friendly
+heinie;50;not-family-friendly
+heinies;50;not-family-friendly
+hell;50;not-family-friendly
+heroin;50;not-family-friendly
+heroinchic;50;not-family-friendly
+hiccupped;50;Canadian variant
+hifalutin;50;non-regional seldom-used variant
+highfaluting;60;non-regional seldom-used variant
+highjack;50;non-regional seldom-used variant
+highjacked;50;non-regional seldom-used variant
+highjacking;50;non-regional seldom-used variant
+highjacks;50;non-regional seldom-used variant
+hijinks;60;non-regional seldom-used variant
+hitlerian;50;not-family-friendly
+hoagy;50;non-regional seldom-used variant
+hoar;50;not-family-friendly
+hoe;50;not-family-friendly
+homewards;50;non-regional variant
+homewrecker;50;not-family-friendly
+homewreckers;50;not-family-friendly
+homie;50;non-regional variant
+homies;50;non-regional variant
+homoeopath;50;British variant
+homoeostasis;50;British variant
+homoerotic;50;not-family-friendly
+homolog;50;American variant
+homologs;50;American variant
+honkeys;50;non-regional seldom-used variant
+honours;50;British preferred, Canadian preferred, Australian preferred
+hookers;50;not-family-friendly
+hookey;50;non-regional seldom-used variant
+hoorah;50;American seldom-used variant
+hoorahs;50;American seldom-used variant
+hoorayed;50;American seldom-used variant, British variant
+hoorays;50;American variant, British variant
+hootch;50;non-regional variant
+hootches;50;non-regional variant
+hooters;50;not-family-friendly
+hophead;50;not-family-friendly
+horndog;50;not-family-friendly
+horndogs;50;not-family-friendly
+horny;50;not-family-friendly
+horsy;50;non-regional disputed (demoted)
+humping;50;not-family-friendly
+humungous;50;non-regional seldom-used variant
+hurray;50;American possible, British variant, American variant
+hussies;50;not-family-friendly
+hussy;50;not-family-friendly
+hutzpah;50;non-regional seldom-used variant
+huzzaing;50;non-regional variant
+idontgiveadamn;50;not-family-friendly
+idyl;50;non-regional seldom-used variant
+idyls;50;non-regional seldom-used variant
+ignitible;50;non-regional seldom-used variant
+ignitor;50;non-regional seldom-used variant
+ignitors;50;non-regional seldom-used variant
+imbedded;50;American seldom-used variant, British variant
+imbedding;50;American seldom-used variant, British variant
+imbeds;50;American seldom-used variant, British variant
+impanelled;50;British preferred, Canadian variant
+impanelling;50;British preferred, Canadian variant
+imposter;50;American variant, British variant, Canadian preferred
+imposters;50;American variant, British variant, Canadian preferred
+incest;50;not-family-friendly
+inclosure;50;non-regional seldom-used variant
+incrust;50;non-regional seldom-used variant
+incrusted;50;non-regional seldom-used variant
+incrusts;50;non-regional seldom-used variant
+indorses;50;non-regional seldom-used variant
+indorsing;50;non-regional seldom-used variant
+indues;50;non-regional variant
+initialled;50;British preferred, Canadian preferred
+initialling;50;British preferred, Canadian preferred
+insignias;50;non-regional variant
+instalment;50;British preferred, Canadian preferred
+instalments;50;British preferred, Canadian preferred
+instil;50;British preferred, Canadian variant
+intercourse;50;not-family-friendly
+intrench;50;non-regional seldom-used variant
+intrenched;50;non-regional seldom-used variant
+intrenches;50;non-regional seldom-used variant
+inwards;50;non-regional variant
+ionise;50;British preferred
+ischaemia;50;British preferred, Australian preferred
+jackass;50;not-family-friendly
+jailor;50;American seldom-used variant, Canadian variant
+jailors;50;American seldom-used variant, Canadian variant
+jellydonut;60;not-family-friendly
+jerk;50;not-family-friendly
+jessamine;50;non-regional seldom-used variant
+jeweller;50;British preferred
+jewellery;50;British preferred, Canadian preferred
+jinns;50;non-regional variant
+jiujitsu;60;non-regional seldom-used variant
+judgement;50;British preferred, Canadian variant
+judgements;50;British preferred, Canadian variant
+jumpinginthesack;60;not-family-friendly
+junkie;50;not-family-friendly
+junkies;50;not-family-friendly
+kabala;50;non-regional seldom-used variant
+kabob;50;non-regional variant
+kabobs;50;non-regional variant
+kaftan;50;American seldom-used variant, British preferred, Canadian variant
+kaftans;50;American seldom-used variant, British preferred, Canadian variant
+keester;50;not-family-friendly
+keister;50;not-family-friendly
+keisters;50;not-family-friendly
+kennelled;50;British preferred
+kennelling;50;British preferred
+kerosine;50;American seldom-used variant, British variant
+khalif;50;non-regional possible
+khalifs;50;non-regional possible
+kiddy;50;non-regional seldom-used variant
+kidnaped;50;American seldom-used variant
+kidnaper;50;American seldom-used variant
+kidnapers;50;American seldom-used variant
+kidnaping;50;American seldom-used variant
+kinaesthesia;50;British preferred, Canadian variant, Australian preferred
+kinaesthetic;50;British preferred, Canadian variant, Australian preferred
+kindergartener;50;American seldom-used variant, British preferred
+kindergarteners;50;American seldom-used variant, British preferred
+kinky;50;not-family-friendly
+knackwurst;50;non-regional disputed (demoted)
+knackwursts;50;non-regional disputed (demoted)
+knob;50;not-family-friendly
+knuckledragger;50;not-family-friendly
+knuckledraggers;50;not-family-friendly
+kookie;50;non-regional seldom-used variant
+kopeks;50;non-regional variant
+koran;50;[proper] American disputed (demoted), British disputed (demoted)
+koranic;50;[proper] American disputed (demoted), British disputed (demoted)
+korans;50;[proper] American disputed (demoted), British disputed (demoted)
+labour;50;British preferred, Canadian preferred, Australian preferred
+labours;50;British preferred, Canadian preferred, Australian preferred
+lacrimal;50;non-regional variant
+ladyofthenight;50;not-family-friendly
+lallygag;50;non-regional variant
+lallygagged;50;non-regional variant
+lallygagging;50;non-regional variant
+lallygags;50;non-regional variant
+lambast;50;non-regional variant
+lambasts;50;non-regional variant
+lapdance;50;not-family-friendly
+lapdances;50;not-family-friendly
+lasagne;50;British preferred
+lasagnes;50;British preferred
+laundrette;50;American seldom-used variant, British variant
+laurelled;50;British preferred
+leapt;50;American disputed (demoted), British preferred
+learnt;50;British preferred, British -ize variant
+lech;50;not-family-friendly
+lecher;50;not-family-friendly
+lecherous;50;not-family-friendly
+lechers;50;not-family-friendly
+lechery;50;not-family-friendly
+leches;50;not-family-friendly
+leftie;50;non-regional seldom-used variant
+lesbianerotica;50;not-family-friendly
+letch;50;not-family-friendly
+letches;50;not-family-friendly
+levelled;50;British preferred
+leveller;50;British preferred
+levellers;50;British preferred
+lewd;50;not-family-friendly
+lewder;50;not-family-friendly
+lewdest;50;not-family-friendly
+lewdly;50;not-family-friendly
+lewdness;50;not-family-friendly
+libellee;50;British preferred
+libellers;50;British preferred
+libellous;50;British preferred, Canadian preferred
+lichee;50;non-regional seldom-used variant
+lichees;50;non-regional seldom-used variant
+likeable;50;American variant, British preferred
+linguini;50;non-regional variant
+liquifies;50;American seldom-used variant, British variant
+liquify;50;American seldom-used variant, British variant
+lissom;50;American seldom-used variant, British preferred, Canadian variant
+litres;50;American seldom-used variant, British preferred
+liveable;50;American seldom-used variant, British preferred, Canadian variant, Australian variant
+loadstone;50;non-regional seldom-used variant
+loadstones;50;non-regional seldom-used variant
+lodgement;50;American variant, British preferred
+lodgements;50;American variant, British preferred
+lolita;50;not-family-friendly
+looney;50;non-regional seldom-used variant
+louvre;50;British preferred, Canadian preferred
+louvred;50;British preferred, Canadian preferred
+louvres;50;British preferred, Canadian preferred
+loveable;50;American seldom-used variant, British variant
+lsdtrip;50;not-family-friendly
+lsdtrips;50;not-family-friendly
+lupin;50;American seldom-used variant, British preferred, Canadian variant
+lupins;50;American seldom-used variant, British preferred, Canadian variant
+lust;50;not-family-friendly
+lusting;50;not-family-friendly
+lustre;50;American seldom-used variant, British preferred
+lustres;50;American seldom-used variant, British preferred
+luvvies;50;non-regional possible
+lychee;50;non-regional variant
+lychees;50;non-regional variant
+lynch;50;not-family-friendly
+lynchings;50;not-family-friendly
+lynchpin;50;non-regional seldom-used variant
+lynchpins;50;non-regional seldom-used variant
+macintosh;50;American seldom-used variant, British variant
+macintoshes;50;American seldom-used variant, British variant
+mack;50;non-regional variant
+macks;50;non-regional variant
+magicmushroom;60;not-family-friendly
+magicmushrooms;60;not-family-friendly
+maharaja;50;non-regional variant
+maharajas;50;non-regional variant
+maharanee;50;non-regional variant
+maharanees;50;non-regional variant
+mahjong;50;non-regional variant
+maiolica;50;non-regional seldom-used variant
+mammas;50;non-regional possible, non-regional seldom-used variant
+manilla;50;[proper] American seldom-used variant, British preferred, Canadian variant
+mannikin;50;non-regional seldom-used variant
+mannikins;50;non-regional seldom-used variant
+marihuana;50;non-regional seldom-used variant
+marlinspike;50;non-regional seldom-used variant
+marshall;50;American seldom-used variant
+marshalled;50;American seldom-used variant, British preferred
+marshalling;50;American seldom-used variant, British preferred
+marvelled;50;British preferred
+marvelling;50;British preferred
+masochist;50;not-family-friendly
+mavins;50;non-regional seldom-used variant
+medalling;50;British preferred
+menageatrois;60;not-family-friendly
+meth;50;not-family-friendly
+methlab;50;not-family-friendly
+methlabs;50;not-family-friendly
+metre;50;American seldom-used variant, British preferred, Canadian preferred
+metres;50;American seldom-used variant, British preferred, Canadian preferred
+miaowed;50;American seldom-used variant, British preferred
+miaowing;50;American seldom-used variant, British preferred
+miaows;50;American seldom-used variant, British preferred
+midwived;50;non-regional variant
+misadvise;50;British preferred
+mitre;50;British preferred
+mitred;50;British preferred
+mitres;50;British preferred
+mitring;50;British preferred
+modellers;50;British preferred
+moggie;50;American seldom-used variant, British preferred, Canadian preferred
+molestation;50;not-family-friendly
+molestations;50;not-family-friendly
+molester;50;not-family-friendly
+molesters;50;not-family-friendly
+mollusc;50;American variant, British preferred
+molluscs;50;American variant, British preferred
+momma;50;non-regional seldom-used variant
+mommas;50;non-regional seldom-used variant
+moneyshot;60;not-family-friendly
+moneyshots;60;not-family-friendly
+monicker;50;non-regional seldom-used variant
+monickers;50;non-regional seldom-used variant
+monied;50;non-regional seldom-used variant
+monolog;50;American seldom-used variant
+monologuist;50;American variant, British variant
+mook;50;not-family-friendly
+mooks;50;not-family-friendly
+moron;50;not-family-friendly
+moronic;50;not-family-friendly
+morons;50;not-family-friendly
+mortgager;50;non-regional seldom-used variant
+mortgagers;50;non-regional seldom-used variant
+mortice;50;non-regional seldom-used variant
+morticed;50;non-regional seldom-used variant
+mortices;50;non-regional seldom-used variant
+morticing;50;non-regional seldom-used variant
+mouldy;50;British preferred, Canadian preferred, Australian preferred
+moults;50;British preferred, Australian preferred
+mousey;50;non-regional variant
+moustache;50;British preferred, Canadian preferred
+moustaches;50;British preferred, Canadian preferred
+moveable;50;American variant, British variant
+muff;50;not-family-friendly
+mujaheddin;50;non-regional possible
+mums;50;British preferred
+mynah;50;American variant, British preferred, Canadian variant
+nan;50;non-regional seldom-used variant
+necrophilia;50;not-family-friendly
+negroleague;50;not-family-friendly
+negroleagues;50;not-family-friendly
+nerdgasm;50;not-family-friendly
+nerdgasms;50;not-family-friendly
+netflixandchill;50;not-family-friendly
+nicknack;50;non-regional seldom-used variant
+nicknacks;50;non-regional seldom-used variant
+nighty;50;non-regional variant
+nipple;50;not-family-friendly
+nipples;50;not-family-friendly
+nite;50;American variant
+nitres;50;British preferred
+nitroglycerine;50;American variant, British preferred, Canadian preferred
+nob;50;not-family-friendly
+notarise;50;British preferred, Canadian variant
+nought;50;American variant, British preferred
+noughts;50;American variant, British preferred
+nude;50;not-family-friendly
+nudity;50;not-family-friendly
+numbskull;50;American variant, British preferred
+numbskulls;50;American variant, British preferred
+nymphomania;50;not-family-friendly
+obscene;50;not-family-friendly
+obscenely;50;not-family-friendly
+obscener;50;not-family-friendly
+obscenest;50;not-family-friendly
+obscenities;50;not-family-friendly
+obscenity;50;not-family-friendly
+ochre;50;British preferred
+ochreous;50;American variant, British preferred
+ochres;50;British preferred
+octette;50;non-regional seldom-used variant
+octettes;50;non-regional seldom-used variant
+octopussy;50;not-family-friendly
+odours;50;British preferred, Canadian preferred, Australian preferred
+oenologists;60;British preferred
+ohhellyeah;60;not-family-friendly
+oldbags;50;not-family-friendly
+oldbat;50;not-family-friendly
+oldbats;50;not-family-friendly
+oldbiddy;50;not-family-friendly
+oldfart;50;not-family-friendly
+oldfarts;50;not-family-friendly
+ombres;50;British preferred
+omelette;50;American variant, British preferred, Canadian preferred
+omelettes;50;American variant, British preferred, Canadian preferred
+onwards;50;American seldom-used variant, British preferred
+organdie;50;American seldom-used variant, British preferred
+orgasm;60;not-family-friendly
+orgasms;60;not-family-friendly
+orgiastic;50;not-family-friendly
+orgies;50;not-family-friendly
+orgy;50;not-family-friendly
+outrivalling;50;British preferred
+outsized;50;non-regional seldom-used variant
+oversized;50;American variant, British preferred
+painintheass;60;not-family-friendly
+panelled;50;British preferred
+pangaea;50;British preferred
+panties;50;not-family-friendly
+pantsed;50;not-family-friendly
+pantsing;50;not-family-friendly
+panty;50;non-regional variant
+pantyraid;50;not-family-friendly
+pantyraids;50;not-family-friendly
+pantywaist;60;not-family-friendly
+pantywaists;60;not-family-friendly
+papaw;50;non-regional disputed (demoted)
+papaws;50;non-regional disputed (demoted)
+parcelled;50;British preferred
+parcelling;50;British preferred
+parlour;50;British preferred, Canadian preferred, Australian preferred
+partizans;50;non-regional seldom-used variant, non-regional variant
+pawn;50;not-family-friendly
+pedalled;50;British preferred, Canadian preferred
+pedlar;50;American seldom-used variant, British preferred, Canadian variant
+pedophilia;50;not-family-friendly
+peepingtom;50;not-family-friendly
+peepingtoms;50;not-family-friendly
+peepshow;50;not-family-friendly
+peepshows;50;not-family-friendly
+pegging;50;not-family-friendly
+pekinese;50;[proper] non-regional variant
+penlites;50;non-regional seldom-used variant
+perilled;50;British preferred
+perv;50;not-family-friendly
+pervs;50;not-family-friendly
+pervy;50;not-family-friendly
+pharmacopeia;50;non-regional variant
+phoenicia;50;British preferred
+phonesex;50;not-family-friendly
+phoney;50;American seldom-used variant, British preferred, British variant, Canadian variant
+phoneys;50;American seldom-used variant, British preferred, Canadian variant
+pickaback;50;non-regional seldom-used variant
+pimp;50;not-family-friendly
+pimped;50;not-family-friendly
+pinko;50;not-family-friendly
+pinkoes;50;not-family-friendly
+pinkos;50;not-family-friendly
+pinky;50;non-regional variant
+pirozhki;50;non-regional variant
+pissedoff;50;not-family-friendly
+pixy;50;non-regional seldom-used variant
+pizazz;50;non-regional disputed (demoted), non-regional variant
+playboy;50;not-family-friendly
+plough;50;British preferred, Canadian variant
+poe;50;British preferred
+pollock;50;not-family-friendly
+pollywog;50;non-regional variant
+pollywogs;50;non-regional variant
+pommelled;50;British preferred
+pommelling;50;British preferred
+pompousass;60;not-family-friendly
+ponce;50;not-family-friendly
+poof;50;not-family-friendly
+poop;50;not-family-friendly
+porn;50;not-family-friendly
+porno;50;not-family-friendly
+pornstache;60;not-family-friendly
+pornstarmartini;50;not-family-friendly
+postillion;50;American variant, British variant
+postillions;50;American variant, British variant
+potbrownies;50;not-family-friendly
+potfarms;50;not-family-friendly
+potgummies;50;not-family-friendly
+pothead;50;not-family-friendly
+potheads;50;not-family-friendly
+potleaf;60;not-family-friendly
+potshops;50;not-family-friendly
+potsmokers;50;not-family-friendly
+potsmoking;50;not-family-friendly
+potstarters;50;not-family-friendly
+pourer;50;British preferred
+pourers;50;British preferred
+prejudgement;50;British preferred
+premaritalsex;50;not-family-friendly
+premisses;50;American seldom-used variant, British variant
+preppie;50;non-regional variant
+presidia;50;American disputed (demoted)
+preterite;50;American variant, British preferred, Canadian preferred
+prevue;50;American seldom-used variant
+prevues;50;American seldom-used variant
+prick;50;not-family-friendly
+pricks;50;not-family-friendly
+pricy;50;non-regional seldom-used variant
+primaeval;50;British variant
+prised;50;British preferred
+programing;50;American variant
+prolog;50;American seldom-used variant
+propellent;50;non-regional seldom-used variant
+propositioned;50;not-family-friendly
+propositioning;50;not-family-friendly
+prostituted;50;not-family-friendly
+prostituting;50;not-family-friendly
+prostitution;50;not-family-friendly
+protestor;50;American variant, British variant
+protestors;50;American variant, British variant
+pryers;50;non-regional seldom-used variant
+pummelled;50;British preferred
+pummelling;50;British preferred
+pussies;50;not-family-friendly
+pygmaean;50;British preferred
+pyorrhoea;50;British preferred
+quahaug;50;non-regional seldom-used variant
+quahaugs;50;non-regional seldom-used variant
+queerbait;50;not-family-friendly
+queueing;50;British variant
+racoon;50;American seldom-used variant, British variant
+racoons;50;American seldom-used variant, British variant
+racquet;50;American variant, British variant, Canadian preferred, Australian preferred
+racquets;50;American variant, British variant, Canadian preferred, Australian preferred
+raja;50;non-regional variant
+rajas;50;non-regional variant
+raunch;50;not-family-friendly
+raunchier;50;not-family-friendly
+raunchiest;50;not-family-friendly
+raunchiness;50;not-family-friendly
+raunchy;50;not-family-friendly
+realise;50;British preferred
+redneck;50;not-family-friendly
+rednecks;50;not-family-friendly
+redskins;50;not-family-friendly
+reefer;50;not-family-friendly
+reefers;50;not-family-friendly
+refuelled;50;British preferred
+remodelling;50;British preferred
+repellant;50;non-regional seldom-used variant
+reprised;50;British preferred
+reshoes;50;British preferred
+retard;50;not-family-friendly
+retarded;50;not-family-friendly
+revery;50;non-regional seldom-used variant
+revokable;50;non-regional seldom-used variant
+rickshas;50;non-regional seldom-used variant
+rigamarole;50;non-regional variant
+rimming;50;not-family-friendly
+riposts;50;non-regional possible
+rivalled;50;British preferred
+rivalling;50;British preferred
+roids;50;not-family-friendly
+rollajoint;50;not-family-friendly
+rollingpaper;50;not-family-friendly
+rollingpapers;50;not-family-friendly
+rollinthehay;60;not-family-friendly
+rollsajoint;50;not-family-friendly
+rollsinthehay;60;not-family-friendly
+rotinhell;50;not-family-friendly
+rouble;50;British preferred
+roubles;50;British preferred
+rumour;50;British preferred, Canadian preferred, Australian preferred
+rumours;50;British preferred, Canadian preferred, Australian preferred
+sabre;50;American variant, British preferred
+sabres;50;American variant, British preferred
+sadism;50;not-family-friendly
+sadist;50;not-family-friendly
+saki;50;American variant, British preferred, Canadian variant
+saleable;50;American variant, British preferred
+saltires;50;British preferred
+sandalled;50;British preferred
+sarees;50;non-regional seldom-used variant
+sausagefest;50;not-family-friendly
+sausagefests;50;not-family-friendly
+sausageparty;50;not-family-friendly
+saveable;50;non-regional variant
+saviours;50;British preferred, Canadian preferred, Australian preferred
+savour;50;British preferred, Canadian preferred, Australian preferred
+scallywag;60;non-regional variant
+scallywags;60;non-regional variant
+scat;50;not-family-friendly
+sceptre;50;British preferred
+sceptred;50;British preferred
+schemas;50;non-regional seldom-used variant
+schlepp;50;non-regional variant
+schlepps;50;non-regional variant
+schlocky;50;non-regional variant
+schmoe;50;non-regional variant
+schmuck;50;not-family-friendly
+schmucks;50;not-family-friendly
+schnaps;50;non-regional possible
+schtick;50;non-regional seldom-used variant
+schticks;50;non-regional seldom-used variant
+scissoring;50;not-family-friendly
+sclerae;50;British preferred
+screwing;50;not-family-friendly
+scrunchie;50;non-regional variant
+selvedge;50;non-regional variant
+selvedges;50;non-regional variant
+septette;50;non-regional seldom-used variant
+septettes;50;non-regional seldom-used variant
+septicaemia;50;British preferred
+sex;50;not-family-friendly
+sexpot;50;not-family-friendly
+sexpots;50;not-family-friendly
+sexshop;50;not-family-friendly
+sexshops;50;not-family-friendly
+sexstrike;50;not-family-friendly
+sexstrikes;50;not-family-friendly
+sextalks;50;not-family-friendly
+sextapes;50;not-family-friendly
+sexted;50;not-family-friendly
+sextette;50;non-regional seldom-used variant
+sextettes;50;non-regional seldom-used variant
+sexting;50;not-family-friendly
+sextoy;50;not-family-friendly
+sextoys;50;not-family-friendly
+sexts;50;not-family-friendly
+sexup;50;not-family-friendly
+sexy;50;not-family-friendly
+shag;50;not-family-friendly
+shammies;50;non-regional seldom-used variant
+shammy;50;non-regional seldom-used variant
+sheikhdom;50;non-regional variant
+sheikhdoms;50;non-regional variant
+sherbert;50;non-regional seldom-used variant
+sherds;50;non-regional variant
+shlemiel;50;non-regional seldom-used variant
+shlepp;50;non-regional seldom-used variant
+shlock;50;non-regional seldom-used variant
+shootingup;50;not-family-friendly
+shootup;50;not-family-friendly
+shortie;50;non-regional variant
+shovelled;50;British preferred
+shoveller;50;British preferred, Canadian preferred
+shovelling;50;British preferred
+shrimping;50;not-family-friendly
+shrivelling;50;British preferred
+shtup;50;not-family-friendly
+shtups;50;not-family-friendly
+signalled;50;British preferred
+signaller;50;British preferred
+signalling;50;British preferred
+siloed;50;British preferred
+sissies;50;not-family-friendly
+sissified;50;not-family-friendly
+sissiness;50;not-family-friendly
+sissy;50;not-family-friendly
+sissyish;50;not-family-friendly
+sixtynine;50;not-family-friendly
+sizeable;50;American variant, British preferred, Canadian variant
+skeet;50;not-family-friendly
+skullduggery;50;non-regional variant
+slag;50;not-family-friendly
+slagged;50;not-family-friendly
+slagging;50;not-family-friendly
+slags;50;not-family-friendly
+slashfic;50;not-family-friendly
+slashfiction;50;not-family-friendly
+sleepingaround;60;not-family-friendly
+sleepinginthebuff;50;not-family-friendly
+sleepinginthenude;50;not-family-friendly
+sleepingwiththeenemy;60;not-family-friendly
+sleepinthebuff;50;not-family-friendly
+sleepsaround;60;not-family-friendly
+sleepsinthebuff;50;not-family-friendly
+sleepswith;50;not-family-friendly
+sleepwith;50;not-family-friendly
+sleptaround;60;not-family-friendly
+sleptinthebuff;50;not-family-friendly
+slyer;50;American variant, British preferred
+slyest;50;American variant, British preferred
+smidge;50;American seldom-used variant, Canadian variant
+smidgeon;50;American seldom-used variant, British variant, Canadian variant
+smidgeons;50;American seldom-used variant, British variant, Canadian variant
+smidgin;50;American seldom-used variant, British variant, Canadian variant
+smidgins;50;American seldom-used variant, British variant, Canadian variant
+smut;50;not-family-friendly
+snatch;50;not-family-friendly
+snigger;50;not-family-friendly
+sniggered;50;not-family-friendly
+sniggering;50;not-family-friendly
+sniggers;50;not-family-friendly
+snivelled;50;British preferred
+snowballing;50;not-family-friendly
+sodomite;50;not-family-friendly
+softie;50;non-regional variant
+sombre;50;American variant, British preferred
+sombrely;50;American variant, British preferred
+sombreness;50;American variant, British preferred
+sonofabitch;50;not-family-friendly
+soubriquet;50;non-regional seldom-used variant
+soubriquets;50;non-regional seldom-used variant
+soupnazi;60;not-family-friendly
+soya;50;non-regional seldom-used variant
+spacy;50;non-regional seldom-used variant
+spastic;50;not-family-friendly
+spectre;50;British preferred
+spectres;50;British preferred
+spilt;50;American seldom-used variant, British preferred, Canadian variant
+spiraea;50;American variant, British preferred, Canadian variant
+spiraeas;50;American variant, British preferred, Canadian variant
+spiralled;50;British preferred, Canadian preferred
+spliff;50;not-family-friendly
+spliffs;50;not-family-friendly
+spoilt;50;British preferred, British -ize variant
+spumone;50;non-regional seldom-used variant
+spunk;50;not-family-friendly
+squawvalley;50;not-family-friendly
+squirrelled;50;British preferred, Canadian preferred
+squirrelling;50;British preferred, Canadian preferred
+stagey;50;non-regional variant
+stencilled;50;British preferred
+stencilling;50;British preferred
+stockinet;50;non-regional variant
+stockinets;50;non-regional variant
+stogy;50;non-regional disputed (demoted)
+stoned;50;not-family-friendly
+stoner;50;not-family-friendly
+stoners;50;not-family-friendly
+stoney;50;non-regional seldom-used variant
+storey;50;American seldom-used variant, British preferred, Canadian preferred, Australian preferred
+straightjacket;50;American seldom-used variant, British variant
+straightjackets;50;American seldom-used variant, British variant
+stripbar;50;not-family-friendly
+stripbars;50;not-family-friendly
+stripclub;50;not-family-friendly
+stripclubs;50;not-family-friendly
+stripjoint;60;not-family-friendly
+stripjoints;60;not-family-friendly
+stripper;50;not-family-friendly
+strippers;50;not-family-friendly
+strippoker;60;not-family-friendly
+stripsearch;60;not-family-friendly
+stripsearched;60;not-family-friendly
+stripsearches;60;not-family-friendly
+stripshow;50;not-family-friendly
+stripshows;50;not-family-friendly
+striptease;50;not-family-friendly
+stripteaseartists;50;not-family-friendly
+stripteaser;50;not-family-friendly
+stripteases;50;not-family-friendly
+strumpet;50;not-family-friendly
+strumpets;50;not-family-friendly
+stye;50;non-regional variant
+styes;50;non-regional variant
+subhuman;50;not-family-friendly
+subtotalled;50;British preferred
+subtotalling;50;British preferred
+suck;50;not-family-friendly
+sucker;50;not-family-friendly
+suckingface;60;not-family-friendly
+sucks;50;not-family-friendly
+sulphurs;50;British preferred
+sumach;50;non-regional seldom-used variant
+sweepstake;50;American seldom-used variant, British preferred, Canadian variant
+sweetbriar;50;non-regional variant
+swinger;50;not-family-friendly
+swivelled;50;British preferred
+swivelling;50;British preferred
+swobbed;50;non-regional possible
+synch;50;American seldom-used variant, British variant
+synched;50;American seldom-used variant, British variant
+synching;50;American seldom-used variant, British variant
+syphon;50;British variant
+syphoned;50;British variant
+syphoning;50;British variant
+syphons;50;British variant
+tabledance;50;not-family-friendly
+tabledances;50;not-family-friendly
+tabouret;50;British preferred
+tabourets;50;British preferred
+taintedlove;50;not-family-friendly
+tameable;50;non-regional variant
+teazel;50;American seldom-used variant, British variant
+teazels;50;American seldom-used variant, British variant
+teazle;50;American seldom-used variant, British variant
+teazles;50;American seldom-used variant, British variant
+teepee;50;non-regional variant
+teepees;50;non-regional variant
+teetotaller;50;British preferred
+teetotallers;50;British preferred
+tempi;50;American variant, British variant
+tendonitis;50;non-regional variant
+testae;50;British preferred
+testicle;50;not-family-friendly
+thatswhatshesaid;60;not-family-friendly
+theatre;50;British preferred, Canadian preferred
+theatregoer;50;British preferred
+theatregoers;50;British preferred
+theatres;50;British preferred, Canadian preferred
+themilehighclub;60;not-family-friendly
+thiamin;50;non-regional seldom-used variant
+threesome;50;not-family-friendly
+throughway;50;American variant, British preferred, Canadian preferred
+throughways;50;American variant, British preferred, Canadian preferred
+thru;50;American variant
+tiedup;50;not-family-friendly
+tike;50;non-regional seldom-used variant
+tinselled;50;British preferred, Canadian preferred
+tit;50;not-family-friendly
+tits;50;not-family-friendly
+titties;50;not-family-friendly
+toffies;50;non-regional seldom-used variant
+toke;50;not-family-friendly
+toked;50;not-family-friendly
+toker;50;not-family-friendly
+tokes;50;not-family-friendly
+toking;50;not-family-friendly
+topless;50;not-family-friendly
+tormenter;50;non-regional seldom-used variant
+tormenters;50;non-regional seldom-used variant
+tosser;50;not-family-friendly
+tosspots;50;not-family-friendly
+totalled;50;British preferred
+totalling;50;British preferred
+towards;50;non-regional disputed (demoted)
+towelled;50;British preferred
+trafficked;50;not-family-friendly
+trafficker;50;not-family-friendly
+traffickers;50;not-family-friendly
+trafficking;50;not-family-friendly
+trank;50;not-family-friendly
+tranquillity;50;American variant, British preferred
+tranquillize;50;American seldom-used variant, Canadian variant, British -ize preferred
+tranquillized;50;American seldom-used variant, Canadian variant, British -ize preferred
+tranquillizing;50;American seldom-used variant, Canadian variant, British -ize preferred
+transgendered;50;non-regional disputed (demoted)
+traveller;50;British preferred
+travelog;50;American variant
+travelogs;50;American variant
+trialling;50;British preferred
+trowelled;50;British preferred
+trowelling;50;British preferred
+tsar;50;American seldom-used variant, British preferred, Canadian variant
+tsardom;50;non-regional seldom-used variant
+tsarina;50;non-regional seldom-used variant
+tsarinas;50;non-regional seldom-used variant
+tsarism;60;non-regional seldom-used variant
+tsarist;50;non-regional seldom-used variant
+tsars;50;American seldom-used variant, British preferred, Canadian variant
+tsouris;50;British preferred
+tumbril;50;American variant, British preferred, Canadian variant
+tumbrils;50;American variant, British preferred, Canadian variant
+tunnelling;50;British preferred
+tushy;50;not-family-friendly
+twinkie;60;not-family-friendly
+tzarina;50;non-regional seldom-used variant
+unbeknown;50;American disputed (demoted), British preferred, Canadian variant
+undersize;50;non-regional seldom-used variant
+undressing;50;not-family-friendly
+unequalled;50;British preferred
+unfocussed;50;American seldom-used variant, British variant
+unlearnt;50;British preferred, British -ize variant
+unravelled;50;British preferred
+unravelling;50;British preferred
+unshakeable;50;American variant, British preferred, Canadian variant
+unspoilt;50;non-regional seldom-used variant
+upwards;50;non-regional variant
+useable;50;American seldom-used variant, British variant
+utilise;50;British preferred
+veldt;50;American seldom-used variant, British variant
+veldts;50;American seldom-used variant, British variant
+vender;50;American seldom-used variant
+venders;50;American seldom-used variant
+verandah;50;American variant, British variant, Australian preferred
+verandahs;50;American variant, British variant, Australian preferred
+vermillion;50;non-regional seldom-used variant
+viagra;50;not-family-friendly
+vibrator;50;not-family-friendly
+vigorish;50;not-family-friendly
+villageidiot;50;not-family-friendly
+villageidiots;50;not-family-friendly
+virtuosos;50;American variant, British variant
+vizors;50;American seldom-used variant, British variant
+voyeur;50;not-family-friendly
+waggon;50;British variant
+waggons;50;British variant
+wainscotted;50;American variant, British variant, Canadian preferred
+wainscotting;50;American variant, British variant, Canadian preferred
+wang;50;not-family-friendly
+wedgie;50;not-family-friendly
+wedgies;50;not-family-friendly
+welch;50;non-regional seldom-used variant
+welched;50;non-regional seldom-used variant
+welches;50;non-regional seldom-used variant
+welching;50;non-regional seldom-used variant
+werescrewed;60;not-family-friendly
+whackier;50;non-regional seldom-used variant
+whackiest;50;non-regional seldom-used variant
+whacky;50;non-regional seldom-used variant
+whimsey;50;non-regional seldom-used variant
+whirr;50;American seldom-used variant, British preferred, Canadian variant
+whirrs;50;American seldom-used variant, British preferred, Canadian variant
+whisky;50;American variant, British preferred, Canadian preferred
+whored;50;not-family-friendly
+widgeon;50;non-regional variant
+widgeons;50;non-regional variant
+wigeons;50;non-regional variant
+wilful;50;American variant, British preferred, Canadian preferred
+willie;50;non-regional seldom-used variant
+willies;50;not-family-friendly
+willy;50;not-family-friendly
+winterier;50;non-regional seldom-used variant
+winteriest;50;non-regional seldom-used variant
+wintery;50;non-regional seldom-used variant
+wiseass;50;not-family-friendly
+wiseasses;50;not-family-friendly
+wistaria;50;non-regional seldom-used variant
+wooly;50;non-regional seldom-used variant
+workingblue;60;not-family-friendly
+worshipped;50;British preferred
+worshipper;50;British preferred
+worshippers;50;British preferred
+xrated;50;not-family-friendly
+xratedfilm;50;not-family-friendly
+xratedfilms;50;not-family-friendly
+xratedmovie;50;not-family-friendly
+xratedmovies;50;not-family-friendly
+xrating;50;not-family-friendly
+xratings;50;not-family-friendly
+xxxrated;60;not-family-friendly
+xxxrating;50;not-family-friendly
+yacked;50;non-regional seldom-used variant
+yacking;50;non-regional seldom-used variant
+yeshivah;50;non-regional seldom-used variant
+yodelled;50;British preferred, Canadian preferred
+yodeller;60;British preferred, Canadian preferred
+yodellers;60;British preferred, Canadian preferred
+yoghurt;50;British variant, Canadian variant, Australian preferred
+yoghurts;50;British variant, Canadian variant, Australian preferred
+yourealiar;50;not-family-friendly
+yucked;50;non-regional variant
+yucking;50;non-regional variant
+yucks;50;non-regional variant
+zipgun;60;not-family-friendly
+zipguns;60;not-family-friendly

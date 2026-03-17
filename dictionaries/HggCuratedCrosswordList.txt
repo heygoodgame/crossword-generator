@@ -135,8 +135,6 @@ abetment;50
 abets;50
 abettal;50
 abetted;50
-abetter;50
-abetters;50
 abetting;50
 abettor;50
 abettors;50
@@ -347,8 +345,6 @@ abridgeddictionaries;60
 abridgeddictionary;60
 abridgedtext;50
 abridgedversion;50
-abridgement;50
-abridgements;50
 abridger;50
 abridgers;50
 abridges;50
@@ -424,10 +420,8 @@ absentmindedprofessor;50
 absentmindedprofessors;50
 absents;50
 absentwithoutleave;50
-absinth;50
 absinthe;60
 absinthes;50
-absinths;50
 absofreakinglutely;60
 absofreakinlutely;60
 absofrickinglutely;60
@@ -846,12 +840,6 @@ accoutering;50
 accouterment;50
 accouterments;50
 accouters;50
-accoutre;50
-accoutred;50
-accoutrement;50
-accoutrements;50
-accoutres;50
-accoutring;50
 accra;50
 accraghana;50
 accredit;50
@@ -1033,7 +1021,6 @@ aciddrop;50
 aciddrops;50
 acidforming;50
 acidhead;50
-acidheads;50
 acidic;50
 acidification;50
 acidified;50
@@ -1045,7 +1032,6 @@ acidjazz;60
 acidly;50
 acidness;50
 acidosis;50
-acidqueen;50
 acidrain;50
 acidreflux;60
 acidrock;60
@@ -1057,8 +1043,6 @@ acidtest;60
 acidtests;60
 acidtongue;50
 acidtongued;60
-acidtrip;50
-acidtrips;50
 acidulating;50
 acidulous;50
 acidwash;50
@@ -1069,8 +1053,6 @@ acing;50
 acityonahill;50
 acknowledge;50
 acknowledged;50
-acknowledgement;50
-acknowledgements;50
 acknowledges;50
 acknowledging;50
 acknowledgment;50
@@ -1472,8 +1454,6 @@ adaptive;50
 adaptogen;50
 adaptogenic;50
 adaptogens;50
-adaptor;50
-adaptors;50
 adapts;50
 adaptto;50
 adatewithdestiny;60
@@ -1737,8 +1717,6 @@ adjusters;50
 adjusting;50
 adjustment;50
 adjustments;50
-adjustor;50
-adjustors;50
 adjusts;50
 adjuststo;50
 adjustthesails;60
@@ -1846,7 +1824,6 @@ adolescents;50
 adollarshort;60
 adollshouse;50
 adonis;50
-adonises;50
 adopt;50
 adoptable;50
 adoptahighway;50
@@ -1893,7 +1870,6 @@ adreamcometrue;60
 adrenal;50
 adrenalgland;50
 adrenalglands;50
-adrenalin;50
 adrenaline;50
 adrenalinejunkie;60
 adrenalinejunkies;60
@@ -2088,9 +2064,7 @@ adviser;50
 advisers;50
 advises;50
 advising;50
-advisor;50
 advisories;50
-advisors;50
 advisory;50
 advisoryboard;50
 advisorycouncil;60
@@ -2104,7 +2078,6 @@ adware;50
 adwoman;50
 adwords;50
 adyingbreed;50
-adz;50
 adze;50
 adzes;50
 adzuki;50
@@ -2115,12 +2088,9 @@ aegeansea;50
 aegis;50
 aegises;50
 aeiousometimesy;50
-aeneid;50
 aeolian;50
 aeolianharps;50
-aeon;50
 aeonflux;50
-aeons;50
 aerate;50
 aerated;50
 aerates;50
@@ -2168,11 +2138,8 @@ aerodynamic;50
 aerodynamically;50
 aerodynamics;50
 aeroflot;50
-aerofoil;50
-aerogel;50
 aerogels;50
 aerogram;50
-aerogramme;50
 aerograms;50
 aerolite;50
 aerolites;50
@@ -2187,10 +2154,8 @@ aeronautics;50
 aeronauts;50
 aerophobia;50
 aerophobic;50
-aeroplane;50
 aerosmith;60
 aerosol;50
-aerosolbomb;50
 aerosolcan;50
 aerosolcans;50
 aerosolize;50
@@ -2202,7 +2167,6 @@ aerospace;50
 aerostat;50
 aerostatic;50
 aeschylus;60
-aesop;50
 aesopian;50
 aesopsfables;60
 aesthete;50
@@ -2211,9 +2175,6 @@ aesthetic;50
 aesthetically;50
 aestheticism;50
 aesthetics;50
-aestivate;50
-aestivates;50
-aestivating;50
 aetna;50
 afaceinthecrowd;60
 afairshake;60
@@ -2459,7 +2420,6 @@ afterthanksgiving;50
 afterthefact;50
 afterthought;50
 afterthoughts;50
-afterward;50
 afterwards;50
 afterword;50
 afterwork;50
@@ -2523,8 +2483,6 @@ agegracefully;60
 agegrade;60
 agegroup;50
 agegroups;50
-ageing;50
-ageings;50
 ageinplace;50
 ageisjustanumber;60
 ageism;50
@@ -3711,11 +3669,9 @@ alimonies;50
 alimony;50
 alimonypayment;50
 alimonypayments;50
-aline;50
 alinedress;50
 alinedresses;50
 alineinthesand;60
-alinement;50
 aliphatic;50
 aliquot;50
 aliquots;50
@@ -4225,7 +4181,6 @@ almagest;50
 almamater;50
 almamaters;50
 almanac;50
-almanack;50
 almanacs;50
 almandine;50
 almandines;50
@@ -4682,7 +4637,6 @@ ambidextrous;50
 ambidextrously;50
 ambidextrousness;50
 ambien;50
-ambience;50
 ambient;50
 ambientnoise;60
 ambigram;60
@@ -4746,7 +4700,6 @@ ambushing;50
 ambushpredators;50
 amcgremlin;60
 ameanstoanend;50
-ameboid;50
 amedeoavogadro;60
 ameliabedelia;50
 ameliabloomer;50
@@ -4912,7 +4865,6 @@ amicuscuriae;50
 amid;50
 amidship;50
 amidships;50
-amidst;50
 amidsummernightsdream;60
 amigas;50
 amigo;50
@@ -4974,7 +4926,6 @@ amnioticsac;60
 amnioticsacs;60
 amodestproposal;50
 amoeba;50
-amoebae;50
 amoebas;50
 amoebic;50
 amoeboid;50
@@ -4983,7 +4934,6 @@ amok;50
 amomentintime;50
 among;50
 amongfriends;50
-amongst;50
 amontillado;60
 amontillados;50
 amoral;50
@@ -5041,7 +4991,6 @@ amphibole;50
 amphiboles;50
 amphitheater;50
 amphitheaters;50
-amphitheatres;50
 amphora;50
 amphorae;50
 amphoras;50
@@ -5061,8 +5010,6 @@ amplifying;50
 amplitude;50
 amplitudes;50
 amply;50
-ampoule;50
-ampoules;50
 amps;50
 ampule;50
 ampules;50
@@ -5085,7 +5032,6 @@ amtrakstation;50
 amtrakstations;50
 amtraktrain;50
 amtraktrains;50
-amuck;50
 amulet;50
 amulets;50
 amundsen;50
@@ -5138,8 +5084,6 @@ anaconda;50
 anacondas;50
 anacquiredtaste;50
 anacrusis;50
-anaemia;50
-anaemic;50
 anaerobe;50
 anaerobes;50
 anaerobic;50
@@ -5184,7 +5128,6 @@ analogwatch;50
 analogwatches;50
 analogy;50
 analysands;50
-analyse;50
 analyses;50
 analysis;50
 analysisparalysis;60
@@ -5439,8 +5382,6 @@ anesthetized;50
 anesthetizes;50
 anesthetizing;50
 aneternity;50
-aneurism;50
-aneurisms;50
 aneurysm;50
 aneurysms;50
 anevendozen;50
@@ -5463,7 +5404,6 @@ angelalansbury;60
 angelamerkel;50
 angelcake;50
 angelcakes;50
-angeldust;50
 angeleno;50
 angelenos;50
 angeles;50
@@ -6710,8 +6650,6 @@ apparatuses;50
 apparel;50
 appareled;50
 appareling;50
-apparelled;50
-apparelling;50
 apparels;50
 apparent;50
 apparently;50
@@ -7165,7 +7103,6 @@ aqueducts;50
 aqueous;50
 aqueoushumor;50
 aqueoushumour;50
-aquiculture;50
 aquietplace;50
 aquifer;50
 aquifers;50
@@ -7328,11 +7265,6 @@ archeddoorway;50
 archedeyebrow;60
 archenemies;60
 archenemy;60
-archeological;50
-archeologies;50
-archeologist;50
-archeologists;50
-archeology;50
 archer;50
 archeries;50
 archers;50
@@ -7346,7 +7278,6 @@ archest;50
 archetypal;50
 archetype;50
 archetypes;50
-archetypical;50
 archfiend;50
 archfiends;50
 archfoe;50
@@ -7466,7 +7397,6 @@ arenarock;50
 arenas;50
 arent;50
 arentweall;50
-areolae;50
 areolas;50
 areolate;50
 areoles;50
@@ -7720,8 +7650,6 @@ armorplates;60
 armors;50
 armory;50
 armoryshow;60
-armour;50
-armoury;50
 armpatch;50
 armpatches;50
 armpit;50
@@ -8275,9 +8203,6 @@ ascendancy;50
 ascendant;50
 ascendants;50
 ascended;50
-ascendence;50
-ascendency;50
-ascendent;50
 ascender;50
 ascenders;50
 ascending;50
@@ -8638,7 +8563,6 @@ asredasabeet;50
 asredasalobster;50
 asrichascroesus;50
 asrightasrain;50
-ass;50
 assad;50
 assagai;50
 assagais;50
@@ -8678,8 +8602,6 @@ assayer;50
 assayers;50
 assaying;50
 assays;50
-assbackward;50
-assbackwards;50
 asscheduled;50
 asseenontv;60
 assegai;50
@@ -8724,7 +8646,6 @@ assertively;50
 assertiveness;50
 asserts;50
 assertsoneself;50
-asses;50
 assess;50
 assessable;50
 assessed;50
@@ -8751,7 +8672,6 @@ asseverates;50
 asseverating;50
 asseverations;50
 assharpasarazor;50
-asshat;50
 assiduity;50
 assiduous;50
 assiduously;50
@@ -8798,7 +8718,6 @@ assisting;50
 assists;50
 assistsin;50
 assize;50
-asskisser;50
 assmoothassilk;50
 assoberasajudge;50
 associability;50
@@ -9743,7 +9662,6 @@ aunties;50
 auntjemima;50
 auntpolly;50
 aunts;50
-aunty;50
 aupair;50
 aupairgirl;50
 aupairs;50
@@ -10287,7 +10205,6 @@ awes;50
 awesome;50
 awesomely;50
 awesomeness;50
-awestricken;50
 awestruck;50
 awful;50
 awfully;50
@@ -10337,7 +10254,6 @@ awrinkleintime;60
 awry;50
 awshucks;60
 awsnap;50
-axe;50
 axed;50
 axehandle;50
 axehead;60
@@ -11036,7 +10952,6 @@ backwardflips;50
 backwardlooking;50
 backwardly;50
 backwardness;50
-backwards;50
 backwardsandforwards;50
 backwash;50
 backwashes;50
@@ -11097,9 +11012,6 @@ badaftertaste;60
 badapple;50
 badapples;50
 badareas;60
-badass;50
-badassery;60
-badasses;50
 badback;60
 badbadleroybrown;50
 badbeat;50
@@ -11136,7 +11048,6 @@ baddest;50
 baddie;50
 baddies;50
 baddreams;50
-baddy;50
 bade;50
 badegg;50
 badeggs;50
@@ -11757,7 +11668,6 @@ ballroomdancers;50
 ballroomdances;50
 ballroomdancing;60
 ballrooms;50
-balls;50
 ballsandstrikes;50
 ballsier;50
 ballsiest;50
@@ -11916,8 +11826,6 @@ bandaid;50
 bandaidfix;50
 bandaidfixes;50
 bandaids;50
-bandana;50
-bandanas;50
 bandanna;50
 bandannas;50
 bandbox;50
@@ -11964,8 +11872,6 @@ bandoleer;50
 bandoleers;50
 bandolero;60
 bandoleros;60
-bandolier;50
-bandoliers;50
 bandontherun;50
 bandrooms;50
 bands;50
@@ -12151,8 +12057,6 @@ bannermen;50
 banners;50
 banneryears;50
 banning;50
-bannister;50
-bannisters;50
 bannocks;50
 banquet;50
 banqueted;50
@@ -12291,7 +12195,6 @@ barbellracks;60
 barbells;50
 barbels;50
 barbenheimer;50
-barbeque;50
 barbequebeef;60
 barbequechicken;60
 barbequepork;60
@@ -12348,7 +12251,6 @@ barcalounger;50
 barcaloungers;50
 barcarole;50
 barcaroles;50
-barcarolle;50
 barcart;50
 barcarts;50
 barcelona;50
@@ -12377,7 +12279,6 @@ bards;50
 bare;50
 bareall;50
 barearms;50
-bareback;50
 barebackrider;50
 barebackriders;50
 barebackriding;50
@@ -12424,7 +12325,6 @@ barelysqueakby;50
 barelyunderthewire;60
 bareminimum;60
 bareminimums;50
-barenaked;50
 barenakedladies;50
 barenecessities;60
 bareness;50
@@ -12634,7 +12534,6 @@ barorders;50
 barouche;50
 barouches;50
 barqs;50
-barques;50
 barrack;50
 barracked;50
 barracking;50
@@ -12670,8 +12569,6 @@ barrelhousejazz;50
 barrelhouses;50
 barreling;50
 barrelingalong;50
-barrelled;50
-barrelling;50
 barreloffun;60
 barreloflaughs;50
 barrelofmonkeys;60
@@ -13069,8 +12966,6 @@ bastes;50
 bastille;50
 bastilleday;50
 bastilles;50
-bastinado;50
-bastinadoes;50
 basting;50
 bastings;50
 bastion;50
@@ -13192,10 +13087,8 @@ bathtubplug;50
 bathtubplugs;50
 bathtubs;50
 bathwater;50
-bathyscaph;50
 bathyscaphe;50
 bathyscaphes;50
-bathyscaphs;50
 bathysphere;50
 bathyspheres;50
 batik;50
@@ -13326,7 +13219,6 @@ battingslump;50
 battingslumps;50
 battingstance;50
 battle;50
-battleax;50
 battleaxe;60
 battleaxes;50
 battlecreek;50
@@ -13416,13 +13308,6 @@ bavaria;50
 bavarian;50
 bavariancream;60
 bavarians;50
-bawdier;50
-bawdiest;50
-bawdily;50
-bawdiness;50
-bawdry;50
-bawdy;50
-bawdylanguage;60
 bawl;50
 bawled;50
 bawledout;50
@@ -14001,7 +13886,6 @@ beaux;50
 beauxarts;50
 beauxgestes;60
 beaver;50
-beavercleaver;60
 beaverdam;50
 beaverdams;50
 beaverfur;60
@@ -14086,8 +13970,6 @@ bedecks;50
 bedevil;50
 bedeviled;50
 bedeviling;50
-bedevilled;50
-bedevilling;50
 bedevilment;50
 bedevils;50
 bedew;50
@@ -14632,7 +14514,6 @@ beintouch;50
 beirut;50
 bejewel;60
 bejeweled;60
-bejewelling;50
 bejewels;60
 bekindrewind;50
 beknights;50
@@ -15323,7 +15204,6 @@ bestfoods;50
 bestfootforward;50
 bestfriend;50
 bestfriends;50
-bestial;50
 bestiaries;50
 bestiary;50
 bestie;50
@@ -15540,8 +15420,6 @@ beveled;50
 beveler;50
 bevelgear;50
 beveling;50
-bevelled;50
-bevelling;50
 bevels;50
 beverage;50
 beverages;50
@@ -16339,7 +16217,6 @@ bilobed;50
 biloxi;50
 biltong;50
 bimanual;50
-bimbo;50
 bimester;50
 bimetal;50
 bimetallic;50
@@ -16415,7 +16292,6 @@ bingewatches;60
 bingewatching;60
 bingeworthy;50
 binghamton;50
-binging;50
 bingo;50
 bingoball;50
 bingoballs;50
@@ -16800,14 +16676,6 @@ bistros;50
 bistrosets;50
 bit;50
 bitbybit;50
-bitched;50
-bitchery;50
-bitches;50
-bitchier;50
-bitchiest;50
-bitchin;50
-bitchiness;50
-bitching;50
 bitcoin;50
 bitcoinatm;50
 bitcoinatms;50
@@ -17050,7 +16918,6 @@ blackeyedsusan;50
 blackeyedsusans;50
 blackeyeliner;50
 blackeyes;50
-blackface;60
 blackfeet;50
 blackfish;50
 blackflag;50
@@ -17254,7 +17121,6 @@ blakeshelton;50
 blam;50
 blamable;50
 blame;50
-blameable;50
 blamed;50
 blameful;50
 blamegame;60
@@ -17914,7 +17780,6 @@ bloodvessels;50
 bloodwillhaveblood;50
 bloodwork;60
 bloodworm;50
-bloody;50
 bloodycaesar;60
 bloodycaesars;60
 bloodyhell;50
@@ -18087,8 +17952,6 @@ blowsaraspberry;50
 blowsaway;50
 blowsbubbles;50
 blowsby;50
-blowsier;50
-blowsiest;50
 blowsin;50
 blowsinto;50
 blowsmoke;60
@@ -18243,7 +18106,6 @@ bluehole;50
 blueholes;50
 bluehumor;50
 blueice;50
-blueing;50
 blueings;50
 blueintheface;50
 blueish;50
@@ -18271,7 +18133,6 @@ bluemoon;50
 bluemoons;60
 bluemorpho;50
 bluemountain;60
-bluemovie;50
 bluemurder;50
 blueness;50
 bluenile;50
@@ -18696,10 +18557,8 @@ bobwhite;50
 bobwoodward;50
 bocaraton;50
 boccaccio;50
-bocce;50
 bocceball;60
 bocceballs;60
-bocci;50
 bocelli;50
 bock;50
 bockbeer;50
@@ -18961,10 +18820,6 @@ boilswater;50
 boilup;50
 boilwater;50
 boing;50
-boink;50
-boinked;50
-boinking;50
-boinks;50
 boise;50
 boiseidaho;60
 boisterous;50
@@ -19136,7 +18991,6 @@ bonappetit;60
 bonbon;50
 bonbons;50
 bond;50
-bondage;50
 bondbroker;60
 bonded;50
 bondedpair;50
@@ -19213,8 +19067,6 @@ bonemarrowdonors;60
 bonemass;50
 bonemeal;50
 boneofcontention;50
-boner;50
-boners;50
 bones;50
 bonesaw;50
 bonescan;50
@@ -19237,16 +19089,12 @@ boneyard;50
 boneyards;50
 bonfire;50
 bonfires;50
-bong;50
-bonged;50
-bonging;50
 bongjoonho;50
 bongo;50
 bongodrum;60
 bongodrums;60
 bongoes;50
 bongos;50
-bongs;50
 bonhomie;50
 bonier;50
 boniest;50
@@ -19272,7 +19120,6 @@ bonneted;50
 bonnethead;50
 bonnets;50
 bonnevilleflats;50
-bonnie;50
 bonnieandclyde;60
 bonniehunt;50
 bonnier;50
@@ -19316,17 +19163,12 @@ bonvoyage;50
 bony;50
 boo;50
 booandhiss;60
-boob;50
 booberry;50
 boobies;50
 boobird;60
 boobirds;60
-boobjob;50
 booboo;50
 booboos;50
-boobs;50
-boobtube;50
-boobtubes;50
 booby;50
 boobyprize;60
 boobyprizes;60
@@ -19620,7 +19462,6 @@ booth;50
 bootheel;60
 boothill;50
 booths;50
-bootie;50
 booties;50
 booting;50
 bootingout;50
@@ -19665,9 +19506,6 @@ boottree;50
 boottrees;50
 bootup;50
 booty;50
-bootycall;60
-bootycalls;60
-bootylicious;50
 bootyshorts;60
 booyah;50
 booze;50
@@ -19703,8 +19541,6 @@ borates;50
 borax;50
 borborygmus;50
 bordeaux;50
-bordello;50
-bordellos;50
 border;50
 bordercollie;50
 bordercollies;50
@@ -21242,7 +21078,6 @@ breastpocket;50
 breastpockets;50
 breastpump;50
 breastpumps;50
-breasts;50
 breaststroke;50
 breaststrokes;50
 breastwork;50
@@ -21387,10 +21222,8 @@ briansetzer;50
 brianssong;50
 brianwilliams;60
 brianwilson;50
-briar;50
 briarpatch;50
 briarpatches;50
-briars;50
 bribable;50
 bribe;50
 bribed;50
@@ -21707,7 +21540,6 @@ brinkmanship;50
 brinkofdisaster;60
 brinkofextinction;50
 brinks;50
-brinksmanship;50
 briny;50
 brinysea;50
 brio;50
@@ -21719,8 +21551,6 @@ briocherolls;50
 brioches;50
 briolettecuts;50
 briony;50
-briquet;50
-briquets;50
 briquette;50
 briquettes;50
 bris;50
@@ -23003,7 +22833,6 @@ bulwarked;50
 bulwarking;50
 bulwarks;50
 bulwerlytton;50
-bum;50
 bumaround;50
 bumbag;50
 bumbags;50
@@ -23113,7 +22942,6 @@ bunco;50
 buncoed;50
 buncogame;50
 buncoing;50
-buncombe;50
 buncoparlor;60
 buncosquad;60
 buncosquads;60
@@ -23147,7 +22975,6 @@ bungeejumpers;60
 bungeejumping;60
 bungeejumps;60
 bungees;50
-bunghole;50
 bungholes;50
 bunging;50
 bungle;50
@@ -23177,7 +23004,6 @@ bunkhouses;50
 bunking;50
 bunkmate;50
 bunkmates;50
-bunko;50
 bunks;50
 bunkum;50
 bunnies;50
@@ -23421,7 +23247,6 @@ burnonesboats;50
 burnonesbridges;60
 burnoose;50
 burnooses;50
-burnouses;50
 burnout;50
 burnouts;50
 burnrate;60
@@ -23463,8 +23288,6 @@ burpees;50
 burpgun;50
 burping;50
 burps;50
-burqa;50
-burqas;50
 burqini;50
 burqinis;50
 burr;50
@@ -23753,7 +23576,6 @@ bustsin;50
 bustsoneschops;60
 bustup;60
 bustups;50
-busty;50
 busy;50
 busyasabeaver;60
 busyasabee;60
@@ -23805,7 +23627,6 @@ butler;50
 butlers;50
 butofcourse;60
 buts;50
-butt;50
 buttdial;60
 buttdialed;60
 buttdialing;60
@@ -23889,7 +23710,6 @@ buttery;50
 buttes;50
 butthead;50
 buttheadswith;60
-butthurt;50
 buttigieg;50
 butting;50
 buttingheads;50
@@ -23944,7 +23764,6 @@ buttressed;50
 buttresses;50
 buttressing;50
 butts;50
-buttsheadswith;60
 buttsout;50
 butyric;50
 buxom;50
@@ -24168,7 +23987,6 @@ byzantineera;60
 byzantium;50
 cab;50
 cabal;50
-cabala;50
 cabalas;50
 cabalist;50
 cabalistic;50
@@ -24201,7 +24019,6 @@ cabbagerose;60
 cabbages;50
 cabbagesoup;50
 cabbed;50
-cabbie;50
 cabbies;50
 cabby;50
 cabcalloway;60
@@ -24397,17 +24214,13 @@ cadres;50
 cads;50
 caducei;50
 caduceus;50
-caesar;50
 caesarandbrutus;50
 caesarcipher;60
 caesarcut;50
 caesarcuts;50
 caesardressing;50
-caesarean;50
-caesareans;50
 caesareansection;50
 caesareansections;50
-caesarian;50
 caesars;50
 caesarsalad;50
 caesarsalads;50
@@ -24460,7 +24273,6 @@ cagematches;50
 cager;50
 cages;50
 cagey;50
-cageyness;50
 cagier;50
 cagiest;50
 cagily;50
@@ -24471,7 +24283,6 @@ cagney;50
 cagneyandlacey;50
 cagoule;50
 cagoules;50
-cagy;50
 cahokia;50
 cahoots;50
 caiman;50
@@ -24606,8 +24417,6 @@ calcutta;50
 caldecott;50
 caldera;50
 calderas;50
-caldron;50
-caldrons;50
 caledonia;50
 calendar;50
 calendarart;50
@@ -24653,8 +24462,6 @@ calibrates;50
 calibrating;50
 calibration;50
 calibrations;50
-calibre;50
-calibres;50
 calico;50
 calicocat;50
 calicocats;50
@@ -24828,7 +24635,6 @@ callinsick;50
 callintoquestion;50
 calliope;50
 calliopes;60
-callipers;50
 callipygian;50
 callisto;50
 callitaday;60
@@ -25222,8 +25028,6 @@ camisoles;50
 camnewton;50
 camo;50
 camogear;50
-camomile;50
-camomiles;50
 camomiletea;50
 camopants;60
 camorra;50
@@ -25408,10 +25212,8 @@ canceledcheck;60
 canceledchecks;60
 canceling;50
 cancelingout;50
-cancellate;50
 cancellation;50
 cancellations;50
-cancelled;50
 cancelledcheck;50
 cancelout;50
 cancels;50
@@ -26117,7 +25919,6 @@ caravanning;50
 caravans;50
 caravansaries;50
 caravansary;50
-caravanserai;50
 caravanserais;50
 caravel;50
 caravels;50
@@ -26569,9 +26370,6 @@ carnegiehall;60
 carnegiemellon;60
 carnelian;50
 carnelians;50
-carney;50
-carneys;50
-carnie;50
 carnies;50
 carnitas;50
 carnival;50
@@ -26615,8 +26413,6 @@ carolinekennedy;60
 caroling;50
 carolingian;50
 carolinian;50
-carolled;50
-carolling;50
 carols;50
 carolsinger;50
 carom;50
@@ -26775,8 +26571,6 @@ carrotsticks;60
 carrottop;50
 carrottops;50
 carroty;50
-carrousel;50
-carrousels;50
 carry;50
 carryabigstick;50
 carryall;50
@@ -27372,7 +27166,6 @@ cataloger;50
 catalogers;50
 cataloging;50
 catalogs;50
-catalogued;50
 catalonia;50
 catalpa;50
 catalpas;50
@@ -27557,7 +27350,6 @@ catchthedrift;50
 catchthemoffguard;60
 catchtwentytwo;50
 catchunawares;50
-catchup;60
 catchword;50
 catchwords;50
 catchy;50
@@ -27730,10 +27522,8 @@ catstail;50
 catstevens;50
 catsuit;50
 catsuits;50
-catsup;50
 catsupbottle;50
 catsupbottles;50
-catsups;50
 cattail;50
 cattails;50
 cattalo;50
@@ -27854,7 +27644,6 @@ caulk;50
 caulked;50
 caulkers;50
 caulking;50
-caulkings;50
 caulks;50
 causal;50
 causality;50
@@ -27966,9 +27755,6 @@ caviars;50
 cavil;50
 caviled;50
 caviling;50
-cavilled;50
-caviller;50
-cavilling;50
 cavils;50
 caving;50
 cavingin;50
@@ -27993,9 +27779,7 @@ cayenne;50
 cayennepepper;60
 cayennepeppers;60
 cayennes;50
-cayman;50
 caymanislands;50
-caymans;50
 cays;50
 cayuga;50
 cayugaduck;50
@@ -28388,10 +28172,7 @@ centralprocessingunits;50
 centraltendency;50
 centraltime;50
 centraltimezone;50
-centre;50
 centrecourt;50
-centrefolds;50
-centres;50
 centric;50
 centrifugal;50
 centrifugalforce;50
@@ -28523,8 +28304,6 @@ cesareans;50
 cesareansection;50
 cesareansections;50
 cesareborgia;50
-cesarian;50
-cesarians;50
 cesarmillan;50
 cesarritz;50
 cesarromero;50
@@ -28956,8 +28735,6 @@ channelize;50
 channelized;50
 channelizes;50
 channelizing;50
-channelled;50
-channelling;50
 channels;50
 channelselector;50
 channelsurf;50
@@ -29017,9 +28794,7 @@ chapeloflove;60
 chapels;50
 chaperon;50
 chaperonage;50
-chaperone;50
 chaperoned;50
-chaperones;50
 chaperoning;50
 chaperons;50
 chaplain;50
@@ -29833,8 +29608,6 @@ chennai;50
 cheongsam;50
 cheongsams;50
 cheops;50
-cheque;50
-cheques;50
 cher;50
 cherish;50
 cherished;50
@@ -30370,7 +30143,6 @@ childstar;50
 childstars;50
 childstoys;50
 childsupport;60
-chile;50
 chilean;50
 chileans;50
 chileanseabass;60
@@ -30378,7 +30150,6 @@ chileconcarne;60
 chilepepper;50
 chilepeppers;50
 chilepine;50
-chiles;50
 chili;50
 chilibean;50
 chilibeans;50
@@ -30397,7 +30168,6 @@ chilipastes;50
 chilipepper;50
 chilipeppers;50
 chilipowder;60
-chilis;50
 chilisauce;50
 chilisauces;50
 chiliverde;50
@@ -30412,7 +30182,6 @@ chilledtothebone;60
 chiller;50
 chillfactor;50
 chillier;50
-chillies;50
 chilliest;50
 chilliness;50
 chilling;50
@@ -30434,7 +30203,6 @@ chilly;50
 chillyreception;60
 chillyreceptions;50
 chillyweather;60
-chimaeras;50
 chimchimcheree;50
 chime;50
 chimed;50
@@ -30530,9 +30298,7 @@ chineseyuan;50
 chinesezodiac;60
 chinet;50
 chinfest;50
-chink;50
 chinkapin;50
-chinking;50
 chinkinthearmor;60
 chinless;50
 chinned;50
@@ -30653,9 +30419,6 @@ chiseledabs;60
 chiseler;50
 chiselers;50
 chiseling;50
-chiselled;50
-chiseller;50
-chisellers;50
 chisels;50
 chisholm;50
 chisholmtrail;50
@@ -30667,8 +30430,6 @@ chitchat;50
 chitchats;50
 chitchatty;50
 chitinous;50
-chitlings;50
-chitlins;50
 chiton;50
 chitons;50
 chitown;50
@@ -30691,9 +30452,6 @@ chive;50
 chives;50
 chivied;50
 chivies;50
-chivvied;50
-chivvies;50
-chivvying;50
 chiweenie;50
 chloezhao;50
 chloral;50
@@ -30726,8 +30484,6 @@ chlorotic;50
 choate;50
 chobani;50
 chobaniyogurt;50
-chocaholic;50
-chocaholics;50
 choccies;50
 chock;50
 chockablock;50
@@ -30805,7 +30561,6 @@ chocolatesyrup;50
 chocolatetherapy;60
 chocolatetruffle;60
 chocolatetruffles;60
-chocolatey;50
 chocolatier;50
 chocolatiers;50
 chocolaty;50
@@ -30898,7 +30653,6 @@ chooses;50
 choosesides;50
 choosesonesbattles;50
 choosesup;50
-choosey;50
 choosier;50
 choosiest;50
 choosing;50
@@ -31386,9 +31140,7 @@ chutes;50
 chutesandladders;50
 chutney;50
 chutneys;50
-chutzpa;50
 chutzpah;60
-chutzpas;50
 ciabatta;50
 ciabattabread;50
 ciabattas;50
@@ -31398,7 +31150,6 @@ ciaoperatives;60
 ciaos;50
 cicada;50
 cicadas;50
-cicatrice;50
 cicatrices;50
 cicatrix;50
 cicatrize;50
@@ -33535,10 +33286,6 @@ cobwebs;50
 coca;50
 cocacola;50
 cocacolaclassic;60
-cocaine;50
-cocaleaf;50
-cocaleaves;50
-cocaplant;60
 cocaptain;50
 coccus;50
 coccygeal;50
@@ -33553,7 +33300,6 @@ cochlear;50
 cochlearimplant;50
 cochlearimplants;50
 cochleas;50
-cock;50
 cockade;50
 cockades;50
 cockadoodledoo;60
@@ -33613,7 +33359,6 @@ cockpit;50
 cockpits;50
 cockroach;50
 cockroaches;50
-cocks;50
 cockscomb;50
 cockscombs;50
 cocksfoot;50
@@ -33794,7 +33539,6 @@ coefficientoffriction;50
 coefficients;50
 coelacanth;50
 coelenterate;50
-coeliac;50
 coenbrothers;50
 coequal;50
 coequals;50
@@ -34120,10 +33864,6 @@ coldcases;50
 coldcash;50
 coldcereal;50
 coldchisel;50
-coldcock;50
-coldcocked;50
-coldcocking;50
-coldcocks;50
 coldcomfort;60
 coldcomfortfarm;50
 coldcompress;50
@@ -34286,8 +34026,6 @@ collators;50
 colleague;50
 colleagues;50
 collect;50
-collectable;50
-collectables;50
 collectcall;50
 collectcalls;50
 collectdust;60
@@ -34597,7 +34335,6 @@ colossusofrhodes;60
 colostomies;50
 colostomy;50
 colostrum;50
-colours;50
 colsonwhitehead;50
 colt;50
 coltfortyfive;50
@@ -35263,8 +35000,6 @@ commercially;50
 commercialpaper;50
 commercialradio;50
 commercials;50
-commie;50
-commies;50
 commingle;50
 commingled;50
 commingles;50
@@ -36221,7 +35956,6 @@ conesofshame;50
 conestoga;50
 conestogawagon;50
 conestogawagons;60
-coney;50
 coneydog;50
 coneydogs;50
 coneyisland;60
@@ -36517,7 +36251,6 @@ conically;50
 conics;50
 conicsection;50
 conicsections;50
-conies;50
 conifer;50
 coniferous;50
 coniferoustrees;50
@@ -36573,8 +36306,6 @@ conjuresup;50
 conjureup;50
 conjuring;50
 conjuringup;50
-conjuror;50
-conjurors;50
 conk;50
 conked;50
 conkedout;50
@@ -36590,8 +36321,6 @@ connate;50
 connect;50
 connected;50
 connectedthedots;50
-connecter;50
-connecters;50
 connectfour;50
 connecticut;50
 connecting;50
@@ -37332,7 +37061,6 @@ conveniencestores;50
 convenient;50
 conveniently;50
 convening;50
-convenors;50
 convent;50
 convention;50
 conventional;50
@@ -37394,8 +37122,6 @@ convertiblesofa;50
 convertiblesofas;50
 convertibletops;50
 converting;50
-convertor;50
-convertors;50
 converts;50
 convex;50
 convexities;50
@@ -37409,10 +37135,8 @@ conveyance;50
 conveyances;50
 conveyancing;50
 conveyed;50
-conveyer;50
 conveyerbelt;50
 conveyerbelts;50
-conveyers;50
 conveying;50
 conveyor;50
 conveyorbelt;60
@@ -37596,7 +37320,6 @@ coolheads;60
 coolhunter;50
 coolhunters;50
 coolidge;50
-coolies;50
 cooling;50
 coolingdown;50
 coolingfan;60
@@ -37714,7 +37437,6 @@ copcars;60
 copdrama;50
 copdramas;50
 cope;50
-copecks;50
 coped;50
 copedwith;50
 copenhagen;50
@@ -38105,7 +37827,6 @@ cornflower;60
 cornflowerblue;50
 cornflowers;50
 cornfritter;60
-cornhole;50
 cornhusk;50
 cornhusker;50
 cornhuskers;50
@@ -38395,7 +38116,6 @@ cosecant;50
 cosecants;50
 cosell;50
 cosets;50
-cosies;50
 cosifantutte;50
 cosign;50
 cosignatories;50
@@ -38405,7 +38125,6 @@ cosigner;50
 cosigners;50
 cosigning;50
 cosigns;50
-cosily;50
 cosine;50
 cosines;50
 cosleep;60
@@ -38688,8 +38407,6 @@ councilbluffsiowa;50
 councilfire;50
 councilfires;50
 councilhousing;50
-councillor;50
-councillors;50
 councilman;50
 councilmen;50
 councilor;50
@@ -39363,7 +39080,6 @@ cowtipping;60
 cowtongue;60
 cowtown;60
 cowtowns;60
-cox;50
 coxcomb;50
 coxcombs;50
 coxed;50
@@ -39684,12 +39400,9 @@ crankypants;60
 crannied;50
 crannies;50
 cranny;50
-crap;50
 crapehanger;50
 crapgame;60
 crapgames;60
-crapload;50
-craploads;50
 crapout;50
 crappedout;50
 crapper;50
@@ -39901,7 +39614,6 @@ creamoftartar;50
 creamofthecrop;60
 creamofwheat;50
 creamorsugar;50
-creampie;50
 creampies;50
 creampuff;60
 creampuffs;60
@@ -40046,7 +39758,6 @@ credulity;50
 credulous;50
 credulously;50
 credulousness;50
-cree;50
 creed;50
 creedence;50
 creeds;50
@@ -40084,7 +39795,6 @@ creepycrawler;60
 creepycrawlies;60
 creepycrawly;60
 creepypasta;50
-crees;50
 crema;50
 cremate;50
 cremated;50
@@ -40120,7 +39830,6 @@ crenelating;50
 crenelation;50
 crenelations;50
 creneled;50
-crenellations;50
 crenels;50
 crenshaw;50
 creole;50
@@ -40180,10 +39889,7 @@ cretaceousperiod;50
 cretan;50
 cretans;50
 crete;50
-cretin;50
 cretinism;50
-cretinous;50
-cretins;50
 cretonne;50
 creutzfeldtjakobdisease;50
 crevasse;50
@@ -40900,8 +40606,6 @@ crowsnest;60
 crowsnests;60
 crowsover;50
 crowsteps;50
-crozier;50
-croziers;50
 crucial;50
 crucially;50
 cruciate;50
@@ -40945,7 +40649,6 @@ cruelest;50
 cruelfate;60
 cruella;50
 cruelladevil;50
-crueller;50
 cruelly;50
 cruelness;50
 cruelties;50
@@ -41315,8 +41018,6 @@ cuddly;50
 cudgel;50
 cudgeled;50
 cudgeling;50
-cudgelled;50
-cudgelling;50
 cudgels;50
 cuds;50
 cudweeds;50
@@ -41372,7 +41073,6 @@ cull;50
 culled;50
 culledfromtheherd;50
 culledout;50
-cullender;50
 cullets;50
 culling;50
 cullingfromtheherd;50
@@ -41458,7 +41158,6 @@ culturevultures;60
 culturing;50
 culvert;50
 culverts;50
-cum;50
 cumbering;50
 cumberland;50
 cumberlandgap;50
@@ -41472,7 +41171,6 @@ cumins;50
 cumlaude;50
 cummerbund;50
 cummerbunds;50
-cumquat;50
 cumshaws;50
 cumulate;50
 cumulated;50
@@ -41760,10 +41458,6 @@ curtisinstitute;50
 curtismayfield;50
 curtly;50
 curtness;50
-curtsey;50
-curtseyed;50
-curtseying;50
-curtseys;50
 curtsied;50
 curtsies;50
 curtsy;50
@@ -42123,7 +41817,6 @@ cyberpets;50
 cyberpunk;60
 cyberpunks;50
 cybersecurityrisks;50
-cybersex;50
 cyberslacking;60
 cyberspace;50
 cybersquat;60
@@ -42197,9 +41890,6 @@ cynophobia;50
 cynosure;50
 cynosures;50
 cynthiaerivo;50
-cypher;60
-cyphered;50
-cyphers;60
 cypress;50
 cypresses;50
 cypresshill;50
@@ -42485,29 +42175,6 @@ dammed;50
 dammedup;50
 damming;50
 dammingup;50
-dammit;50
-damn;50
-damnable;50
-damnably;50
-damnation;50
-damnations;50
-damndest;50
-damned;50
-damnedest;50
-damnedifido;60
-damnedwithfaintpraise;60
-damnify;50
-damnifying;50
-damning;50
-damningwithfaintpraise;50
-damnitall;50
-damnright;50
-damns;50
-damnstraight;50
-damnswithfaintpraise;60
-damnthetorpedoes;60
-damnwithfaintpraise;60
-damnyankees;50
 damocles;50
 damonandpythias;50
 damonrunyon;50
@@ -43569,7 +43236,6 @@ dearest;50
 dearfriends;50
 deargod;60
 dearheart;50
-dearie;50
 dearieme;50
 dearies;50
 dearjohn;50
@@ -43795,7 +43461,6 @@ decafteas;50
 decagon;50
 decagonal;50
 decagons;50
-decagram;50
 decahedron;50
 decahedrons;50
 decal;50
@@ -43805,13 +43470,9 @@ decalcifies;50
 decalcify;50
 decalcifying;50
 decalcomanias;50
-decaliter;50
-decaliters;50
 decalogue;50
 decals;50
 decameron;50
-decameter;50
-decameters;50
 decamp;50
 decamped;50
 decamping;50
@@ -44313,7 +43974,6 @@ deepstate;50
 deepstates;50
 deepthought;50
 deepthoughts;60
-deepthroat;60
 deeptissue;50
 deeptissuemassage;50
 deeptrouble;50
@@ -45008,9 +44668,7 @@ demagnetize;50
 demagnetized;50
 demagnetizes;50
 demagnetizing;50
-demagog;50
 demagogic;50
-demagogs;50
 demagogue;50
 demagoguery;50
 demagogues;50
@@ -45370,7 +45028,6 @@ dented;50
 dentifrice;50
 dentifrices;50
 dentin;50
-dentine;50
 denting;50
 dentist;50
 dentistry;50
@@ -45456,9 +45113,6 @@ dependability;50
 dependable;50
 dependableness;50
 dependably;50
-dependance;50
-dependant;50
-dependants;50
 depended;50
 dependedon;50
 dependedupon;50
@@ -45770,7 +45424,6 @@ descend;50
 descendant;50
 descendants;50
 descended;50
-descendent;50
 descending;50
 descendingorder;60
 descends;50
@@ -45900,8 +45553,6 @@ designerbabies;60
 designerbaby;60
 designerdress;60
 designerdresses;60
-designerdrug;50
-designerdrugs;50
 designergown;60
 designergowns;60
 designerjeans;60
@@ -45995,9 +45646,6 @@ despaired;50
 despairing;50
 despairingly;50
 despairs;50
-despatched;50
-despatches;50
-despatching;50
 desperado;60
 desperadoes;60
 desperados;50
@@ -46454,8 +46102,6 @@ dextral;50
 dextrin;50
 dextrorotary;50
 dextrose;50
-dextrous;50
-dextrously;50
 dflat;50
 dflats;50
 dhaka;50
@@ -46525,12 +46171,9 @@ dialingin;50
 dialingitback;50
 dialingitdown;50
 dialitback;50
-dialled;50
-dialling;50
 dialog;50
 dialogbox;50
 dialogboxes;60
-dialogs;50
 dialogue;50
 dialogueballoon;50
 dialogueballoons;50
@@ -46643,7 +46286,6 @@ diarists;50
 diarrhea;50
 diarrheal;50
 diarrheas;50
-diarrhoeic;50
 diary;50
 diaryentries;50
 diaryentry;50
@@ -46704,7 +46346,6 @@ dichromatic;50
 dicier;50
 diciest;50
 dicing;50
-dick;50
 dickandjane;60
 dickbutkus;50
 dickcavett;60
@@ -46722,7 +46363,6 @@ dickey;50
 dickeys;50
 dickfrancis;50
 dickgrayson;50
-dickies;50
 dickinson;50
 dicks;50
 dicktracy;50
@@ -46908,8 +46548,6 @@ dietetically;50
 dietetics;50
 dietfad;50
 dietfads;50
-dietician;50
-dieticians;50
 dieting;50
 dietitian;50
 dietitians;50
@@ -47122,7 +46760,6 @@ dihedral;50
 dijon;50
 dijonmustard;60
 dikdiks;50
-dike;50
 diked;50
 dikembe;50
 dikembemutombo;50
@@ -47324,13 +46961,11 @@ diningset;50
 diningsets;50
 diningtable;50
 diningtables;50
-dink;50
 dinkaround;60
 dinkedaround;60
 dinkier;50
 dinkiest;50
 dinkingaround;60
-dinks;50
 dinksaround;60
 dinkum;50
 dinky;50
@@ -48052,8 +47687,6 @@ disembodying;50
 disembowel;50
 disemboweled;50
 disemboweling;50
-disembowelled;50
-disembowelling;50
 disembowelment;50
 disembowelments;50
 disembowels;50
@@ -48549,7 +48182,6 @@ disruptions;50
 disruptive;50
 disruptively;50
 disrupts;50
-diss;50
 dissatisfaction;50
 dissatisfied;50
 dissatisfies;50
@@ -48826,10 +48458,8 @@ dittybag;50
 dittybags;50
 ditz;50
 ditzes;50
-ditzier;50
 ditziest;50
 ditziness;50
-ditzy;50
 diuretic;50
 diuretics;50
 diurnal;50
@@ -49062,9 +48692,6 @@ djculture;50
 djibouti;50
 djin;50
 djing;50
-djinn;50
-djinni;50
-djinns;50
 djjazzyjeff;50
 djkhaled;50
 djmixes;50
@@ -49314,7 +48941,6 @@ doesntbudgeaninch;50
 doesntfitthebill;50
 doesntgetthememo;50
 doesntgiveahoot;50
-doesntgivearip;60
 doesnthaveaclue;50
 doesnthavethefoggiest;50
 doesntholdwater;60
@@ -49412,7 +49038,6 @@ dogged;50
 doggedly;50
 doggedness;50
 doggerel;50
-doggie;50
 doggiebag;60
 doggiebags;60
 doggiedaycare;60
@@ -49422,11 +49047,9 @@ doggiedoors;60
 doggies;50
 doggietreat;60
 doggietreats;60
-dogging;50
 doggingit;50
 doggish;50
 doggone;50
-doggoned;50
 doggoneit;60
 doggroomer;60
 doggroomers;60
@@ -49439,7 +49062,6 @@ doggypaddle;60
 doggypaddled;60
 doggypaddles;60
 doggypaddling;60
-doggystyle;50
 doggytreat;60
 doggytreats;60
 doghair;50
@@ -49480,10 +49102,8 @@ dogmeat;50
 dogmuzzle;60
 dogmuzzles;60
 dognap;50
-dognapped;50
 dognapper;50
 dognappers;50
-dognapping;50
 dognaps;50
 dogood;60
 dogooder;50
@@ -49774,13 +49394,9 @@ dominate;50
 dominated;50
 dominates;50
 dominating;50
-domination;50
 dominations;50
 dominator;50
 dominators;50
-dominatrices;50
-dominatrix;50
-dominatrixes;50
 domineer;50
 domineered;50
 domineering;50
@@ -50000,19 +49616,15 @@ dontworrybehappy;60
 dontyoufret;50
 dontyoustartwithme;50
 dontyouwantme;50
-donut;50
 donutdunker;50
 donutdunkers;50
 donuthole;50
 donutholes;50
-donuts;50
 donutshop;60
 donutshops;60
 donvitocorleone;50
 doo;50
-doobie;50
 doobiebrothers;60
-doobies;50
 doodad;50
 doodads;50
 doodah;50
@@ -50144,7 +49756,6 @@ dopants;50
 dope;50
 doped;50
 dopedout;50
-dopefiend;50
 dopeness;50
 dopeout;50
 doper;50
@@ -50877,7 +50488,6 @@ downward;50
 downwarddog;60
 downwardfacing;50
 downwardfacingdog;60
-downwards;50
 downwardspiral;60
 downwardspirals;60
 downwardtrajectories;50
@@ -50898,13 +50508,7 @@ dowses;50
 dowsing;50
 dowsingrod;50
 dowsingrods;60
-dox;50
-doxed;50
-doxing;50
 doxology;50
-doxxed;50
-doxxes;50
-doxxing;50
 doyen;50
 doyenne;50
 doyennes;50
@@ -50951,7 +50555,6 @@ draftbeer;50
 draftbeers;50
 draftbill;50
 draftbills;50
-draftboard;50
 draftcard;60
 draftcards;60
 draftchoice;50
@@ -51392,7 +50995,6 @@ dreamsof;50
 dreamstate;50
 dreamstates;50
 dreamsup;50
-dreamt;50
 dreamtabout;50
 dreamteam;50
 dreamteams;60
@@ -51658,7 +51260,6 @@ drillsite;50
 drillsites;50
 drillteam;60
 drillteams;60
-drily;50
 drink;50
 drinkable;50
 drinkandbemerry;60
@@ -51754,10 +51355,6 @@ driveled;50
 driveler;50
 drivelers;50
 driveling;50
-drivelled;50
-driveller;50
-drivellers;50
-drivelling;50
 drivels;50
 drivemecrazy;50
 driven;50
@@ -52006,9 +51603,7 @@ droppedtheball;60
 droppedthebeat;50
 droppedthecurtain;50
 droppedthefacade;60
-droppedthefbomb;60
 droppedthehammer;60
-droppedthelbomb;50
 dropper;50
 droppers;50
 dropping;50
@@ -52033,7 +51628,6 @@ droppingofftheradar;60
 droppingout;50
 droppings;50
 droppingtheact;50
-droppingtrou;60
 droppoint;50
 drops;50
 dropsabomb;60
@@ -52070,7 +51664,6 @@ dropstheball;60
 dropsthebeat;50
 dropsthecurtain;50
 dropsthefacade;60
-dropsthefbomb;60
 dropsthelbomb;50
 dropsthesubject;50
 dropstitch;50
@@ -52081,7 +51674,6 @@ droptheax;60
 droptheball;60
 dropthecurtain;50
 dropthefacade;60
-dropthefbomb;60
 dropthelbomb;50
 droptop;50
 droptops;50
@@ -52352,7 +51944,6 @@ dryersheet;60
 dryersheets;60
 dryervent;50
 dryervents;50
-dryest;50
 dryeye;50
 dryeyed;50
 dryeyes;50
@@ -52628,11 +52219,6 @@ dueling;50
 duelingbanjos;60
 duelinthesun;50
 duelist;50
-duelled;50
-dueller;50
-duellers;50
-duelling;50
-duellists;50
 duels;50
 duennas;50
 duenorth;50
@@ -52724,11 +52310,8 @@ dulynoted;50
 duma;50
 dumas;50
 dumasfils;50
-dumb;50
 dumbanddumber;50
 dumbartonoaks;50
-dumbass;50
-dumbasses;50
 dumbbell;50
 dumbbells;50
 dumbcane;50
@@ -52763,10 +52346,6 @@ dumbwaiter;50
 dumbwaiters;50
 dumdum;50
 dumdums;50
-dumfound;50
-dumfounded;50
-dumfounding;50
-dumfounds;50
 dummied;50
 dummies;50
 dummy;50
@@ -53133,7 +52712,6 @@ dyingstars;50
 dyingto;50
 dyingwish;50
 dyingwishes;50
-dyke;50
 dykes;50
 dylan;50
 dylanthomas;50
@@ -53982,8 +53560,6 @@ edgedout;50
 edgedup;50
 edgein;50
 edgeless;50
-edgelord;50
-edgelords;50
 edgeout;50
 edgepiece;50
 edgepieces;50
@@ -55556,10 +55132,6 @@ emotively;50
 empales;50
 empanada;50
 empanadas;50
-empanel;50
-empaneled;50
-empaneling;50
-empanelled;50
 empath;50
 empathetic;50
 empathic;50
@@ -55744,9 +55316,6 @@ enameler;50
 enamelers;50
 enameling;50
 enamelists;50
-enamelled;50
-enameller;50
-enamelling;50
 enamelpaint;50
 enamels;50
 enamelware;50
@@ -55755,7 +55324,6 @@ enamored;50
 enamoredof;50
 enamoring;50
 enamors;50
-enamour;50
 enbies;50
 enbloc;50
 enby;50
@@ -55890,7 +55458,6 @@ encumbrance;50
 encumbrances;50
 encyclical;50
 encyclicals;50
-encyclopaedic;50
 encyclopedia;50
 encyclopediabrown;60
 encyclopedias;50
@@ -55928,7 +55495,6 @@ endeavor;50
 endeavored;50
 endeavoring;50
 endeavors;50
-endeavour;50
 ended;50
 endedintears;50
 endedon;50
@@ -56439,10 +56005,7 @@ enplaned;50
 enpleinair;50
 enpointe;50
 enqueue;50
-enquire;50
-enquired;50
 enquirer;50
-enquiry;50
 enrage;50
 enraged;50
 enrages;50
@@ -56541,7 +56104,6 @@ entanglements;50
 entangles;50
 entangling;50
 entebbe;50
-entendre;50
 entente;50
 ententecordiale;60
 ententes;50
@@ -56794,8 +56356,6 @@ eonsago;50
 eosines;50
 epaulet;50
 epaulets;50
-epaulette;50
-epaulettes;50
 epcot;50
 epcotcenter;60
 epee;50
@@ -56865,8 +56425,6 @@ epilation;50
 epilepsy;50
 epileptic;50
 epileptics;50
-epilog;50
-epilogs;50
 epilogue;50
 epilogues;50
 epinephrine;50
@@ -57150,7 +56708,6 @@ erosion;50
 erosional;50
 erosions;50
 erosive;50
-erotic;50
 erotica;50
 eroticart;50
 eroticartist;60
@@ -57313,7 +56870,6 @@ escoffier;50
 escolar;50
 escooter;50
 escooters;50
-escort;50
 escorted;50
 escortedout;50
 escorting;50
@@ -57446,10 +57002,6 @@ esters;50
 estespark;50
 esther;50
 estherwilliams;50
-esthete;50
-esthetes;50
-esthetic;50
-esthetics;50
 estheticvalue;50
 estimable;50
 estimably;50
@@ -57692,7 +57244,6 @@ eulogized;50
 eulogizes;50
 eulogizing;50
 eulogy;50
-eunuch;50
 eunuchs;50
 eupassports;50
 euphemism;50
@@ -58633,18 +58184,12 @@ exorbitant;50
 exorbitantly;50
 exorcise;50
 exorcised;50
-exorciser;50
-exorcisers;50
 exorcises;50
 exorcising;50
 exorcism;50
 exorcisms;50
 exorcist;50
 exorcists;50
-exorcize;50
-exorcized;50
-exorcizes;50
-exorcizing;50
 exordia;50
 exordium;50
 exoskeleton;50
@@ -59016,7 +58561,6 @@ extendedfamily;50
 extendedstay;50
 extender;50
 extenders;50
-extendible;50
 extending;50
 extendingover;50
 extends;50
@@ -59094,7 +58638,6 @@ extolled;50
 extoller;50
 extollers;50
 extolling;50
-extolls;50
 extols;50
 extort;50
 extorted;50
@@ -59198,8 +58741,6 @@ extravagantly;50
 extravaganza;50
 extravaganzas;50
 extravehicular;50
-extravert;50
-extraverts;50
 extravirgin;50
 extravirginoliveoil;60
 extrawide;50
@@ -59418,7 +58959,6 @@ eyewashes;50
 eyewear;60
 eyewitness;50
 eyewitnesses;50
-eying;50
 eyingupanddown;50
 eyre;50
 ezbakeoven;60
@@ -60375,7 +59915,6 @@ fanniemae;50
 fanning;50
 fanningout;50
 fanningtheflames;60
-fanny;50
 fannybrice;60
 fannypack;50
 fannypacks;50
@@ -60582,7 +60121,6 @@ farsi;50
 farside;50
 farsighted;50
 farsightedness;50
-fart;50
 farther;50
 farthest;50
 farthing;50
@@ -61000,8 +60538,6 @@ fbiinvestigators;50
 fbiraid;50
 fbireports;60
 fbispecialagents;50
-fbomb;50
-fbombs;50
 fdrmemorial;60
 fealties;50
 fealty;50
@@ -61388,11 +60924,6 @@ fell;50
 fella;50
 fellapart;50
 fellas;50
-fellate;50
-fellated;50
-fellating;50
-fellations;50
-fellatios;50
 fellback;50
 fellbackon;50
 fellbehind;50
@@ -62266,7 +61797,6 @@ filetmignons;60
 filetofish;50
 filetofishes;50
 filetofsole;50
-filets;50
 filetypes;50
 filial;50
 filibuster;50
@@ -62676,7 +62206,6 @@ fingerexercises;50
 fingerfood;60
 fingerfoods;60
 fingerguns;50
-fingering;50
 fingerings;50
 fingerinthedike;60
 fingerlake;50
@@ -63528,8 +63057,6 @@ fivedollarbill;50
 fivedollarbills;50
 fivedollarwords;50
 fiveeasypieces;50
-fivefingerdiscount;60
-fivefingerdiscounts;60
 fivefold;50
 fivefoottwoeyesofblue;50
 fivegoldenrings;50
@@ -63798,10 +63325,8 @@ flameon;50
 flameout;60
 flameouts;50
 flameproof;50
-flamer;50
 flameresistant;50
 flameretardant;60
-flamers;50
 flames;50
 flamesout;60
 flamethrower;60
@@ -63823,7 +63348,6 @@ flammable;50
 flammablegas;60
 flan;50
 flandersfields;50
-flange;50
 flanged;50
 flanges;50
 flank;50
@@ -63890,8 +63414,6 @@ flashdance;50
 flashdrive;50
 flashdrives;50
 flashed;50
-flasher;50
-flashers;50
 flashes;50
 flashesinthepan;50
 flashest;50
@@ -64069,8 +63591,6 @@ flaunting;50
 flaunts;50
 flauta;50
 flautas;50
-flautist;50
-flautists;50
 flavin;50
 flavins;50
 flavonoid;50
@@ -64146,7 +63666,6 @@ flecks;50
 fled;50
 fledge;50
 fledged;50
-fledgeling;50
 fledges;50
 fledging;50
 fledgling;50
@@ -64271,7 +63790,6 @@ flexion;50
 flexions;50
 flexitarian;60
 flexitarians;50
-flexitime;50
 flexor;50
 flexors;50
 flextime;60
@@ -64444,7 +63962,6 @@ flippedout;50
 flippedouton;50
 flippedover;50
 flippedsides;50
-flippedthebird;50
 flippedthescript;60
 flippedtheswitch;50
 flipper;50
@@ -64455,10 +63972,8 @@ flipping;50
 flippingahouse;60
 flippingburgers;60
 flippinghouses;50
-flippingoff;50
 flippingout;50
 flippingover;50
-flippingthebird;50
 flippingthescript;60
 flips;50
 flipsahouse;60
@@ -64467,15 +63982,12 @@ flipsburgers;60
 flipshouses;50
 flipside;50
 flipsides;50
-flipsoff;50
 flipsoneslid;50
 flipsout;50
 flipsover;50
 flipssides;50
-flipsthebird;50
 flipsthescript;60
 flipstheswitch;50
-flipthebird;50
 flipthescript;60
 fliptheswitch;50
 fliptop;50
@@ -64525,7 +64037,6 @@ flivvers;50
 float;50
 floatationdevice;60
 floatationdevices;60
-floatations;50
 floatby;50
 floated;50
 floatedaloan;50
@@ -64670,9 +64181,6 @@ floorwaxer;60
 floorwaxers;60
 floorwaxes;60
 floorwaxing;60
-floosie;50
-floosies;50
-floozie;50
 flop;50
 flopeared;50
 flophouse;50
@@ -64933,8 +64441,6 @@ flungat;50
 flunk;50
 flunked;50
 flunkedout;60
-flunkey;50
-flunkeys;50
 flunkies;50
 flunking;50
 flunkingout;60
@@ -65050,8 +64556,6 @@ flybywire;60
 flycasting;50
 flycatcher;50
 flycatchers;50
-flyer;50
-flyers;50
 flyfirstclass;60
 flyfish;60
 flyfisherman;50
@@ -65254,9 +64758,7 @@ focusing;50
 focusingin;50
 focusinginon;50
 focusinon;50
-focussed;50
 focusses;50
-focussing;50
 fodder;50
 fodders;50
 fodors;50
@@ -65271,8 +64773,6 @@ fogbanks;50
 fogbound;50
 fogbow;50
 fogcity;50
-fogey;50
-fogeys;50
 fogged;50
 foggedin;60
 foggedup;50
@@ -65532,7 +65032,6 @@ fondues;50
 fonduesets;50
 font;50
 fontanel;50
-fontanelle;50
 fontanels;50
 fonteyn;50
 fonts;50
@@ -65633,7 +65132,6 @@ foofaraws;50
 foofighter;60
 foofighters;50
 foofoo;50
-fool;50
 foolaround;50
 fooled;50
 fooledaround;60
@@ -65731,8 +65229,6 @@ footfall;50
 footfalls;50
 footfault;60
 footfaults;50
-footfetish;50
-footfetishes;50
 footflexor;50
 footgear;50
 foothill;50
@@ -66013,10 +65509,6 @@ forefinger;50
 forefingers;50
 forefoot;50
 forefront;50
-foregather;50
-foregathered;50
-foregathering;50
-foregathers;50
 forego;50
 foregoes;50
 foregoing;50
@@ -66160,7 +65652,6 @@ forests;50
 forestscapes;50
 forestservice;50
 forestwhitaker;60
-foreswore;50
 foretaste;50
 foretastes;50
 foretell;50
@@ -66392,7 +65883,6 @@ formosan;50
 forms;50
 formsaplan;50
 formula;50
-formulae;50
 formulaic;50
 formulaone;60
 formulary;50
@@ -67196,10 +66686,6 @@ freeasabird;60
 freeassociate;50
 freeassociation;60
 freeatlast;50
-freebase;50
-freebased;50
-freebases;50
-freebasing;50
 freebeer;50
 freebie;50
 freebies;50
@@ -68190,7 +67676,6 @@ frowningupon;50
 frownon;50
 frowns;50
 frownupon;50
-frowsier;50
 frowzier;50
 frowziest;50
 frowzy;50
@@ -68374,7 +67859,6 @@ fstop;50
 fstops;50
 ftwayne;50
 ftworth;50
-fubar;50
 fubu;50
 fuchsia;50
 fuchsias;50
@@ -68427,11 +67911,9 @@ fuelinjected;60
 fuelinjection;50
 fuelinjector;60
 fuelinjectors;60
-fuelled;50
 fuellevel;50
 fuelline;50
 fuellines;50
-fuelling;50
 fueloil;50
 fueloils;50
 fuelpump;50
@@ -68765,8 +68247,6 @@ funnelcloud;50
 funnelclouds;50
 funneled;50
 funneling;50
-funnelled;50
-funnelling;50
 funnels;50
 funnier;50
 funnies;50
@@ -68854,7 +68334,6 @@ furnishings;50
 furniture;50
 furniturepolish;60
 furor;50
-furores;50
 furors;50
 furred;50
 furrier;50
@@ -69345,8 +68824,6 @@ gamboge;50
 gambol;50
 gamboled;50
 gamboling;50
-gambolled;50
-gambolling;50
 gambols;50
 gambrel;50
 game;50
@@ -69566,7 +69043,6 @@ gangwar;50
 gangwars;50
 gangway;50
 gangways;50
-ganja;50
 gannets;50
 gannett;50
 gantlet;50
@@ -69576,7 +69052,6 @@ gantry;50
 ganttchart;50
 ganttcharts;50
 ganymede;50
-gaolbreak;50
 gap;50
 gape;50
 gaped;50
@@ -69775,10 +69250,6 @@ garnishment;50
 garnishments;50
 garniture;50
 garnitures;50
-garotte;50
-garotted;50
-garottes;50
-garotting;50
 garret;50
 garrets;50
 garrison;50
@@ -69941,7 +69412,6 @@ gassed;50
 gassedout;50
 gassedup;50
 gassers;50
-gasses;50
 gassesout;50
 gassesup;50
 gassier;50
@@ -70199,8 +69669,6 @@ gayicon;60
 gayicons;60
 gayleking;50
 gayliberationfront;60
-gaylord;50
-gayly;50
 gaymarriage;60
 gaymecca;50
 gaymeccas;50
@@ -70316,7 +69784,6 @@ geese;50
 geewhillikers;50
 geewhiz;50
 geewillikers;50
-geez;50
 geezer;50
 geezers;50
 geezlouise;60
@@ -70334,7 +69801,6 @@ geishas;50
 gel;50
 gelati;50
 gelatin;50
-gelatine;50
 gelatinize;50
 gelatinized;50
 gelatinizing;50
@@ -70912,7 +70378,6 @@ gerundial;50
 gerundive;50
 gerunds;50
 gesso;50
-gessoes;50
 gest;50
 gestalt;50
 gestapo;50
@@ -71045,7 +70510,6 @@ gethammered;50
 gethangry;60
 gethitched;60
 gethome;50
-gethookedup;50
 gethsemane;50
 gethungup;50
 gethungupon;50
@@ -71068,7 +70532,6 @@ getinvolved;50
 getit;50
 getitdone;50
 getitdownpat;50
-getiton;50
 getittogether;60
 getjiggy;50
 getjiggywith;50
@@ -71178,7 +70641,6 @@ getsbackonthehorse;60
 getsbacktonature;60
 getsbetter;50
 getsbeyond;50
-getsbiblicalon;50
 getsbusy;50
 getsby;50
 getscarriedaway;50
@@ -71193,7 +70655,6 @@ getscreditfor;50
 getscute;50
 getsderailed;50
 getsdown;50
-getsdownanddirty;60
 getsdownpat;50
 getsdowntobrasstacks;50
 getsdressed;50
@@ -71442,12 +70903,10 @@ gettingfar;50
 gettingfit;50
 gettingforasong;50
 gettingfresh;50
-gettingfrisky;50
 gettinggoing;50
 gettinghammered;50
 gettinghangry;60
 gettinghitched;60
-gettinghot;50
 gettinghungup;50
 gettinghungupon;50
 gettinginahole;50
@@ -71461,9 +70920,7 @@ gettingintohotwater;60
 gettingintoshape;50
 gettinginvolved;50
 gettinginvolvedwith;50
-gettingit;50
 gettingitdownpat;50
-gettingiton;50
 gettingjiggy;50
 gettingloose;50
 gettinglost;50
@@ -71473,7 +70930,6 @@ gettingmixedup;50
 gettingmoving;50
 gettingnear;50
 gettingnowhere;50
-gettingoff;50
 gettingoffashot;50
 gettingoffonatechnicality;50
 gettingoffontherightfoot;50
@@ -71528,7 +70984,6 @@ gettingthewrongidea;60
 gettingto;50
 gettingtogether;50
 gettingtothepoint;50
-gettingturnedon;50
 gettingugly;50
 gettingunderfoot;50
 gettingunderonesskin;50
@@ -71548,10 +71003,8 @@ gettingyourgoat;60
 gettofirstbase;50
 gettogether;50
 gettogethers;50
-gettoit;50
 gettoknow;50
 gettopbilling;50
-gettosecondbase;50
 gettothepoint;60
 gettough;60
 gettoughwith;60
@@ -71574,7 +71027,6 @@ getupthenerve;50
 getuptospeed;60
 getusedto;50
 getusedtoit;60
-getwasted;50
 getwell;50
 getwellbouquet;50
 getwellcard;60
@@ -71923,7 +71375,6 @@ gingham;50
 ginghams;50
 gingival;50
 gingivitis;50
-gingko;50
 gingkonut;50
 gingkonuts;50
 gingrich;50
@@ -72343,7 +71794,6 @@ glammedup;50
 glammetal;50
 glammetalband;60
 glammingup;50
-glamor;50
 glamorization;50
 glamorizations;50
 glamorize;50
@@ -72352,10 +71802,8 @@ glamorizes;50
 glamorizing;50
 glamorous;50
 glamorously;50
-glamors;50
 glamour;50
 glamourgirl;50
-glamourize;50
 glamours;50
 glamp;50
 glamped;50
@@ -72831,7 +72279,6 @@ glycemicindex;50
 glyceride;50
 glycerides;50
 glycerin;50
-glycerine;50
 glycerol;50
 glycine;50
 glycogen;50
@@ -72989,7 +72436,6 @@ gobbing;50
 gobble;50
 gobbled;50
 gobbleddown;50
-gobbledegook;50
 gobbledown;50
 gobbledup;50
 gobbledygook;50
@@ -73062,8 +72508,6 @@ godchild;50
 godchildren;50
 godcomplex;60
 godcomplexes;60
-goddamn;50
-goddamned;50
 goddaughter;50
 goddaughters;50
 goddess;50
@@ -74063,7 +73507,6 @@ goodbet;50
 goodbets;50
 goodbuddies;50
 goodbuddy;50
-goodby;50
 goodbye;50
 goodbyecolumbus;50
 goodbyefornow;50
@@ -74147,7 +73590,6 @@ goodhumored;50
 goodhumoredly;50
 goodhumorman;50
 goodhumors;50
-goodie;50
 goodiebag;60
 goodiebags;60
 goodies;50
@@ -74513,8 +73955,6 @@ gosouth;60
 gospel;50
 gospeler;50
 gospelers;50
-gospeller;50
-gospellers;50
 gospelmusic;50
 gospelofmark;60
 gospelofmatthew;60
@@ -75088,7 +74528,6 @@ grammarcheckers;60
 grammarchecks;50
 grammarian;50
 grammarians;50
-grammarnazi;50
 grammarpolice;60
 grammars;50
 grammarschool;50
@@ -75116,8 +74555,6 @@ granaries;50
 granary;50
 grancanaria;50
 grand;50
-grandad;50
-grandads;50
 grandam;50
 grandame;50
 grandams;50
@@ -75292,7 +74729,6 @@ granites;50
 granitestate;60
 graniteware;50
 granitic;50
-grannie;50
 grannies;50
 granny;50
 grannydress;50
@@ -75512,8 +74948,6 @@ gravediggers;50
 graveerrors;50
 gravel;50
 graveled;50
-gravelled;50
-gravelling;50
 gravelly;50
 gravelpit;50
 gravelpits;50
@@ -75651,8 +75085,6 @@ greasepaint;50
 greasepaints;50
 greaseproof;50
 greaseproofpaper;50
-greaser;50
-greasers;50
 greases;50
 greasesonespalm;50
 greasesonespalms;60
@@ -76093,13 +75525,9 @@ grewupon;50
 grewweary;50
 grewwearyof;50
 grewwild;50
-grey;50
 greyarea;50
 greycell;50
 greycup;50
-greyed;50
-greyer;50
-greyest;50
 greygoo;50
 greyheron;60
 greyherons;60
@@ -76107,10 +75535,8 @@ greyhound;50
 greyhoundbus;60
 greyhounds;50
 greymatter;60
-greyness;50
 greynomads;60
 greypoupon;60
-greys;50
 greysanatomy;50
 grid;50
 gridder;50
@@ -76232,7 +75658,6 @@ grindsup;50
 grindtoahalt;50
 grindup;50
 grinfromeartoear;50
-gringo;50
 gringos;50
 grinned;50
 grinnedat;50
@@ -76378,7 +75803,6 @@ grooviest;50
 groovin;50
 grooving;50
 groovy;50
-grope;50
 groped;50
 gropedfor;50
 gropefor;50
@@ -76734,10 +76158,7 @@ gruyere;50
 gruyeres;50
 gryffindor;50
 gryffindors;50
-gryphon;50
-gryphons;50
 gsharp;50
-gspot;50
 gstring;60
 gstrings;60
 gsuit;50
@@ -77022,8 +76443,6 @@ gull;50
 gulled;50
 gullet;50
 gullets;50
-gulley;50
-gulleys;50
 gullibility;50
 gullible;50
 gullies;50
@@ -77400,7 +76819,6 @@ gymsuit;50
 gymsuits;50
 gymteacher;50
 gymteachers;50
-gynaecological;50
 gynecologic;50
 gynecological;50
 gynecologist;50
@@ -77613,9 +77031,6 @@ haditinfor;60
 haditmade;50
 haditout;50
 haditoutwith;50
-hadj;50
-hadji;50
-hadjis;50
 hadkittens;50
 hadmoneytoburn;60
 hadmore;50
@@ -77643,9 +77058,6 @@ hadthelimelight;50
 hadto;50
 hadtogo;50
 hadwords;50
-haematological;50
-haematologist;50
-haematology;50
 hafnium;50
 hafted;50
 hag;50
@@ -77675,7 +77087,6 @@ hagrid;50
 hagridden;50
 hags;50
 hague;50
-hah;50
 haha;50
 hahas;50
 haifa;50
@@ -78693,7 +78104,6 @@ hankofhair;50
 hanks;50
 hanksnow;50
 hankwilliams;50
-hanky;50
 hankypanky;50
 hannabarbera;50
 hannaharendt;50
@@ -78885,7 +78295,6 @@ hardcontactlens;60
 hardcontacts;50
 hardcopies;50
 hardcopy;50
-hardcore;50
 hardcorefan;60
 hardcorefans;60
 hardcorepunk;60
@@ -78904,8 +78313,6 @@ harddrink;50
 harddrinks;50
 harddrive;50
 harddrives;50
-harddrug;50
-harddrugs;50
 hardearned;50
 hardearnedcash;60
 hardearnedmoney;50
@@ -79367,7 +78774,6 @@ hashhouses;50
 hashing;50
 hashingitout;50
 hashingout;50
-hashish;50
 hashitout;50
 hashmark;50
 hashmarks;50
@@ -79484,7 +78890,6 @@ hatereading;50
 hatereads;50
 haters;50
 hates;50
-hatesex;50
 hatesto;50
 hateto;50
 hatetoeatandrun;60
@@ -80519,7 +79924,6 @@ heavymetal;50
 heavymetalband;60
 heavymetalbands;60
 heavymetals;50
-heavypetting;50
 heavyrain;50
 heavyrains;60
 heavyset;50
@@ -80697,8 +80101,6 @@ heights;50
 heimlich;50
 heimlichmaneuver;60
 heineken;50
-heinie;50
-heinies;50
 heinous;50
 heinously;50
 heinousness;50
@@ -80819,7 +80221,6 @@ heliumballoons;60
 helix;50
 helixes;50
 helixnebula;50
-hell;50
 hellagood;50
 hellbender;50
 hellbent;50
@@ -81263,8 +80664,6 @@ heroicdeeds;50
 heroicomic;50
 heroicpoetry;50
 heroics;50
-heroin;50
-heroinchic;50
 heroine;50
 heroines;50
 heroism;50
@@ -81442,7 +80841,6 @@ hiccoughs;60
 hiccup;50
 hiccuped;50
 hiccuping;50
-hiccupped;50
 hiccups;50
 hick;50
 hickey;50
@@ -81556,7 +80954,6 @@ hieroglyphs;60
 hieronymusbosch;60
 hierophants;50
 hieveryone;50
-hifalutin;50
 hifi;50
 hifiequipment;50
 hifistereo;50
@@ -81645,7 +81042,6 @@ highexpectations;50
 highexplosive;50
 highexplosives;50
 highfalutin;60
-highfaluting;60
 highfantasy;50
 highfashion;50
 highfiber;50
@@ -81689,10 +81085,6 @@ highimpact;50
 highincome;50
 highintensity;50
 highiqs;50
-highjack;50
-highjacked;50
-highjacking;50
-highjacks;50
 highjinks;50
 highjinx;60
 highjump;50
@@ -81912,7 +81304,6 @@ hijackers;50
 hijacking;50
 hijackings;50
 hijacks;50
-hijinks;60
 hike;50
 hiked;50
 hikedup;50
@@ -82247,7 +81638,6 @@ hititbig;60
 hititoff;60
 hitjob;50
 hitjobs;50
-hitlerian;50
 hitless;50
 hitlist;50
 hitlists;50
@@ -82456,9 +81846,7 @@ hmsendeavour;60
 hmsvictory;50
 hoagie;50
 hoagies;50
-hoagy;50
 hoagycarmichael;50
-hoar;50
 hoard;50
 hoarded;50
 hoarder;50
@@ -82572,7 +81960,6 @@ hocuspocus;50
 hodgepodge;50
 hodgepodges;50
 hodgkin;50
-hoe;50
 hoecake;50
 hoecakes;50
 hoed;50
@@ -83257,19 +82644,14 @@ homevisit;50
 homevisits;50
 homeward;50
 homewardbound;50
-homewards;50
 homework;50
 homeworkexcuses;50
 homeworld;60
-homewrecker;50
-homewreckers;50
 homey;50
 homicidal;50
 homicide;50
 homicides;50
-homie;50
 homier;50
-homies;50
 homiest;50
 homiletic;50
 homilies;50
@@ -83286,10 +82668,7 @@ hominoids;50
 hominy;50
 hominygrits;50
 homocentric;50
-homoeopath;50
-homoeostasis;50
 homoerectus;60
-homoerotic;50
 homoeroticism;50
 homogenate;50
 homogeneity;50
@@ -83306,9 +82685,7 @@ homogenous;50
 homograph;50
 homographic;50
 homographs;50
-homolog;50
 homologous;50
-homologs;50
 homologue;50
 homology;50
 homonym;50
@@ -83438,7 +82815,6 @@ honked;50
 honkedat;50
 honker;50
 honkers;50
-honkeys;50
 honking;50
 honkingat;50
 honks;50
@@ -83483,7 +82859,6 @@ honorstudents;50
 honorsystem;60
 honorthyfather;50
 honorthymother;50
-honours;50
 honshu;50
 honuswagner;50
 hooboy;60
@@ -83545,8 +82920,6 @@ hookedonphonics;50
 hookedup;50
 hookedupwith;50
 hookemhorns;60
-hookers;50
-hookey;50
 hooking;50
 hookingup;50
 hookingupwith;50
@@ -83579,11 +82952,7 @@ hoopskirt;50
 hoopskirts;50
 hoopster;50
 hoopsters;50
-hoorah;50
-hoorahs;50
 hooray;50
-hoorayed;50
-hoorays;50
 hoosegow;50
 hoosegows;50
 hoosgow;50
@@ -83594,15 +82963,12 @@ hoosierstate;60
 hoot;50
 hootandholler;60
 hootat;50
-hootch;50
-hootches;50
 hooted;50
 hootedandhollered;60
 hootedat;50
 hootenannies;60
 hootenanny;60
 hooter;50
-hooters;50
 hooting;50
 hootingandhollering;60
 hootowl;50
@@ -83649,7 +83015,6 @@ hopeso;50
 hopeto;50
 hopgarden;50
 hopgardens;50
-hophead;50
 hopi;50
 hoping;50
 hopinto;50
@@ -83742,8 +83107,6 @@ hornblende;50
 hornblower;50
 hornbook;50
 hornbooks;50
-horndog;50
-horndogs;50
 horned;50
 hornedfrog;50
 hornedfrogs;50
@@ -83791,7 +83154,6 @@ hornswoggled;50
 hornswoggles;50
 hornswoggling;50
 hornwort;50
-horny;50
 hornytoad;50
 hornytoads;50
 horological;50
@@ -83952,7 +83314,6 @@ horsiest;50
 horsing;50
 horsingaround;50
 horst;50
-horsy;50
 hortatory;50
 horticultural;50
 horticulture;50
@@ -85008,11 +84369,9 @@ humperdinck;50
 humph;50
 humphreybogart;50
 humphs;50
-humping;50
 humps;50
 humptydumpty;50
 hums;50
-humungous;50
 humuses;50
 humvee;50
 humvees;50
@@ -85162,7 +84521,6 @@ hurrah;50
 hurrahed;50
 hurrahing;50
 hurrahs;50
-hurray;50
 hurricane;50
 hurricanecarter;50
 hurricanehunter;50
@@ -85237,8 +84595,6 @@ husks;50
 husky;50
 hussars;50
 hussein;50
-hussies;50
-hussy;50
 hustings;50
 hustle;50
 hustleandbustle;60
@@ -85257,11 +84613,9 @@ hutches;50
 huts;50
 hutu;50
 hutus;50
-hutzpah;50
 hutzpahs;50
 huxtables;50
 huzzah;50
-huzzaing;50
 hyacinth;50
 hyacinthine;50
 hyacinthmacaw;50
@@ -86134,7 +85488,6 @@ idolworships;50
 idontbuyit;60
 idontgetit;60
 idontgetnorespect;60
-idontgiveadamn;50
 idontgiveadarn;60
 idontgiveahoot;50
 idonthavethefoggiest;60
@@ -86151,13 +85504,11 @@ ids;50
 idsay;50
 idtags;50
 idtheft;50
-idyl;50
 idyll;50
 idyllic;50
 idyllically;50
 idylls;50
 idyllsoftheking;50
-idyls;50
 ifatall;50
 ifearso;50
 ifeelawful;60
@@ -86214,13 +85565,10 @@ ignited;50
 igniter;50
 igniters;50
 ignites;50
-ignitible;50
 igniting;50
 ignition;50
 ignitionkey;50
 ignitions;50
-ignitor;50
-ignitors;50
 ignobel;50
 ignobelprize;60
 ignobelprizes;60
@@ -86550,9 +85898,6 @@ imbecile;50
 imbeciles;50
 imbecilic;50
 imbecility;50
-imbedded;50
-imbedding;50
-imbeds;50
 imbeingframed;50
 imbibe;50
 imbibed;50
@@ -86799,8 +86144,6 @@ impalpably;50
 impanel;50
 impaneled;50
 impaneling;50
-impanelled;50
-impanelling;50
 impanels;50
 imparity;50
 impart;50
@@ -87058,8 +86401,6 @@ impossibledream;50
 impossibleness;50
 impossibly;50
 impost;50
-imposter;50
-imposters;50
 impostersyndrome;60
 impostor;50
 impostors;50
@@ -87590,7 +86931,6 @@ incertaincases;50
 incertitude;50
 incessant;50
 incessantly;50
-incest;50
 incestuous;50
 incestuously;50
 inch;50
@@ -87676,7 +87016,6 @@ inclining;50
 inclinometer;50
 inclosecontact;50
 inclosequarters;50
-inclosure;50
 inclover;50
 include;50
 included;50
@@ -87856,11 +87195,8 @@ incriminatory;50
 incrisis;50
 incrowd;50
 incrowds;50
-incrust;50
 incrustation;50
 incrustations;50
-incrusted;50
-incrusts;50
 incubate;50
 incubated;50
 incubates;50
@@ -88224,8 +87560,6 @@ indoors;50
 indoorskislope;50
 indoorskislopes;50
 indoortanning;50
-indorses;50
-indorsing;50
 indoubt;50
 indraft;50
 indribsanddrabs;60
@@ -88262,7 +87596,6 @@ inductor;50
 inductors;50
 inducts;50
 induecourse;50
-indues;50
 induetime;50
 indulge;50
 indulged;50
@@ -88926,8 +88259,6 @@ initialize;50
 initialized;50
 initializes;50
 initializing;50
-initialled;50
-initialling;50
 initially;50
 initialnecklace;50
 initialoutlay;50
@@ -89495,7 +88826,6 @@ insight;50
 insightful;50
 insights;50
 insignia;50
-insignias;50
 insignificance;50
 insignificant;50
 insignificantly;50
@@ -89626,8 +88956,6 @@ installmentplan;50
 installmentplans;50
 installments;50
 installs;50
-instalment;50
-instalments;50
 instamatic;60
 instamatics;50
 instance;50
@@ -89688,7 +89016,6 @@ instigating;50
 instigation;50
 instigator;50
 instigators;50
-instil;50
 instill;50
 instillation;50
 instilled;50
@@ -89995,7 +89322,6 @@ intercontinental;50
 intercontinentalballisticmissiles;50
 intercostal;50
 intercounty;50
-intercourse;50
 interdenominational;50
 interdepartmental;50
 interdependence;50
@@ -90614,9 +89940,6 @@ intravenousdrips;50
 intravenously;50
 intray;50
 intrays;50
-intrench;50
-intrenched;50
-intrenches;50
 intrepid;50
 intrepidity;50
 intrepidly;50
@@ -90915,7 +90238,6 @@ inwalkingdistance;60
 inward;50
 inwardly;50
 inwardness;50
-inwards;50
 inweave;50
 inweaves;50
 inweaving;50
@@ -90956,7 +90278,6 @@ ioniccolumns;50
 ionicorder;50
 ioniq;50
 ioniqs;50
-ionise;50
 ionization;50
 ionize;50
 ionized;50
@@ -91388,7 +90709,6 @@ isamunoguchi;50
 isawthatcoming;60
 isawthelight;60
 isayso;50
-ischaemia;50
 ischemia;50
 ischium;50
 isecond;50
@@ -92009,7 +91329,6 @@ jackandcokes;60
 jackandjill;50
 jackaroo;60
 jackaroos;60
-jackass;50
 jackassery;50
 jackasses;50
 jackbauer;50
@@ -92203,8 +91522,6 @@ jailhouserock;50
 jailhouses;50
 jailing;50
 jailkeeper;50
-jailor;50
-jailors;50
 jails;50
 jailsentence;50
 jailstretch;50
@@ -92766,7 +92083,6 @@ jellybean;60
 jellybeans;60
 jellybellies;50
 jellybelly;50
-jellydonut;60
 jellydonuts;60
 jellydoughnut;60
 jellydoughnuts;60
@@ -92816,7 +92132,6 @@ jeremyirons;50
 jeremyrenner;50
 jergens;50
 jericho;50
-jerk;50
 jerkchicken;50
 jerked;50
 jerkedaround;50
@@ -92878,7 +92193,6 @@ jerusalemartichoke;50
 jerusalemcross;60
 jerusalemcrosses;60
 jess;50
-jessamine;50
 jesseeisenberg;50
 jessejackson;60
 jessejacksonjr;50
@@ -93001,8 +92315,6 @@ jewelheist;60
 jewelheists;60
 jeweling;50
 jewelinthecrown;60
-jeweller;50
-jewellery;50
 jewelry;50
 jewelrybox;60
 jewelryboxes;50
@@ -93168,7 +92480,6 @@ jinking;50
 jinn;50
 jinnee;50
 jinni;50
-jinns;50
 jinrikisha;50
 jinrikishas;50
 jinx;50
@@ -93188,7 +92499,6 @@ jitterbugs;50
 jittering;50
 jitters;50
 jittery;50
-jiujitsu;60
 jiujitsugis;60
 jive;50
 jived;50
@@ -93901,8 +93211,6 @@ judgeandjury;60
 judged;50
 judgedredd;60
 judgejudy;60
-judgement;50
-judgements;50
 judges;50
 judgeschambers;60
 judgeship;50
@@ -94137,7 +93445,6 @@ jumpingbeans;50
 jumpingforjoy;60
 jumpingfrog;60
 jumpingin;50
-jumpinginthesack;60
 jumpingjack;50
 jumpingjacks;50
 jumpingjehosaphat;60
@@ -94314,8 +93621,6 @@ junkfoodjunkie;50
 junkfoods;60
 junkheap;50
 junkheaps;50
-junkie;50
-junkies;50
 junking;50
 junkinthetrunk;50
 junkmail;50
@@ -94537,12 +93842,9 @@ juxtaposing;50
 juxtaposition;50
 juxtapositions;50
 kaaba;50
-kabala;50
 kabbalah;50
 kablooey;50
 kablooie;60
-kabob;50
-kabobs;50
 kabocha;50
 kaboodle;50
 kaboom;50
@@ -94565,8 +93867,6 @@ kaffeeklatsch;50
 kaffiyeh;50
 kafka;50
 kafkaesque;60
-kaftan;50
-kaftans;50
 kahlilgibran;50
 kahlo;50
 kahlua;50
@@ -95062,7 +94362,6 @@ keepyoureyeontheball;50
 keepyourshirton;50
 keeshond;50
 keeshonds;50
-keester;50
 kefir;50
 kefirs;50
 keg;50
@@ -95083,8 +94382,6 @@ kegsofbeer;50
 kegstand;50
 kegstands;50
 keiraknightley;50
-keister;50
-keisters;50
 keithhernandez;50
 keithmoon;60
 keithrichards;60
@@ -95137,8 +94434,6 @@ kennelclubs;50
 kennelcough;50
 kenneled;50
 kenneling;50
-kennelled;50
-kennelling;50
 kennels;50
 kennesaw;50
 kennethbranagh;50
@@ -95278,7 +94573,6 @@ kerosene;50
 kerosenelamp;50
 kerosenelamps;50
 kerosenes;50
-kerosine;50
 kerouac;50
 kerplop;50
 kerplunk;60
@@ -95451,9 +94745,7 @@ khakigreen;50
 khakipants;50
 khakis;50
 khakishorts;60
-khalif;50
 khalifa;50
-khalifs;50
 khamenei;50
 khan;50
 khanacademy;50
@@ -95634,7 +94926,6 @@ kidding;50
 kiddingaround;50
 kiddo;50
 kiddos;50
-kiddy;50
 kidfriendly;60
 kidglove;50
 kidgloves;60
@@ -95643,10 +94934,6 @@ kidleather;50
 kidlit;50
 kidman;50
 kidnap;50
-kidnaped;50
-kidnaper;50
-kidnapers;50
-kidnaping;50
 kidnapped;50
 kidnapper;50
 kidnappers;50
@@ -95794,8 +95081,6 @@ kimphilby;50
 kimpossible;50
 kin;50
 kinabalu;50
-kinaesthesia;50
-kinaesthetic;50
 kinara;50
 kind;50
 kinda;50
@@ -95804,8 +95089,6 @@ kindbars;50
 kinder;50
 kindergarten;50
 kindergartencop;50
-kindergartener;50
-kindergarteners;50
 kindergartens;50
 kindergartner;50
 kindergartners;50
@@ -95974,7 +95257,6 @@ kinkily;50
 kinking;50
 kinks;50
 kinkshaming;50
-kinky;50
 kinkyboots;50
 kinkyfriedman;50
 kinsey;50
@@ -96215,8 +95497,6 @@ knacker;50
 knackered;50
 knackers;50
 knacks;50
-knackwurst;50
-knackwursts;50
 knapped;50
 knapping;50
 knapsack;50
@@ -96390,7 +95670,6 @@ knitwear;50
 knives;50
 knivesandforks;50
 knivesout;50
-knob;50
 knobbed;50
 knobbier;50
 knobbiest;50
@@ -96552,8 +95831,6 @@ knucklebone;50
 knuckled;50
 knuckleddown;50
 knuckledown;50
-knuckledragger;50
-knuckledraggers;50
 knuckledunder;50
 knucklehead;60
 knuckleheaded;50
@@ -96638,7 +95915,6 @@ kontikimuseum;50
 kook;50
 kookaburra;50
 kookaburras;50
-kookie;50
 kookier;60
 kookiest;50
 kookiness;50
@@ -96654,11 +95930,7 @@ koozie;50
 koozies;50
 kopeck;50
 kopecks;50
-kopeks;50
 kopjes;50
-koran;50
-koranic;50
-korans;50
 korbel;50
 korea;50
 korean;50
@@ -96961,11 +96233,9 @@ laborstrike;50
 laborstrikes;50
 laborunion;50
 laborunions;50
-labour;50
 labourcandidate;50
 labouroflove;50
 labourparty;50
-labours;50
 labpartners;50
 labradoodle;50
 labradoodles;50
@@ -97081,7 +96351,6 @@ lacquered;50
 lacqueredwood;50
 lacquering;50
 lacquers;50
-lacrimal;50
 lacrimatory;50
 lacrosse;50
 lacrosseball;50
@@ -97213,7 +96482,6 @@ ladynancyastor;50
 ladyofleisure;50
 ladyofthehouse;50
 ladyofthelake;60
-ladyofthenight;50
 ladypalm;50
 ladypalms;50
 ladysfinger;50
@@ -97382,10 +96650,6 @@ lalaland;50
 lalaw;50
 lalecheleague;50
 laliga;50
-lallygag;50
-lallygagged;50
-lallygagging;50
-lallygags;50
 laloschifrin;50
 lam;50
 lama;50
@@ -97408,12 +96672,10 @@ lamazetraining;50
 lamb;50
 lambada;50
 lambadas;50
-lambast;50
 lambaste;50
 lambasted;50
 lambastes;50
 lambasting;50
-lambasts;50
 lambburger;50
 lambburgers;50
 lambchop;50
@@ -97766,8 +97028,6 @@ lapboard;50
 lapboards;50
 lapcat;50
 lapcats;50
-lapdance;50
-lapdances;50
 lapdesk;50
 lapdesks;50
 lapdog;50
@@ -97939,8 +97199,6 @@ larynx;50
 larynxes;50
 lasagna;50
 lasagnas;50
-lasagne;50
-lasagnes;50
 lascala;50
 lascars;50
 lascaux;50
@@ -98442,7 +97700,6 @@ laundermoney;50
 launders;50
 laundress;50
 laundresses;50
-laundrette;50
 laundries;50
 laundromat;50
 laundromats;50
@@ -98473,7 +97730,6 @@ laureateship;50
 laurel;50
 laurelandhardy;50
 laureled;50
-laurelled;50
 laurels;50
 laureltree;50
 laureltrees;50
@@ -99111,7 +98367,6 @@ leapsforward;50
 leapsoffaith;60
 leapsout;50
 leapsup;50
-leapt;50
 leaptover;50
 leaptup;50
 leapup;50
@@ -99151,7 +98406,6 @@ learnsof;50
 learnsoneslessons;60
 learnstheropes;60
 learnstolivewith;50
-learnt;50
 learntheropes;60
 learntoletgo;50
 leary;50
@@ -99315,12 +98569,6 @@ lebowski;50
 lebron;50
 lebronjames;60
 lecarre;50
-lech;50
-lecher;50
-lecherous;50
-lechers;50
-lechery;50
-leches;50
 lechwalesa;50
 lecoqsportif;60
 lecorbusier;50
@@ -99464,7 +98712,6 @@ leftheels;50
 lefthighanddry;60
 lefthook;50
 lefthooks;50
-leftie;50
 lefties;50
 leftinahuff;50
 leftinstitches;50
@@ -100015,7 +99262,6 @@ leroybrown;50
 lesabre;50
 lesbian;50
 lesbianbars;50
-lesbianerotica;50
 lesbianpride;50
 lesbians;50
 lesemajesty;50
@@ -100069,8 +99315,6 @@ letalone;50
 letbackin;50
 letbe;50
 letbygonesbebygones;60
-letch;50
-letches;50
 letdown;50
 letdownoneshair;50
 letdownreflex;50
@@ -100307,9 +99551,6 @@ leveling;50
 levelingout;50
 levelingtheplayingfield;50
 levelingup;50
-levelled;50
-leveller;50
-levellers;50
 levelly;50
 levelness;50
 leveloff;50
@@ -100357,11 +99598,6 @@ levity;50
 levorotatory;50
 levy;50
 levying;50
-lewd;50
-lewder;50
-lewdest;50
-lewdly;50
-lewdness;50
 lewis;50
 lewisandclark;60
 lewisblack;50
@@ -100434,9 +99670,6 @@ libelers;50
 libeling;50
 libellaw;50
 libellaws;50
-libellee;50
-libellers;50
-libellous;50
 libelous;50
 libels;50
 libelsuit;50
@@ -100546,8 +99779,6 @@ licentiates;50
 licentious;50
 licentiously;50
 licentiousness;50
-lichee;50
-lichees;50
 lichen;50
 lichenous;50
 lichens;50
@@ -101025,7 +100256,6 @@ lignite;50
 likable;50
 like;50
 likeabatoutofhell;60
-likeable;50
 likeaboltoflightning;60
 likeaboss;60
 likeabumponalog;50
@@ -101412,7 +100642,6 @@ linguafrancas;50
 lingual;50
 linguals;50
 linguine;50
-linguini;50
 linguist;50
 linguistic;50
 linguistically;50
@@ -101643,8 +100872,6 @@ liquidpaper;60
 liquids;50
 liquidsmoke;60
 liquidsoap;50
-liquifies;50
-liquify;50
 liquor;50
 liquorbottles;60
 liquorcabinet;60
@@ -101677,7 +100904,6 @@ lispers;50
 lisping;50
 lispingly;50
 lisps;50
-lissom;50
 lissome;50
 lissomeness;50
 list;50
@@ -101806,7 +101032,6 @@ litmustest;60
 litmustests;60
 litonfire;50
 litotes;50
-litres;50
 litter;50
 litterateur;50
 litterateurs;50
@@ -101946,7 +101171,6 @@ liturgists;50
 liturgy;50
 livable;50
 live;50
-liveable;50
 liveabroad;50
 liveact;50
 liveaction;50
@@ -102238,8 +101462,6 @@ loadsof;50
 loadsoffun;50
 loadsoflaundry;50
 loadsthebases;50
-loadstone;50
-loadstones;50
 loadsup;50
 loadtime;50
 loadtimes;50
@@ -102562,8 +101784,6 @@ lodestone;50
 lodestones;50
 lodge;50
 lodged;50
-lodgement;50
-lodgements;50
 lodgepole;50
 lodger;50
 lodgers;50
@@ -102717,7 +101937,6 @@ loki;50
 lola;50
 lolcat;50
 lolcats;50
-lolita;50
 lolitas;50
 loll;50
 lollapalooza;60
@@ -103150,7 +102369,6 @@ looms;50
 loomslarge;50
 loomsover;50
 loon;50
-looney;50
 looneytunes;50
 loonie;50
 loonier;50
@@ -103703,16 +102921,12 @@ louts;50
 louver;50
 louvered;50
 louvers;50
-louvre;50
-louvred;50
 louvrepyramid;50
-louvres;50
 lovable;50
 lovably;50
 lovage;50
 lovages;50
 love;50
-loveable;50
 loveactually;50
 loveaffair;50
 loveaffairs;50
@@ -104123,8 +103337,6 @@ lozenges;50
 lpgatour;60
 lprecord;50
 lprecords;50
-lsdtrip;50
-lsdtrips;50
 lshaped;50
 lshapedlivingrooms;50
 luanda;50
@@ -104489,10 +103701,8 @@ lunkheads;50
 lunula;50
 lunule;50
 lupefiasco;50
-lupin;50
 lupine;50
 lupines;50
-lupins;50
 lupitanyongo;50
 lupus;50
 lurch;50
@@ -104531,7 +103741,6 @@ lushlife;50
 lushly;50
 lushness;50
 lusitania;50
-lust;50
 lustafter;50
 lusted;50
 lustedafter;50
@@ -104547,13 +103756,10 @@ lustier;50
 lustiest;50
 lustily;50
 lustiness;50
-lusting;50
 lustingafter;50
 lustingfor;50
 lustra;50
 lustrate;50
-lustre;50
-lustres;50
 lustrous;50
 lusts;50
 lustsafter;50
@@ -104583,7 +103789,6 @@ lutist;50
 lutists;50
 lutz;50
 lutzes;50
-luvvies;50
 lux;50
 luxations;50
 luxe;50
@@ -104629,8 +103834,6 @@ lycanthropes;50
 lycanthropy;60
 lyceum;50
 lyceums;50
-lychee;50
-lychees;50
 lychgate;50
 lycra;50
 lycrabras;50
@@ -104673,11 +103876,7 @@ lymphoid;50
 lymphoma;50
 lymphomas;50
 lymphs;50
-lynch;50
 lynchburg;50
-lynchings;50
-lynchpin;50
-lynchpins;50
 lyndacarter;50
 lyndonbjohnson;50
 lyndonjohnson;60
@@ -104833,10 +104032,7 @@ macho;50
 machoman;60
 machos;50
 machupicchu;60
-macintosh;50
 macintoshapples;50
-macintoshes;50
-mack;50
 mackdaddy;50
 mackerel;50
 mackerels;50
@@ -104849,7 +104045,6 @@ mackinaws;50
 mackintosh;50
 mackintoshes;50
 macklemore;50
-macks;50
 macktheknife;50
 macktruck;50
 macktrucks;50
@@ -105246,8 +104441,6 @@ magicmike;50
 magicmoment;60
 magicmoments;60
 magicmountain;60
-magicmushroom;60
-magicmushrooms;60
 magicnumber;60
 magicrealism;50
 magicschoolbus;50
@@ -105385,12 +104578,8 @@ mahabharata;50
 mahalia;50
 mahaliajackson;50
 mahalo;50
-maharaja;50
 maharajah;50
 maharajahs;50
-maharajas;50
-maharanee;50
-maharanees;50
 maharani;50
 maharanis;50
 maharishi;50
@@ -105403,7 +104592,6 @@ mahershala;50
 mahershalaali;50
 mahi;50
 mahimahi;50
-mahjong;50
 mahjongg;60
 mahjongtile;50
 mahler;50
@@ -105627,7 +104815,6 @@ mainthemes;50
 mainthing;50
 maintop;50
 maintops;50
-maiolica;50
 maisiewilliams;50
 maisonette;50
 maisonettes;50
@@ -106457,7 +105644,6 @@ mammamia;60
 mammary;50
 mammarygland;50
 mammaryglands;50
-mammas;50
 mammee;50
 mammogram;50
 mammography;50
@@ -106709,7 +105895,6 @@ manilafolder;50
 manilafolders;50
 manilapaper;60
 manilas;50
-manilla;50
 manillas;50
 manilow;50
 maninblack;50
@@ -106762,8 +105947,6 @@ mannerists;50
 mannerly;50
 manners;50
 mannies;60
-mannikin;50
-mannikins;50
 manning;50
 manningup;50
 mannish;50
@@ -107182,7 +106365,6 @@ marietussaud;60
 marigold;50
 marigolds;50
 marigot;50
-marihuana;50
 marijuana;50
 marijuanaedible;50
 marijuanaedibles;50
@@ -107382,7 +106564,6 @@ marlin;50
 marline;50
 marlinespike;50
 marlins;50
-marlinspike;50
 marlonbrando;50
 marlonwayans;50
 marlowe;50
@@ -107487,11 +106668,8 @@ marsh;50
 marshal;50
 marshaled;50
 marshaling;50
-marshall;50
-marshalled;50
 marshallfield;50
 marshallfields;50
-marshalling;50
 marshallingyard;50
 marshallislands;50
 marshallmathers;50
@@ -107588,8 +106766,6 @@ marvelcomics;50
 marveled;50
 marveledat;50
 marveling;50
-marvelled;50
-marvelling;50
 marvelous;50
 marvelously;50
 marvelousmarvin;50
@@ -107706,7 +106882,6 @@ maskup;50
 maslow;50
 maslowshierarchy;50
 masochism;50
-masochist;50
 masochistic;50
 masochists;50
 mason;50
@@ -108201,7 +107376,6 @@ maven;50
 mavens;50
 maverick;50
 mavericks;50
-mavins;50
 mavs;50
 maw;50
 mawkish;50
@@ -108621,7 +107795,6 @@ medalcounts;60
 medaled;50
 medalist;50
 medalists;50
-medalling;50
 medallion;50
 medallions;50
 medaloffreedom;50
@@ -109203,7 +108376,6 @@ menachembegin;50
 menacing;50
 menacingly;50
 menage;50
-menageatrois;60
 menagerie;50
 menageries;50
 menages;50
@@ -109812,15 +108984,12 @@ metes;50
 metesout;50
 metexpectations;50
 metgala;50
-meth;50
 methadone;50
 methamphetamine;50
 methane;50
 methanol;50
 methaqualone;50
 methionine;50
-methlab;50
-methlabs;50
 method;50
 methodacting;60
 methodactor;60
@@ -109872,8 +109041,6 @@ metooera;50
 metoomovement;50
 metopera;50
 metpayroll;60
-metre;50
-metres;50
 metric;50
 metrical;50
 metrically;50
@@ -109978,9 +109145,6 @@ miamiheat;50
 miamimarlin;50
 miamimarlins;50
 miamivice;50
-miaowed;50
-miaowing;50
-miaows;50
 miasma;50
 miasmal;50
 miasmas;50
@@ -110396,7 +109560,6 @@ midwifed;50
 midwifery;50
 midwinter;50
 midwinterbreak;50
-midwived;50
 midwives;50
 midyear;50
 midyears;50
@@ -111316,7 +110479,6 @@ misaddress;50
 misadds;50
 misadventure;50
 misadventures;50
-misadvise;50
 misadvised;50
 misadvises;50
 misadvising;50
@@ -111898,10 +111060,6 @@ mitotic;50
 mitral;50
 mitralvalve;50
 mitralvalves;50
-mitre;50
-mitred;50
-mitres;50
-mitring;50
 mitsubishi;50
 mitt;50
 mitten;50
@@ -112160,7 +111318,6 @@ modelhome;50
 modelhomes;50
 modeling;50
 modelingclay;60
-modellers;50
 modelmaker;50
 modelmakers;50
 modelpaint;50
@@ -112290,7 +111447,6 @@ moeszyslak;60
 moet;50
 mofongo;50
 mogadishu;50
-moggie;50
 moggies;50
 mogul;50
 moguls;50
@@ -112392,10 +111548,6 @@ moleskin;60
 moleskine;50
 moleskines;50
 moleskins;50
-molestation;50
-molestations;50
-molester;50
-molesters;50
 moliere;50
 moll;50
 mollflanders;50
@@ -112406,9 +111558,7 @@ mollified;50
 mollifies;50
 mollify;50
 mollifying;50
-mollusc;50
 molluscan;50
-molluscs;50
 mollusk;50
 mollusks;50
 molly;50
@@ -112481,8 +111631,6 @@ momentum;50
 momfriends;50
 momism;50
 momjeans;60
-momma;50
-mommas;50
 mommiedearest;50
 mommies;50
 mommy;50
@@ -112596,8 +111744,6 @@ moneyplayers;50
 moneys;50
 moneysaver;50
 moneysaving;50
-moneyshot;60
-moneyshots;60
 moneyspinner;50
 moneyspinners;50
 moneysupply;50
@@ -112625,9 +111771,6 @@ mongrel;50
 mongrels;50
 monicageller;60
 monicaseles;50
-monicker;50
-monickers;50
-monied;50
 monies;50
 moniker;50
 monikers;50
@@ -112734,12 +111877,10 @@ monolingual;50
 monolith;50
 monolithic;50
 monoliths;50
-monolog;50
 monologist;50
 monologists;50
 monologue;50
 monologues;50
-monologuist;50
 monomania;50
 monomaniac;50
 monomaniacal;50
@@ -112945,8 +112086,6 @@ moogoogaipan;60
 moogs;50
 mooing;50
 moojuice;60
-mook;50
-mooks;50
 moola;50
 moolah;50
 moolahs;50
@@ -113276,9 +112415,6 @@ morningtime;50
 morns;50
 moroccan;50
 morocco;50
-moron;50
-moronic;50
-morons;50
 morose;50
 morosely;50
 moroseness;50
@@ -113341,23 +112477,17 @@ mortgagee;50
 mortgagees;50
 mortgagepayments;60
 mortgagepools;50
-mortgager;50
 mortgagerate;50
 mortgagerates;50
 mortgagerefis;50
-mortgagers;50
 mortgages;50
 mortgaging;50
 mortgagor;50
 mortgagors;50
-mortice;50
-morticed;50
-mortices;50
 morticia;50
 morticiaaddams;50
 mortician;50
 morticians;50
-morticing;50
 mortification;50
 mortifications;50
 mortified;50
@@ -113649,10 +112779,8 @@ mottos;50
 moue;50
 moues;50
 mouflon;50
-mouldy;50
 moulin;50
 moulinrouge;50
-moults;50
 mound;50
 mounded;50
 mounding;50
@@ -113788,7 +112916,6 @@ mousetail;50
 mousetails;50
 mousetrap;50
 mousetraps;50
-mousey;50
 mousier;50
 mousiest;50
 mousing;50
@@ -113797,8 +112924,6 @@ moussakas;50
 mousse;50
 mousses;50
 moussorgsky;50
-moustache;50
-moustaches;50
 moustachewax;60
 mousy;50
 mouth;50
@@ -113840,7 +112965,6 @@ movabletype;50
 movably;50
 movado;50
 move;50
-moveable;50
 moveablefeast;50
 moveablefeasts;60
 moveahead;50
@@ -114286,7 +113410,6 @@ mueslis;50
 muezzin;50
 muezzins;50
 mufasa;50
-muff;50
 muffed;50
 muffedit;50
 muffin;50
@@ -114352,7 +113475,6 @@ muhammad;50
 muhammadali;60
 muhammara;50
 muharram;50
-mujaheddin;50
 mukbangs;50
 mukluk;50
 mukluks;50
@@ -114530,7 +113652,6 @@ mummyscurse;50
 mummystomb;50
 mumps;50
 mumpsimus;50
-mums;50
 mumstheword;60
 munch;50
 munched;50
@@ -115125,7 +114246,6 @@ mymistake;50
 myna;50
 mynabird;50
 mynabirds;50
-mynah;50
 mynahbird;50
 mynahbirds;50
 mynahs;50
@@ -115434,7 +114554,6 @@ namibian;50
 namibians;50
 naming;50
 namingnames;60
-nan;50
 nana;50
 nanaimo;50
 nanas;50
@@ -116242,7 +115361,6 @@ necromancer;50
 necromancers;50
 necromancy;50
 necromantic;50
-necrophilia;50
 necrophobia;50
 necrophobic;50
 necropolis;50
@@ -116375,8 +115493,6 @@ negotiations;50
 negotiator;50
 negotiators;50
 negritude;50
-negroleague;50
-negroleagues;50
 negroni;50
 negronis;50
 neguses;50
@@ -116544,8 +115660,6 @@ nerdculture;60
 nerdedout;50
 nerdfest;60
 nerdfests;60
-nerdgasm;50
-nerdgasms;50
 nerdier;50
 nerdiest;50
 nerdingout;50
@@ -116668,7 +115782,6 @@ netearnings;50
 neteffect;50
 neteffects;50
 netflix;50
-netflixandchill;50
 netflixoriginals;50
 netflixspecial;50
 netflixspecials;50
@@ -117397,8 +116510,6 @@ nickjonas;50
 nickkroll;50
 nicklaus;50
 nickleby;50
-nicknack;50
-nicknacks;50
 nickname;50
 nicknamed;50
 nicknames;50
@@ -117547,7 +116658,6 @@ nightwatch;50
 nightwatchman;50
 nightwatchmen;50
 nightwear;60
-nighty;50
 nigiri;50
 nihilism;50
 nihilist;50
@@ -117699,10 +116809,8 @@ nipping;50
 nippingat;50
 nippinginthebud;50
 nippingitinthebud;50
-nipple;50
 nipplering;50
 nipplerings;50
-nipples;50
 nippon;50
 nippy;50
 nipseyrussell;50
@@ -117722,7 +116830,6 @@ nissansentra;50
 nissantitan;50
 nissantitans;50
 nit;50
-nite;50
 niter;50
 niters;50
 nitpick;50
@@ -117736,7 +116843,6 @@ nitrate;50
 nitrated;50
 nitrates;50
 nitrating;50
-nitres;50
 nitric;50
 nitricacid;50
 nitricoxide;50
@@ -117762,7 +116868,6 @@ nitrogennarcosis;50
 nitrogenous;50
 nitrogenoxide;50
 nitroglycerin;50
-nitroglycerine;50
 nitrous;50
 nitrousacid;50
 nitrousoxide;50
@@ -117800,7 +116905,6 @@ noargumenthere;60
 noargumentshere;60
 noarms;50
 noassemblyrequired;50
-nob;50
 nobacksies;50
 nobaggage;50
 nobail;50
@@ -118794,7 +117898,6 @@ notaproblem;60
 notarial;50
 notaries;50
 notariespublic;50
-notarise;50
 notarize;50
 notarized;50
 notarizes;50
@@ -119004,8 +118107,6 @@ nougat;50
 nougatbar;50
 nougatbars;50
 nougats;50
-nought;50
-noughts;50
 noun;50
 nounal;50
 nouns;50
@@ -119223,7 +118324,6 @@ nucleosynthesis;50
 nucleotide;50
 nucleotides;50
 nucleus;50
-nude;50
 nudebeach;60
 nudebeaches;60
 nudemodel;50
@@ -119254,7 +118354,6 @@ nudistresort;50
 nudistresorts;50
 nudists;50
 nudities;50
-nudity;50
 nudnik;50
 nudniks;50
 nugatory;60
@@ -119330,8 +118429,6 @@ numbing;50
 numbly;50
 numbness;50
 numbs;50
-numbskull;50
-numbskulls;50
 numerable;50
 numeracy;50
 numeral;50
@@ -119536,7 +118633,6 @@ nylon;50
 nylons;50
 nylontarps;50
 nymph;50
-nymphomania;50
 nymphomaniac;50
 nymphomaniacal;50
 nymphomaniacs;50
@@ -119782,12 +118878,6 @@ oboesonata;60
 oboist;50
 oboists;50
 obovate;50
-obscene;50
-obscenely;50
-obscener;50
-obscenest;50
-obscenities;50
-obscenity;50
 obscurantism;50
 obscurantist;50
 obscurantists;50
@@ -120031,9 +119121,6 @@ ocelot;50
 ocelots;50
 ocher;50
 ochers;50
-ochre;50
-ochreous;50
-ochres;50
 ockham;50
 oclock;50
 ocotillo;50
@@ -120066,8 +119153,6 @@ octavo;50
 octavos;50
 octet;50
 octets;50
-octette;50
-octettes;50
 octillion;50
 octobass;60
 octobasses;60
@@ -120085,7 +119170,6 @@ octopods;50
 octopus;50
 octopuses;50
 octopussgarden;50
-octopussy;50
 octosyllabic;50
 octosyllable;50
 octuple;50
@@ -120172,7 +119256,6 @@ odorless;50
 odorlessgas;50
 odorous;50
 odors;50
-odours;50
 odwalla;50
 odyssean;50
 odysseus;50
@@ -120184,7 +119267,6 @@ oedipalcomplexes;60
 oedipus;50
 oedipuscomplex;60
 oedipusrex;60
-oenologists;60
 oenology;50
 oenophile;60
 oenophiles;50
@@ -120535,7 +119617,6 @@ ohgoodgrief;50
 ohgoodlord;60
 ohgrowup;50
 ohheckyes;50
-ohhellyeah;60
 ohhenry;50
 ohio;50
 ohioan;50
@@ -120812,14 +119893,10 @@ oldasdirt;60
 oldasmethuselah;50
 oldasthehills;60
 oldastime;50
-oldbags;50
 oldbailey;50
-oldbat;50
-oldbats;50
 oldbay;50
 oldbean;50
 oldbetsy;50
-oldbiddy;50
 oldblackmagic;60
 oldblock;50
 oldbloodandguts;50
@@ -120860,8 +119937,6 @@ oldergeneration;50
 olderthandirt;60
 oldest;50
 oldfaithful;60
-oldfart;50
-oldfarts;50
 oldfashioned;50
 oldfashionedideas;60
 oldfashioneds;50
@@ -121154,7 +120229,6 @@ omanis;50
 omarbradley;60
 omarkhayyam;50
 omarsharif;50
-ombres;50
 ombudsman;50
 ombudsmen;50
 omega;50
@@ -121166,10 +120240,8 @@ omeletbars;50
 omeletpan;50
 omeletpans;50
 omelets;50
-omelette;50
 omelettebar;50
 omelettebars;50
-omelettes;50
 omen;50
 omens;50
 omerta;50
@@ -122046,7 +121118,6 @@ onvideo;50
 onview;50
 onwalkabout;50
 onward;50
-onwards;50
 onwatch;50
 onwater;50
 onwelfare;50
@@ -122937,7 +122008,6 @@ ores;50
 organ;50
 organbank;50
 organbanks;50
-organdie;50
 organdies;50
 organdonor;60
 organdonorcard;60
@@ -123002,15 +122072,10 @@ organstops;50
 organtransplant;50
 organtransplants;50
 organza;50
-orgasm;60
-orgasms;60
 orgchart;60
 orgcharts;60
 orgeat;50
 orgeats;50
-orgiastic;50
-orgies;50
-orgy;50
 oriel;50
 oriels;50
 orient;50
@@ -123783,7 +122848,6 @@ outright;50
 outrival;50
 outrivaled;50
 outrivaling;50
-outrivalling;50
 outrivals;50
 outro;50
 outrode;50
@@ -123835,7 +122899,6 @@ outsideshots;60
 outsidethebox;50
 outsidevoice;60
 outsize;50
-outsized;50
 outsizes;50
 outskirt;50
 outskirts;60
@@ -124464,7 +123527,6 @@ oversimplifies;50
 oversimplify;50
 oversimplifying;50
 oversize;50
-oversized;50
 oversizedchecks;60
 overskirt;50
 oversleep;50
@@ -125210,7 +124272,6 @@ painfully;50
 painfullyobvious;60
 painfulness;50
 paining;50
-painintheass;60
 paininthebutt;50
 painintheneck;50
 painkiller;50
@@ -125682,7 +124743,6 @@ paneling;50
 panelings;50
 panelist;50
 panelists;50
-panelled;50
 panels;50
 panelsaws;50
 paneltruck;50
@@ -125705,7 +124765,6 @@ panfrying;50
 panful;50
 panfuls;50
 pang;50
-pangaea;50
 panged;50
 pangloss;50
 panglossian;50
@@ -125814,7 +124873,6 @@ pantheons;50
 panther;50
 panthers;50
 pantie;50
-panties;50
 pantile;50
 panting;50
 pantleg;50
@@ -125832,8 +124890,6 @@ pantothenicacid;50
 pantries;50
 pantry;50
 pants;50
-pantsed;50
-pantsing;50
 pantsonfire;50
 pantspocket;50
 pantspresses;60
@@ -125842,15 +124898,10 @@ pantssuits;50
 pantsuit;50
 pantsuited;50
 pantsuits;50
-panty;50
 pantygirdle;50
 pantyhose;60
 pantyline;60
 pantylines;60
-pantyraid;50
-pantyraids;50
-pantywaist;60
-pantywaists;60
 panzanella;50
 panzer;50
 panzerotti;50
@@ -125881,9 +124932,7 @@ paparazzi;50
 paparazzo;50
 papas;50
 papasmurf;60
-papaw;50
 papawasarollinstone;60
-papaws;50
 papaya;50
 papayas;50
 papayatree;50
@@ -126221,9 +125270,7 @@ parceled;50
 parceledout;50
 parceling;50
 parcelingout;50
-parcelled;50
 parcelledout;50
-parcelling;50
 parcelofland;50
 parcelout;50
 parcelpost;50
@@ -126431,7 +125478,6 @@ parlormaids;50
 parlors;50
 parlortrick;60
 parlortricks;60
-parlour;50
 parlous;50
 parm;50
 parmaham;50
@@ -126621,7 +125667,6 @@ partitioning;50
 partitions;50
 partitionsoff;50
 partitive;50
-partizans;50
 partly;50
 partner;50
 partnerdance;50
@@ -127484,7 +126529,6 @@ pawedat;50
 pawing;50
 pawl;50
 pawls;50
-pawn;50
 pawnable;50
 pawnbroker;60
 pawnbrokers;60
@@ -128014,7 +127058,6 @@ pedalboats;50
 pedaled;50
 pedaler;50
 pedaling;50
-pedalled;50
 pedalpoint;50
 pedalpower;60
 pedalpusher;50
@@ -128067,11 +127110,9 @@ pedigrees;50
 pediment;50
 pediments;50
 pedis;50
-pedlar;50
 pedodontist;50
 pedometer;50
 pedometers;50
-pedophilia;50
 pedropascal;50
 peduncle;50
 peduncles;50
@@ -128126,12 +127167,8 @@ peepers;50
 peephole;50
 peepholes;50
 peeping;50
-peepingtom;50
-peepingtoms;50
 peeps;50
 peepsat;50
-peepshow;50
-peepshows;50
 peer;50
 peerage;50
 peerages;50
@@ -128184,7 +127221,6 @@ pegboard;50
 pegboards;50
 pegbox;50
 pegged;50
-pegging;50
 peggylee;50
 peggynoonan;50
 pegleg;60
@@ -128201,7 +127237,6 @@ pejoratives;60
 pekans;50
 peke;50
 pekes;50
-pekinese;50
 peking;50
 pekingduck;60
 pekingese;50
@@ -128391,7 +127426,6 @@ penknife;50
 penknives;50
 penlight;50
 penlights;50
-penlites;50
 penmanship;60
 penname;60
 pennames;60
@@ -128888,7 +127922,6 @@ perihelion;50
 perihelions;50
 peril;50
 periled;50
-perilled;50
 perilous;50
 perilously;50
 perilousness;50
@@ -129309,7 +128342,6 @@ peruvian;50
 peruvianaccent;50
 peruvianbark;50
 peruvians;50
-perv;50
 pervade;50
 pervaded;50
 pervades;50
@@ -129331,8 +128363,6 @@ perverting;50
 perverts;50
 pervious;50
 perviousness;50
-pervs;50
-pervy;50
 pesach;50
 pescatarian;50
 pescatariandiets;50
@@ -129699,7 +128729,6 @@ pharmacological;50
 pharmacologist;50
 pharmacologists;50
 pharmacology;50
-pharmacopeia;50
 pharmacopoeia;50
 pharmacopoeias;50
 pharmacy;50
@@ -129875,7 +128904,6 @@ phobophobia;60
 phobos;50
 phoebe;50
 phoebes;50
-phoenicia;50
 phoenician;50
 phoenicians;50
 phoenix;50
@@ -129937,7 +128965,6 @@ phonerecord;50
 phonerecords;50
 phones;50
 phoneservice;50
-phonesex;50
 phonesin;50
 phonetap;50
 phonetapping;50
@@ -129948,9 +128975,7 @@ phonetician;50
 phoneticians;50
 phonetics;50
 phonetree;50
-phoney;50
 phoneybaloney;60
-phoneys;50
 phonezombie;50
 phonezombies;50
 phonic;50
@@ -130273,7 +129298,6 @@ piccolos;50
 piccolotrumpet;60
 piccolotrumpets;60
 pick;50
-pickaback;50
 pickabonewith;50
 pickacardanycard;60
 pickafight;60
@@ -130924,8 +129948,6 @@ pimlico;50
 pimms;50
 pimmscup;50
 pimmscups;50
-pimp;50
-pimped;50
 pimpernel;50
 pimpernels;50
 pimple;50
@@ -131111,9 +130133,6 @@ pinklady;50
 pinkmartini;50
 pinkness;50
 pinknoise;50
-pinko;50
-pinkoes;50
-pinkos;50
 pinkpanther;50
 pinkpanthershow;60
 pinkribbon;60
@@ -131131,7 +130150,6 @@ pinkwash;50
 pinkwashed;50
 pinkwashes;50
 pinkwashing;50
-pinky;50
 pinkyandthebrain;60
 pinkypromise;60
 pinkypromises;60
@@ -131376,7 +130394,6 @@ pirouette;50
 pirouetted;50
 pirouettes;50
 pirouetting;50
-pirozhki;50
 pisa;50
 piscatorial;50
 pisces;50
@@ -131389,7 +130406,6 @@ pish;50
 pished;50
 pismobeach;50
 pissarro;50
-pissedoff;50
 pistachio;50
 pistachiogreen;50
 pistachionut;50
@@ -131615,10 +130631,8 @@ pixiedust;60
 pixieish;50
 pixies;50
 pixilated;50
-pixy;50
 pixystix;60
 pizarro;50
-pizazz;50
 pizza;50
 pizzabagel;60
 pizzabox;60
@@ -132156,7 +131170,6 @@ playbill;50
 playbills;50
 playbook;60
 playbooks;60
-playboy;50
 playboybunnies;50
 playboybunny;50
 playboymagazine;60
@@ -132758,7 +131771,6 @@ plotz;50
 plotzed;50
 plotzes;50
 plotzing;50
-plough;50
 ploughmanslunch;50
 ploughthrough;60
 plover;50
@@ -133116,7 +132128,6 @@ pods;50
 podunk;50
 podunktown;60
 podunktowns;60
-poe;50
 poehler;50
 poem;50
 poems;50
@@ -133665,7 +132676,6 @@ pollingstation;50
 pollingstations;50
 polliwog;50
 polliwogs;50
-pollock;50
 pollocks;50
 polls;50
 pollster;50
@@ -133698,8 +132708,6 @@ pollyholliday;50
 pollypocket;50
 pollywantacracker;50
 pollywantsacracker;50
-pollywog;50
-pollywogs;50
 polo;50
 poloball;50
 poloballs;50
@@ -133850,8 +132858,6 @@ pommeled;50
 pommelhorse;50
 pommelhorses;50
 pommeling;50
-pommelled;50
-pommelling;50
 pommels;50
 pommelsaddle;50
 pommies;50
@@ -133873,10 +132879,8 @@ pompons;50
 pomposities;50
 pomposity;50
 pompous;50
-pompousass;60
 pompously;50
 pompousness;50
-ponce;50
 poncedeleon;50
 poncho;50
 ponchos;50
@@ -133960,7 +132964,6 @@ poodlecuts;50
 poodles;50
 poodleskirt;50
 poodleskirts;50
-poof;50
 poofs;50
 pooh;50
 poohbah;50
@@ -134022,7 +133025,6 @@ pooltable;60
 pooltables;60
 pooltoy;60
 pooltoys;60
-poop;50
 poopdeck;60
 poopdecks;60
 pooped;50
@@ -134423,10 +133425,6 @@ porktenderloins;50
 porkwraps;50
 porky;50
 porkypig;50
-porn;50
-porno;50
-pornstache;60
-pornstarmartini;50
 porosities;50
 porosity;50
 porous;50
@@ -134753,8 +133751,6 @@ posthumously;50
 posthypnoticsuggestion;50
 postilion;50
 postilions;50
-postillion;50
-postillions;50
 posting;50
 postings;50
 postingup;50
@@ -134922,7 +133918,6 @@ potbellystoves;50
 potboiler;50
 potboilers;50
 potbound;50
-potbrownies;50
 poteen;50
 poteens;50
 potemkin;50
@@ -134949,12 +133944,8 @@ potentilla;50
 potentiometer;50
 potentiometers;50
 potently;50
-potfarms;50
 potful;50
 potfuls;50
-potgummies;50
-pothead;50
-potheads;50
 pother;50
 potherb;50
 potherbs;50
@@ -134970,7 +133961,6 @@ pothouses;50
 potion;50
 potions;50
 potlatch;50
-potleaf;60
 potlikker;50
 potliquor;50
 potluck;50
@@ -134999,15 +133989,11 @@ potsdam;50
 potshard;50
 potsherd;50
 potsherds;50
-potshops;50
 potshot;60
 potshots;60
-potsmokers;50
-potsmoking;50
 potsofgold;60
 potsofmoney;50
 potsogold;60
-potstarters;50
 potsticker;50
 potstickers;50
 potsy;50
@@ -135125,8 +134111,6 @@ pouredforth;50
 pouredon;50
 pouredout;50
 pouredover;50
-pourer;50
-pourers;50
 pourforth;50
 pouring;50
 pouringcoldwateron;50
@@ -135873,7 +134857,6 @@ prehistory;50
 prehuman;50
 prejudge;50
 prejudged;50
-prejudgement;50
 prejudges;50
 prejudging;50
 prejudgment;50
@@ -135906,7 +134889,6 @@ preludetoakiss;50
 preluding;50
 premade;50
 premarital;50
-premaritalsex;50
 premature;50
 prematurely;50
 prematureness;50
@@ -135937,7 +134919,6 @@ premise;50
 premised;50
 premises;50
 premising;50
-premisses;50
 premium;50
 premiumgas;50
 premiumoffer;50
@@ -136032,7 +135013,6 @@ prepossession;50
 preposterous;50
 preposterously;50
 prepped;50
-preppie;50
 preppier;50
 preppies;50
 preppiest;50
@@ -136186,7 +135166,6 @@ presidentwilson;50
 presideover;50
 presides;50
 presidesover;50
-presidia;50
 presiding;50
 presidingover;50
 presidio;50
@@ -136370,7 +135349,6 @@ pretentious;50
 pretentiously;50
 pretentiousness;50
 preterit;50
-preterite;50
 preterm;50
 preternatural;50
 preternaturally;50
@@ -136455,8 +135433,6 @@ previewing;50
 previews;50
 previous;50
 previously;50
-prevue;50
-prevues;50
 prewar;50
 prewarm;50
 prewarms;50
@@ -136543,7 +135519,6 @@ pricey;50
 pricier;50
 priciest;50
 pricing;50
-prick;50
 pricked;50
 prickedup;50
 pricker;50
@@ -136561,9 +135536,7 @@ prickly;50
 pricklyheat;50
 pricklypear;50
 pricklypears;50
-pricks;50
 prickuponesears;50
-pricy;50
 pride;50
 prideandjoy;60
 prideandprejudice;60
@@ -136617,7 +135590,6 @@ primacies;50
 primacy;50
 primadonna;60
 primadonnas;60
-primaeval;50
 primafacie;50
 primal;50
 primalfear;50
@@ -136880,7 +135852,6 @@ priorto;50
 priory;50
 priscilla;50
 priscillapresley;50
-prised;50
 prism;50
 prismatic;50
 prisms;50
@@ -137373,7 +136344,6 @@ prognosticators;50
 progolfer;60
 progolfers;60
 program;50
-programing;50
 programmable;50
 programmanagers;50
 programmatic;50
@@ -137468,7 +136438,6 @@ proline;50
 prolix;50
 prolixity;50
 prolixly;50
-prolog;50
 prologue;50
 prolong;50
 prolongation;50
@@ -137640,7 +136609,6 @@ propel;50
 propellant;50
 propellants;50
 propelled;50
-propellent;50
 propeller;50
 propellerbeanie;60
 propellers;50
@@ -137725,8 +136693,6 @@ proposeto;50
 proposing;50
 proposition;50
 propositional;50
-propositioned;50
-propositioning;50
 propositions;50
 propound;50
 propounded;50
@@ -137864,9 +136830,6 @@ prostheticlegs;50
 prosthetics;50
 prosthetist;50
 prosthodontist;50
-prostituted;50
-prostituting;50
-prostitution;50
 prostrate;50
 prostrated;50
 prostrates;50
@@ -137936,8 +136899,6 @@ protester;50
 protesters;50
 protesting;50
 protestmarch;60
-protestor;50
-protestors;50
 protestrallies;60
 protests;50
 protestsagainst;50
@@ -138160,7 +137121,6 @@ pryapart;50
 pryaway;50
 prybar;50
 prybars;50
-pryers;50
 prying;50
 pryinginto;50
 pryingly;50
@@ -138765,8 +137725,6 @@ pumicing;50
 pummel;50
 pummeled;50
 pummeling;50
-pummelled;50
-pummelling;50
 pummels;50
 pump;50
 pumpaction;50
@@ -139277,7 +138235,6 @@ pusillanimous;50
 pusillanimously;50
 puss;50
 pusses;50
-pussies;50
 pussinboots;50
 pussnboots;60
 pussybow;50
@@ -139623,7 +138580,6 @@ pwn;50
 pwning;50
 pwns;50
 pyedogs;50
-pygmaean;50
 pygmalion;50
 pygmies;50
 pygmy;50
@@ -139638,7 +138594,6 @@ pylons;50
 pyloric;50
 pylorus;50
 pyongyang;50
-pyorrhoea;50
 pyracanth;50
 pyramid;50
 pyramidal;50
@@ -139793,8 +138748,6 @@ quaggiest;50
 quaggy;50
 quagmire;50
 quagmires;50
-quahaug;50
-quahaugs;50
 quahog;50
 quahogs;50
 quail;50
@@ -140096,7 +139049,6 @@ queenvictoria;60
 queequeg;50
 queer;50
 queerasfolk;50
-queerbait;50
 queerbaited;50
 queerbaiting;50
 queerbaits;50
@@ -140170,7 +139122,6 @@ quetzals;50
 queue;50
 queued;50
 queuedup;50
-queueing;50
 queueingup;50
 queuejumper;50
 queuejumpers;50
@@ -140703,12 +139654,8 @@ racksup;50
 rackup;50
 raconteur;50
 raconteurs;50
-racoon;50
-racoons;50
-racquet;50
 racquetball;60
 racquetballracket;60
-racquets;50
 racy;50
 rad;50
 radar;50
@@ -141347,10 +140294,8 @@ raisondetre;60
 raita;50
 raitt;50
 raj;50
-raja;50
 rajah;50
 rajahs;50
-rajas;50
 rajasthan;50
 rajivgandhi;50
 rajput;50
@@ -142104,11 +141049,6 @@ raucous;50
 raucously;50
 raucousness;50
 rauljulia;50
-raunch;50
-raunchier;50
-raunchiest;50
-raunchiness;50
-raunchy;50
 rauwolfia;50
 ravage;50
 ravaged;50
@@ -142544,7 +141484,6 @@ realignment;50
 realignments;50
 realigns;50
 realincome;50
-realise;50
 realism;50
 realist;50
 realistic;50
@@ -143769,8 +142708,6 @@ redmeats;50
 redmenace;60
 redmoon;50
 redmoons;50
-redneck;50
-rednecks;50
 redness;50
 rednose;50
 rednosed;50
@@ -143875,7 +142812,6 @@ redshoe;50
 redshoes;50
 redsignals;50
 redskelton;50
-redskins;50
 redsky;50
 redskyatmorning;50
 redsnapper;50
@@ -144010,8 +142946,6 @@ reeducationcamp;50
 reedy;50
 reef;50
 reefed;50
-reefer;50
-reefers;50
 reefing;50
 reefs;50
 reefshark;60
@@ -144342,7 +143276,6 @@ refuel;50
 refueled;50
 refueler;50
 refueling;50
-refuelled;50
 refuels;50
 refuge;50
 refugee;50
@@ -145175,7 +144108,6 @@ remodel;50
 remodeled;50
 remodelers;50
 remodeling;50
-remodelling;50
 remodels;50
 remold;50
 remolded;50
@@ -145510,7 +144442,6 @@ repeatoffender;60
 repeatoffenders;60
 repeats;50
 repel;50
-repellant;50
 repelled;50
 repellency;50
 repellent;50
@@ -145707,7 +144638,6 @@ reprints;50
 reprisal;50
 reprisals;50
 reprise;50
-reprised;50
 reprises;50
 reprising;50
 repro;50
@@ -146028,7 +144958,6 @@ reshipping;50
 reships;50
 reshod;50
 reshoe;50
-reshoes;50
 reshoot;50
 reshot;50
 reshows;50
@@ -146480,11 +145409,9 @@ retape;50
 retaped;50
 retapes;50
 retaps;50
-retard;50
 retardant;50
 retardants;50
 retardation;50
-retarded;50
 retarder;50
 retarders;50
 retarding;50
@@ -146911,7 +145838,6 @@ reverter;50
 reverting;50
 reverts;50
 revertto;50
-revery;50
 revests;50
 revetment;50
 revetments;50
@@ -146987,7 +145913,6 @@ revocabletrust;50
 revocabletrusts;50
 revocation;50
 revocations;50
-revokable;50
 revoke;50
 revoked;50
 revokes;50
@@ -147408,7 +146333,6 @@ rickroll;60
 rickrolled;60
 rickrolling;60
 rickrolls;60
-rickshas;50
 rickshaw;50
 rickshawdrivers;60
 rickshaws;50
@@ -147607,7 +146531,6 @@ rig;50
 riga;50
 rigadoon;50
 rigalatvia;50
-rigamarole;50
 rigatoni;50
 rigel;50
 rigged;50
@@ -147792,7 +146715,6 @@ rimiest;50
 riming;50
 rimless;50
 rimmed;50
-rimming;50
 rimose;50
 rimrock;50
 rims;50
@@ -148004,7 +146926,6 @@ riposte;50
 riposted;50
 ripostes;50
 riposting;50
-riposts;50
 ripout;50
 ripped;50
 rippedabs;50
@@ -148196,8 +147117,6 @@ rivaled;50
 rivalfaction;60
 rivalfactions;60
 rivaling;50
-rivalled;50
-rivalling;50
 rivalries;50
 rivalrous;50
 rivalry;50
@@ -148877,7 +147796,6 @@ roguestates;60
 roguish;50
 roguishly;50
 roguishness;50
-roids;50
 roil;50
 roiled;50
 roiling;50
@@ -148915,7 +147833,6 @@ roll;50
 rollaboard;50
 rollaboards;50
 rollacigar;60
-rollajoint;50
 rollaway;50
 rollawaybed;50
 rollawaybeds;50
@@ -148995,8 +147912,6 @@ rollingoff;50
 rollingout;50
 rollingover;50
 rollingoveranira;50
-rollingpaper;50
-rollingpapers;50
 rollingpin;50
 rollingpins;50
 rollingrock;50
@@ -149012,7 +147927,6 @@ rollingthunder;50
 rollingwaves;60
 rollingwiththepunches;60
 rollinstone;60
-rollinthehay;60
 rollmyeyes;50
 rollofcoins;50
 rolloff;50
@@ -149035,13 +147949,11 @@ rolloverira;50
 rolloveriras;50
 rollovers;50
 rolls;50
-rollsajoint;50
 rollsback;50
 rollsbackprices;50
 rollsby;50
 rollsforward;50
 rollsin;50
-rollsinthehay;60
 rollsintotown;50
 rollsoff;50
 rollsofthedice;50
@@ -149613,7 +148525,6 @@ rothschild;50
 roti;50
 rotifer;50
 rotifers;50
-rotinhell;50
 rotini;50
 rotis;50
 rotisserie;50
@@ -149667,8 +148578,6 @@ rotundas;50
 rotundity;50
 rotundly;50
 rotundness;50
-rouble;50
-roubles;50
 rouen;50
 roues;50
 rouge;50
@@ -150358,9 +149267,7 @@ rumormills;60
 rumormonger;60
 rumormongers;50
 rumors;50
-rumour;50
 rumourhasit;60
-rumours;50
 rump;50
 rumpelstiltskin;60
 rumple;50
@@ -151043,9 +149950,7 @@ saboteurs;50
 sabots;50
 sabra;50
 sabras;50
-sabre;50
 sabredance;50
-sabres;50
 sac;50
 sacagawea;50
 sacagaweadollar;60
@@ -151210,8 +150115,6 @@ sadiehawkinsday;60
 sadiqkhan;50
 sadiron;50
 sadirons;50
-sadism;50
-sadist;50
 sadistic;50
 sadistically;50
 sadists;50
@@ -151560,7 +150463,6 @@ sakecup;60
 sakecups;60
 sakes;50
 sakharov;50
-saki;50
 saks;50
 saksfifthavenue;60
 salaam;50
@@ -151624,7 +150526,6 @@ salchow;50
 salchows;50
 saldana;50
 sale;50
-saleable;50
 saleday;50
 saledays;50
 saleitem;50
@@ -151861,7 +150762,6 @@ saltiness;50
 salting;50
 saltingaway;50
 saltire;50
-saltires;50
 saltish;50
 saltlake;50
 saltlakecity;50
@@ -152111,7 +151011,6 @@ sanctumsanctorum;50
 sand;50
 sandal;50
 sandaled;50
-sandalled;50
 sandals;50
 sandaltans;60
 sandalwood;50
@@ -152461,7 +151360,6 @@ sardonically;50
 sardonicgrins;50
 sardonyx;50
 sardonyxes;50
-sarees;50
 sargasso;50
 sargassosea;50
 sargassum;50
@@ -152712,12 +151610,9 @@ sausagecurl;50
 sausagecurls;50
 sausagedog;60
 sausagedogs;50
-sausagefest;50
-sausagefests;50
 sausagelink;50
 sausagelinks;50
 sausagemeat;50
-sausageparty;50
 sausagepatties;60
 sausagepatty;60
 sausagepie;50
@@ -152761,7 +151656,6 @@ savants;50
 savarin;50
 savate;50
 save;50
-saveable;50
 saveas;50
 saveaseat;50
 saved;50
@@ -152846,7 +151740,6 @@ savior;50
 saviorcomplex;60
 savioroftheunion;50
 saviors;50
-saviours;50
 savoirfaire;50
 savonarola;50
 savor;50
@@ -152859,7 +151752,6 @@ savorless;50
 savors;50
 savorthemoment;60
 savory;50
-savour;50
 savoy;50
 savoyard;50
 savoys;50
@@ -153096,8 +151988,6 @@ scalloper;50
 scalloping;50
 scallopini;50
 scallops;50
-scallywag;60
-scallywags;60
 scalp;50
 scalpcare;50
 scalped;50
@@ -153296,7 +152186,6 @@ scarymovie;50
 scaryspice;50
 scarystories;50
 scarystory;50
-scat;50
 scathe;50
 scathes;50
 scathing;50
@@ -153375,8 +152264,6 @@ scents;50
 scepter;50
 sceptered;50
 scepters;50
-sceptre;50
-sceptred;50
 schadenfreude;50
 schedule;50
 schedulechanges;50
@@ -153391,7 +152278,6 @@ schedulingcoordinator;50
 schedulingcoordinators;50
 scheherazade;60
 schema;50
-schemas;50
 schemata;50
 schematic;50
 schematically;50
@@ -153432,18 +152318,15 @@ schizophrenics;50
 schlemiel;60
 schlemiels;60
 schlep;50
-schlepp;50
 schlepped;50
 schleppedaround;50
 schlepping;50
-schlepps;50
 schleps;50
 schlimazel;50
 schlimazels;50
 schlitz;50
 schlock;50
 schlocks;50
-schlocky;50
 schlub;50
 schlubby;50
 schlubs;50
@@ -153457,7 +152340,6 @@ schmear;50
 schmears;50
 schmeer;50
 schmo;50
-schmoe;50
 schmoes;50
 schmooze;50
 schmoozed;50
@@ -153468,11 +152350,8 @@ schmoozers;50
 schmoozes;50
 schmoozing;50
 schmos;50
-schmuck;50
-schmucks;50
 schmutz;50
 schnapps;50
-schnaps;50
 schnauzer;50
 schnauzers;50
 schnitzel;50
@@ -153615,8 +152494,6 @@ schopenhauer;50
 schottische;50
 schrodinger;50
 schrodingerscat;60
-schtick;50
-schticks;50
 schubert;50
 schumann;50
 schumer;50
@@ -153699,7 +152576,6 @@ scissorcuts;50
 scissordoor;50
 scissordoors;50
 scissorhands;50
-scissoring;50
 scissorkick;60
 scissorkicked;60
 scissorkicking;60
@@ -153714,7 +152590,6 @@ scissorsholds;50
 scissorskick;50
 scissorskicks;50
 sclera;50
-sclerae;50
 scleral;50
 scleras;50
 scleroses;50
@@ -154221,7 +153096,6 @@ screweye;50
 screwhooks;50
 screwier;50
 screwiest;50
-screwing;50
 screwingup;50
 screwjack;50
 screwoncap;50
@@ -154375,7 +153249,6 @@ scrunched;50
 scrunchedup;50
 scrunches;50
 scrunchesup;50
-scrunchie;50
 scrunchies;50
 scrunching;50
 scrunchingup;50
@@ -155956,8 +154829,6 @@ seltzerwater;50
 seltzerwaters;50
 selvage;50
 selvages;50
-selvedge;50
-selvedges;50
 selves;50
 semantic;50
 semantically;50
@@ -156403,10 +155274,7 @@ septembermorn;50
 septembersong;50
 septet;50
 septets;50
-septette;50
-septettes;50
 septic;50
-septicaemia;50
 septicemia;50
 septicsystem;50
 septicsystems;50
@@ -157104,7 +155972,6 @@ sewsin;50
 sewsup;50
 sewup;50
 sewupavictory;50
-sex;50
 sexagenarian;50
 sexagenarians;50
 sexaholic;50
@@ -157158,40 +156025,25 @@ sexorgans;50
 sexpistols;60
 sexpositive;50
 sexpositivity;50
-sexpot;50
-sexpots;50
 sexscandal;50
 sexscandals;50
 sexscene;50
 sexscenes;50
-sexshop;50
-sexshops;50
-sexstrike;50
-sexstrikes;50
 sexsymbol;50
 sexsymbols;50
 sext;50
-sextalks;50
 sextant;50
 sextants;50
-sextapes;50
-sexted;50
 sextet;50
 sextets;50
-sextette;50
-sextettes;50
 sextherapist;50
 sextherapists;50
 sextherapy;60
 sextile;50
 sextiles;50
 sextillion;50
-sexting;50
 sexton;50
 sextons;50
-sextoy;50
-sextoys;50
-sexts;50
 sextuple;50
 sextuplet;50
 sextuplets;50
@@ -157203,11 +156055,9 @@ sexualized;50
 sexually;50
 sexualrevolution;60
 sexualtension;60
-sexup;50
 sexwax;60
 sexworker;50
 sexworkers;50
-sexy;50
 sexyandiknowit;50
 sexyback;50
 sexybeast;50
@@ -157300,7 +156150,6 @@ shafting;50
 shaftoflight;50
 shaftofsunlight;50
 shafts;50
-shag;50
 shagbark;50
 shagcarpet;50
 shagcarpeting;60
@@ -157468,9 +156317,7 @@ shammarriages;60
 shammed;50
 shammer;50
 shammers;50
-shammies;50
 shamming;50
-shammy;50
 shampoo;50
 shampooed;50
 shampooer;50
@@ -157875,8 +156722,6 @@ sheik;50
 sheikdom;50
 sheikdoms;50
 sheikh;50
-sheikhdom;50
-sheikhdoms;50
 sheikhs;50
 sheiks;50
 sheila;50
@@ -157974,10 +156819,8 @@ shepherdscrooks;60
 shepherdspie;50
 shepherdspurse;50
 sheraton;50
-sherbert;50
 sherbet;50
 sherbets;50
-sherds;50
 sherekhan;60
 sheriff;50
 sheriffs;50
@@ -158302,9 +157145,6 @@ shivermytimbers;50
 shivers;50
 shivery;50
 shivs;50
-shlemiel;50
-shlepp;50
-shlock;50
 shmear;50
 shmoes;50
 shmooze;50
@@ -158493,7 +157333,6 @@ shootingsticks;50
 shootingthebreeze;60
 shootingthebull;60
 shootingthemoon;50
-shootingup;50
 shootinthefoot;50
 shootist;50
 shootout;50
@@ -158519,7 +157358,6 @@ shootthebreeze;60
 shootthebull;50
 shootthemoon;50
 shoottheworks;50
-shootup;50
 shop;50
 shopaholic;50
 shopaholics;50
@@ -158666,7 +157504,6 @@ shorthopped;50
 shorthopping;50
 shorthops;50
 shorthorn;50
-shortie;50
 shorties;50
 shorting;50
 shortingout;50
@@ -158868,9 +157705,6 @@ shovelhat;50
 shovelhead;50
 shoveling;50
 shovelingsnow;60
-shovelled;50
-shoveller;50
-shovelling;50
 shovelpass;50
 shovelpasses;50
 shovelready;60
@@ -159103,7 +157937,6 @@ shrimper;50
 shrimpers;50
 shrimpfriedrice;50
 shrimpgumbo;50
-shrimping;50
 shrimppoboy;50
 shrimppoboys;50
 shrimps;50
@@ -159146,7 +157979,6 @@ shriveled;50
 shriveledup;60
 shriveling;50
 shrivelingup;60
-shrivelling;50
 shrivels;50
 shrivelsup;60
 shrivelup;60
@@ -159190,8 +158022,6 @@ shtetls;50
 shtick;50
 shticks;50
 shticky;50
-shtup;50
-shtups;50
 shuck;50
 shuckcorn;60
 shucked;50
@@ -159709,9 +158539,6 @@ signalizes;50
 signalizing;50
 signaljammer;50
 signaljammers;50
-signalled;50
-signaller;50
-signalling;50
 signally;50
 signalman;50
 signalmen;50
@@ -159993,7 +158820,6 @@ sillystring;60
 sillystrings;50
 sillywalk;60
 silo;50
-siloed;50
 siloing;50
 silos;50
 silt;50
@@ -160547,13 +159373,8 @@ sisboombah;50
 siskin;50
 siskins;50
 sissier;50
-sissies;50
-sissified;50
-sissiness;50
-sissy;50
 sissybar;60
 sissybars;60
-sissyish;50
 sissyspacek;60
 sister;50
 sisteract;50
@@ -160769,7 +159590,6 @@ sixtyforty;50
 sixtyfourthnote;50
 sixtyfourthnotes;50
 sixtyminutes;50
-sixtynine;50
 sixtyseven;50
 sixtysix;50
 sixwaystosunday;60
@@ -160778,7 +159598,6 @@ sixweeks;50
 sixyearterm;60
 sizable;50
 size;50
-sizeable;50
 sized;50
 sizedup;50
 sizelimitations;50
@@ -160847,7 +159666,6 @@ skedaddled;50
 skedaddles;50
 skedaddling;50
 skeeball;50
-skeet;50
 skeeters;50
 skeets;50
 skeetshoot;50
@@ -161267,7 +160085,6 @@ skullcap;50
 skullcaps;50
 skullcrusher;60
 skullcrushers;60
-skullduggery;50
 skulled;50
 skullisland;50
 skulls;50
@@ -161394,12 +160211,8 @@ slacksoffatwork;50
 slacktivism;60
 slacktivist;60
 slacktivists;60
-slag;50
-slagged;50
-slagging;50
 slagheap;50
 slagheaps;50
-slags;50
 slain;50
 slake;50
 slaked;50
@@ -161518,8 +160331,6 @@ slashermovies;50
 slashers;50
 slashes;50
 slashesprices;50
-slashfic;50
-slashfiction;50
 slashing;50
 slashingprices;50
 slashmark;50
@@ -161680,7 +160491,6 @@ sleepiest;50
 sleepily;50
 sleepiness;50
 sleeping;50
-sleepingaround;60
 sleepingbag;50
 sleepingbags;50
 sleepingbeauty;50
@@ -161689,8 +160499,6 @@ sleepingcars;50
 sleepinggiant;60
 sleepinggiants;50
 sleepingin;50
-sleepinginthebuff;50
-sleepinginthenude;50
 sleepinglate;50
 sleepinglikeababy;60
 sleepingoff;50
@@ -161703,8 +160511,6 @@ sleepingpods;60
 sleepingsickness;50
 sleepingsoundly;50
 sleepingtablet;50
-sleepingwiththeenemy;60
-sleepinthebuff;50
 sleeplab;60
 sleeplaboratory;50
 sleepless;50
@@ -161732,10 +160538,8 @@ sleepphases;50
 sleeps;50
 sleepsack;60
 sleepsacks;60
-sleepsaround;60
 sleepseasy;50
 sleepsin;50
-sleepsinthebuff;50
 sleepslikeababy;60
 sleepslikealog;50
 sleepsofa;50
@@ -161747,7 +160551,6 @@ sleepssoundly;50
 sleepstage;50
 sleepstages;50
 sleepstarts;60
-sleepswith;50
 sleeptalk;60
 sleeptalker;50
 sleeptalkers;50
@@ -161762,7 +160565,6 @@ sleepwalkers;60
 sleepwalking;60
 sleepwalks;60
 sleepwear;50
-sleepwith;50
 sleepy;50
 sleepyeyed;60
 sleepyhead;50
@@ -161811,8 +160613,6 @@ slenderly;50
 slenderness;50
 slenderprospects;50
 slept;50
-sleptaround;60
-sleptinthebuff;50
 sleptlikeababy;60
 sleptlikealog;50
 sleptoff;50
@@ -162416,8 +161216,6 @@ slyasafox;60
 slyboots;50
 slydini;50
 slydog;60
-slyer;50
-slyest;50
 slyfox;50
 slyfoxes;50
 slygrins;60
@@ -162667,13 +161465,8 @@ smelting;50
 smeltingmill;50
 smelts;50
 smetana;50
-smidge;50
 smidgen;50
 smidgens;50
-smidgeon;50
-smidgeons;50
-smidgin;50
-smidgins;50
 smilax;50
 smilaxes;50
 smile;50
@@ -162923,7 +161716,6 @@ smush;50
 smushed;50
 smushes;50
 smushing;50
-smut;50
 smutted;50
 smuttier;50
 smuttiest;50
@@ -163145,7 +161937,6 @@ snarling;50
 snarls;50
 snarlsat;50
 snarly;50
-snatch;50
 snatchandgrab;50
 snatchandgrabs;50
 snatched;50
@@ -163292,10 +162083,6 @@ snifftests;50
 sniffy;50
 snifter;60
 snifters;60
-snigger;50
-sniggered;50
-sniggering;50
-sniggers;50
 sniggle;50
 sniggling;50
 sniglet;50
@@ -163342,7 +162129,6 @@ sniveled;50
 sniveler;50
 snivelers;50
 sniveling;50
-snivelled;50
 snivels;50
 snob;50
 snoball;50
@@ -163453,7 +162239,6 @@ snowballed;50
 snowballeffects;50
 snowballfight;60
 snowballfights;60
-snowballing;50
 snowballs;50
 snowbank;50
 snowbanks;50
@@ -163964,7 +162749,6 @@ sodiumnitrate;50
 sodiumpentothal;50
 sodom;50
 sodomandgomorrah;60
-sodomite;50
 sods;50
 soeasy;50
 soexcited;50
@@ -164045,7 +162829,6 @@ softhearted;50
 softheartedness;50
 softhearts;60
 softicecream;60
-softie;50
 softies;50
 softish;50
 softlanding;50
@@ -164440,9 +163223,6 @@ somberly;50
 somberness;50
 somberoccasion;50
 somberoccasions;50
-sombre;50
-sombrely;50
-sombreness;50
 sombrero;50
 sombreros;50
 some;50
@@ -164570,7 +163350,6 @@ sonnycrockett;50
 sonnyliston;50
 sonnyrollins;50
 sonobuoy;50
-sonofabitch;50
 sonofagun;50
 sonofapreacherman;60
 sonoffrankenstein;60
@@ -164801,8 +163580,6 @@ sottishly;50
 sou;50
 soubrette;50
 soubrettes;50
-soubriquet;50
-soubriquets;50
 souchong;50
 souffle;50
 souffles;50
@@ -164964,7 +163741,6 @@ soupladle;60
 soupladles;60
 soupmix;50
 soupmixes;50
-soupnazi;60
 soupoftheday;60
 souporsalad;50
 soupplate;50
@@ -165178,7 +163954,6 @@ sowthistle;50
 sowyourwildoats;50
 sox;50
 soy;50
-soya;50
 soyabean;50
 soyabeans;50
 soyasauce;50
@@ -165322,7 +164097,6 @@ spaciousness;50
 spackle;50
 spackled;50
 spackling;50
-spacy;50
 spade;50
 spaded;50
 spadeful;50
@@ -165528,7 +164302,6 @@ spasmodic;50
 spasmodically;50
 spasms;50
 spassky;50
-spastic;50
 spasticity;50
 spat;50
 spatchcock;50
@@ -165757,8 +164530,6 @@ specter;50
 specters;50
 spectra;50
 spectral;50
-spectre;50
-spectres;50
 spectrogram;50
 spectrograms;50
 spectrograph;50
@@ -166219,7 +164990,6 @@ spillthetea;50
 spillway;50
 spillways;50
 spillyourguts;50
-spilt;50
 spilth;50
 spiltmilk;60
 spin;50
@@ -166353,8 +165123,6 @@ spinyeels;50
 spinyfinned;50
 spiracle;50
 spiracles;50
-spiraea;50
-spiraeas;50
 spiral;50
 spiralbound;50
 spiraled;50
@@ -166366,7 +165134,6 @@ spiraling;50
 spiralingdebt;50
 spiralingout;50
 spiraljetty;50
-spiralled;50
 spirally;50
 spiralnotebook;50
 spiralnotebooks;50
@@ -166550,8 +165317,6 @@ splicers;50
 splices;50
 splicesout;50
 splicing;50
-spliff;50
-spliffs;50
 spline;50
 splined;50
 splines;50
@@ -166703,7 +165468,6 @@ spoilsofwar;60
 spoilsport;50
 spoilsports;50
 spoilssystem;50
-spoilt;50
 spokane;50
 spoke;50
 spokefor;50
@@ -167244,14 +166008,12 @@ spume;50
 spumed;50
 spumes;50
 spuming;50
-spumone;50
 spumoni;50
 spun;50
 spunaround;50
 spunaweb;60
 spunayarn;50
 spunfibers;50
-spunk;50
 spunkier;50
 spunkiest;50
 spunks;50
@@ -167491,7 +166253,6 @@ squawkers;50
 squawking;50
 squawks;50
 squawksat;50
-squawvalley;50
 squeak;50
 squeakby;60
 squeaked;50
@@ -167615,8 +166376,6 @@ squirreled;50
 squirreledaway;50
 squirreling;50
 squirrelingaway;50
-squirrelled;50
-squirrelling;50
 squirrelly;50
 squirrelmonkey;60
 squirrelmonkeys;60
@@ -167825,7 +166584,6 @@ stagestruck;50
 stagewhisper;50
 stagewhispering;60
 stagewhispers;50
-stagey;50
 stagflation;60
 stagged;50
 stagger;50
@@ -169413,8 +168171,6 @@ stenches;50
 stencil;50
 stenciled;50
 stenciling;50
-stencilled;50
-stencilling;50
 stencils;50
 stendhal;50
 stengel;50
@@ -170190,8 +168946,6 @@ stockily;50
 stockindex;50
 stockindexes;50
 stockiness;50
-stockinet;50
-stockinets;50
 stockinette;50
 stocking;50
 stockingcap;50
@@ -170285,7 +169039,6 @@ stodginess;50
 stodgy;50
 stogie;50
 stogies;50
-stogy;50
 stoic;50
 stoical;50
 stoically;50
@@ -170386,7 +169139,6 @@ stonecrab;50
 stonecrabs;50
 stonecrop;50
 stonecutter;50
-stoned;50
 stonedead;50
 stonedeaf;50
 stonediaries;50
@@ -170413,8 +169165,6 @@ stoneoven;50
 stonepit;50
 stonequarries;50
 stonequarry;50
-stoner;50
-stoners;50
 stones;50
 stonesoup;50
 stonesthrow;60
@@ -170441,7 +169191,6 @@ stonewashed;50
 stonework;50
 stoneworks;50
 stonewort;50
-stoney;50
 stonier;50
 stoniest;50
 stonily;50
@@ -170679,7 +169428,6 @@ storeup;50
 storewide;50
 storewindow;50
 storewindows;50
-storey;50
 storeyed;50
 storied;50
 storiedpast;60
@@ -170889,8 +169637,6 @@ straightflushes;50
 straightforward;50
 straightforwardly;50
 straightforwardness;50
-straightjacket;50
-straightjackets;50
 straightlaced;50
 straightline;50
 straightlines;50
@@ -171512,11 +170258,7 @@ stringup;50
 stringy;50
 strip;50
 stripaway;50
-stripbar;50
-stripbars;50
 stripcartoon;50
-stripclub;50
-stripclubs;50
 stripdown;50
 stripe;50
 striped;50
@@ -171531,8 +170273,6 @@ stripier;50
 stripiest;50
 striping;50
 stripings;50
-stripjoint;60
-stripjoints;60
 striplighting;50
 stripling;50
 striplings;50
@@ -171555,31 +170295,19 @@ strippedofrank;60
 strippedout;50
 strippedscrew;50
 strippedscrews;50
-stripper;50
-strippers;50
 stripping;50
 strippingaway;50
 strippingdown;50
 strippingoff;50
 strippingout;50
-strippoker;60
 strips;50
 stripsaway;50
 stripsdown;50
-stripsearch;60
-stripsearched;60
-stripsearches;60
-stripshow;50
-stripshows;50
 stripsoff;50
 stripsout;50
 stripsteak;50
 stripsteaks;50
 stripsthegears;50
-striptease;50
-stripteaseartists;50
-stripteaser;50
-stripteases;50
 stripthegears;50
 stripy;50
 strive;50
@@ -171725,8 +170453,6 @@ struggling;50
 strum;50
 strummed;50
 strumming;50
-strumpet;50
-strumpets;50
 strums;50
 strung;50
 strungalong;50
@@ -172043,8 +170769,6 @@ stuyvesant;50
 stvalentine;50
 stvalentinesday;50
 sty;50
-stye;50
-styes;50
 stygian;50
 stying;50
 stylar;50
@@ -172200,7 +170924,6 @@ subhead;50
 subheading;50
 subheadings;50
 subheads;50
-subhuman;50
 subindexes;50
 subindices;50
 subitem;50
@@ -172485,8 +171208,6 @@ subtonic;50
 subtotal;50
 subtotaled;50
 subtotaling;50
-subtotalled;50
-subtotalling;50
 subtotals;50
 subtract;50
 subtracted;50
@@ -172602,7 +171323,6 @@ suchislife;60
 suchlike;50
 suchsweetsorrow;50
 suchthat;50
-suck;50
 sucka;50
 suckas;50
 suckat;50
@@ -172615,7 +171335,6 @@ suckeditup;50
 suckedup;50
 suckedupto;50
 suckedwind;60
-sucker;50
 suckerbet;60
 suckerbets;60
 suckered;50
@@ -172629,7 +171348,6 @@ suckersbet;60
 suckersbets;60
 sucking;50
 suckingdry;50
-suckingface;60
 suckingitup;50
 suckingpig;50
 suckingpigs;50
@@ -172643,7 +171361,6 @@ suckling;50
 sucklingpig;50
 sucklingpigs;50
 sucklings;50
-sucks;50
 sucksat;50
 sucksitup;50
 sucksup;50
@@ -172943,7 +171660,6 @@ sullies;50
 sully;50
 sullying;50
 sulpha;50
-sulphurs;50
 sultan;50
 sultana;50
 sultanas;50
@@ -172961,7 +171677,6 @@ sultry;50
 sum;50
 sumac;50
 sumacberries;50
-sumach;50
 sumachs;50
 sumacs;50
 sumandsubstance;50
@@ -174353,7 +173068,6 @@ sweepsashore;50
 sweepsaside;50
 sweepsaway;50
 sweepsout;50
-sweepstake;50
 sweepstakes;50
 sweepsthenation;60
 sweepsundertherug;50
@@ -174384,7 +173098,6 @@ sweetbays;50
 sweetbirdofyouth;50
 sweetbread;50
 sweetbreads;50
-sweetbriar;50
 sweetbrier;50
 sweetcaroline;50
 sweetcharity;50
@@ -174625,7 +173338,6 @@ swingdances;50
 swingdancing;60
 swingdoor;50
 swingdoors;50
-swinger;50
 swingers;50
 swingforit;50
 swingforthefences;60
@@ -174771,8 +173483,6 @@ swiveled;50
 swivelgun;60
 swivelguns;60
 swiveling;50
-swivelled;50
-swivelling;50
 swivels;50
 swivet;50
 swizzle;60
@@ -174780,7 +173490,6 @@ swizzles;50
 swizzlestick;60
 swizzlesticks;60
 swizzling;50
-swobbed;50
 swole;50
 swollen;50
 swollenheaded;50
@@ -174975,9 +173684,6 @@ synaptic;50
 sync;50
 synced;50
 syncedup;50
-synch;50
-synched;50
-synching;50
 synchromesh;50
 synchronicity;60
 synchronies;50
@@ -175081,10 +173787,6 @@ syphilis;50
 syphilises;50
 syphilitic;50
 syphilitics;50
-syphon;50
-syphoned;50
-syphoning;50
-syphons;50
 syracuse;50
 syracuseny;60
 syrah;50
@@ -175169,8 +173871,6 @@ tableaux;50
 tablecloth;50
 tablecloths;50
 tabled;50
-tabledance;50
-tabledances;50
 tableforfour;50
 tableforone;50
 tablefortwo;50
@@ -175258,8 +173958,6 @@ taborets;50
 tabors;50
 tabouli;50
 tabour;50
-tabouret;50
-tabourets;50
 tabs;50
 tabsets;50
 tabstop;50
@@ -175498,7 +174196,6 @@ tailwind;50
 tailwinds;50
 taint;50
 tainted;50
-taintedlove;50
 tainting;50
 taints;50
 taipan;50
@@ -176459,7 +175156,6 @@ tambourines;50
 tambours;50
 tambura;50
 tame;50
-tameable;50
 tamed;50
 tameless;50
 tamely;50
@@ -177659,10 +176355,6 @@ teawagons;60
 teaware;50
 teawithlemon;50
 teawithmussolini;50
-teazel;50
-teazels;50
-teazle;50
-teazles;50
 tebow;50
 tebowed;50
 tecate;50
@@ -177853,8 +176545,6 @@ teenyweeny;50
 teeoff;50
 teeoffon;60
 teepad;50
-teepee;50
-teepees;50
 tees;50
 teeshirt;50
 teeshirts;50
@@ -177893,8 +176583,6 @@ teetotal;50
 teetotaler;50
 teetotalers;50
 teetotalism;50
-teetotaller;50
-teetotallers;50
 teetotals;50
 teetotum;50
 teetotums;50
@@ -178168,7 +176856,6 @@ tempest;50
 tempests;50
 tempestuous;50
 tempestuously;50
-tempi;50
 temping;50
 tempjob;50
 tempjobs;50
@@ -178303,7 +176990,6 @@ tendingto;50
 tendinitis;50
 tendollarbills;50
 tendon;50
-tendonitis;50
 tendons;50
 tendowningstreet;50
 tendril;50
@@ -178725,7 +177411,6 @@ tesses;50
 tessofthedurbervilles;50
 test;50
 testable;50
-testae;50
 testament;50
 testamentary;50
 testaments;50
@@ -178761,7 +177446,6 @@ testflights;60
 testfly;50
 testgrades;50
 testgroup;50
-testicle;50
 testicular;50
 testier;50
 testiest;50
@@ -179140,7 +177824,6 @@ thatstheticket;60
 thatsthewayitis;50
 thatsthewaythecookiecrumbles;50
 thatstinks;60
-thatswhatshesaid;60
 thatswhatsup;50
 thattearsit;50
 thattimeofyear;60
@@ -179239,12 +177922,8 @@ theatermarquee;50
 theaters;50
 theatlantic;50
 theatomicage;60
-theatre;50
 theatredistrict;50
-theatregoer;50
-theatregoers;50
 theatreintheround;60
-theatres;50
 theatrical;50
 theatricality;50
 theatrically;50
@@ -180473,7 +179152,6 @@ themightyducks;60
 themightyquinn;50
 themikado;50
 themilehighcity;60
-themilehighclub;60
 themilerun;60
 themilkyway;60
 themillenniumbug;60
@@ -181552,7 +180230,6 @@ thezapruderfilm;50
 thezombies;60
 thezoomies;50
 thezuluparade;60
-thiamin;50
 thiamine;50
 thick;50
 thickaccents;50
@@ -182095,7 +180772,6 @@ threescompany;50
 threesets;50
 threesheetstothewind;50
 threesixty;50
-threesome;50
 threesomes;50
 threespeed;50
 threespot;50
@@ -182246,8 +180922,6 @@ throughthenose;50
 throughtheroof;50
 throughthickandthin;60
 throughtraffic;50
-throughway;50
-throughways;50
 throuple;50
 throuples;50
 throve;50
@@ -182352,7 +181026,6 @@ throwthebookat;50
 throwtogether;50
 throwunderthebus;50
 throwup;50
-thru;50
 thrum;50
 thrummed;50
 thrumming;50
@@ -182699,7 +181372,6 @@ tiedscore;50
 tiedtheknot;60
 tiedto;50
 tiedtogether;50
-tiedup;50
 tiedupfordays;50
 tiedupinknots;50
 tiedupintraffic;50
@@ -182870,7 +181542,6 @@ tigris;50
 tigrisriver;50
 tijuana;50
 tikal;50
-tike;50
 tiki;50
 tikibar;50
 tikibars;50
@@ -183295,7 +181966,6 @@ tins;50
 tinsel;50
 tinseled;50
 tinseling;50
-tinselled;50
 tinselly;50
 tinsels;50
 tinseltown;50
@@ -183476,7 +182146,6 @@ tissuesample;60
 tissuesamples;60
 tissuing;50
 tistheseason;60
-tit;50
 titan;50
 titanate;50
 titaness;50
@@ -183559,13 +182228,11 @@ titrates;50
 titrating;50
 titration;50
 titrations;50
-tits;50
 titter;50
 tittered;50
 titterers;50
 tittering;50
 titters;50
-titties;50
 tittle;50
 tittles;50
 tittletattle;50
@@ -183773,7 +182440,6 @@ toffee;50
 toffeeapple;50
 toffeeapples;50
 toffees;50
-toffies;50
 toffs;50
 tofu;50
 tofubites;50
@@ -183859,17 +182525,12 @@ toinfinityandbeyond;50
 tojo;50
 tokay;50
 tokays;50
-toke;50
-toked;50
 token;50
 tokengesture;50
 tokenism;60
 tokenmoney;50
 tokens;50
-toker;50
-tokes;50
 tokillamockingbird;60
-toking;50
 tokyo;50
 tokyodisney;60
 tokyodome;60
@@ -184589,7 +183250,6 @@ topknot;50
 topknots;50
 toplayer;50
 toplayers;50
-topless;50
 toplessbeach;50
 toplessbeaches;50
 toplessdancers;50
@@ -184756,8 +183416,6 @@ torii;50
 torino;50
 torment;50
 tormented;50
-tormenter;50
-tormenters;50
 tormenting;50
 tormentor;50
 tormentors;50
@@ -184909,7 +183567,6 @@ tossedout;50
 tossedsalad;50
 tossedsalads;50
 tossedto;50
-tosser;50
 tossers;50
 tosses;50
 tossesacoin;50
@@ -184936,7 +183593,6 @@ tossoff;50
 tossout;50
 tossoverboard;60
 tosspot;50
-tosspots;50
 tossthecaber;50
 tossup;50
 tossupquestion;50
@@ -184980,9 +183636,7 @@ totalized;50
 totalizer;50
 totalizes;50
 totalizing;50
-totalled;50
 totalletdown;50
-totalling;50
 totalloss;50
 totallunareclipse;60
 totallunareclipses;60
@@ -185272,7 +183926,6 @@ touts;50
 tow;50
 towage;50
 toward;50
-towards;50
 towaway;50
 towawayzone;60
 towbar;50
@@ -185295,7 +183948,6 @@ toweledoff;50
 towelette;50
 toweling;50
 towelingoff;50
-towelled;50
 toweloff;50
 towelrack;50
 towelracks;50
@@ -185722,10 +184374,6 @@ trafficisland;50
 trafficislands;50
 trafficjam;50
 trafficjams;50
-trafficked;50
-trafficker;50
-traffickers;50
-trafficking;50
 trafficlane;50
 trafficlanes;50
 trafficlaw;60
@@ -185955,7 +184603,6 @@ trances;50
 tranche;50
 tranches;50
 trancing;50
-trank;50
 tranquil;50
 tranquility;50
 tranquilize;50
@@ -185965,10 +184612,6 @@ tranquilizergun;50
 tranquilizers;50
 tranquilizes;50
 tranquilizing;50
-tranquillity;50
-tranquillize;50
-tranquillized;50
-tranquillizing;50
 tranquilly;50
 transact;50
 transacted;50
@@ -186069,7 +184712,6 @@ transfusing;50
 transfusion;50
 transfusions;50
 transgender;50
-transgendered;50
 transgenderrights;60
 transgenic;50
 transgress;50
@@ -186393,12 +185035,9 @@ travelinsurance;50
 traveliron;50
 travelirons;50
 travelkit;50
-traveller;50
 travellight;50
 travelmug;60
 travelmugs;60
-travelog;50
-travelogs;50
 travelogue;50
 travelogues;50
 travelpillow;50
@@ -186765,7 +185404,6 @@ trialjudge;50
 trialjudges;50
 triallawyer;50
 triallawyers;50
-trialling;50
 trialmembership;60
 trialmemberships;60
 trialoffer;60
@@ -187438,8 +186076,6 @@ trowed;50
 trowel;50
 troweled;50
 troweling;50
-trowelled;50
-trowelling;50
 trowels;50
 trowing;50
 troy;50
@@ -187741,15 +186377,8 @@ trytokeepup;50
 tryyourbest;50
 tryyourdarnedest;60
 tryyourluck;50
-tsar;50
-tsardom;50
-tsarina;50
-tsarinas;50
-tsarism;60
-tsarist;50
 tsarists;50
 tsarofrussia;50
-tsars;50
 tsetse;50
 tsetseflies;50
 tsetsefly;50
@@ -187771,7 +186400,6 @@ tsktsked;50
 tsktsks;50
 tsktsktsk;50
 tslot;50
-tsouris;50
 tsquare;50
 tsquares;50
 tstops;50
@@ -187945,8 +186573,6 @@ tumblings;50
 tumblr;50
 tumbrel;50
 tumbrels;50
-tumbril;50
-tumbrils;50
 tumefies;50
 tumescence;50
 tumescent;50
@@ -188045,7 +186671,6 @@ tunneler;50
 tunnelers;50
 tunneling;50
 tunnelings;50
-tunnelling;50
 tunnels;50
 tunnelvision;60
 tunnies;50
@@ -188459,7 +187084,6 @@ tush;50
 tushes;50
 tushie;50
 tushies;50
-tushy;50
 tusk;50
 tusked;50
 tuskedwarthog;50
@@ -188784,7 +187408,6 @@ twining;50
 twinings;50
 twinjet;50
 twinjets;50
-twinkie;60
 twinkies;60
 twinkillings;50
 twinkle;50
@@ -189250,7 +187873,6 @@ tyrrheniansea;50
 tyson;50
 tysonfury;50
 tyvek;50
-tzarina;50
 tzatziki;50
 tzatzikisauce;60
 tzatzikisauces;60
@@ -189630,7 +188252,6 @@ unbecoming;50
 unbecomingly;50
 unbefitting;50
 unbeholden;50
-unbeknown;50
 unbeknownst;50
 unbelief;50
 unbelievable;50
@@ -190240,7 +188861,6 @@ underside;50
 undersides;50
 undersiege;50
 undersigned;50
-undersize;50
 undersized;50
 underskirt;50
 underskirts;50
@@ -190415,7 +189035,6 @@ undreamedof;50
 undress;50
 undressed;50
 undresses;50
-undressing;50
 undrew;50
 undrinkable;50
 undue;50
@@ -190486,7 +189105,6 @@ unenviable;50
 unenviableposition;50
 unequal;50
 unequaled;50
-unequalled;50
 unequally;50
 unequipped;50
 unequivocal;50
@@ -190602,7 +189220,6 @@ unfledged;50
 unflinching;50
 unflinchingly;50
 unfocused;50
-unfocussed;50
 unfold;50
 unfolded;50
 unfolding;50
@@ -191074,7 +189691,6 @@ unlearn;50
 unlearned;50
 unlearning;50
 unlearns;50
-unlearnt;50
 unleash;50
 unleashed;50
 unleashes;50
@@ -191411,8 +190027,6 @@ unrated;50
 unravel;50
 unraveled;50
 unraveling;50
-unravelled;50
-unravelling;50
 unravels;50
 unread;50
 unreadable;50
@@ -191641,7 +190255,6 @@ unshackling;50
 unshaded;50
 unshakable;50
 unshakably;50
-unshakeable;50
 unshaken;50
 unshaped;50
 unshapely;50
@@ -191729,7 +190342,6 @@ unspent;50
 unspilt;50
 unspoiled;50
 unspoilered;50
-unspoilt;50
 unspoken;50
 unspokenrule;60
 unspokenrules;60
@@ -192361,7 +190973,6 @@ upwardfacingdog;50
 upwardly;50
 upwardlymobile;60
 upwardmobility;60
-upwards;50
 upwardtrajectories;50
 upwardtrend;50
 upwardtrends;50
@@ -192486,7 +191097,6 @@ usdaorganic;50
 usdollar;50
 usdollars;50
 use;50
-useable;50
 useanalias;50
 useasbait;60
 useby;50
@@ -192678,7 +191288,6 @@ uteri;50
 uterine;50
 uterus;50
 utes;50
-utilise;50
 utilitarian;50
 utilitarianism;50
 utilitarians;50
@@ -193498,8 +192107,6 @@ velcrostraps;50
 velcrostrip;50
 velcrostrips;50
 velcrowallets;50
-veldt;50
-veldts;50
 velleity;50
 vellicate;50
 vellicating;50
@@ -193539,8 +192146,6 @@ vendable;50
 vended;50
 vendee;50
 vendees;50
-vender;50
-venders;50
 vendetta;50
 vendettas;50
 vending;50
@@ -193668,8 +192273,6 @@ veracities;50
 veracity;50
 veracruz;50
 veranda;50
-verandah;50
-verandahs;50
 verandas;50
 verawang;50
 verb;50
@@ -193750,7 +192353,6 @@ vermiform;50
 vermifuge;50
 vermifuges;50
 vermilion;50
-vermillion;50
 vermin;50
 verminous;50
 vermont;50
@@ -193940,7 +192542,6 @@ viably;50
 viacom;50
 viaduct;50
 viaducts;50
-viagra;50
 vial;50
 vials;50
 viands;50
@@ -193968,7 +192569,6 @@ vibration;50
 vibrational;50
 vibrations;50
 vibrato;50
-vibrator;50
 vibrators;50
 vibratory;50
 vibratos;50
@@ -194189,7 +192789,6 @@ vigils;50
 vignette;50
 vignettes;50
 vigor;50
-vigorish;50
 vigorous;50
 vigorously;50
 vigors;50
@@ -194218,8 +192817,6 @@ village;50
 villagecommon;50
 villageelder;50
 villagegreen;50
-villageidiot;50
-villageidiots;50
 villagepeople;60
 villager;50
 villagers;50
@@ -194464,7 +193061,6 @@ virtuosic;50
 virtuosities;50
 virtuosity;50
 virtuoso;50
-virtuosos;50
 virtuous;50
 virtuously;50
 virtuousness;50
@@ -194695,7 +193291,6 @@ vixens;50
 vizard;50
 vizier;50
 viziers;50
-vizors;50
 vjday;50
 vladimir;50
 vladimirhorowitz;50
@@ -195074,7 +193669,6 @@ voyageur;50
 voyageurs;50
 voyageursnationalpark;50
 voyaging;50
-voyeur;50
 voyeurism;50
 voyeuristic;50
 voyeuristically;50
@@ -195267,8 +193861,6 @@ waggledances;60
 waggles;50
 waggling;50
 waggly;50
-waggon;50
-waggons;50
 waging;50
 wagingwar;50
 wagingwaron;50
@@ -195322,8 +193914,6 @@ wainscot;50
 wainscoted;50
 wainscoting;50
 wainscots;50
-wainscotted;50
-wainscotting;50
 wainwright;50
 waist;50
 waistband;50
@@ -195817,7 +194407,6 @@ wands;50
 wane;50
 waned;50
 wanes;50
-wang;50
 wangarimaathai;50
 wangle;50
 wangled;50
@@ -197280,8 +195869,6 @@ wedgesalads;50
 wedgeshot;50
 wedgeshots;50
 wedgesneakers;50
-wedgie;50
-wedgies;50
 wedging;50
 wedgwood;50
 wedlock;50
@@ -197484,12 +196071,8 @@ weisenheimer;50
 weisenheimers;50
 weissmuller;50
 weiwei;50
-welch;50
-welched;50
 welcher;50
 welchers;50
-welches;50
-welching;50
 welcome;50
 welcomeback;60
 welcomebackkotter;50
@@ -197982,7 +196565,6 @@ wereopen;50
 wererabbit;50
 wereruined;60
 weresaved;50
-werescrewed;60
 weresorry;50
 werestumped;50
 weresunk;50
@@ -198168,13 +196750,10 @@ whackamole;60
 whacked;50
 whacker;50
 whackers;50
-whackier;50
-whackiest;50
 whacking;50
 whackjob;50
 whackjobs;50
 whacks;50
-whacky;50
 whaddya;50
 whale;50
 whaleblubber;50
@@ -198541,7 +197120,6 @@ whimpered;50
 whimpering;50
 whimpers;50
 whims;50
-whimsey;50
 whimsical;50
 whimsicality;50
 whimsically;50
@@ -198654,10 +197232,8 @@ whirlwindtours;60
 whirly;50
 whirlybird;60
 whirlybirds;50
-whirr;50
 whirred;50
 whirring;50
-whirrs;50
 whirs;50
 whishes;50
 whisk;50
@@ -198689,7 +197265,6 @@ whisking;50
 whiskingaway;50
 whisks;50
 whisksaway;50
-whisky;50
 whiskyrebellion;50
 whiskystone;60
 whiskystones;60
@@ -199102,7 +197677,6 @@ whopperjunior;50
 whopperjuniors;50
 whoppers;50
 whopping;50
-whored;50
 whorl;50
 whorled;50
 whorls;50
@@ -199222,8 +197796,6 @@ wideshots;50
 widespread;50
 widest;50
 wideturn;50
-widgeon;50
-widgeons;50
 widget;50
 widgets;50
 widow;50
@@ -199284,7 +197856,6 @@ wifisquatting;50
 wifizone;50
 wig;50
 wigeon;50
-wigeons;50
 wigged;50
 wiggedout;50
 wiggingout;50
@@ -199471,7 +198042,6 @@ wiles;50
 wiley;50
 wileypost;60
 wilfordbrimley;50
-wilful;50
 wilhelm;50
 wilhelmgrimm;50
 wilhelmina;50
@@ -199533,11 +198103,9 @@ williamstyron;50
 williamtell;50
 williamtheconqueror;60
 williamwallace;50
-willie;50
 williemays;60
 williemosconi;50
 willienelson;60
-willies;50
 willieshoemaker;50
 williestargell;50
 willing;50
@@ -199562,7 +198130,6 @@ willrogers;50
 wills;50
 willshortz;50
 willsmith;50
-willy;50
 willyandthepoorboys;60
 willyloman;60
 willynilly;60
@@ -200109,8 +198676,6 @@ wintergreen;50
 wintergreengum;60
 wintergreenmint;50
 wintergreens;50
-winterier;50
-winteriest;50
 wintering;50
 winterize;50
 winterized;50
@@ -200145,7 +198710,6 @@ winterwheat;50
 winterwonderland;60
 winterwonderlands;60
 winterxgames;60
-wintery;50
 winthegame;50
 winthepot;60
 wintour;50
@@ -200285,8 +198849,6 @@ wise;50
 wiseacre;50
 wiseacres;50
 wiseasanowl;60
-wiseass;50
-wiseasses;50
 wiseassolomon;60
 wisechoice;60
 wisechoices;60
@@ -200357,7 +198919,6 @@ wisps;50
 wispy;50
 wispycloud;50
 wispyclouds;50
-wistaria;50
 wisteria;50
 wisterias;50
 wistful;50
@@ -200946,7 +199507,6 @@ woolsweaters;50
 woolvest;50
 woolvests;50
 woolworth;50
-wooly;50
 woolybully;50
 woos;50
 woosh;50
@@ -201143,7 +199703,6 @@ workhusbands;50
 working;50
 workingaround;50
 workingatit;50
-workingblue;60
 workingcapital;50
 workingclass;50
 workingclasses;50
@@ -201433,9 +199992,6 @@ worshiper;50
 worshipers;50
 worshipful;50
 worshiping;50
-worshipped;50
-worshipper;50
-worshippers;50
 worshippingatthealtar;50
 worships;50
 worst;50
@@ -201957,13 +200513,6 @@ xmen;50
 xolo;50
 xolos;50
 xprize;50
-xrated;50
-xratedfilm;50
-xratedfilms;50
-xratedmovie;50
-xratedmovies;50
-xrating;50
-xratings;50
 xray;50
 xraybeams;60
 xraycamera;50
@@ -201990,8 +200539,6 @@ xterras;50
 xwingfighter;60
 xwingpilot;50
 xxxlshirts;50
-xxxrated;60
-xxxrating;50
 xychromosome;50
 xylem;50
 xylene;50
@@ -202019,10 +200566,8 @@ yachtsman;50
 yachtsmen;50
 yachtswoman;50
 yachtswomen;50
-yacked;50
 yacketyyack;50
 yacketyyak;60
-yacking;50
 yadayada;50
 yadayadayada;50
 yadda;50
@@ -202405,7 +200950,6 @@ yesbut;50
 yesdear;50
 yeses;50
 yeshiva;50
-yeshivah;50
 yeshivas;50
 yesido;50
 yesiknow;50
@@ -202499,9 +201043,6 @@ yodeled;50
 yodeler;50
 yodelers;50
 yodeling;50
-yodelled;50
-yodeller;60
-yodellers;60
 yodels;50
 yoga;50
 yogaball;60
@@ -202526,8 +201067,6 @@ yogastudio;60
 yogastudios;60
 yogateacher;50
 yogateachers;50
-yoghurt;50
-yoghurts;50
 yogi;50
 yogibear;60
 yogiberra;60
@@ -202719,7 +201258,6 @@ yourchoice;50
 youreacatch;50
 youreadmymind;60
 youreadoll;60
-yourealiar;50
 yourealifesaver;60
 youreallset;60
 youreallygotaholdonme;50
@@ -202862,12 +201400,9 @@ yuccas;50
 yuccatree;50
 yuccatrees;50
 yuck;50
-yucked;50
 yuckfactor;50
 yuckier;50
 yuckiest;50
-yucking;50
-yucks;50
 yucky;50
 yugo;50
 yugos;50
@@ -203206,8 +201741,6 @@ zipdrives;50
 zipfastener;50
 zipfile;60
 zipfiles;60
-zipgun;60
-zipguns;60
 zipin;50
 zipit;50
 zipitup;50
