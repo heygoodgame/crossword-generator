@@ -77,23 +77,20 @@ def is_american_preferred(tags: list[tuple[str, str]]) -> bool:
 
 def _parse_line_entries(
     line: str,
-) -> list[tuple[str, list[tuple[str, str]]]]:
-    """Parse a single varcon data line into [(word, tags), ...].
+) -> list[tuple[str, str, list[tuple[str, str]]]]:
+    """Parse a varcon data line into [(normalized, original, tags), ...].
 
-    Returns only lowercase, non-proper-noun, non-empty entries.
+    ``normalized`` is the lowercase, alpha-only form for matching.
+    ``original`` is the raw word as it appears in varcon.
     """
     entries = line.split(" / ")
-    results = []
+    results: list[tuple[str, str, list[tuple[str, str]]]] = []
     for entry in entries:
         entry = entry.strip()
         if ": " not in entry:
             continue
         tag_str, raw_word = entry.split(": ", 1)
         raw_word = raw_word.strip()
-
-        # Skip proper nouns (capitalized words)
-        if raw_word[0].isupper():
-            continue
 
         # Normalize: lowercase, strip non-alpha chars
         word = re.sub(r"[^a-z]", "", raw_word.lower())
@@ -104,14 +101,96 @@ def _parse_line_entries(
         if not tags:
             continue
 
-        results.append((word, tags))
+        results.append((word, raw_word, tags))
     return results
+
+
+REGION_NAMES = {
+    "A": "American",
+    "B": "British",
+    "Z": "British -ize",
+    "C": "Canadian",
+    "D": "Australian",
+    "_": "non-regional",
+}
+
+MODIFIER_NAMES = {
+    "": "preferred",
+    ".": "disputed",
+    ".*": "disputed (demoted)",
+    "v": "variant",
+    "V": "seldom-used variant",
+    "-": "possible",
+    "x": "improper",
+}
+
+
+def _describe_tags(tags: list[tuple[str, str]]) -> str:
+    """Produce a human-readable description of a word's tags."""
+    parts = []
+    for region, modifier in tags:
+        r = REGION_NAMES.get(region, region)
+        m = MODIFIER_NAMES.get(modifier, modifier)
+        parts.append(f"{r} {m}")
+    # Deduplicate while preserving order
+    seen: set[str] = set()
+    unique = []
+    for p in parts:
+        if p not in seen:
+            seen.add(p)
+            unique.append(p)
+    return ", ".join(unique)
+
+
+def _format_preferred(original: str) -> str:
+    """Format a preferred form, marking proper nouns."""
+    if original[0].isupper():
+        return f"{original} (proper)"
+    return original
+
+
+def _format_reason(
+    original_forms: list[str],
+    tags: list[tuple[str, str]],
+    preferred_originals: list[str],
+) -> str:
+    """Build a reason string with original case and proper-noun markers.
+
+    Example: 'British variant; preferred: color'
+    Example: 'British preferred; preferred: Acer (proper)'
+    """
+    # Mark if this word itself is only from proper nouns
+    desc = _describe_tags(tags)
+    if any(f[0].isupper() for f in original_forms):
+        desc = f"[proper] {desc}"
+
+    if preferred_originals:
+        # Deduplicate preferred forms, preserving order
+        seen: set[str] = set()
+        unique_pref = []
+        for p in preferred_originals:
+            if p not in seen:
+                seen.add(p)
+                unique_pref.append(p)
+        alts = [_format_preferred(p) for p in unique_pref]
+        if alts:
+            return f"{desc}; preferred: {', '.join(alts)}"
+    return desc
 
 
 def parse_varcon(
     varcon_path: Path,
-) -> dict[str, list[tuple[str, str]]]:
-    """Parse varcon.txt into {word: [(region, modifier), ...]}.
+) -> tuple[
+    dict[str, list[tuple[str, str]]],
+    dict[str, list[str]],
+    dict[str, list[str]],
+]:
+    """Parse varcon.txt.
+
+    Returns:
+        word_tags: {normalized: [(region, modifier), ...]}
+        word_preferred: {normalized: [preferred_original, ...]}
+        word_originals: {normalized: [original_form, ...]}
 
     When a line has an entry with bare A/_ (truly preferred), any
     sibling entries with only A./_.  (disputed) are demoted: their
@@ -119,6 +198,8 @@ def parse_varcon(
     as preferred.
     """
     word_tags: dict[str, list[tuple[str, str]]] = {}
+    word_preferred: dict[str, list[str]] = {}
+    word_originals: dict[str, list[str]] = {}
 
     with open(varcon_path, encoding="latin-1") as f:
         for line in f:
@@ -142,10 +223,18 @@ def parse_varcon(
 
             # Check if any entry on this line is truly preferred
             line_has_preferred = any(
-                _has_bare_preferred(tags) for _, tags in parsed
+                _has_bare_preferred(tags)
+                for _, _, tags in parsed
             )
 
-            for word, tags in parsed:
+            # Collect preferred original forms on this line
+            preferred_on_line = [
+                orig
+                for _, orig, tags in parsed
+                if _has_bare_preferred(tags)
+            ]
+
+            for word, orig, tags in parsed:
                 if line_has_preferred:
                     # Demote disputed (.) to non-preferred when a
                     # sibling is truly preferred
@@ -158,7 +247,15 @@ def parse_varcon(
                     word_tags[word] = []
                 word_tags[word].extend(tags)
 
-    return word_tags
+                if word not in word_preferred:
+                    word_preferred[word] = []
+                word_preferred[word].extend(preferred_on_line)
+
+                if word not in word_originals:
+                    word_originals[word] = []
+                word_originals[word].append(orig)
+
+    return word_tags, word_preferred, word_originals
 
 
 def find_variants(
@@ -208,7 +305,7 @@ def main() -> None:
 
     # Parse varcon
     logger.info("Parsing %s ...", VARCON_PATH)
-    word_tags = parse_varcon(VARCON_PATH)
+    word_tags, word_preferred, word_originals = parse_varcon(VARCON_PATH)
     logger.info("Found %d unique words in varcon.", len(word_tags))
 
     # Find variants
@@ -220,11 +317,16 @@ def main() -> None:
     dictionary = load_dictionary(DICTIONARY_PATH)
     logger.info("Dictionary contains %d entries.", len(dictionary))
 
-    # Intersect
-    to_remove = {}
+    # Intersect and build reasons
+    to_remove: dict[str, tuple[str, str]] = {}
     for word in sorted(variants):
         if word in dictionary:
-            to_remove[word] = dictionary[word]
+            reason = _format_reason(
+                word_originals.get(word, [word]),
+                word_tags[word],
+                word_preferred.get(word, []),
+            )
+            to_remove[word] = (dictionary[word], reason)
 
     logger.info(
         "Found %d variant words present in the dictionary.", len(to_remove)
@@ -233,11 +335,8 @@ def main() -> None:
     if args.verbose:
         logger.info("\n--- Variants to remove ---")
         for word in sorted(to_remove):
-            tags = word_tags[word]
-            tag_summary = " ".join(
-                f"{r}{m}" for r, m in tags
-            )
-            logger.info("  %s;%s  [varcon: %s]", word, to_remove[word], tag_summary)
+            score, reason = to_remove[word]
+            logger.info("  %s;%s;%s", word, score, reason)
 
     if args.dry_run:
         logger.info("\nDry run — no file written.")
@@ -246,7 +345,8 @@ def main() -> None:
     # Write output
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
         for word in sorted(to_remove):
-            f.write(f"{word};{to_remove[word]}\n")
+            score, reason = to_remove[word]
+            f.write(f"{word};{score};{reason}\n")
 
     logger.info("Wrote %d entries to %s", len(to_remove), OUTPUT_PATH)
 

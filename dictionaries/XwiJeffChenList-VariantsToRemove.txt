@@ -1,1272 +1,1290 @@
-abetter;50
-abetters;50
-abridgement;50
-abridgements;50
-absinth;50
-absinths;50
-accoutre;50
-accoutred;50
-accoutrement;50
-accoutrements;50
-accoutres;50
-accoutring;50
-accurst;50
-acknowledgement;50
-acknowledgements;50
-adaptor;50
-adaptors;50
-adjustor;50
-adjustors;50
-adonises;50
-adrenalin;50
-advertize;50
-advertized;50
-advertizement;50
-advertizes;50
-advertizing;50
-advisor;50
-advisors;50
-adz;50
-aec;25
-aeneid;50
-aeon;50
-aeonian;50
-aeons;50
-aerofoil;50
-aerogel;50
-aerogramme;50
-aeroplane;50
-aeros;20
-aesop;50
-aesthesia;50
-aestival;50
-aestivate;50
-aestivated;50
-aestivates;50
-aestivating;50
-afterward;50
-ageing;50
-ageings;50
-agism;20
-aline;50
-alined;10
-alinement;50
-alines;50
-alining;50
-almanack;50
-altho;50
-ambience;50
-ameba;20
-amebae;30
-amebas;30
-amebic;10
-ameboid;50
-ameer;20
-ameers;10
-amidst;50
-amir;25
-amirs;20
-amoebae;50
-amongst;50
-amphitheatres;50
-ampoule;50
-ampoules;50
-ampuls;10
-amuck;50
-anaemia;50
-anaemic;50
-analyse;50
-aneurism;50
-aneurisms;50
-apnoea;10
-appal;20
-appals;10
-apparelled;50
-apparelling;50
-aquiculture;50
-arbour;10
-archeological;50
-archeologies;50
-archeologist;50
-archeologists;50
-archeology;50
-archetypical;50
-ardour;10
-areolae;50
-aristae;50
-armour;50
-armoury;50
-arse;25
-arses;20
-artefacts;30
-ascendence;50
-ascendency;50
-ascendent;50
-aunty;50
-aureola;30
-avises;30
-awestricken;50
-awol;50
-axe;50
-backwards;50
-baddy;50
-bandana;50
-bandanas;50
-bandolier;50
-bandoliers;50
-bannister;50
-bannisters;50
-barbeque;50
-barcarolle;50
-barque;10
-barques;50
-barrelled;50
-barrelling;50
-bastinadoes;50
-bathyscaph;50
-bathyscaphs;50
-battleax;50
-bedevilled;50
-bedevilling;50
-bejewelling;50
-bevelled;50
-bevelling;50
-biassed;50
-biassing;50
-bimetallist;50
-binging;50
-bise;25
-bistre;10
-blaise;50
-blameable;50
-blowsier;50
-blowsiest;50
-blowsy;30
-blueing;50
-bocce;50
-bocci;50
-bogy;25
-bonnie;50
-bootie;50
-borises;10
-borsch;10
-bourg;20
-bowlder;50
-bowlders;50
-bren;25
-briar;50
-briars;50
-brimfull;50
-brinksmanship;50
-briquet;50
-briquets;50
-broncho;50
-bronchos;50
-buncombe;50
-bunko;50
-bunkos;30
-burnous;50
-burnouses;50
-burqa;50
-burqas;50
-byelaw;10
-cabala;50
-cabbala;10
-cabbie;50
-caesar;50
-caesarean;50
-caesareans;50
-caesarian;50
-caesural;50
-cageyness;50
-cagy;50
-caldron;50
-caldrons;50
-calibre;50
-calibres;50
-calif;20
-califs;10
-callipers;50
-callisthenics;10
-camise;30
-camomile;50
-camomiles;50
-canaller;50
-canalling;50
-cancellate;50
-cancelled;50
-canonise;30
-cantaloups;50
-caravanserai;50
-carney;50
-carneys;50
-carnie;50
-carolled;50
-carolling;50
-carrousel;50
-carrousels;50
-cassino;50
-cassinos;50
-catalogued;50
-catchup;60
-catsup;50
-catsups;50
-caulkings;50
-caviare;50
-caviares;50
-cavilled;50
-caviller;50
-cavillers;50
-cavilling;50
-cayman;50
-caymans;50
-centre;50
-centrefolds;50
-centres;50
-cesarian;50
-cesarians;50
-channelled;50
-channelling;50
-chaperone;50
-chaperones;50
-cheque;50
-cheques;50
-chile;50
-chiles;50
-chilis;50
-chilli;10
-chillies;50
-chimaeras;50
-chiselled;50
-chiseller;50
-chisellers;50
-chitlings;50
-chitlins;50
-chivvied;50
-chivvies;50
-chivvying;50
-chocaholic;50
-chocaholics;50
-chocolatey;50
-choosey;50
-chutzpa;50
-chutzpas;50
-cicatrice;50
-cigaret;50
-cocoanut;50
-cocoanuts;50
-coe;50
-coeliac;50
-coelom;10
-collectable;50
-collectables;50
-colour;30
-colours;50
-conchae;50
-coney;50
-conies;50
-conjuror;50
-conjurors;50
-connecter;50
-connecters;50
-convenors;50
-convertor;50
-convertors;50
-conveyer;50
-conveyers;50
-copeck;10
-copecks;50
-cosies;50
-cosily;50
-costae;10
-cosy;25
-councillor;50
-councillors;50
-crea;25
-cree;50
-crees;50
-crenellations;50
-crozier;50
-croziers;50
-crueller;50
-cruellest;50
-cryptaesthesia;50
-crystalize;50
-cudgelled;50
-cudgelling;50
-cullender;50
-cumquat;50
-cumquats;50
-curtsey;50
-curtseyed;50
-curtseying;50
-curtseys;50
-cypher;60
-cyphered;50
-cyphering;50
-cyphers;60
-daedal;30
-danae;50
-dearie;50
-decagram;50
-decaliter;50
-decaliters;50
-decameter;50
-decameters;50
-demagog;50
-demagogs;50
-dentine;50
-dependance;50
-dependant;50
-dependants;50
-descendent;50
-despatch;50
-despatched;50
-despatches;50
-despatching;50
-dextrous;50
-dextrously;50
-dialled;50
-dialling;50
-dialogs;50
-diarrhoeic;50
-dickie;30
-dickies;50
-dicky;20
-dietician;50
-dieticians;50
-disembowelled;50
-disembowelling;50
-dishonour;30
-diss;50
-ditzier;50
-ditzy;50
-djinn;50
-djinni;50
-djinns;50
-doggie;50
-doggoned;50
-dognapped;50
-dognapping;50
-dogy;25
-donut;50
-donuts;50
-dopy;25
-downwards;50
-draftboard;50
-draftboards;50
-dreamt;50
-drily;50
-drivelled;50
-driveller;50
-drivellers;50
-drivelling;50
-dryest;50
-duelled;50
-dueller;50
-duellers;50
-duelling;50
-duellist;50
-duellists;50
-dumfound;50
-dumfounded;50
-dumfounding;50
-dumfounds;50
-dyked;20
-dyking;10
-edile;20
-ediles;10
-eery;25
-egis;25
-egises;10
-empanel;50
-empaneled;50
-empaneling;50
-empanelled;50
-empanels;30
-enamelled;50
-enameller;50
-enamelling;50
-enamour;50
-encyclopaedic;50
-endeavour;50
-enquire;50
-enquired;50
-enquiry;50
-enrol;20
-enrols;30
-entendre;50
-enthral;30
-enure;20
-enured;30
-enures;30
-enuring;50
-epaulette;50
-epaulettes;50
-epilog;50
-epilogs;50
-epinephrin;50
-esthete;50
-esthetes;50
-esthetic;50
-esthetics;50
-eudaemon;50
-eudaemonia;60
-eviller;50
-evillest;50
-exorciser;50
-exorcisers;50
-exorcize;50
-exorcized;50
-exorcizes;50
-exorcizing;50
-extendible;50
-extolls;50
-extravert;50
-extraverts;50
-eying;50
-eyrie;20
-eyries;10
-fae;50
-faery;20
-felafel;50
-fibre;20
-fibres;30
-filets;50
-fiord;20
-fiords;10
-flautist;50
-flautists;50
-fledgeling;50
-fledgelings;50
-flexitime;50
-floatations;50
-floozie;50
-flukey;30
-flunkey;50
-flunkeys;50
-flyer;50
-flyers;50
-focussed;50
-focussing;50
-foetid;10
-fogey;50
-fogeys;50
-fondu;20
-fontanelle;50
-foregather;50
-foregathered;50
-foregathering;50
-foregathers;50
-foreswore;50
-formulae;50
-fossae;30
-fred;50
-freebee;50
-freebees;50
-friers;50
-frise;20
-frisette;50
-frivolled;50
-frivolling;50
-friz;25
-frowsier;50
-frowsy;30
-fuelled;50
-fuelling;50
-fulness;50
-funnelled;50
-funnelling;50
-furore;10
-furores;50
-fuze;25
-gae;25
-gambolled;50
-gambolling;50
-gaol;25
-gaolbreak;50
-gaoler;30
-gaols;20
-garotte;50
-garotted;50
-garottes;50
-garotting;50
-gasolene;50
-gasolenes;50
-gasses;50
-gayety;10
-gayly;50
-geegaw;10
-geez;50
-gelatine;50
-gessoes;50
-gestae;30
-gingko;50
-gipsies;50
-gipsy;20
-girlie;30
-gismo;20
-gismos;30
-glamor;50
-glamors;50
-glamourize;50
-glueing;50
-glycerine;50
-gobbledegook;50
-goddam;30
-goitre;10
-goodby;50
-goodie;50
-gospeller;50
-gospellers;50
-gramme;30
-grammes;50
-grandad;50
-grandads;50
-grannie;50
-gravelled;50
-gravelling;50
-gre;50
-grecize;50
-grecized;50
-grecizes;50
-gres;25
-grey;50
-greyed;50
-greyer;50
-greyest;50
-greyness;50
-greys;50
-groyne;10
-gryphon;50
-gryphons;50
-guerilla;10
-guerillas;10
-gulley;50
-gulleys;50
-gynaecological;50
-hadj;50
-hadji;50
-hadjis;50
-haematin;50
-haematological;50
-haematologist;50
-haematology;50
-hah;50
-hallo;50
-hallos;30
-handselling;50
-hanky;50
-hasheesh;50
-hatchelled;50
-hiccupped;50
-hifalutin;50
-highfaluting;60
-highjack;50
-highjacked;50
-highjacking;50
-highjacks;50
-hijinks;60
-hoagy;50
-homewards;50
-homie;50
-homies;50
-homoeopath;50
-homoeostasis;50
-homolog;50
-homologs;50
-homy;25
-honkeys;50
-honour;30
-honours;50
-hookey;50
-hoorah;50
-hoorahs;50
-hoorayed;50
-hoorays;50
-hootch;50
-hootches;50
-horae;50
-horsy;50
-humungous;50
-hurray;50
-hutzpah;50
-huzzaed;50
-huzzaing;50
-huzzas;10
-hyaena;10
-hyaenas;10
-hydrocephaly;50
-idyl;50
-idyls;50
-ignitible;50
-ignitor;50
-ignitors;50
-ikon;25
-ikons;20
-imbed;20
-imbedded;50
-imbedding;50
-imbeds;50
-impanelled;50
-impanelling;50
-imposter;50
-imposters;50
-inclose;50
-inclosed;50
-incloses;50
-inclosing;50
-inclosure;50
-incrust;50
-incrusted;50
-incrusting;50
-incrusts;50
-indorse;50
-indorsed;50
-indorses;50
-indorsing;50
-indue;20
-indued;50
-indues;50
-initialled;50
-initialling;50
-insigne;50
-insignias;50
-instal;50
-instalment;50
-instalments;50
-instals;50
-instil;50
-institutor;50
-institutors;50
-interne;50
-intimae;50
-intrench;50
-intrenched;50
-intrenches;50
-intrust;50
-intrusted;50
-intrusting;50
-intrusts;50
-inwards;50
-ionise;50
-ischaemia;50
-ising;20
-jailor;50
-jailors;50
-jessamine;50
-jeweller;50
-jewellery;50
-jinns;50
-jiujitsu;60
-joky;25
-jour;50
-jours;20
-judgement;50
-judgements;50
-kabala;50
-kabbala;10
-kabob;50
-kabobs;50
-kaftan;50
-kaftans;50
-kebob;20
-kennelled;50
-kennelling;50
-kerb;25
-kerbs;20
-kerosine;50
-khalif;50
-khalifs;50
-kiddy;50
-kidnaped;50
-kidnaper;50
-kidnapers;50
-kidnaping;50
-kinaesthesia;50
-kinaesthetic;50
-kindergartener;50
-kindergarteners;50
-knackwurst;50
-knackwursts;50
-kookie;50
-kopek;20
-kopeks;50
-labelled;30
-labour;50
-labours;50
-lacrimal;50
-lallygag;50
-lallygagged;50
-lallygagging;50
-lallygags;50
-lambast;50
-lambasts;50
-lasagne;50
-lasagnes;50
-laundrette;50
-laurelled;50
-leapt;50
-learnt;50
-leftie;50
-levelled;50
-leveller;50
-levellers;50
-libellee;50
-libellees;50
-libellers;50
-libellous;50
-lichee;50
-lichees;50
-likeable;50
-linguini;50
-liquified;50
-liquifies;50
-liquify;50
-lissom;50
-litre;20
-litres;50
-liveable;50
-loadstar;10
-loadstone;50
-loadstones;50
-lodgement;50
-lodgements;50
-looney;50
-louvre;50
-louvred;50
-louvres;50
-loveable;50
-lupin;50
-lupins;50
-lustre;50
-lustres;50
-lustring;50
-luv;50
-luvs;25
-luvvie;50
-luvvies;50
-lychee;50
-lychees;50
-lynchpin;50
-lynchpins;50
-maaed;20
-macintosh;50
-macintoshes;50
-mack;50
-macks;50
-maharaja;50
-maharajas;50
-maharanee;50
-maharanees;50
-mahjong;50
-maigre;50
-maiolica;50
-mammas;50
-mandril;50
-manilla;50
-mannikin;50
-mannikins;50
-marihuana;50
-marlinspike;50
-marshall;50
-marshalled;50
-marshalling;50
-marvelled;50
-marvelling;50
-maths;20
-matt;50
-matts;20
-mavin;20
-mavins;50
-meagre;30
-medalled;30
-medalling;50
-mediaeval;50
-megaerg;50
-menad;20
-mesquit;50
-metre;50
-metres;50
-miaow;20
-miaowed;50
-miaowing;50
-miaows;50
-midwived;50
-millepede;50
-millepedes;50
-miniscule;50
-misadvise;50
-mise;25
-missis;50
-mitre;50
-mitred;50
-mitres;50
-mitring;50
-modellers;50
-moggie;50
-mollusc;50
-molluscs;50
-momma;50
-mommas;50
-mommie;50
-monicker;50
-monickers;50
-monied;50
-monolog;50
-monologuist;50
-mortgager;50
-mortgagers;50
-mortice;50
-morticed;50
-mortices;50
-morticing;50
-mould;20
-mouldy;50
-moult;20
-moults;50
-mousey;50
-moustache;50
-moustaches;50
-moveable;50
-mujaheddin;50
-mums;50
-mynah;50
-nan;50
-nans;25
-neuronic;50
-nickelled;50
-nicknack;50
-nicknacks;50
-nighty;50
-nite;50
-nites;50
-nitre;20
-nitres;50
-nitroglycerine;50
-nosey;20
-notarise;50
-notre;50
-nought;50
-noughts;50
-numbskull;50
-numbskulls;50
-ochre;50
-ochreous;50
-ochres;50
-octette;50
-octettes;50
-odour;20
-odours;50
-oenologist;60
-oenologists;60
-ombre;20
-ombres;50
-omelette;50
-omelettes;50
-onwards;50
-organdie;50
-outrivalling;50
-outsized;50
-oversized;50
-palaestra;50
-panelled;50
-pangaea;50
-panty;50
-papaw;50
-papaws;50
-parcelled;50
-parcelling;50
-parlour;50
-parrakeet;50
-parrakeets;50
-partizans;50
-patinae;50
-pedagog;50
-pedagogs;50
-pedalled;50
-pediatrist;50
-pediatrists;50
-pedlar;50
-penlites;50
-perilled;50
-perilling;50
-phantasies;50
-phantasy;50
-pharmacopeia;50
-phoenicia;50
-phoney;50
-phoneys;50
-phrenetic;50
-pickaback;50
-pigmies;50
-pigmy;50
-pilau;20
-pinky;50
-pinocle;50
-piny;25
-pirozhki;50
-pixy;50
-pizazz;50
-plough;50
-poe;50
-pollock;50
-pollywog;50
-pollywogs;50
-pommelled;50
-pommelling;50
-postillion;50
-postillions;50
-pourer;50
-pourers;50
-praesidium;50
-prejudgement;50
-premiss;50
-premisses;50
-preppie;50
-presidia;50
-preterite;50
-prev;25
-prevue;50
-prevues;50
-pricy;50
-primaeval;50
-prise;20
-prised;50
-programed;50
-programing;50
-prolog;50
-prologs;50
-propellent;50
-protestor;50
-protestors;50
-pryer;20
-pryers;50
-pummelled;50
-pummelling;50
-pygmaean;50
-pyorrhoea;50
-quae;25
-quahaug;50
-quahaugs;50
-questor;50
-queueing;50
-quintette;50
-racoon;50
-racoons;50
-racquet;50
-racquets;50
-raja;50
-rajas;50
-rani;25
-ranis;20
-ratlin;50
-realise;50
-reenforce;50
-reenforcing;50
-refuelled;50
-remodelling;50
-ren;50
-renes;20
-renest;50
-repellant;50
-reprised;50
-resh;25
-reshoes;50
-ret;25
-revery;50
-revokable;50
-ricksha;30
-rickshas;50
-rigamarole;50
-ripost;50
-riposts;50
-rivalled;50
-rivalless;50
-rivalling;50
-rouble;50
-roubles;50
-rumour;50
-rumours;50
-sabre;50
-sabres;50
-sae;25
-saki;50
-sakis;20
-saleable;50
-saltires;50
-sandalled;50
-sarape;30
-sarapes;30
-saree;20
-sarees;50
-savannah;50
-saveable;50
-saviours;50
-savour;50
-scallywag;60
-scallywags;60
-scarey;50
-sceptre;50
-sceptred;50
-schemas;50
-schlepp;50
-schlepps;50
-schlocky;50
-schmoe;50
-schnaps;50
-schtick;50
-schticks;50
-sclerae;50
-scollop;50
-scolloped;50
-scollops;50
-scrunchie;50
-selvedge;50
-selvedges;50
-sempre;50
-septette;50
-septettes;50
-septicaemia;50
-sextette;50
-sextettes;50
-shammies;50
-shammy;50
-sharpy;50
-sheikhdom;50
-sheikhdoms;50
-sherbert;50
-sherd;20
-sherds;50
-shlemiel;50
-shlep;20
-shlepp;50
-shlock;50
-shoer;20
-shortie;50
-shovelled;50
-shoveller;50
-shovelling;50
-shrivelling;50
-signalled;50
-signaller;50
-signalling;50
-siloed;50
-silvan;50
-siree;20
-sirup;20
-sirups;50
-sizeable;50
-skullduggery;50
-slily;20
-slyer;50
-slyest;50
-smidge;50
-smidgeon;50
-smidgeons;50
-smidgin;50
-smidgins;50
-smoothy;50
-snivelled;50
-softie;50
-sombre;50
-sombrely;50
-sombreness;50
-sos;50
-soubriquet;50
-soubriquets;50
-soya;50
-soyas;20
-spacy;50
-spectre;50
-spectres;50
-spilt;50
-spiraea;50
-spiraeas;50
-spiralled;50
-spirochaete;50
-spoilt;50
-spumone;50
-squirrelled;50
-squirrelling;50
-stagey;50
-stelae;50
-stencilled;50
-stencilling;50
-stockinet;50
-stockinets;50
-stogy;50
-stoney;50
-storey;50
-storeys;30
-stour;20
-straightjacket;50
-straightjackets;50
-stye;50
-styes;50
-subtotalled;50
-subtotalling;50
-sulphurs;50
-sumach;50
-sweepstake;50
-sweetbriar;50
-swivelled;50
-swivelling;50
-swob;25
-swobbed;50
-synch;50
-synched;50
-synching;50
-syphon;50
-syphoned;50
-syphoning;50
-syphons;50
-tabouret;50
-tabourets;50
-tabu;25
-tabus;20
-tae;25
-taegu;20
-taels;20
-taenia;50
-tameable;50
-teazel;50
-teazels;50
-teazle;50
-teazles;50
-teepee;50
-teepees;50
-teetotaller;50
-teetotallers;50
-tempi;50
-tendonitis;50
-testae;50
-theatre;50
-theatregoer;50
-theatregoers;50
-theatres;50
-thiamin;50
-throughway;50
-throughways;50
-thru;50
-tike;50
-tikes;20
-tinselled;50
-tipi;25
-tipis;20
-tiro;25
-tiros;20
-titre;20
-toffies;50
-tormenter;50
-tormenters;50
-totalled;50
-totalling;50
-towards;50
-towelled;50
-tranquillity;50
-tranquillize;50
-tranquillized;50
-tranquillizer;30
-tranquillizers;30
-tranquillizing;50
-transgendered;50
-traveller;50
-travelog;50
-travelogs;50
-tref;25
-trets;20
-trialling;50
-trowelled;50
-trowelling;50
-tsar;50
-tsardom;50
-tsarina;50
-tsarinas;50
-tsarism;60
-tsarist;50
-tsars;50
-tsouris;50
-tumbril;50
-tumbrils;50
-tunnelling;50
-tyre;25
-tyres;20
-tzar;25
-tzarina;50
-tzars;20
-ukelele;10
-ukeleles;10
-unbeknown;50
-undersize;50
-undreamt;50
-unequalled;50
-unfocussed;50
-unlearnt;50
-unravelled;50
-unravelling;50
-unshakeable;50
-unspoilt;50
-upwards;50
-useable;50
-utilise;50
-valour;50
-veldt;50
-veldts;50
-vender;50
-venders;50
-verandah;50
-verandahs;50
-verbalise;30
-vermillion;50
-vetoer;50
-vigour;30
-virtuosos;50
-vivre;20
-vizors;50
-waggon;50
-waggoner;50
-waggoners;50
-waggons;50
-wainscotted;50
-wainscotting;50
-walla;20
-welch;50
-welched;50
-welches;50
-welching;50
-whackier;50
-whackiest;50
-whacky;50
-whimsey;50
-whirr;50
-whirrs;50
-whisky;50
-widgeon;50
-widgeons;50
-wigeons;50
-wilful;50
-willie;50
-winterier;50
-winteriest;50
-wintery;50
-wistaria;50
-wooly;50
-worshipped;50
-worshipper;50
-worshippers;50
-yack;25
-yacked;50
-yacking;50
-yeshivah;50
-yodelled;50
-yodeller;60
-yodellers;60
-yoghourt;50
-yoghourts;50
-yoghurt;50
-yoghurts;50
-yucked;50
-yucking;50
-yucks;50
-zombis;50
+abetter;50;American variant, British preferred; preferred: abettor
+abetters;50;American variant, British preferred; preferred: abettors
+abridgement;50;British preferred, Canadian preferred, Australian preferred; preferred: abridgment
+abridgements;50;British preferred, Canadian preferred, Australian preferred; preferred: abridgments
+absinth;50;American seldom-used variant, British preferred; preferred: absinthe
+absinths;50;American seldom-used variant, British preferred; preferred: absinthes
+accoutre;50;American variant, British preferred; preferred: accouter
+accoutred;50;American variant, British preferred; preferred: accoutered
+accoutrement;50;American variant, British preferred; preferred: accouterment
+accoutrements;50;American variant, British preferred; preferred: accouterments
+accoutres;50;American variant, British preferred; preferred: accouters
+accoutring;50;American variant, British preferred; preferred: accoutering
+accurst;50;American seldom-used variant, British possible; preferred: accursed
+acknowledgement;50;American variant, British preferred, Canadian preferred; preferred: acknowledgment
+acknowledgements;50;American variant, British preferred, Canadian preferred; preferred: acknowledgments
+acre;50;[proper] British preferred; preferred: Acer (proper)
+adaptor;50;American seldom-used variant, British preferred, Canadian variant; preferred: adapter
+adaptors;50;American seldom-used variant, British preferred, Canadian variant; preferred: adapters
+adjustor;50;non-regional seldom-used variant; preferred: adjuster
+adjustors;50;non-regional seldom-used variant; preferred: adjusters
+adonises;50;British preferred; preferred: adonizes
+adrenalin;50;non-regional seldom-used variant; preferred: adrenaline
+advertize;50;American possible; preferred: advertise
+advertized;50;American possible; preferred: advertised
+advertizement;50;American possible; preferred: advertisement
+advertizes;50;American possible; preferred: advertises
+advertizing;50;American possible; preferred: advertising
+advisor;50;American disputed (demoted), British variant, Canadian disputed (demoted); preferred: adviser
+advisors;50;American disputed (demoted), British variant, Canadian disputed (demoted); preferred: advisers
+adz;50;American variant; preferred: adze
+aec;25;British preferred; preferred: ec
+aeneid;50;British preferred; preferred: eneid
+aeon;50;American variant, British preferred, Canadian variant, Australian preferred; preferred: eon
+aeonian;50;British preferred; preferred: eonian
+aeons;50;American variant, British preferred, Canadian variant, Australian preferred; preferred: eons
+aerofoil;50;British preferred; preferred: airfoil
+aerogel;50;British preferred; preferred: airgel
+aerogramme;50;non-regional variant; preferred: aerogram
+aeroplane;50;British preferred, Australian preferred; preferred: airplane
+aeros;20;British preferred; preferred: eros
+aesop;50;British preferred, Australian preferred; preferred: esop
+aesthesia;50;British preferred; preferred: esthesia
+aestival;50;American seldom-used variant, British preferred, Canadian preferred; preferred: estival
+aestivate;50;British preferred, Canadian preferred; preferred: estivate
+aestivated;50;British preferred, Canadian preferred; preferred: estivated
+aestivates;50;British preferred, Canadian preferred; preferred: estivates
+aestivating;50;British preferred, Canadian preferred; preferred: estivating
+afterward;50;American disputed (demoted), Canadian variant; preferred: afterwards
+ageing;50;American variant, British preferred, Canadian variant; preferred: aging
+ageings;50;American variant, British preferred, Canadian variant; preferred: agings
+agism;20;non-regional seldom-used variant; preferred: ageism
+aline;50;American seldom-used variant; preferred: align
+alined;10;American seldom-used variant; preferred: aligned
+alinement;50;American seldom-used variant; preferred: alignment
+alines;50;American seldom-used variant; preferred: aligns
+alining;50;American seldom-used variant; preferred: aligning
+almanack;50;British variant; preferred: almanac
+altho;50;American seldom-used variant; preferred: although
+ambience;50;American disputed (demoted), British preferred; preferred: ambiance
+ameba;20;American variant, Australian variant; preferred: amoeba
+amebae;30;American variant, Australian variant; preferred: amoebas
+amebas;30;American variant, Australian variant; preferred: amoebas
+amebic;10;American variant, Australian variant; preferred: amoebic
+ameboid;50;American variant, Australian variant; preferred: amoeboid
+ameer;20;non-regional seldom-used variant; preferred: emir
+ameers;10;non-regional seldom-used variant; preferred: emirs
+amidst;50;American variant, British variant, British preferred; preferred: amid
+amir;25;non-regional variant; preferred: emir
+amirs;20;non-regional variant; preferred: emirs
+amoebae;50;American variant, British variant, Australian variant; preferred: amoebas
+amongst;50;American seldom-used variant, British preferred, British -ize variant; preferred: among
+amphitheatres;50;British preferred, Canadian preferred; preferred: amphitheaters
+ampoule;50;non-regional variant; preferred: ampule
+ampoules;50;non-regional variant; preferred: ampules
+ampuls;10;non-regional seldom-used variant; preferred: ampules
+amuck;50;American disputed (demoted), British variant; preferred: amok
+anaemia;50;British preferred, Australian preferred; preferred: anemia
+anaemic;50;British preferred, Australian preferred; preferred: anemic
+analyse;50;British preferred, Canadian variant; preferred: analyze
+aneurism;50;non-regional seldom-used variant; preferred: aneurysm
+aneurisms;50;non-regional seldom-used variant; preferred: aneurysms
+apnoea;10;British preferred, Australian preferred; preferred: apnea
+appal;20;British preferred, Canadian variant, Australian preferred; preferred: appall
+appals;10;British preferred, Canadian variant, Australian preferred; preferred: appalls
+apparelled;50;British preferred; preferred: appareled
+apparelling;50;British preferred; preferred: appareling
+aquiculture;50;non-regional seldom-used variant; preferred: aquaculture
+aramaean;50;[proper] British preferred, Australian preferred; preferred: Aramean (proper)
+arbour;10;British preferred, Canadian preferred; preferred: arbor
+archeological;50;American variant, Canadian variant, Australian variant; preferred: archaeological
+archeologies;50;American variant, Canadian variant, Australian variant; preferred: archaeologies
+archeologist;50;American variant, Canadian variant, Australian variant; preferred: archaeologist
+archeologists;50;American variant, Canadian variant, Australian variant; preferred: archaeologists
+archeology;50;American variant, Canadian variant, Australian variant; preferred: archaeology
+archetypical;50;non-regional seldom-used variant; preferred: archetypal
+ardour;10;British preferred, Canadian preferred, Australian preferred; preferred: ardor
+areolae;50;British preferred; preferred: areole
+aristae;50;British preferred; preferred: ariste
+armour;50;British preferred, Canadian preferred, Australian preferred; preferred: armor
+armoury;50;British preferred, Canadian preferred, Australian preferred; preferred: armory
+arse;25;British preferred; preferred: ass
+arses;20;British preferred; preferred: asses
+artefacts;30;British preferred, Canadian variant, Australian preferred; preferred: artifacts
+ascendence;50;non-regional seldom-used variant; preferred: ascendance
+ascendency;50;American seldom-used variant, Canadian variant; preferred: ascendancy
+ascendent;50;American seldom-used variant, British variant; preferred: ascendant
+aunty;50;American seldom-used variant, British variant; preferred: auntie
+aureola;30;non-regional variant; preferred: aureole
+avises;30;British preferred; preferred: avizes
+awestricken;50;non-regional seldom-used variant; preferred: awestruck
+axe;50;American disputed (demoted), British preferred; preferred: ax
+backwards;50;American disputed (demoted), British preferred; preferred: backward
+baddy;50;non-regional variant; preferred: baddie
+bandana;50;American variant, British variant, Canadian preferred; preferred: bandanna
+bandanas;50;American variant, British variant, Canadian preferred; preferred: bandannas
+bandolier;50;non-regional disputed (demoted); preferred: bandoleer
+bandoliers;50;non-regional disputed (demoted); preferred: bandoleers
+bannister;50;American seldom-used variant, British variant; preferred: banister
+bannisters;50;American seldom-used variant, British variant; preferred: banisters
+barbeque;50;American seldom-used variant, British variant; preferred: barbecue
+barcarolle;50;non-regional seldom-used variant; preferred: barcarole
+bare;50;[proper] British preferred; preferred: Baer (proper)
+barque;10;American variant, British preferred; preferred: bark
+barques;50;American variant, British preferred; preferred: barks
+barrelled;50;American variant, British preferred; preferred: barreled
+barrelling;50;American variant, British preferred; preferred: barreling
+bastinadoes;50;British preferred; preferred: bastinades
+bathyscaph;50;non-regional disputed (demoted); preferred: bathyscaphe
+bathyscaphs;50;non-regional disputed (demoted); preferred: bathyscaphes
+battleax;50;American variant; preferred: battleaxe
+bedevilled;50;British preferred; preferred: bedeviled
+bedevilling;50;British preferred; preferred: bedeviling
+bejewelling;50;British preferred; preferred: bejeweling
+berea;50;[proper] British preferred; preferred: Beera (proper)
+bevelled;50;British preferred, Canadian preferred; preferred: beveled
+bevelling;50;British preferred, Canadian preferred; preferred: beveling
+biassed;50;American variant, British variant; preferred: biased
+biassing;50;American variant, British variant; preferred: biasing
+bimetallist;50;British preferred; preferred: bimetalist
+binging;50;American variant; preferred: bingeing
+bise;25;British preferred; preferred: bize
+bistre;10;British preferred, Canadian preferred; preferred: bister
+blaise;50;British preferred; preferred: blaize
+blameable;50;American variant, British preferred, Canadian preferred; preferred: blamable
+blowsier;50;American variant, British preferred; preferred: blowzier
+blowsiest;50;American variant, British preferred; preferred: blowziest
+blowsy;30;American variant, British preferred; preferred: blowzy
+blueing;50;non-regional variant; preferred: bluing
+bocce;50;non-regional variant; preferred: boccie
+bocci;50;non-regional variant; preferred: boccie
+bogy;25;non-regional seldom-used variant; preferred: bogey
+bonnie;50;non-regional seldom-used variant; preferred: bonny
+bootie;50;non-regional variant, non-regional seldom-used variant; preferred: bootee, booty
+borises;10;British preferred; preferred: borizes
+borsch;10;non-regional variant; preferred: borscht
+bourg;20;British preferred; preferred: borg
+bowlder;50;American seldom-used variant; preferred: boulder
+bowlders;50;American seldom-used variant; preferred: boulders
+bren;25;British preferred; preferred: bern
+briar;50;American variant, British preferred, Canadian variant; preferred: brier
+briars;50;American variant, British preferred, Canadian variant; preferred: briers
+brimfull;50;non-regional seldom-used variant; preferred: brimful
+brinksmanship;50;non-regional seldom-used variant; preferred: brinkmanship
+briquet;50;non-regional variant; preferred: briquette
+briquets;50;non-regional variant; preferred: briquettes
+broncho;50;non-regional seldom-used variant; preferred: bronco
+bronchos;50;non-regional seldom-used variant; preferred: broncos
+buncombe;50;non-regional variant; preferred: bunkum
+bunko;50;non-regional variant; preferred: bunco
+bunkos;30;non-regional variant; preferred: buncos
+burnous;50;non-regional variant; preferred: burnoose
+burnouses;50;non-regional variant; preferred: burnooses
+burqa;50;British disputed (demoted), Australian preferred; preferred: burka
+burqas;50;British disputed (demoted), Australian preferred; preferred: burkas
+byelaw;10;non-regional seldom-used variant; preferred: bylaw
+cabala;50;non-regional variant; preferred: kabbalah
+cabbala;10;non-regional seldom-used variant; preferred: kabbalah
+cabbie;50;non-regional disputed (demoted); preferred: cabby
+caesar;50;British preferred; preferred: cesar
+caesarean;50;non-regional variant; preferred: cesarean
+caesareans;50;non-regional variant; preferred: cesareans
+caesarian;50;non-regional seldom-used variant; preferred: cesarean
+caesural;50;British preferred, Australian preferred; preferred: cesural
+cageyness;50;American seldom-used variant, British variant; preferred: caginess
+cagy;50;American seldom-used variant, British variant; preferred: cagey
+caldron;50;American disputed (demoted), British variant; preferred: cauldron
+caldrons;50;American disputed (demoted), British variant; preferred: cauldrons
+calibre;50;British preferred; preferred: caliber
+calibres;50;British preferred; preferred: calibers
+calif;20;non-regional seldom-used variant; preferred: caliph
+califs;10;non-regional seldom-used variant; preferred: caliphs
+callipers;50;British variant; preferred: calipers
+callisthenics;10;British preferred, Canadian variant; preferred: calisthenics
+camise;30;British preferred; preferred: camize
+camomile;50;non-regional variant; preferred: chamomile
+camomiles;50;non-regional variant; preferred: chamomiles
+canaller;50;British preferred; preferred: canaler
+canalling;50;British preferred; preferred: canaling
+cancellate;50;American variant, British preferred; preferred: cancelate
+cancelled;50;American variant, British preferred; preferred: canceled
+canonise;30;British preferred; preferred: canonize
+cantaloups;50;American seldom-used variant, Canadian variant; preferred: cantaloupes
+caravanserai;50;non-regional variant; preferred: caravansary
+carney;50;non-regional variant; preferred: carny
+carneys;50;non-regional variant; preferred: carnies
+carnie;50;non-regional variant; preferred: carny
+carolled;50;British preferred; preferred: caroled
+carolling;50;British preferred; preferred: caroling
+carrousel;50;non-regional seldom-used variant; preferred: carousel
+carrousels;50;non-regional seldom-used variant; preferred: carousels
+cassino;50;non-regional seldom-used variant; preferred: casino
+cassinos;50;non-regional seldom-used variant; preferred: casinos
+catalogued;50;American variant, British preferred; preferred: cataloged
+catchup;60;non-regional seldom-used variant; preferred: ketchup
+catsup;50;non-regional variant; preferred: ketchup
+catsups;50;non-regional variant; preferred: ketchups
+caulkings;50;American seldom-used variant, British variant; preferred: caulks
+caviare;50;American seldom-used variant, British variant; preferred: caviar
+caviares;50;American seldom-used variant, British variant; preferred: caviars
+cavilled;50;British preferred, Canadian preferred; preferred: caviled
+caviller;50;British preferred; preferred: caviler
+cavillers;50;British preferred; preferred: cavilers
+cavilling;50;British preferred, Canadian preferred; preferred: caviling
+cayman;50;non-regional seldom-used variant; preferred: caiman
+caymans;50;non-regional seldom-used variant; preferred: caimans
+centre;50;British preferred, Canadian preferred; preferred: center
+centrefolds;50;British preferred; preferred: centerfolds
+centres;50;British preferred, Canadian preferred; preferred: centers
+cesarian;50;non-regional seldom-used variant; preferred: cesarean
+cesarians;50;non-regional seldom-used variant; preferred: cesareans
+channelled;50;British preferred; preferred: channeled
+channelling;50;British preferred; preferred: channeling
+chaperone;50;American variant, British preferred; preferred: chaperon
+chaperones;50;American variant, British preferred; preferred: chaperons
+cheque;50;British preferred, Canadian preferred; preferred: check
+cheques;50;British preferred, Canadian preferred; preferred: checks
+chile;50;American seldom-used variant, Canadian variant; preferred: chili
+chiles;50;American seldom-used variant, Canadian variant; preferred: chilies
+chilis;50;American seldom-used variant; preferred: chilies
+chilli;10;American seldom-used variant, British preferred; preferred: chili
+chillies;50;American seldom-used variant, British preferred; preferred: chilies
+chimaeras;50;American variant, British variant; preferred: chimeras
+chiselled;50;American variant, British preferred; preferred: chiseled
+chiseller;50;American variant, British preferred; preferred: chiseler
+chisellers;50;American variant, British preferred; preferred: chiselers
+chitlings;50;non-regional seldom-used variant; preferred: chitterlings
+chitlins;50;non-regional variant; preferred: chitterlings
+chivvied;50;non-regional variant; preferred: chivied
+chivvies;50;non-regional variant; preferred: chivies
+chivvying;50;non-regional variant; preferred: chivying
+chocaholic;50;non-regional seldom-used variant; preferred: chocoholic
+chocaholics;50;non-regional seldom-used variant; preferred: chocoholics
+chocolatey;50;American variant, British preferred; preferred: chocolaty
+choosey;50;non-regional seldom-used variant; preferred: choosy
+chutzpa;50;non-regional seldom-used variant; preferred: chutzpah
+chutzpas;50;non-regional seldom-used variant; preferred: chutzpahes
+cicatrice;50;American seldom-used variant, British variant, Canadian preferred; preferred: cicatrix
+cigaret;50;American seldom-used variant; preferred: cigarette
+cocoanut;50;non-regional seldom-used variant; preferred: coconut
+cocoanuts;50;non-regional seldom-used variant; preferred: coconuts
+coeliac;50;British preferred, Australian preferred; preferred: celiac
+coelom;10;British preferred, British variant, Canadian preferred, Australian preferred; preferred: celom
+collectable;50;American variant, British preferred; preferred: collectible
+collectables;50;American variant, British preferred; preferred: collectibles
+colour;30;British preferred, Canadian preferred, Australian preferred; preferred: color
+colours;50;British preferred, Canadian preferred, Australian preferred; preferred: colors
+conchae;50;British preferred; preferred: conche
+coney;50;non-regional variant; preferred: cony
+conies;50;non-regional variant; preferred: coneys
+conjuror;50;non-regional variant; preferred: conjurer
+conjurors;50;non-regional variant; preferred: conjurers
+connecter;50;American seldom-used variant; preferred: connector
+connecters;50;American seldom-used variant; preferred: connectors
+convenors;50;non-regional variant; preferred: conveners
+convertor;50;British variant, American variant; preferred: converter
+convertors;50;British variant, American variant; preferred: converters
+conveyer;50;non-regional seldom-used variant; preferred: conveyor
+conveyers;50;non-regional seldom-used variant; preferred: conveyors
+copeck;10;non-regional seldom-used variant; preferred: kopeck
+copecks;50;non-regional seldom-used variant; preferred: kopecks
+cosies;50;British preferred, Canadian variant; preferred: cozies
+cosily;50;British preferred; preferred: cozily
+costae;10;British preferred; preferred: coste
+cosy;25;British preferred, Canadian variant; preferred: cozy
+councillor;50;British preferred; preferred: councilor
+councillors;50;British preferred; preferred: councilors
+crea;25;British preferred; preferred: cera
+cree;50;British preferred; preferred: cere
+crees;50;British preferred; preferred: ceres
+crenellations;50;British preferred; preferred: crenelations
+crozier;50;American variant, British preferred; preferred: crosier
+croziers;50;American variant, British preferred; preferred: crosiers
+crueller;50;British preferred, Canadian preferred; preferred: crueler
+cruellest;50;British preferred, Canadian preferred; preferred: cruelest
+cryptaesthesia;50;British preferred, Australian preferred; preferred: cryptesthesia
+crystalize;50;American seldom-used variant; preferred: crystallize
+cudgelled;50;British preferred; preferred: cudgeled
+cudgelling;50;British preferred; preferred: cudgeling
+cullender;50;non-regional variant; preferred: colander
+cumquat;50;non-regional seldom-used variant; preferred: kumquat
+cumquats;50;non-regional seldom-used variant; preferred: kumquats
+curtsey;50;American seldom-used variant, British variant; preferred: curtsy
+curtseyed;50;American seldom-used variant, British variant; preferred: curtsied
+curtseying;50;American seldom-used variant, British variant; preferred: curtsying
+curtseys;50;American seldom-used variant, British variant; preferred: curtsies
+cypher;60;British variant; preferred: cipher
+cyphered;50;British variant; preferred: ciphered
+cyphering;50;British variant; preferred: ciphering
+cyphers;60;British variant; preferred: ciphers
+daedal;30;British preferred; preferred: dedal
+danae;50;British preferred; preferred: dane
+dearie;50;non-regional variant; preferred: deary
+decagram;50;American variant, British preferred; preferred: dekagram
+decaliter;50;American variant; preferred: dekaliter
+decaliters;50;American variant; preferred: dekaliters
+decameter;50;American variant, Canadian variant; preferred: dekameter
+decameters;50;American variant, Canadian variant; preferred: dekameters
+demagog;50;American seldom-used variant; preferred: demagogue
+demagogs;50;American seldom-used variant; preferred: demagogues
+dentine;50;American variant, British preferred; preferred: dentin
+dependance;50;American seldom-used variant; preferred: dependence
+dependant;50;British preferred; preferred: dependent
+dependants;50;British preferred; preferred: dependents
+descendent;50;American seldom-used variant, British preferred; preferred: descendant
+despatch;50;American seldom-used variant, British variant; preferred: dispatch
+despatched;50;American seldom-used variant, British variant; preferred: dispatched
+despatches;50;American seldom-used variant, British variant; preferred: dispatches
+despatching;50;American seldom-used variant, British variant; preferred: dispatching
+dextrous;50;non-regional seldom-used variant; preferred: dexterous
+dextrously;50;non-regional seldom-used variant; preferred: dexterously
+dialled;50;British preferred, Canadian variant; preferred: dialed
+dialling;50;British preferred, Canadian variant; preferred: dialing
+dialogs;50;American seldom-used variant; preferred: dialogues
+diarrhoeic;50;British preferred, Australian preferred; preferred: diarrheic
+dickie;30;non-regional seldom-used variant; preferred: dickey
+dickies;50;non-regional variant, non-regional seldom-used variant; preferred: dickeys
+dicky;20;non-regional variant; preferred: dickey
+dietician;50;American variant, British variant; preferred: dietitian
+dieticians;50;American variant, British variant; preferred: dietitians
+disembowelled;50;British preferred; preferred: disemboweled
+disembowelling;50;British preferred; preferred: disemboweling
+dishonour;30;British preferred, Canadian preferred, Australian preferred; preferred: dishonor
+diss;50;American seldom-used variant, British variant; preferred: dis
+ditzier;50;non-regional variant; preferred: ditsier
+ditzy;50;non-regional variant; preferred: ditsy
+djinn;50;non-regional seldom-used variant; preferred: jinni, jinn
+djinni;50;non-regional seldom-used variant; preferred: jinni
+djinns;50;non-regional seldom-used variant; preferred: jinn
+doggie;50;non-regional variant; preferred: doggy
+doggoned;50;non-regional variant; preferred: doggone
+dognapped;50;British preferred; preferred: dognaped
+dognapping;50;British preferred; preferred: dognaping
+dogy;25;non-regional possible; preferred: dogie
+donut;50;American seldom-used variant; preferred: doughnut
+donuts;50;American seldom-used variant; preferred: doughnuts
+dopy;25;non-regional seldom-used variant; preferred: dopey
+downwards;50;non-regional variant; preferred: downward
+draftboard;50;American possible, Canadian possible; preferred: draughtboard
+draftboards;50;American possible, Canadian possible; preferred: draughtboards
+dreamt;50;British disputed (demoted), Canadian preferred, British -ize variant; preferred: dreamed
+drily;50;American variant, British preferred, Canadian variant; preferred: dryly
+drivelled;50;British preferred; preferred: driveled
+driveller;50;British preferred; preferred: driveler
+drivellers;50;British preferred; preferred: drivelers
+drivelling;50;British preferred; preferred: driveling
+dryest;50;non-regional seldom-used variant; preferred: driest
+duelled;50;British preferred; preferred: dueled
+dueller;50;British preferred; preferred: dueler
+duellers;50;British preferred; preferred: duelers
+duelling;50;British preferred; preferred: dueling
+duellist;50;British preferred; preferred: duelist
+duellists;50;British preferred; preferred: duelists
+dumfound;50;non-regional seldom-used variant; preferred: dumbfound
+dumfounded;50;non-regional seldom-used variant; preferred: dumbfounded
+dumfounding;50;non-regional seldom-used variant; preferred: dumbfounding
+dumfounds;50;non-regional seldom-used variant; preferred: dumbfounds
+dyked;20;American seldom-used variant, British preferred, Canadian variant; preferred: diked
+dyking;10;American seldom-used variant, British preferred, Canadian variant; preferred: diking
+edile;20;American seldom-used variant; preferred: aedile
+ediles;10;American seldom-used variant; preferred: aediles
+eery;25;non-regional seldom-used variant; preferred: eerie
+egis;25;American seldom-used variant; preferred: aegis
+egises;10;American seldom-used variant; preferred: aegises
+empanel;50;American variant, British variant, Canadian preferred; preferred: impanel
+empaneled;50;American variant; preferred: impaneled
+empaneling;50;American variant; preferred: impaneling
+empanelled;50;British variant, Canadian preferred; preferred: impaneled
+empanels;30;American variant, British variant, Canadian preferred; preferred: impanels
+enamelled;50;British preferred, Canadian preferred; preferred: enameled
+enameller;50;British preferred; preferred: enameler
+enamelling;50;British preferred, Canadian preferred; preferred: enameling
+enamour;50;British preferred, Canadian preferred, Australian preferred; preferred: enamor
+encyclopaedic;50;American seldom-used variant, British disputed (demoted), Canadian variant, Australian variant; preferred: encyclopedic
+endeavour;50;British preferred, Canadian preferred, Australian preferred; preferred: endeavor
+enquire;50;British preferred, Canadian variant, Australian disputed (demoted); preferred: inquire
+enquired;50;British preferred, Canadian variant, Australian disputed (demoted); preferred: inquired
+enquiry;50;British preferred, Canadian variant, Australian disputed (demoted); preferred: inquiry
+enrol;20;British preferred, Canadian preferred, Australian preferred; preferred: enroll
+enrols;30;British preferred, Canadian preferred, Australian preferred; preferred: enrolls
+entendre;50;British preferred; preferred: entender
+enthral;30;British preferred, Canadian variant; preferred: enthrall
+enure;20;non-regional variant; preferred: inure
+enured;30;non-regional variant; preferred: inured
+enures;30;non-regional variant; preferred: inures
+enuring;50;non-regional variant; preferred: inuring
+epaulette;50;American seldom-used variant, British preferred, Canadian preferred; preferred: epaulet
+epaulettes;50;American seldom-used variant, British preferred, Canadian preferred; preferred: epaulets
+epilog;50;American seldom-used variant; preferred: epilogue
+epilogs;50;American seldom-used variant; preferred: epilogues
+epinephrin;50;non-regional seldom-used variant; preferred: epinephrine
+esthete;50;American seldom-used variant; preferred: aesthete
+esthetes;50;American seldom-used variant; preferred: aesthetes
+esthetic;50;American variant, Canadian variant, Australian variant; preferred: aesthetic
+esthetics;50;American variant, Canadian variant, Australian variant; preferred: aesthetics
+eudaemon;50;British preferred; preferred: eudemon
+eudaemonia;60;British preferred; preferred: eudemonia
+eviller;50;British preferred; preferred: eviler
+evillest;50;British preferred; preferred: evilest
+exorciser;50;British preferred; preferred: exorcizer
+exorcisers;50;British preferred; preferred: exorcizers
+exorcize;50;American seldom-used variant, Canadian variant, British -ize preferred; preferred: exorcise
+exorcized;50;American seldom-used variant, Canadian variant, British -ize preferred; preferred: exorcised
+exorcizes;50;American seldom-used variant, Canadian variant, British -ize preferred; preferred: exorcises
+exorcizing;50;American seldom-used variant, Canadian variant, British -ize preferred; preferred: exorcising
+extendible;50;non-regional variant; preferred: extendable
+extolls;50;American seldom-used variant; preferred: extols
+extravert;50;American seldom-used variant, British seldom-used variant; preferred: extrovert
+extraverts;50;American seldom-used variant, British seldom-used variant; preferred: extroverts
+eying;50;American variant, British variant; preferred: eyeing
+eyrie;20;British variant; preferred: aerie
+eyries;10;American possible, British variant; preferred: aeries
+fae;50;British preferred; preferred: fe
+faery;20;American seldom-used variant, British variant; preferred: faerie
+felafel;50;non-regional seldom-used variant; preferred: falafel
+fibre;20;British preferred; preferred: fiber
+fibres;30;British preferred; preferred: fibers
+filets;50;non-regional seldom-used variant, non-regional possible; preferred: fillets
+fiord;20;non-regional seldom-used variant; preferred: fjord
+fiords;10;non-regional seldom-used variant; preferred: fjords
+flautist;50;British preferred, Canadian disputed (demoted); preferred: flutist
+flautists;50;British preferred, Canadian disputed (demoted); preferred: flutists
+fledgeling;50;American seldom-used variant, British variant; preferred: fledgling
+fledgelings;50;American seldom-used variant, British variant; preferred: fledglings
+flexitime;50;non-regional seldom-used variant; preferred: flextime
+floatations;50;non-regional seldom-used variant; preferred: flotations
+floozie;50;non-regional variant; preferred: floozy
+flukey;30;non-regional seldom-used variant; preferred: fluky
+flunkey;50;non-regional seldom-used variant; preferred: flunky
+flunkeys;50;non-regional seldom-used variant; preferred: flunkies
+flyer;50;American seldom-used variant, British preferred; preferred: flier
+flyers;50;American seldom-used variant, British preferred; preferred: fliers
+focussed;50;American seldom-used variant, British variant; preferred: focused
+focussing;50;American seldom-used variant, British variant; preferred: focusing
+foetid;10;British variant; preferred: fetid
+fogey;50;British preferred; preferred: fogy
+fogeys;50;British preferred; preferred: fogies
+fondu;20;non-regional seldom-used variant; preferred: fondue
+fontanelle;50;American variant, British preferred; preferred: fontanel
+foregather;50;American variant, British preferred; preferred: forgather
+foregathered;50;American variant, British preferred; preferred: forgathered
+foregathering;50;American variant, British preferred; preferred: forgathering
+foregathers;50;American variant, British preferred; preferred: forgathers
+foreswore;50;non-regional seldom-used variant; preferred: forswore
+formulae;50;American variant, British preferred; preferred: formulas
+fossae;30;British preferred; preferred: fosse
+fred;50;British preferred; preferred: ferd
+freebee;50;non-regional variant; preferred: freebie
+freebees;50;non-regional variant; preferred: freebies
+friers;50;non-regional seldom-used variant; preferred: fryers
+frise;20;British preferred; preferred: frize
+frisette;50;British preferred; preferred: frizette
+frivolled;50;British preferred; preferred: frivoled
+frivolling;50;British preferred; preferred: frivoling
+friz;25;non-regional possible; preferred: frizz
+frowsier;50;American variant, British variant; preferred: frowzier
+frowsy;30;American variant, British variant; preferred: frowzy
+fuelled;50;British preferred; preferred: fueled
+fuelling;50;British preferred; preferred: fueling
+fulness;50;non-regional seldom-used variant; preferred: fullness
+funnelled;50;British preferred; preferred: funneled
+funnelling;50;British preferred; preferred: funneling
+furore;10;British preferred, Australian preferred; preferred: furor
+furores;50;British preferred, Australian preferred; preferred: furors
+fuze;25;American seldom-used variant, Canadian variant; preferred: fuse
+gae;25;British preferred; preferred: ge
+gambolled;50;British preferred; preferred: gamboled
+gambolling;50;British preferred; preferred: gamboling
+gaol;25;British variant, British -ize seldom-used variant; preferred: jail
+gaolbreak;50;British possible; preferred: jailbreak
+gaoler;30;British variant, British -ize seldom-used variant; preferred: jailer
+gaols;20;British variant, British -ize seldom-used variant; preferred: jails
+garotte;50;non-regional variant; preferred: garrote
+garotted;50;non-regional variant; preferred: garroted
+garottes;50;non-regional variant; preferred: garrotes
+garotting;50;non-regional variant; preferred: garroting
+gasolene;50;American seldom-used variant, British variant; preferred: gasoline
+gasolenes;50;American seldom-used variant, British variant; preferred: gasolines
+gasses;50;American seldom-used variant; preferred: gases
+gayety;10;non-regional seldom-used variant; preferred: gaiety
+gayly;50;non-regional seldom-used variant; preferred: gaily
+geegaw;10;non-regional seldom-used variant; preferred: gewgaw
+geez;50;non-regional seldom-used variant; preferred: jeez
+gelatine;50;American seldom-used variant, British variant; preferred: gelatin
+gessoes;50;British preferred; preferred: gesses
+gestae;30;British preferred; preferred: geste
+gingko;50;non-regional seldom-used variant; preferred: ginkgo
+gipsies;50;non-regional seldom-used variant; preferred: gypsies
+gipsy;20;non-regional seldom-used variant; preferred: gypsy
+girlie;30;non-regional variant; preferred: girly
+gismo;20;non-regional seldom-used variant; preferred: gizmo
+gismos;30;non-regional seldom-used variant; preferred: gizmos
+glamor;50;American variant, Canadian variant, Australian seldom-used variant; preferred: glamour
+glamors;50;American variant, Canadian variant, Australian seldom-used variant; preferred: glamours
+glamourize;50;American seldom-used variant, British -ize variant; preferred: glamorize
+glueing;50;American seldom-used variant, British variant; preferred: gluing
+glycerine;50;American variant, British preferred; preferred: glycerin
+gobbledegook;50;American seldom-used variant, British preferred, Canadian variant; preferred: gobbledygook
+goddam;30;non-regional variant; preferred: goddamn
+goes;50;[proper] British preferred; preferred: Ges (proper)
+goetz;20;[proper] British preferred; preferred: Getz (proper)
+goitre;10;British preferred; preferred: goiter
+goodby;50;American variant; preferred: goodbye
+goodie;50;American variant, British variant; preferred: goody
+gospeller;50;British preferred; preferred: gospeler
+gospellers;50;British preferred; preferred: gospelers
+graecize;50;[proper] British -ize preferred; preferred: Grecize (proper)
+graecized;50;[proper] British -ize preferred; preferred: Grecized (proper)
+graecizes;50;[proper] British -ize preferred; preferred: Grecizes (proper)
+graecizing;50;[proper] British -ize preferred; preferred: Grecizing (proper)
+gramme;30;British variant; preferred: gram
+grammes;50;British variant; preferred: grams
+grandad;50;non-regional variant; preferred: granddad
+grandads;50;non-regional variant; preferred: granddads
+grannie;50;non-regional variant; preferred: granny
+gravelled;50;British preferred; preferred: graveled
+gravelling;50;British preferred; preferred: graveling
+gre;50;British preferred; preferred: ger
+gres;25;British preferred; preferred: gers
+grey;50;American seldom-used variant, British preferred, Canadian preferred; preferred: gray
+greyed;50;American seldom-used variant, British preferred, Canadian preferred; preferred: grayed
+greyer;50;American seldom-used variant, British preferred, Canadian preferred; preferred: grayer
+greyest;50;American seldom-used variant, British preferred, Canadian preferred; preferred: grayest
+greyness;50;British preferred; preferred: grayness
+greys;50;American seldom-used variant, British preferred, Canadian preferred; preferred: grays
+groyne;10;British preferred; preferred: groin
+gryphon;50;non-regional seldom-used variant; preferred: griffin
+gryphons;50;non-regional seldom-used variant; preferred: griffins
+guerilla;10;American variant, British variant, Australian preferred; preferred: guerrilla
+guerillas;10;American variant, British variant, Australian preferred; preferred: guerrillas
+gulley;50;non-regional seldom-used variant; preferred: gully
+gulleys;50;non-regional possible; preferred: gullies
+gynaecological;50;British preferred, Australian preferred; preferred: gynecological
+hadj;50;non-regional seldom-used variant; preferred: hajj
+hadji;50;non-regional seldom-used variant; preferred: hajji
+hadjis;50;non-regional seldom-used variant; preferred: hajjis
+haematin;50;British preferred, Australian preferred; preferred: hematin
+haematological;50;British preferred, Australian preferred; preferred: hematological
+haematologist;50;British preferred, Australian preferred; preferred: hematologist
+haematology;50;British preferred, Australian preferred; preferred: hematology
+hah;50;American variant, British variant; preferred: ha
+hallo;50;non-regional seldom-used variant; preferred: halloo
+hallos;30;non-regional seldom-used variant; preferred: halloos
+handselling;50;British preferred; preferred: handseling
+hanky;50;American disputed (demoted), British preferred; preferred: hankie
+hasheesh;50;non-regional seldom-used variant; preferred: hashish
+hatchelled;50;British preferred; preferred: hatcheled
+hiccupped;50;Canadian variant; preferred: hiccuped
+hifalutin;50;non-regional seldom-used variant; preferred: highfalutin
+highfaluting;60;non-regional seldom-used variant; preferred: highfalutin
+highjack;50;non-regional seldom-used variant; preferred: hijack
+highjacked;50;non-regional seldom-used variant; preferred: hijacked
+highjacking;50;non-regional seldom-used variant; preferred: hijacking
+highjacks;50;non-regional seldom-used variant; preferred: hijacks
+hijinks;60;non-regional seldom-used variant; preferred: high_jinks
+hoagy;50;non-regional seldom-used variant; preferred: hoagie
+homewards;50;non-regional variant; preferred: homeward
+homie;50;non-regional variant; preferred: homey
+homies;50;non-regional variant; preferred: homeys
+homoeopath;50;British variant; preferred: homeopath
+homoeostasis;50;British variant; preferred: homeostasis
+homolog;50;American variant; preferred: homologue
+homologs;50;American variant; preferred: homologues
+homy;25;non-regional seldom-used variant; preferred: homey
+honkeys;50;non-regional seldom-used variant; preferred: honkies
+honour;30;British preferred, Canadian preferred, Australian preferred; preferred: honor
+honours;50;British preferred, Canadian preferred, Australian preferred; preferred: honors
+hookey;50;non-regional seldom-used variant; preferred: hooky
+hoorah;50;American seldom-used variant; preferred: hurrah
+hoorahs;50;American seldom-used variant; preferred: hurrahs
+hoorayed;50;American seldom-used variant, British variant; preferred: hurrahed
+hoorays;50;American variant, British variant; preferred: hurrahs
+hootch;50;non-regional variant; preferred: hooch
+hootches;50;non-regional variant; preferred: hooches
+horae;50;British preferred; preferred: hore
+horsy;50;non-regional disputed (demoted); preferred: horsey
+humungous;50;non-regional seldom-used variant; preferred: humongous
+hurray;50;American possible, British variant, American variant; preferred: hurrah, hooray
+hutzpah;50;non-regional seldom-used variant; preferred: chutzpah
+huzzaed;50;non-regional variant; preferred: huzzahed
+huzzaing;50;non-regional variant; preferred: huzzahing
+huzzas;10;non-regional variant; preferred: huzzahs
+hyaena;10;non-regional seldom-used variant; preferred: hyena, hyenas
+hyaenas;10;non-regional seldom-used variant; preferred: hyenas
+hydrocephaly;50;non-regional seldom-used variant; preferred: hydrocephalus
+idyl;50;non-regional seldom-used variant; preferred: idyll
+idyls;50;non-regional seldom-used variant; preferred: idylls
+ignitible;50;non-regional seldom-used variant; preferred: ignitable
+ignitor;50;non-regional seldom-used variant; preferred: igniter
+ignitors;50;non-regional seldom-used variant; preferred: igniters
+ikon;25;American seldom-used variant, British variant; preferred: icon
+ikons;20;American seldom-used variant, British variant; preferred: icons
+imbed;20;American seldom-used variant, British variant; preferred: embed
+imbedded;50;American seldom-used variant, British variant; preferred: embedded
+imbedding;50;American seldom-used variant, British variant; preferred: embedding
+imbeds;50;American seldom-used variant, British variant; preferred: embeds
+impanelled;50;British preferred, Canadian variant; preferred: impaneled
+impanelling;50;British preferred, Canadian variant; preferred: impaneling
+imposter;50;American variant, British variant, Canadian preferred; preferred: impostor
+imposters;50;American variant, British variant, Canadian preferred; preferred: impostors
+imre;25;[proper] British preferred; preferred: Imer (proper)
+inclose;50;American seldom-used variant; preferred: enclose
+inclosed;50;American seldom-used variant; preferred: enclosed
+incloses;50;American seldom-used variant; preferred: encloses
+inclosing;50;American seldom-used variant; preferred: enclosing
+inclosure;50;non-regional seldom-used variant; preferred: enclosure
+incrust;50;non-regional seldom-used variant; preferred: encrust
+incrusted;50;non-regional seldom-used variant; preferred: encrusted
+incrusting;50;non-regional seldom-used variant; preferred: encrusting
+incrusts;50;non-regional seldom-used variant; preferred: encrusts
+indorse;50;non-regional seldom-used variant; preferred: endorse
+indorsed;50;non-regional seldom-used variant; preferred: endorsed
+indorses;50;non-regional seldom-used variant; preferred: endorses
+indorsing;50;non-regional seldom-used variant; preferred: endorsing
+indue;20;non-regional variant; preferred: endue
+indued;50;non-regional variant; preferred: endued
+indues;50;non-regional variant; preferred: endues
+initialled;50;British preferred, Canadian preferred; preferred: initialed
+initialling;50;British preferred, Canadian preferred; preferred: initialing
+insigne;50;non-regional seldom-used variant; preferred: insignia
+insignias;50;non-regional variant; preferred: insignia
+instal;50;British variant; preferred: install
+instalment;50;British preferred, Canadian preferred; preferred: installment
+instalments;50;British preferred, Canadian preferred; preferred: installments
+instals;50;British variant; preferred: installs
+instil;50;British preferred, Canadian variant; preferred: instill
+institutor;50;non-regional variant; preferred: instituter
+institutors;50;non-regional variant; preferred: instituters
+interne;50;non-regional variant, non-regional seldom-used variant; preferred: intern
+intimae;50;British preferred; preferred: intime
+intrench;50;non-regional seldom-used variant; preferred: entrench
+intrenched;50;non-regional seldom-used variant; preferred: entrenched
+intrenches;50;non-regional seldom-used variant; preferred: entrenches
+intrust;50;non-regional seldom-used variant; preferred: entrust
+intrusted;50;non-regional seldom-used variant; preferred: entrusted
+intrusting;50;non-regional seldom-used variant; preferred: entrusting
+intrusts;50;non-regional seldom-used variant; preferred: entrusts
+inwards;50;non-regional variant; preferred: inward
+ionise;50;British preferred; preferred: ionize
+ire;50;[proper] British preferred; preferred: Ier (proper)
+ischaemia;50;British preferred, Australian preferred; preferred: ischemia
+ising;20;British preferred; preferred: izing
+jailor;50;American seldom-used variant, Canadian variant; preferred: jailer
+jailors;50;American seldom-used variant, Canadian variant; preferred: jailers
+jessamine;50;non-regional seldom-used variant; preferred: jasmine
+jeweller;50;British preferred; preferred: jeweler
+jewellery;50;British preferred, Canadian preferred; preferred: jewelry
+jinns;50;non-regional variant; preferred: jinn
+jiujitsu;60;non-regional seldom-used variant; preferred: jujitsu
+joky;25;American seldom-used variant, British variant; preferred: jokey
+jour;50;British preferred; preferred: jor
+jours;20;British preferred; preferred: jors
+judgement;50;British preferred, Canadian variant; preferred: judgment
+judgements;50;British preferred, Canadian variant; preferred: judgments
+kabala;50;non-regional seldom-used variant; preferred: kabbalah
+kabbala;10;non-regional variant; preferred: kabbalah
+kabob;50;non-regional variant; preferred: kebab
+kabobs;50;non-regional variant; preferred: kebabs
+kaftan;50;American seldom-used variant, British preferred, Canadian variant; preferred: caftan
+kaftans;50;American seldom-used variant, British preferred, Canadian variant; preferred: caftans
+kebob;20;non-regional variant; preferred: kebab
+kennelled;50;British preferred; preferred: kenneled
+kennelling;50;British preferred; preferred: kenneling
+kerb;25;British preferred; preferred: curb
+kerbs;20;British preferred; preferred: curbs
+kerosine;50;American seldom-used variant, British variant; preferred: kerosene
+khalif;50;non-regional possible; preferred: caliph
+khalifs;50;non-regional possible; preferred: caliphs
+kiddy;50;non-regional seldom-used variant; preferred: kiddie
+kidnaped;50;American seldom-used variant; preferred: kidnapped
+kidnaper;50;American seldom-used variant; preferred: kidnapper
+kidnapers;50;American seldom-used variant; preferred: kidnappers
+kidnaping;50;American seldom-used variant; preferred: kidnapping
+kinaesthesia;50;British preferred, Canadian variant, Australian preferred; preferred: kinesthesia
+kinaesthetic;50;British preferred, Canadian variant, Australian preferred; preferred: kinesthetic
+kindergartener;50;American seldom-used variant, British preferred; preferred: kindergartner
+kindergarteners;50;American seldom-used variant, British preferred; preferred: kindergartners
+knackwurst;50;non-regional disputed (demoted); preferred: knockwurst
+knackwursts;50;non-regional disputed (demoted); preferred: knockwursts
+kookie;50;non-regional seldom-used variant; preferred: kooky
+kopek;20;non-regional variant; preferred: kopeck
+kopeks;50;non-regional variant; preferred: kopecks
+koran;50;[proper] American disputed (demoted), British disputed (demoted); preferred: Quran (proper)
+koranic;50;[proper] American disputed (demoted), British disputed (demoted); preferred: Quranic (proper)
+korans;50;[proper] American disputed (demoted), British disputed (demoted); preferred: Qurans (proper)
+labelled;30;British preferred; preferred: labeled
+labour;50;British preferred, Canadian preferred, Australian preferred; preferred: labor
+labours;50;British preferred, Canadian preferred, Australian preferred; preferred: labors
+lacrimal;50;non-regional variant; preferred: lachrymal
+lallygag;50;non-regional variant; preferred: lollygag
+lallygagged;50;non-regional variant; preferred: lollygagged
+lallygagging;50;non-regional variant; preferred: lollygagging
+lallygags;50;non-regional variant; preferred: lollygags
+lambast;50;non-regional variant; preferred: lambaste
+lambasts;50;non-regional variant; preferred: lambastes
+lasagne;50;British preferred; preferred: lasagna
+lasagnes;50;British preferred; preferred: lasagnas
+laundrette;50;American seldom-used variant, British variant; preferred: launderette
+laurelled;50;British preferred; preferred: laureled
+leapt;50;American disputed (demoted), British preferred; preferred: leaped
+learnt;50;British preferred, British -ize variant; preferred: learned
+leftie;50;non-regional seldom-used variant; preferred: lefty
+levelled;50;British preferred; preferred: leveled
+leveller;50;British preferred; preferred: leveler
+levellers;50;British preferred; preferred: levelers
+libellee;50;British preferred; preferred: libelee
+libellees;50;British preferred; preferred: libelees
+libellers;50;British preferred; preferred: libelers
+libellous;50;British preferred, Canadian preferred; preferred: libelous
+lichee;50;non-regional seldom-used variant; preferred: litchi
+lichees;50;non-regional seldom-used variant; preferred: litchis
+likeable;50;American variant, British preferred; preferred: likable
+linguini;50;non-regional variant; preferred: linguine
+liquified;50;American seldom-used variant, British variant; preferred: liquefied
+liquifies;50;American seldom-used variant, British variant; preferred: liquefies
+liquify;50;American seldom-used variant, British variant; preferred: liquefy
+lissom;50;American seldom-used variant, British preferred, Canadian variant; preferred: lissome
+litre;20;American seldom-used variant, British preferred; preferred: liter
+litres;50;American seldom-used variant, British preferred; preferred: liters
+liveable;50;American seldom-used variant, British preferred, Canadian variant, Australian variant; preferred: livable
+loadstar;10;non-regional seldom-used variant; preferred: lodestar
+loadstone;50;non-regional seldom-used variant; preferred: lodestone
+loadstones;50;non-regional seldom-used variant; preferred: lodestones
+lodgement;50;American variant, British preferred; preferred: lodgment
+lodgements;50;American variant, British preferred; preferred: lodgments
+looney;50;non-regional seldom-used variant; preferred: loony
+louvre;50;British preferred, Canadian preferred; preferred: louver
+louvred;50;British preferred, Canadian preferred; preferred: louvered
+louvres;50;British preferred, Canadian preferred; preferred: louvers
+loveable;50;American seldom-used variant, British variant; preferred: lovable
+lupin;50;American seldom-used variant, British preferred, Canadian variant; preferred: lupine
+lupins;50;American seldom-used variant, British preferred, Canadian variant; preferred: lupines
+lustre;50;American seldom-used variant, British preferred; preferred: luster
+lustres;50;American seldom-used variant, British preferred; preferred: lusters
+lustring;50;American seldom-used variant, British preferred; preferred: lustering
+luv;50;American possible; preferred: love
+luvs;25;American possible; preferred: loves
+luvvie;50;non-regional seldom-used variant, non-regional possible; preferred: luvvy, lovey
+luvvies;50;non-regional possible; preferred: loveys
+lychee;50;non-regional variant; preferred: litchi
+lychees;50;non-regional variant; preferred: litchis
+lynchpin;50;non-regional seldom-used variant; preferred: linchpin
+lynchpins;50;non-regional seldom-used variant; preferred: linchpins
+maaed;20;British preferred; preferred: maed
+macintosh;50;American seldom-used variant, British variant; preferred: mackintosh
+macintoshes;50;American seldom-used variant, British variant; preferred: mackintoshes
+mack;50;non-regional variant; preferred: mac
+macks;50;non-regional variant; preferred: macs
+maharaja;50;non-regional variant; preferred: maharajah
+maharajas;50;non-regional variant; preferred: maharajahs
+maharanee;50;non-regional variant; preferred: maharani
+maharanees;50;non-regional variant; preferred: maharanis
+mahjong;50;non-regional variant; preferred: mah-jongg
+maigre;50;British preferred; preferred: maiger
+maiolica;50;non-regional seldom-used variant; preferred: majolica
+mammas;50;non-regional possible, non-regional seldom-used variant; preferred: mammae, mamas
+mandril;50;non-regional seldom-used variant; preferred: mandrel
+manilla;50;[proper] American seldom-used variant, British preferred, Canadian variant; preferred: manila, Manila (proper)
+mannikin;50;non-regional seldom-used variant; preferred: manikin
+mannikins;50;non-regional seldom-used variant; preferred: manikins
+marihuana;50;non-regional seldom-used variant; preferred: marijuana
+marlinspike;50;non-regional seldom-used variant; preferred: marlinespike
+marshall;50;American seldom-used variant; preferred: marshal
+marshalled;50;American seldom-used variant, British preferred; preferred: marshaled
+marshalling;50;American seldom-used variant, British preferred; preferred: marshaling
+marvelled;50;British preferred; preferred: marveled
+marvelling;50;British preferred; preferred: marveling
+maths;20;British preferred; preferred: math
+matts;20;American seldom-used variant, British preferred; preferred: mats
+mavin;20;non-regional seldom-used variant; preferred: maven
+mavins;50;non-regional seldom-used variant; preferred: mavens
+meagre;30;British preferred, Canadian preferred; preferred: meager
+medalled;30;British preferred; preferred: medaled
+medalling;50;British preferred; preferred: medaling
+mediaeval;50;American seldom-used variant, British variant; preferred: medieval
+megaerg;50;British preferred; preferred: megerg
+menad;20;American seldom-used variant; preferred: maenad
+mesquit;50;non-regional possible; preferred: mesquite
+metre;50;American seldom-used variant, British preferred, Canadian preferred; preferred: meter
+metres;50;American seldom-used variant, British preferred, Canadian preferred; preferred: meters
+miaow;20;American seldom-used variant, British preferred; preferred: meow
+miaowed;50;American seldom-used variant, British preferred; preferred: meowed
+miaowing;50;American seldom-used variant, British preferred; preferred: meowing
+miaows;50;American seldom-used variant, British preferred; preferred: meows
+midwived;50;non-regional variant; preferred: midwifed
+millepede;50;non-regional seldom-used variant; preferred: millipede
+millepedes;50;non-regional seldom-used variant; preferred: millipedes
+miniscule;50;non-regional seldom-used variant; preferred: minuscule
+misadvise;50;British preferred; preferred: misadvize
+mise;25;British preferred; preferred: mize
+missis;50;non-regional variant; preferred: missus
+mitre;50;British preferred; preferred: miter
+mitred;50;British preferred; preferred: mitered
+mitres;50;British preferred; preferred: miters
+mitring;50;British preferred; preferred: mitering
+modellers;50;British preferred; preferred: modelers
+moggie;50;American seldom-used variant, British preferred, Canadian preferred; preferred: moggy
+mollusc;50;American variant, British preferred; preferred: mollusk
+molluscs;50;American variant, British preferred; preferred: mollusks
+momma;50;non-regional seldom-used variant; preferred: mama
+mommas;50;non-regional seldom-used variant; preferred: mamas
+mommie;50;non-regional possible; preferred: mommy
+monicker;50;non-regional seldom-used variant; preferred: moniker
+monickers;50;non-regional seldom-used variant; preferred: monikers
+monied;50;non-regional seldom-used variant; preferred: moneyed
+monolog;50;American seldom-used variant; preferred: monologue
+monologuist;50;American variant, British variant; preferred: monologist
+mortgager;50;non-regional seldom-used variant; preferred: mortgagor
+mortgagers;50;non-regional seldom-used variant; preferred: mortgagors
+mortice;50;non-regional seldom-used variant; preferred: mortise
+morticed;50;non-regional seldom-used variant; preferred: mortised
+mortices;50;non-regional seldom-used variant; preferred: mortises
+morticing;50;non-regional seldom-used variant; preferred: mortising
+moslem;30;[proper] non-regional variant; preferred: Muslim (proper)
+mould;20;British preferred, Canadian preferred, Australian preferred; preferred: mold
+mouldy;50;British preferred, Canadian preferred, Australian preferred; preferred: moldy
+moult;20;British preferred, Australian preferred; preferred: molt
+moults;50;British preferred, Australian preferred; preferred: molts
+mousey;50;non-regional variant; preferred: mousy
+moustache;50;British preferred, Canadian preferred; preferred: mustache
+moustaches;50;British preferred, Canadian preferred; preferred: mustaches
+moveable;50;American variant, British variant; preferred: movable
+mujaheddin;50;non-regional possible; preferred: mujahideen
+mums;50;British preferred; preferred: moms
+mynah;50;American variant, British preferred, Canadian variant; preferred: myna
+nan;50;non-regional seldom-used variant; preferred: naan
+nans;25;non-regional seldom-used variant; preferred: naans
+neuronic;50;non-regional seldom-used variant; preferred: neuronal
+nickelled;50;British preferred; preferred: nickeled
+nicknack;50;non-regional seldom-used variant; preferred: knickknack
+nicknacks;50;non-regional seldom-used variant; preferred: knickknacks
+nighty;50;non-regional variant; preferred: nightie
+nite;50;American variant; preferred: night
+nites;50;American variant; preferred: nights
+nitre;20;British preferred; preferred: niter
+nitres;50;British preferred; preferred: niters
+nitroglycerine;50;American variant, British preferred, Canadian preferred; preferred: nitroglycerin
+nosey;20;British variant; preferred: nosy
+notarise;50;British preferred, Canadian variant; preferred: notarize
+notre;50;British preferred; preferred: noter
+nought;50;American variant, British preferred; preferred: naught
+noughts;50;American variant, British preferred; preferred: naughts
+numbskull;50;American variant, British preferred; preferred: numskull
+numbskulls;50;American variant, British preferred; preferred: numskulls
+oboe;50;[proper] British preferred; preferred: Obe (proper)
+ochre;50;British preferred; preferred: ocher
+ochreous;50;American variant, British preferred; preferred: ocherous
+ochres;50;British preferred; preferred: ochers
+octette;50;non-regional seldom-used variant; preferred: octet
+octettes;50;non-regional seldom-used variant; preferred: octets
+odour;20;British preferred, Canadian preferred, Australian preferred; preferred: odor
+odours;50;British preferred, Canadian preferred, Australian preferred; preferred: odors
+oenologist;60;British preferred; preferred: enologist
+oenologists;60;British preferred; preferred: enologists
+okay;50;American disputed (demoted), British disputed (demoted), Canadian preferred; preferred: OK (proper)
+okayed;50;American disputed (demoted), British disputed (demoted), Canadian preferred; preferred: OKed (proper)
+okaying;50;American disputed (demoted), British disputed (demoted), Canadian preferred; preferred: OKing (proper)
+okays;50;American disputed (demoted), British disputed (demoted), Canadian preferred; preferred: OKs (proper)
+ombre;20;British preferred; preferred: omber
+ombres;50;British preferred; preferred: ombers
+omelette;50;American variant, British preferred, Canadian preferred; preferred: omelet
+omelettes;50;American variant, British preferred, Canadian preferred; preferred: omelets
+onwards;50;American seldom-used variant, British preferred; preferred: onward
+organdie;50;American seldom-used variant, British preferred; preferred: organdy
+outrivalling;50;British preferred; preferred: outrivaling
+outsized;50;non-regional seldom-used variant; preferred: outsize
+oversized;50;American variant, British preferred; preferred: oversize
+palaestra;50;British preferred, Australian preferred; preferred: palestra
+panelled;50;British preferred; preferred: paneled
+pangaea;50;British preferred; preferred: pangea
+panty;50;non-regional variant; preferred: pantie
+papaw;50;non-regional disputed (demoted); preferred: pawpaw
+papaws;50;non-regional disputed (demoted); preferred: pawpaws
+parcelled;50;British preferred; preferred: parceled
+parcelling;50;British preferred; preferred: parceling
+parlour;50;British preferred, Canadian preferred, Australian preferred; preferred: parlor
+parrakeet;50;non-regional seldom-used variant; preferred: parakeet
+parrakeets;50;non-regional seldom-used variant; preferred: parakeets
+partizans;50;non-regional seldom-used variant, non-regional variant; preferred: partisans
+patinae;50;British preferred; preferred: patine
+pedagog;50;American seldom-used variant; preferred: pedagogue
+pedagogs;50;American seldom-used variant; preferred: pedagogues
+pedalled;50;British preferred, Canadian preferred; preferred: pedaled
+pediatrist;50;American seldom-used variant; preferred: pediatrician
+pediatrists;50;American seldom-used variant; preferred: pediatricians
+pedlar;50;American seldom-used variant, British preferred, Canadian variant; preferred: peddler
+pekinese;50;[proper] non-regional variant; preferred: Pekingese (proper)
+penlites;50;non-regional seldom-used variant; preferred: penlights
+perilled;50;British preferred; preferred: periled
+perilling;50;British preferred; preferred: periling
+phantasies;50;American seldom-used variant, British seldom-used variant; preferred: fantasies
+phantasy;50;American seldom-used variant, British seldom-used variant; preferred: fantasy
+pharmacopeia;50;non-regional variant; preferred: pharmacopoeia
+phoenicia;50;British preferred; preferred: phenicia
+phoney;50;American seldom-used variant, British preferred, British variant, Canadian variant; preferred: phony
+phoneys;50;American seldom-used variant, British preferred, Canadian variant; preferred: phonies
+phrenetic;50;non-regional possible; preferred: frenetic
+pickaback;50;non-regional seldom-used variant; preferred: piggyback
+pigmies;50;non-regional seldom-used variant; preferred: pygmies
+pigmy;50;non-regional seldom-used variant; preferred: pygmy
+pilau;20;non-regional seldom-used variant; preferred: pilaf
+pinky;50;non-regional variant; preferred: pinkie
+pinocle;50;non-regional possible; preferred: pinochle
+piny;25;non-regional disputed (demoted); preferred: piney
+pirozhki;50;non-regional variant; preferred: piroshki
+pixy;50;non-regional seldom-used variant; preferred: pixie
+pizazz;50;non-regional disputed (demoted), non-regional variant; preferred: pizzazz
+plough;50;British preferred, Canadian variant; preferred: plow
+poe;50;British preferred; preferred: pe
+pollywog;50;non-regional variant; preferred: polliwog
+pollywogs;50;non-regional variant; preferred: polliwogs
+pommelled;50;British preferred; preferred: pommeled
+pommelling;50;British preferred; preferred: pommeling
+postillion;50;American variant, British variant; preferred: postilion
+postillions;50;American variant, British variant; preferred: postilions
+pourer;50;British preferred; preferred: porer
+pourers;50;British preferred; preferred: porers
+praesidium;50;American seldom-used variant, British variant; preferred: presidium
+prejudgement;50;British preferred; preferred: prejudgment
+premiss;50;American seldom-used variant, British variant; preferred: premise
+premisses;50;American seldom-used variant, British variant; preferred: premises
+preppie;50;non-regional variant; preferred: preppy
+presidia;50;American disputed (demoted); preferred: presidiums
+preterite;50;American variant, British preferred, Canadian preferred; preferred: preterit
+prev;25;British preferred; preferred: perv
+prevue;50;American seldom-used variant; preferred: preview
+prevues;50;American seldom-used variant; preferred: previews
+pricy;50;non-regional seldom-used variant; preferred: pricey
+primaeval;50;British variant; preferred: primeval
+prise;20;British preferred; preferred: prize
+prised;50;British preferred; preferred: prized
+programed;50;American variant; preferred: programmed
+programing;50;American variant; preferred: programming
+prolog;50;American seldom-used variant; preferred: prologue
+prologs;50;American seldom-used variant; preferred: prologues
+propellent;50;non-regional seldom-used variant; preferred: propellant
+protestor;50;American variant, British variant; preferred: protester
+protestors;50;American variant, British variant; preferred: protesters
+pryer;20;non-regional seldom-used variant; preferred: prier
+pryers;50;non-regional seldom-used variant; preferred: priers
+pummelled;50;British preferred; preferred: pummeled
+pummelling;50;British preferred; preferred: pummeling
+pygmaean;50;British preferred; preferred: pygmean
+pyorrhoea;50;British preferred; preferred: pyorrhea
+quae;25;British preferred; preferred: que
+quahaug;50;non-regional seldom-used variant; preferred: quahog
+quahaugs;50;non-regional seldom-used variant; preferred: quahogs
+questor;50;American seldom-used variant; preferred: quaestor
+queueing;50;British variant; preferred: queuing
+quintette;50;non-regional possible; preferred: quintet
+racoon;50;American seldom-used variant, British variant; preferred: raccoon
+racoons;50;American seldom-used variant, British variant; preferred: raccoons
+racquet;50;American variant, British variant, Canadian preferred, Australian preferred; preferred: racket
+racquets;50;American variant, British variant, Canadian preferred, Australian preferred; preferred: rackets
+raja;50;non-regional variant; preferred: rajah
+rajas;50;non-regional variant; preferred: rajahs
+rani;25;non-regional variant; preferred: ranee
+ranis;20;non-regional variant; preferred: ranees
+ratlin;50;non-regional possible; preferred: ratline
+realise;50;British preferred; preferred: realize
+reenforce;50;American seldom-used variant; preferred: reinforce
+reenforcing;50;American seldom-used variant; preferred: reinforcing
+refuelled;50;British preferred; preferred: refueled
+remodelling;50;British preferred; preferred: remodeling
+ren;50;British preferred; preferred: ern
+renes;20;British preferred; preferred: ernes
+renest;50;British preferred; preferred: ernest
+repellant;50;non-regional seldom-used variant; preferred: repellent
+reprised;50;British preferred; preferred: reprized
+resh;25;British preferred; preferred: ersh
+reshoes;50;British preferred; preferred: reshes
+ret;25;British preferred; preferred: ert
+revery;50;non-regional seldom-used variant; preferred: reverie
+revokable;50;non-regional seldom-used variant; preferred: revocable
+ricksha;30;non-regional seldom-used variant; preferred: rickshaw
+rickshas;50;non-regional seldom-used variant; preferred: rickshaws
+rigamarole;50;non-regional variant; preferred: rigmarole
+ripost;50;non-regional possible; preferred: riposte
+riposts;50;non-regional possible; preferred: ripostes
+rivalled;50;British preferred; preferred: rivaled
+rivalless;50;British preferred; preferred: rivaless
+rivalling;50;British preferred; preferred: rivaling
+rouble;50;British preferred; preferred: ruble
+roubles;50;British preferred; preferred: rubles
+rumour;50;British preferred, Canadian preferred, Australian preferred; preferred: rumor
+rumours;50;British preferred, Canadian preferred, Australian preferred; preferred: rumors
+sabre;50;American variant, British preferred; preferred: saber
+sabres;50;American variant, British preferred; preferred: sabers
+sae;25;British preferred; preferred: se
+saeed;50;[proper] British preferred; preferred: Seed (proper)
+safire;50;[proper] British preferred; preferred: Safier (proper)
+saki;50;American variant, British preferred, Canadian variant; preferred: sake
+sakis;20;American variant, British preferred, Canadian variant; preferred: sakes
+saleable;50;American variant, British preferred; preferred: salable
+saltires;50;British preferred; preferred: saltiers
+sandalled;50;British preferred; preferred: sandaled
+sarape;30;non-regional seldom-used variant; preferred: serape
+sarapes;30;non-regional seldom-used variant; preferred: serapes
+saree;20;non-regional seldom-used variant; preferred: sari
+sarees;50;non-regional seldom-used variant; preferred: saris
+saveable;50;non-regional variant; preferred: savable
+saviours;50;British preferred, Canadian preferred, Australian preferred; preferred: saviors
+savour;50;British preferred, Canadian preferred, Australian preferred; preferred: savor
+scallywag;60;non-regional variant; preferred: scalawag
+scallywags;60;non-regional variant; preferred: scalawags
+scarey;50;non-regional possible; preferred: scary
+sceptre;50;British preferred; preferred: scepter
+sceptred;50;British preferred; preferred: sceptered
+schemas;50;non-regional seldom-used variant; preferred: schemata
+schlepp;50;non-regional variant; preferred: schlep
+schlepps;50;non-regional variant; preferred: schleps
+schlocky;50;non-regional variant; preferred: schlock
+schmoe;50;non-regional variant; preferred: schmo
+schnaps;50;non-regional possible; preferred: schnapps
+schtick;50;non-regional seldom-used variant; preferred: shtick
+schticks;50;non-regional seldom-used variant; preferred: shticks
+sclerae;50;British preferred; preferred: sclere
+scollop;50;non-regional seldom-used variant; preferred: scallop
+scolloped;50;non-regional seldom-used variant; preferred: scalloped
+scollops;50;non-regional seldom-used variant; preferred: scallops
+scrunchie;50;non-regional variant; preferred: scrunchy
+selvedge;50;non-regional variant; preferred: selvage
+selvedges;50;non-regional variant; preferred: selvages
+sempre;50;British preferred; preferred: semper
+septette;50;non-regional seldom-used variant; preferred: septet
+septettes;50;non-regional seldom-used variant; preferred: septets
+septicaemia;50;British preferred; preferred: septicemia
+sextette;50;non-regional seldom-used variant; preferred: sextet
+sextettes;50;non-regional seldom-used variant; preferred: sextets
+shammies;50;non-regional seldom-used variant; preferred: chamois
+shammy;50;non-regional seldom-used variant; preferred: chamois
+sharpy;50;non-regional variant; preferred: sharpie
+sheikhdom;50;non-regional variant; preferred: sheikdom
+sheikhdoms;50;non-regional variant; preferred: sheikdoms
+sherbert;50;non-regional seldom-used variant; preferred: sherbet
+sherd;20;non-regional variant; preferred: shard
+sherds;50;non-regional variant; preferred: shards
+shlemiel;50;non-regional seldom-used variant; preferred: schlemiel
+shlep;20;non-regional seldom-used variant; preferred: schlep
+shlepp;50;non-regional seldom-used variant; preferred: schlep
+shlock;50;non-regional seldom-used variant; preferred: schlock
+shoer;20;British preferred; preferred: sher
+shortie;50;non-regional variant; preferred: shorty
+shovelled;50;British preferred; preferred: shoveled
+shoveller;50;British preferred, Canadian preferred; preferred: shoveler
+shovelling;50;British preferred; preferred: shoveling
+shrivelling;50;British preferred; preferred: shriveling
+signalled;50;British preferred; preferred: signaled
+signaller;50;British preferred; preferred: signaler
+signalling;50;British preferred; preferred: signaling
+siloed;50;British preferred; preferred: siled
+silvan;50;non-regional variant; preferred: sylvan
+siree;20;non-regional variant; preferred: sirree
+sirup;20;American seldom-used variant; preferred: syrup
+sirups;50;American seldom-used variant; preferred: syrups
+sizeable;50;American variant, British preferred, Canadian variant; preferred: sizable
+skullduggery;50;non-regional variant; preferred: skulduggery
+slily;20;American seldom-used variant, British variant; preferred: slyly
+slyer;50;American variant, British preferred; preferred: slier
+slyest;50;American variant, British preferred; preferred: sliest
+smidge;50;American seldom-used variant, Canadian variant; preferred: smidgen
+smidgeon;50;American seldom-used variant, British variant, Canadian variant; preferred: smidgen
+smidgeons;50;American seldom-used variant, British variant, Canadian variant; preferred: smidgens
+smidgin;50;American seldom-used variant, British variant, Canadian variant; preferred: smidgen
+smidgins;50;American seldom-used variant, British variant, Canadian variant; preferred: smidgens
+smoothy;50;non-regional variant; preferred: smoothie
+snivelled;50;British preferred; preferred: sniveled
+softie;50;non-regional variant; preferred: softy
+sombre;50;American variant, British preferred; preferred: somber
+sombrely;50;American variant, British preferred; preferred: somberly
+sombreness;50;American variant, British preferred; preferred: somberness
+sos;50;non-regional seldom-used variant; preferred: sols
+soubriquet;50;non-regional seldom-used variant; preferred: sobriquet
+soubriquets;50;non-regional seldom-used variant; preferred: sobriquets
+soya;50;non-regional seldom-used variant; preferred: soy
+soyas;20;non-regional seldom-used variant; preferred: soys
+spacy;50;non-regional seldom-used variant; preferred: spacey
+spectre;50;British preferred; preferred: specter
+spectres;50;British preferred; preferred: specters
+spilt;50;American seldom-used variant, British preferred, Canadian variant; preferred: spilled
+spiraea;50;American variant, British preferred, Canadian variant; preferred: spirea
+spiraeas;50;American variant, British preferred, Canadian variant; preferred: spireas
+spiralled;50;British preferred, Canadian preferred; preferred: spiraled
+spires;50;[proper] British preferred; preferred: Spiers (proper)
+spirochaete;50;British preferred; preferred: spirochete
+spoilt;50;British preferred, British -ize variant; preferred: spoiled
+spumone;50;non-regional seldom-used variant; preferred: spumoni
+squire;50;[proper] British preferred; preferred: Squier (proper)
+squirrelled;50;British preferred, Canadian preferred; preferred: squirreled
+squirrelling;50;British preferred, Canadian preferred; preferred: squirreling
+stagey;50;non-regional variant; preferred: stagy
+stelae;50;British preferred; preferred: stele
+stencilled;50;British preferred; preferred: stenciled
+stencilling;50;British preferred; preferred: stenciling
+stockinet;50;non-regional variant; preferred: stockinette
+stockinets;50;non-regional variant; preferred: stockinettes
+stogy;50;non-regional disputed (demoted); preferred: stogie
+stoney;50;non-regional seldom-used variant; preferred: stony
+storey;50;American seldom-used variant, British preferred, Canadian preferred, Australian preferred; preferred: story
+storeys;30;American seldom-used variant, British preferred, Canadian preferred, Australian preferred; preferred: stories
+stour;20;British preferred; preferred: stor
+straightjacket;50;American seldom-used variant, British variant; preferred: straitjacket
+straightjackets;50;American seldom-used variant, British variant; preferred: straitjackets
+stye;50;non-regional variant; preferred: sty
+styes;50;non-regional variant; preferred: sties
+subtotalled;50;British preferred; preferred: subtotaled
+subtotalling;50;British preferred; preferred: subtotaling
+sulphurs;50;British preferred; preferred: sulfurs
+sumach;50;non-regional seldom-used variant; preferred: sumac
+sweepstake;50;American seldom-used variant, British preferred, Canadian variant; preferred: sweepstakes
+sweetbriar;50;non-regional variant; preferred: sweetbrier
+swivelled;50;British preferred; preferred: swiveled
+swivelling;50;British preferred; preferred: swiveling
+swob;25;non-regional possible; preferred: swab
+swobbed;50;non-regional possible; preferred: swabbed
+synch;50;American seldom-used variant, British variant; preferred: sync
+synched;50;American seldom-used variant, British variant; preferred: synced
+synching;50;American seldom-used variant, British variant; preferred: syncing
+syphon;50;British variant; preferred: siphon
+syphoned;50;British variant; preferred: siphoned
+syphoning;50;British variant; preferred: siphoning
+syphons;50;British variant; preferred: siphons
+tabouret;50;British preferred; preferred: taboret
+tabourets;50;British preferred; preferred: taborets
+tabu;25;non-regional seldom-used variant; preferred: taboo
+tabus;20;non-regional seldom-used variant; preferred: taboos
+tae;25;British preferred; preferred: te
+taegu;20;British preferred; preferred: tegu
+taels;20;British preferred; preferred: tels
+taenia;50;British preferred; preferred: tenia
+tameable;50;non-regional variant; preferred: tamable
+teazel;50;American seldom-used variant, British variant; preferred: teasel
+teazels;50;American seldom-used variant, British variant; preferred: teasels
+teazle;50;American seldom-used variant, British variant; preferred: teasel
+teazles;50;American seldom-used variant, British variant; preferred: teasels
+teepee;50;non-regional variant; preferred: tepee
+teepees;50;non-regional variant; preferred: tepees
+teetotaller;50;British preferred; preferred: teetotaler
+teetotallers;50;British preferred; preferred: teetotalers
+tempi;50;American variant, British variant; preferred: tempos
+tendonitis;50;non-regional variant; preferred: tendinitis
+testae;50;British preferred; preferred: teste
+theatre;50;British preferred, Canadian preferred; preferred: theater
+theatregoer;50;British preferred; preferred: theatergoer
+theatregoers;50;British preferred; preferred: theatergoers
+theatres;50;British preferred, Canadian preferred; preferred: theaters
+thiamin;50;non-regional seldom-used variant; preferred: thiamine
+throughway;50;American variant, British preferred, Canadian preferred; preferred: thruway
+throughways;50;American variant, British preferred, Canadian preferred; preferred: thruways
+thru;50;American variant; preferred: through
+tike;50;non-regional seldom-used variant; preferred: tyke
+tikes;20;non-regional seldom-used variant; preferred: tykes
+tinselled;50;British preferred, Canadian preferred; preferred: tinseled
+tipi;25;non-regional seldom-used variant; preferred: tepee
+tipis;20;non-regional seldom-used variant; preferred: tepees
+tiro;25;American seldom-used variant, British variant; preferred: tyro
+tiros;20;American seldom-used variant, British variant; preferred: tyros
+titre;20;British preferred, Canadian preferred; preferred: titer
+toffies;50;non-regional seldom-used variant; preferred: toffees
+tormenter;50;non-regional seldom-used variant; preferred: tormentor
+tormenters;50;non-regional seldom-used variant; preferred: tormentors
+totalled;50;British preferred; preferred: totaled
+totalling;50;British preferred; preferred: totaling
+towards;50;non-regional disputed (demoted); preferred: toward
+towelled;50;British preferred; preferred: toweled
+tranquillity;50;American variant, British preferred; preferred: tranquility
+tranquillize;50;American seldom-used variant, Canadian variant, British -ize preferred; preferred: tranquilize
+tranquillized;50;American seldom-used variant, Canadian variant, British -ize preferred; preferred: tranquilized
+tranquillizer;30;American seldom-used variant, Canadian variant, British -ize preferred; preferred: tranquilizer
+tranquillizers;30;American seldom-used variant, Canadian variant, British -ize preferred; preferred: tranquilizers
+tranquillizing;50;American seldom-used variant, Canadian variant, British -ize preferred; preferred: tranquilizing
+transgendered;50;non-regional disputed (demoted); preferred: transgender
+traveller;50;British preferred; preferred: traveler
+travelog;50;American variant; preferred: travelogue
+travelogs;50;American variant; preferred: travelogues
+tref;25;British preferred; preferred: terf
+trets;20;British preferred; preferred: terts
+trialling;50;British preferred; preferred: trialing
+trowelled;50;British preferred; preferred: troweled
+trowelling;50;British preferred; preferred: troweling
+tsar;50;American seldom-used variant, British preferred, Canadian variant; preferred: czar
+tsardom;50;non-regional seldom-used variant; preferred: czardom
+tsarina;50;non-regional seldom-used variant; preferred: czarina
+tsarinas;50;non-regional seldom-used variant; preferred: czarinas
+tsarism;60;non-regional seldom-used variant; preferred: czarism
+tsarist;50;non-regional seldom-used variant; preferred: czarist
+tsars;50;American seldom-used variant, British preferred, Canadian variant; preferred: czars
+tsouris;50;British preferred; preferred: tsoris
+tumbril;50;American variant, British preferred, Canadian variant; preferred: tumbrel
+tumbrils;50;American variant, British preferred, Canadian variant; preferred: tumbrels
+tunnelling;50;British preferred; preferred: tunneling
+tyre;25;British preferred; preferred: tire
+tyres;20;British preferred; preferred: tires
+tzar;25;American seldom-used variant, British variant; preferred: czar
+tzarina;50;non-regional seldom-used variant; preferred: czarina
+tzars;20;American seldom-used variant, British variant; preferred: czars
+ukelele;10;non-regional seldom-used variant; preferred: ukulele
+ukeleles;10;non-regional seldom-used variant; preferred: ukuleles
+unbeknown;50;American disputed (demoted), British preferred, Canadian variant; preferred: unbeknownst
+undersize;50;non-regional seldom-used variant; preferred: undersized
+undreamt;50;non-regional variant; preferred: undreamed
+unequalled;50;British preferred; preferred: unequaled
+unfocussed;50;American seldom-used variant, British variant; preferred: unfocused
+unlearnt;50;British preferred, British -ize variant; preferred: unlearned
+unravelled;50;British preferred; preferred: unraveled
+unravelling;50;British preferred; preferred: unraveling
+unshakeable;50;American variant, British preferred, Canadian variant; preferred: unshakable
+unspoilt;50;non-regional seldom-used variant; preferred: unspoiled
+upwards;50;non-regional variant; preferred: upward
+useable;50;American seldom-used variant, British variant; preferred: usable
+utilise;50;British preferred; preferred: utilize
+valour;50;British preferred, Canadian preferred, Australian preferred; preferred: valor
+veldt;50;American seldom-used variant, British variant; preferred: veld
+veldts;50;American seldom-used variant, British variant; preferred: velds
+vender;50;American seldom-used variant; preferred: vendor
+venders;50;American seldom-used variant; preferred: vendors
+verandah;50;American variant, British variant, Australian preferred; preferred: veranda
+verandahs;50;American variant, British variant, Australian preferred; preferred: verandas
+verbalise;30;British preferred; preferred: verbalize
+vermillion;50;non-regional seldom-used variant; preferred: vermilion
+vetoer;50;British preferred; preferred: veter
+vigour;30;British preferred, Canadian preferred, Australian preferred; preferred: vigor
+virtuosos;50;American variant, British variant; preferred: virtuosi
+vivre;20;British preferred; preferred: viver
+vizors;50;American seldom-used variant, British variant; preferred: visors
+waggon;50;British variant; preferred: wagon
+waggoner;50;British variant; preferred: wagoner
+waggoners;50;British variant; preferred: wagoners
+waggons;50;British variant; preferred: wagons
+wainscotted;50;American variant, British variant, Canadian preferred; preferred: wainscoted
+wainscotting;50;American variant, British variant, Canadian preferred; preferred: wainscoting
+walla;20;non-regional possible; preferred: wallah
+welch;50;non-regional seldom-used variant; preferred: welsh
+welched;50;non-regional seldom-used variant; preferred: welshed
+welches;50;non-regional seldom-used variant; preferred: welshes
+welching;50;non-regional seldom-used variant; preferred: welshing
+whackier;50;non-regional seldom-used variant; preferred: wackier
+whackiest;50;non-regional seldom-used variant; preferred: wackiest
+whacky;50;non-regional seldom-used variant; preferred: wacky
+whimsey;50;non-regional seldom-used variant; preferred: whimsy
+whirr;50;American seldom-used variant, British preferred, Canadian variant; preferred: whir
+whirrs;50;American seldom-used variant, British preferred, Canadian variant; preferred: whirs
+whisky;50;American variant, British preferred, Canadian preferred; preferred: whiskey
+widgeon;50;non-regional variant; preferred: wigeon
+widgeons;50;non-regional variant; preferred: wigeon
+wigeons;50;non-regional variant; preferred: wigeon
+wilful;50;American variant, British preferred, Canadian preferred; preferred: willful
+willie;50;non-regional seldom-used variant; preferred: willy
+winterier;50;non-regional seldom-used variant; preferred: wintrier
+winteriest;50;non-regional seldom-used variant; preferred: wintriest
+wintery;50;non-regional seldom-used variant; preferred: wintry
+wistaria;50;non-regional seldom-used variant; preferred: wisteria
+wooly;50;non-regional seldom-used variant; preferred: woolly
+worshipped;50;British preferred; preferred: worshiped
+worshipper;50;British preferred; preferred: worshiper
+worshippers;50;British preferred; preferred: worshipers
+yack;25;non-regional seldom-used variant; preferred: yak
+yacked;50;non-regional seldom-used variant; preferred: yakked
+yacking;50;non-regional seldom-used variant; preferred: yakking
+yeshivah;50;non-regional seldom-used variant; preferred: yeshiva
+yodelled;50;British preferred, Canadian preferred; preferred: yodeled
+yodeller;60;British preferred, Canadian preferred; preferred: yodeler
+yodellers;60;British preferred, Canadian preferred; preferred: yodelers
+yoghourt;50;British variant, Australian seldom-used variant; preferred: yogurt
+yoghourts;50;British variant, Australian seldom-used variant; preferred: yogurts
+yoghurt;50;British variant, Canadian variant, Australian preferred; preferred: yogurt
+yoghurts;50;British variant, Canadian variant, Australian preferred; preferred: yogurts
+yucked;50;non-regional variant; preferred: yukked
+yucking;50;non-regional variant; preferred: yukking
+yucks;50;non-regional variant; preferred: yuks
+zombis;50;non-regional seldom-used variant; preferred: zombies
