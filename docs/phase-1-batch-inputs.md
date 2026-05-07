@@ -120,3 +120,43 @@ For non-themed generation, `fill.max_grid_variants` now allows the direct fill
 path to walk forward through later grid seeds until it finds a compatible
 pattern or exhausts the variant budget. This avoids spending CSP time on grids
 that cannot possibly be filled by a constrained dictionary.
+
+## Phase 2B Pilot Data Store Save
+
+Generated pilot candidates can be saved to the authenticated HeyGG admin data
+store without writing directly to the hey-you database. The staging API base is
+the default:
+
+```bash
+export HEYGG_API_BASE_URL=https://id-beta.hey.gg/api
+export HEYGG_ADMIN_API_TOKEN=<staging admin API token>
+
+uv run crossword-generator save-generated-puzzles \
+  --manifest output/batches/phase-2b-pilot/manifest.json
+```
+
+The command reads successful IPUZ files from the manifest and creates records
+in `crosswords/generated-puzzles` with `status=draft`,
+`metadata.review_status=unreviewed`, and
+`metadata.publication_status=draft`. By default, 5x5 and 7x7 records use
+`game_key=minicrossword`, while 9x9 records use `game_key=midicrossword`.
+
+Keys are deterministic and include game, batch, difficulty, size, and seed, for
+example:
+
+```text
+generated:minicrossword:phase-2b-pilot:easy:5x5:seed-1
+```
+
+Reruns do not create second records for duplicate keys. If a duplicate is
+reported by the API, the command queries the existing record and skips it. To
+intentionally replace existing draft candidates, pass `--replace-existing`,
+which PATCHes the existing record instead.
+
+Validate records without API calls:
+
+```bash
+uv run crossword-generator save-generated-puzzles \
+  --manifest output/batches/phase-2b-pilot/manifest.json \
+  --dry-run
+```

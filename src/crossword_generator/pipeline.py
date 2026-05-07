@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import time
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -47,7 +48,14 @@ class Pipeline:
 
         for step in self._steps:
             logger.info("Running step: %s", step.name)
+            started = time.monotonic()
             envelope = step.run(envelope)
+            elapsed = time.monotonic() - started
+            metadata = dict(envelope.metadata)
+            timings = dict(metadata.get("step_timings_seconds", {}))
+            timings[step.name] = round(elapsed, 3)
+            metadata["step_timings_seconds"] = timings
+            envelope = envelope.model_copy(update={"metadata": metadata})
             self._save_intermediate(envelope, step.name)
 
         # Export
