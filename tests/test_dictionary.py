@@ -194,3 +194,22 @@ class TestRealDictionary:
         d = Dictionary.load(dictionary_path, min_2letter_score=10)
         twos = d.words_by_length(2)
         assert len(twos) == 0
+
+
+class TestPhase1PreparedDictionaries:
+    """Tests against the generated Phase 1 flat-score dictionaries."""
+
+    def test_easy_dictionary_loads(self, project_root: Path) -> None:
+        path = project_root / "dictionaries" / "hgg-easy-flat-55.txt"
+        d = Dictionary.load(path, min_word_score=55, min_2letter_score=55)
+        assert len(d) == 8967
+        assert d.score("ABACUS") == 55
+        assert d.score("zoom") == 55
+
+    def test_hard_dictionary_loads(self, project_root: Path) -> None:
+        path = project_root / "dictionaries" / "hgg-hard-flat-55.txt"
+        d = Dictionary.load(path, min_word_score=55, min_2letter_score=55)
+        assert len(d) == 201978
+        assert d.score("AAH") == 55
+        assert d.score("ZZTOP") == 55
+        assert d.score("CATCH22") is None

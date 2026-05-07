@@ -2,7 +2,11 @@
 
 import pytest
 
-from crossword_generator.grid_specs import get_grid_spec
+from crossword_generator.grid_pattern_validation import (
+    summarize_validations,
+    validate_weighted_patterns,
+)
+from crossword_generator.grid_specs import get_grid_patterns, get_grid_spec
 from crossword_generator.models import PuzzleType
 
 
@@ -129,6 +133,48 @@ class TestGetGridSpec:
         for seed in range(100):
             spec = get_grid_spec(PuzzleType.MIDI, size, seed=seed)
             _assert_valid_grid_structure(spec)
+
+
+class TestMiniGridPatternCatalog:
+    @pytest.mark.parametrize(
+        ("size", "expected_count", "expected_weight"),
+        [(5, 34, 95), (7, 50, 86)],
+    )
+    def test_attachment_pattern_counts_and_weights(
+        self,
+        size: int,
+        expected_count: int,
+        expected_weight: int,
+    ) -> None:
+        patterns = get_grid_patterns(PuzzleType.MINI, size)
+        assert len(patterns) == expected_count
+        assert sum(pattern.weight for pattern in patterns) == expected_weight
+
+    @pytest.mark.parametrize("size", [5, 7])
+    def test_catalog_patterns_are_structurally_valid(self, size: int) -> None:
+        patterns = [
+            (list(pattern.black_cells), pattern.weight)
+            for pattern in get_grid_patterns(PuzzleType.MINI, size)
+        ]
+        results = validate_weighted_patterns(size, patterns)
+        assert all(result.valid for result in results)
+
+    @pytest.mark.parametrize("size", [5, 7])
+    def test_catalog_reports_symmetric_and_asymmetric_patterns(
+        self, size: int
+    ) -> None:
+        patterns = get_grid_patterns(PuzzleType.MINI, size)
+        summary = summarize_validations(
+            validate_weighted_patterns(
+                size,
+                [(list(pattern.black_cells), pattern.weight) for pattern in patterns],
+            )
+        )
+        assert summary["symmetric"] > 0
+        assert summary["asymmetric"] > 0
+        assert len(get_grid_patterns(PuzzleType.MINI, size, symmetric_only=True)) == (
+            summary["symmetric"]
+        )
 
 
 def _assert_valid_grid_structure(spec: "GridSpec") -> None:  # noqa: F821

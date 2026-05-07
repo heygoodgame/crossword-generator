@@ -526,6 +526,120 @@ def export_dictionary(
     click.echo(f"Exported {count} words (min_score={min_score}) to {out}")
 
 
+@main.command(name="prepare-dictionaries")
+@click.option(
+    "--easy-source",
+    type=click.Path(exists=True),
+    required=True,
+    help="Path to Jeff's WordpleteCulledJYC.txt source file.",
+)
+@click.option(
+    "--hard-source",
+    type=click.Path(exists=True),
+    default="dictionaries/HggCuratedCrosswordList.txt",
+    help="Path to the curated hard source dictionary.",
+)
+@click.option(
+    "--easy-output",
+    type=click.Path(),
+    default="dictionaries/hgg-easy-flat-55.txt",
+    help="Output path for the normalized easy dictionary.",
+)
+@click.option(
+    "--hard-output",
+    type=click.Path(),
+    default="dictionaries/hgg-hard-flat-55.txt",
+    help="Output path for the normalized hard dictionary.",
+)
+@click.option(
+    "--score",
+    type=int,
+    default=55,
+    help="Flat score to assign to every output entry.",
+)
+def prepare_dictionaries(
+    easy_source: str,
+    hard_source: str,
+    easy_output: str,
+    hard_output: str,
+    score: int,
+) -> None:
+    """Prepare flat-score easy and hard dictionaries for batch experiments."""
+    from crossword_generator.dictionary_prep import (
+        format_summary,
+        prepare_flat_dictionary,
+    )
+
+    project_root = find_project_root()
+    jobs = [
+        ("Easy dictionary", Path(easy_source), Path(easy_output)),
+        ("Hard dictionary", Path(hard_source), Path(hard_output)),
+    ]
+
+    for label, source, output in jobs:
+        if not source.is_absolute():
+            source = project_root / source
+        if not output.is_absolute():
+            output = project_root / output
+
+        summary = prepare_flat_dictionary(source, output, score=score)
+        click.echo(f"{label}:")
+        click.echo(format_summary(summary))
+        click.echo("")
+
+
+@main.command(name="validate-mini-patterns")
+def validate_mini_patterns() -> None:
+    """Validate catalogued 5x5 and 7x7 mini grid patterns."""
+    from crossword_generator.grid_pattern_validation import (
+        summarize_validations,
+        validate_weighted_patterns,
+    )
+    from crossword_generator.grid_specs import get_grid_patterns
+    from crossword_generator.models import PuzzleType
+
+    failures = 0
+    for size, expected_count, expected_weight in ((5, 34, 95), (7, 50, 86)):
+        patterns = [
+            (list(pattern.black_cells), pattern.weight)
+            for pattern in get_grid_patterns(PuzzleType.MINI, size)
+        ]
+        results = validate_weighted_patterns(size, patterns)
+        summary = summarize_validations(results)
+        asymmetric = [
+            str(result.index) for result in results if not result.symmetric
+        ]
+
+        click.echo(
+            f"{size}x{size}: patterns={summary['patterns']} "
+            f"total_weight={summary['total_weight']} "
+            f"valid={summary['valid']} invalid={summary['invalid']} "
+            f"symmetric={summary['symmetric']} "
+            f"asymmetric={summary['asymmetric']}"
+        )
+        click.echo(
+            "  asymmetric pattern indexes: "
+            + (", ".join(asymmetric) if asymmetric else "none")
+        )
+
+        if (
+            summary["patterns"] != expected_count
+            or summary["total_weight"] != expected_weight
+            or summary["invalid"] != 0
+        ):
+            failures += 1
+            for result in results:
+                if result.errors:
+                    click.echo(
+                        f"  pattern {result.index} errors: "
+                        + "; ".join(result.errors),
+                        err=True,
+                    )
+
+    if failures:
+        sys.exit(1)
+
+
 def _setup_logging(verbose: bool) -> None:
     level = logging.DEBUG if verbose else logging.INFO
     logging.basicConfig(

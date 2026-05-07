@@ -64,6 +64,27 @@ class TestLoadConfig:
         assert cfg.fill.provider == "csp"
         assert cfg.llm.ollama.model == "llama3"
 
+    @pytest.mark.parametrize(
+        ("filename", "dictionary_path"),
+        [
+            ("config.easy.yaml", "dictionaries/hgg-easy-flat-55.txt"),
+            ("config.hard.yaml", "dictionaries/hgg-hard-flat-55.txt"),
+        ],
+    )
+    def test_load_phase_1_configs(
+        self,
+        project_root: Path,
+        filename: str,
+        dictionary_path: str,
+    ) -> None:
+        cfg = load_config(project_root / filename)
+        assert cfg.dictionary.path == dictionary_path
+        assert cfg.dictionary.min_word_score == 55
+        assert cfg.fill.csp.dictionary_path == dictionary_path
+        assert cfg.fill.csp.min_word_score == 55
+        assert cfg.fill.csp.quality_tiers == [55]
+        assert cfg.theme.enabled is False
+
     def test_load_explicit_path_custom_values(self, tmp_path: Path) -> None:
         yaml_file = tmp_path / "custom.yaml"
         yaml_file.write_text(
