@@ -31,6 +31,8 @@ def test_make_record_uses_generated_puzzle_contract() -> None:
         generator_commit="abc123",
         fill_score=55.0,
         clue_score=80.0,
+        title="Au Naturel",
+        title_reasoning="Au is the chemical symbol for gold.",
     )
 
     assert record["namespace"] == "crosswords"
@@ -49,6 +51,8 @@ def test_make_record_uses_generated_puzzle_contract() -> None:
         "generator_commit": "abc123",
         "fill_score": 55.0,
         "clue_score": 80.0,
+        "title": "Au Naturel",
+        "title_reasoning": "Au is the chemical symbol for gold.",
         "author": "crossword-generator",
         "publication_status": "draft",
     }
@@ -86,6 +90,8 @@ def test_records_from_manifest_reads_successful_ipuz_files(tmp_path: Path) -> No
                         "seed": 1,
                         "fill_score": 55,
                         "clue_score": 75.5,
+                        "title": "Crossing Over",
+                        "title_reasoning": "Bridges literally cross over.",
                     },
                     {
                         "success": False,
@@ -111,6 +117,11 @@ def test_records_from_manifest_reads_successful_ipuz_files(tmp_path: Path) -> No
     assert records[0]["metadata"]["size"] == 9
     assert records[0]["metadata"]["difficulty"] == "hard"
     assert records[0]["metadata"]["clue_score"] == 75.5
+    assert records[0]["metadata"]["title"] == "Crossing Over"
+    assert (
+        records[0]["metadata"]["title_reasoning"]
+        == "Bridges literally cross over."
+    )
 
 
 def test_bulk_save_skips_duplicate_records(

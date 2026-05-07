@@ -63,7 +63,17 @@ def build_puzzle_naming_prompt(
     if len(clues) > 10:
         clue_block += f"\n... and {len(clues) - 10} more entries"
 
-    example_output = json.dumps({"title": "Au Naturel"}, indent=2)
+    example_output = json.dumps(
+        {
+            "why": (
+                "The theme is things that are golden — 'Au' is the chemical "
+                "symbol for gold, so 'Au Naturel' winks at the theme without "
+                "naming it."
+            ),
+            "title": "Au Naturel",
+        },
+        indent=2,
+    )
 
     role = (
         "You are a crossword puzzle editor choosing a title for a "
@@ -79,18 +89,25 @@ def build_puzzle_naming_prompt(
         "giving it away\n"
         "- For themeless puzzles: something catchy inspired by the "
         "standout fill\n"
-        "\nEXAMPLES OF GOOD TITLES:\n"
-        '- For a puzzle themed around "things that are golden": '
-        '"Midas Touch" or "Au Naturel"\n'
-        '- For a puzzle themed around "types of bridges": '
-        '"Crossing Over" or "Span Class"\n'
-        '- For a themeless with JAZZ, ROBOT, PIXEL: '
-        '"Digital Riffs" or "Byte-Sized"\n'
+        "\nEXAMPLES OF GOOD TITLES (with reasoning):\n"
+        '- Theme "things that are golden" → "Midas Touch" '
+        "(everything Midas touched turned to gold — oblique nod to the "
+        "theme)\n"
+        '- Theme "types of bridges" → "Crossing Over" '
+        "(double meaning: bridges literally cross over, and the phrase "
+        "evokes transition without naming bridges)\n"
+        '- Themeless with JAZZ, ROBOT, PIXEL → "Digital Riffs" '
+        "(captures the modern/tech-meets-music vibe of the standout "
+        "fill)\n"
     )
 
     output_section = (
         "OUTPUT FORMAT:\n"
-        "Return ONLY a JSON object with a single key. "
+        "Return ONLY a JSON object with two keys, in this order:\n"
+        "- \"why\": one or two sentences explaining the reasoning behind "
+        "the title (what it ties to, why it works for this puzzle). "
+        "Think this through FIRST so the title is well-grounded.\n"
+        "- \"title\": the title itself, following the guidelines above.\n"
         "No other text before or after.\n"
         f"\n{example_output}\n"
         "\nNow generate a title. Return ONLY the JSON object."

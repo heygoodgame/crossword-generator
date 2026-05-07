@@ -164,6 +164,12 @@ def generate(
     help="Root directory for generated puzzles, logs, and manifest.",
 )
 @click.option(
+    "--batch-id",
+    default="phase-2b-pilot",
+    help="Batch identifier recorded in the manifest and used downstream "
+    "by save-generated-puzzles.",
+)
+@click.option(
     "--count",
     type=int,
     default=5,
@@ -221,6 +227,7 @@ def generate(
 )
 def generate_pilot_batch(
     output_root: str,
+    batch_id: str,
     count: int,
     seed_start: int,
     llm_provider: str,
@@ -276,7 +283,7 @@ def generate_pilot_batch(
             )
 
     manifest = {
-        "batch": "phase-2b-pilot",
+        "batch": batch_id,
         "started_at": started_at,
         "finished_at": _utc_timestamp(),
         "output_root": str(root),
@@ -989,6 +996,7 @@ def _run_batch_item(
         "fill_score": None,
         "clue_score": None,
         "title": None,
+        "title_reasoning": None,
         "runtime_seconds": 0.0,
         "fill_seconds": None,
         "clue_seconds": None,
@@ -1016,6 +1024,7 @@ def _run_batch_item(
                     else None
                 ),
                 "title": completed.title or None,
+                "title_reasoning": completed.title_reasoning or None,
                 "fill_seconds": _metadata_timing(
                     completed, "grid-fill-with-grading"
                 ),

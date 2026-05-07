@@ -88,14 +88,32 @@ def _make_envelope(
 
 class TestPuzzleNamingStep:
     def test_happy_path(self) -> None:
-        """LLM returns valid JSON, title is set on envelope."""
-        response = json.dumps({"title": "Midas Touch"})
+        """LLM returns valid JSON, title and reasoning are set on envelope."""
+        response = json.dumps(
+            {
+                "why": "Everything Midas touched turned to gold.",
+                "title": "Midas Touch",
+            }
+        )
         step = PuzzleNamingStep(MockLLM(response=response))
         envelope = _make_envelope(grid=MOCK_GRID, clues=MOCK_CLUES)
         result = step.run(envelope)
 
         assert result.title == "Midas Touch"
+        assert result.title_reasoning == (
+            "Everything Midas touched turned to gold."
+        )
         assert "puzzle-naming" in result.step_history
+
+    def test_missing_why_field_is_tolerated(self) -> None:
+        """LLM omits 'why' — title still extracted, reasoning is empty."""
+        response = json.dumps({"title": "Stoic Choice"})
+        step = PuzzleNamingStep(MockLLM(response=response))
+        envelope = _make_envelope(grid=MOCK_GRID, clues=MOCK_CLUES)
+        result = step.run(envelope)
+
+        assert result.title == "Stoic Choice"
+        assert result.title_reasoning == ""
 
     def test_step_name(self) -> None:
         step = PuzzleNamingStep(MockLLM())
@@ -114,7 +132,7 @@ class TestPuzzleNamingStep:
         assert result.title == "Second Try"
 
     def test_total_failure_falls_back(self) -> None:
-        """All retries fail — falls back to generic title."""
+        """All retries fail — falls back to generic title, no reasoning."""
         step = PuzzleNamingStep(
             MockLLM(response="garbage"),
             max_retries=2,
@@ -123,6 +141,7 @@ class TestPuzzleNamingStep:
         result = step.run(envelope)
 
         assert result.title == "Mini Crossword"
+        assert result.title_reasoning == ""
 
     def test_fallback_for_midi(self) -> None:
         """Fallback title uses puzzle type."""

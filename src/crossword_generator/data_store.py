@@ -58,6 +58,8 @@ def make_record(
     generator_commit: str | None = None,
     fill_score: float | None = None,
     clue_score: float | None = None,
+    title: str | None = None,
+    title_reasoning: str | None = None,
     key: str | None = None,
 ) -> dict[str, Any]:
     """Build a generated-puzzle data-store record."""
@@ -81,6 +83,8 @@ def make_record(
             "generator_commit": generator_commit,
             "fill_score": fill_score,
             "clue_score": clue_score,
+            "title": title,
+            "title_reasoning": title_reasoning,
             "author": AUTHOR,
             "publication_status": "draft",
         },
@@ -134,6 +138,10 @@ def records_from_manifest(
                 generator_commit=generator_commit,
                 fill_score=_optional_float(result.get("fill_score")),
                 clue_score=_optional_float(result.get("clue_score")),
+                title=_optional_str(result.get("title")),
+                title_reasoning=_optional_str(
+                    result.get("title_reasoning")
+                ),
             )
         )
 
@@ -352,6 +360,13 @@ def _request_json(
 
 def _optional_float(value: object) -> float | None:
     return float(value) if value is not None else None
+
+
+def _optional_str(value: object) -> str | None:
+    if value is None:
+        return None
+    text = str(value).strip()
+    return text or None
 
 
 def _ensure_dict(value: object) -> dict[str, Any]:

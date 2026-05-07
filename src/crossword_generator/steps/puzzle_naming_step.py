@@ -45,6 +45,7 @@ class PuzzleNamingStep(PipelineStep):
         )
 
         title: str | None = None
+        reasoning: str = ""
         last_error = ""
 
         for attempt in range(1, self._max_retries + 1):
@@ -61,7 +62,8 @@ class PuzzleNamingStep(PipelineStep):
                 raw_response,
             )
             try:
-                title = _parse_title_response(raw_response)
+                title, reasoning = _parse_title_response(raw_response)
+                logger.info("Title: %r — reasoning: %s", title, reasoning)
                 break
             except (json.JSONDecodeError, ValueError, KeyError) as exc:
                 last_error = str(exc)
@@ -82,10 +84,12 @@ class PuzzleNamingStep(PipelineStep):
                 fallback,
             )
             title = fallback
+            reasoning = ""
 
         return envelope.model_copy(
             update={
                 "title": title,
+                "title_reasoning": reasoning,
                 "step_history": [*envelope.step_history, self.name],
             }
         )
@@ -99,8 +103,11 @@ class PuzzleNamingStep(PipelineStep):
         return errors
 
 
-def _parse_title_response(raw_response: str) -> str:
-    """Parse the LLM's JSON response to extract the title.
+def _parse_title_response(raw_response: str) -> tuple[str, str]:
+    """Parse the LLM's JSON response to extract the title and reasoning.
+
+    Returns:
+        A (title, reasoning) tuple. Reasoning is "" if not provided.
 
     Raises:
         json.JSONDecodeError: If the response is not valid JSON.
@@ -129,4 +136,9 @@ def _parse_title_response(raw_response: str) -> str:
     if not isinstance(title, str) or not title.strip():
         raise ValueError("Title is empty or not a string")
 
-    return title.strip()
+    reasoning_raw = parsed.get("why", "")
+    reasoning = (
+        reasoning_raw.strip() if isinstance(reasoning_raw, str) else ""
+    )
+
+    return title.strip(), reasoning
