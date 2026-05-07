@@ -86,9 +86,7 @@ def _prescan_grid_signatures(
     groups: dict[SlotSignature, SignatureGroup] = {}
 
     for variant in range(num_variants):
-        grid_seed = (
-            base_seed + variant if base_seed is not None else None
-        )
+        grid_seed = _grid_seed_for_variant(base_seed, variant)
         spec = get_grid_spec(puzzle_type, grid_size, seed=grid_seed)
         black = set(spec.black_cells)
         slots = extract_slots(spec.rows, spec.cols, black)
@@ -197,6 +195,45 @@ def _has_theme(envelope: PuzzleEnvelope) -> bool:
     return bool(
         envelope.theme
         and (envelope.theme.seed_entries or envelope.theme.revealer)
+    )
+
+
+def _unsupported_slot_lengths(
+    spec: GridSpec,
+    dictionary: Dictionary | None,
+) -> list[int]:
+    """Return grid slot lengths not present in the active dictionary."""
+    if dictionary is None:
+        return []
+
+    supported = dictionary.supported_lengths()
+    slots = extract_slots(spec.rows, spec.cols, set(spec.black_cells))
+    return sorted({slot.length for slot in slots if slot.length not in supported})
+
+
+def _grid_seed_for_variant(
+    base_seed: int | None,
+    grid_variant: int,
+) -> int | None:
+    """Resolve a grid variant seed while preserving the default first variant."""
+    if base_seed is not None:
+        return base_seed + grid_variant
+    return None if grid_variant == 0 else grid_variant
+
+
+def _format_exhausted_error(
+    *,
+    max_grid_variants: int,
+    incompatible_skips: int,
+    filler_failures: int,
+    total_attempts: int,
+) -> str:
+    return (
+        f"All grid variants exhausted: could not fill grid after trying "
+        f"{max_grid_variants} pattern(s); "
+        f"{incompatible_skips} incompatible pattern(s) skipped; "
+        f"{filler_failures} filler attempt(s) failed; "
+        f"{total_attempts} total filler attempt(s)"
     )
 
 
@@ -762,10 +799,24 @@ class FillWithGradingStep(PipelineStep):
         best_result: FillResult | None = None
         total_attempts = 0
 
-        for grid_seed in grid_seeds[:max_seeds]:
+        for grid_variant, grid_seed in enumerate(grid_seeds[:max_seeds]):
             spec = get_grid_spec(
                 envelope.puzzle_type, envelope.grid_size, seed=grid_seed
             )
+
+            unsupported = (
+                _unsupported_slot_lengths(spec, self._dictionary)
+                if not has_theme
+                else []
+            )
+            if unsupported:
+                logger.info(
+                    "Grid variant %d skipped: slot lengths %s unsupported "
+                    "by dictionary",
+                    grid_variant,
+                    unsupported,
+                )
+                continue
 
             if has_theme:
                 try:
@@ -810,21 +861,40 @@ class FillWithGradingStep(PipelineStep):
         """Original fill path: use seed_entries directly."""
         base_seed = envelope.metadata.get("seed")
         has_theme = _has_theme(envelope)
-        max_grid_variants = self._max_grid_variants if has_theme else 1
+        max_grid_variants = (
+            self._max_grid_variants
+            if has_theme or self._dictionary is not None
+            else 1
+        )
         max_fill_attempts = self._max_retries if self._retry_on_fail else 1
 
         collector = _CandidateCollector(target=self._collect_boards)
+        incompatible_skips = 0
+        filler_failures = 0
 
         for grid_variant in range(max_grid_variants):
             if collector.is_full():
                 break
 
-            grid_seed = (
-                base_seed + grid_variant if base_seed is not None else None
-            )
+            grid_seed = _grid_seed_for_variant(base_seed, grid_variant)
             spec = get_grid_spec(
                 envelope.puzzle_type, envelope.grid_size, seed=grid_seed
             )
+
+            unsupported = (
+                _unsupported_slot_lengths(spec, self._dictionary)
+                if not has_theme
+                else []
+            )
+            if unsupported:
+                incompatible_skips += 1
+                logger.info(
+                    "Grid variant %d skipped: slot lengths %s unsupported "
+                    "by dictionary",
+                    grid_variant,
+                    unsupported,
+                )
+                continue
 
             # Assign seed entries to this grid's slots
             if has_theme:
@@ -863,6 +933,7 @@ class FillWithGradingStep(PipelineStep):
                 try:
                     filled = self._filler.fill(spec)
                 except FillError:
+                    filler_failures += 1
                     if has_theme:
                         logger.warning(
                             "Grid variant %d: fill infeasible with theme "
@@ -911,9 +982,12 @@ class FillWithGradingStep(PipelineStep):
 
         if collector.best_result is None:
             raise FillError(
-                f"All grid variants exhausted: could not fill grid after "
-                f"trying {max_grid_variants} pattern(s) with "
-                f"{collector.total_attempts} total attempt(s)"
+                _format_exhausted_error(
+                    max_grid_variants=max_grid_variants,
+                    incompatible_skips=incompatible_skips,
+                    filler_failures=filler_failures,
+                    total_attempts=collector.total_attempts,
+                )
             )
 
         # Select the best board from collected candidates

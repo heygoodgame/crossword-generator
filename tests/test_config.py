@@ -42,6 +42,8 @@ class TestConfigDefaults:
         assert cfg.llm.ollama.base_url == "http://localhost:11434"
         assert cfg.llm.ollama.model == "llama3"
         assert cfg.llm.ollama.timeout == 120
+        assert cfg.llm.claude.clue_generation_model == "claude-sonnet-4-6"
+        assert cfg.llm.claude.clue_grading_model == "claude-sonnet-4-6"
 
     def test_default_output(self) -> None:
         cfg = Config()
@@ -84,6 +86,10 @@ class TestLoadConfig:
         assert cfg.fill.csp.min_word_score == 55
         assert cfg.fill.csp.quality_tiers == [55]
         assert cfg.theme.enabled is False
+        assert cfg.llm.claude.clue_generation_model == "claude-sonnet-4-6"
+        assert cfg.llm.claude.clue_grading_model == "claude-sonnet-4-6"
+        rejected_model = "claude-sonnet-4-5" + "-20241022"
+        assert rejected_model not in (project_root / filename).read_text()
 
     def test_load_explicit_path_custom_values(self, tmp_path: Path) -> None:
         yaml_file = tmp_path / "custom.yaml"

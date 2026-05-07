@@ -100,3 +100,23 @@ uv run pytest tests/test_dictionary.py tests/test_dictionary_prep.py \
 - Asymmetric mini patterns are preserved for now, but Jeff prefers unthemed
   mini symmetry. Future batch scripts can use the structured pattern symmetry
   flag to filter or down-rank asymmetric patterns.
+
+## Easy 9x9 Smoke Finding
+
+The initial easy 9x9 smoke pass failed for most seeds even with 50 retries.
+The easy dictionary only contains word lengths 3-7, while generated 9x9 midi
+patterns often contain 8- or 9-letter slots. Seed 26 succeeded because its
+9x9 slot lengths were only 3, 4, 5, and 7.
+
+Generation now checks the selected grid pattern against the active dictionary
+before invoking the filler. Unsupported patterns are skipped with a log line
+like:
+
+```text
+Grid variant N skipped: slot lengths [8, 9] unsupported by dictionary
+```
+
+For non-themed generation, `fill.max_grid_variants` now allows the direct fill
+path to walk forward through later grid seeds until it finds a compatible
+pattern or exhausts the variant budget. This avoids spending CSP time on grids
+that cannot possibly be filled by a constrained dictionary.

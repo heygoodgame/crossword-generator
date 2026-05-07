@@ -213,3 +213,10 @@ class TestPhase1PreparedDictionaries:
         assert d.score("AAH") == 55
         assert d.score("ZZTOP") == 55
         assert d.score("CATCH22") is None
+
+    def test_easy_dictionary_supports_lengths_3_through_7_only(
+        self, project_root: Path
+    ) -> None:
+        path = project_root / "dictionaries" / "hgg-easy-flat-55.txt"
+        d = Dictionary.load(path, min_word_score=55, min_2letter_score=55)
+        assert d.supported_lengths() == {3, 4, 5, 6, 7}

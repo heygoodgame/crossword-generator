@@ -47,8 +47,8 @@ llm:
     timeout: 120
   claude:
     model: claude-haiku-4-5-20251001
-    clue_generation_model: claude-sonnet-4-5-20241022
-    clue_grading_model: claude-sonnet-4-5-20241022
+    clue_generation_model: claude-sonnet-4-6
+    clue_grading_model: claude-sonnet-4-6
     max_tokens: 4096
     timeout: 120
 
