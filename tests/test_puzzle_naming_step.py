@@ -255,3 +255,28 @@ class TestPuzzleNamingPrompt:
 
         assert "JSON" in prompt
         assert '"title"' in prompt
+
+    def test_prompt_highlights_1_across_as_marquee(self) -> None:
+        """The prompt singles out 1-Across with extra weight."""
+        prompt = build_puzzle_naming_prompt(
+            PuzzleType.MINI, 5, MOCK_CLUES, MOCK_GRID
+        )
+
+        assert "MARQUEE ENTRY (1-ACROSS)" in prompt
+        # The 1-Across answer (ABCDE) and clue ("First row") appear in
+        # the marquee block.
+        assert "ABCDE" in prompt
+        assert "First row" in prompt
+        # And the guideline calls out the 1-Across weighting.
+        assert "1-Across" in prompt
+
+    def test_prompt_handles_missing_1_across(self) -> None:
+        """Gracefully omits the marquee block if no 1-Across exists."""
+        clues_without_1_across = [
+            c for c in MOCK_CLUES if not (c.number == 1 and c.direction == "across")
+        ]
+        prompt = build_puzzle_naming_prompt(
+            PuzzleType.MINI, 5, clues_without_1_across, MOCK_GRID
+        )
+
+        assert "MARQUEE ENTRY (1-ACROSS)" not in prompt

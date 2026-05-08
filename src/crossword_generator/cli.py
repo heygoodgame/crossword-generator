@@ -182,6 +182,12 @@ def generate(
     help="First deterministic seed for every bucket.",
 )
 @click.option(
+    "--buckets",
+    default=None,
+    help="Comma-separated subset of buckets to run, formatted "
+    "<difficulty>/<size> (e.g. 'easy/9,hard/9'). Defaults to all buckets.",
+)
+@click.option(
     "--llm",
     "llm_provider",
     type=click.Choice(["ollama", "claude"]),
@@ -230,6 +236,7 @@ def generate_pilot_batch(
     batch_id: str,
     count: int,
     seed_start: int,
+    buckets: str | None,
     llm_provider: str,
     per_pattern_attempts: int,
     max_grid_variants: int,
@@ -248,7 +255,7 @@ def generate_pilot_batch(
     logs_dir = root / "logs"
     logs_dir.mkdir(parents=True, exist_ok=True)
 
-    buckets = [
+    all_buckets = [
         ("easy", 5, "mini", project_root / "config.easy.yaml"),
         ("easy", 7, "mini", project_root / "config.easy.yaml"),
         ("easy", 9, "midi", project_root / "config.easy.yaml"),
@@ -256,10 +263,23 @@ def generate_pilot_batch(
         ("hard", 7, "mini", project_root / "config.hard.yaml"),
         ("hard", 9, "midi", project_root / "config.hard.yaml"),
     ]
+    if buckets:
+        wanted = {tag.strip() for tag in buckets.split(",") if tag.strip()}
+        unknown = wanted - {f"{d}/{s}" for d, s, _, _ in all_buckets}
+        if unknown:
+            raise click.BadParameter(
+                f"Unknown bucket(s): {', '.join(sorted(unknown))}. "
+                f"Valid: {', '.join(f'{d}/{s}' for d, s, _, _ in all_buckets)}"
+            )
+        selected_buckets = [
+            b for b in all_buckets if f"{b[0]}/{b[1]}" in wanted
+        ]
+    else:
+        selected_buckets = all_buckets
 
     started_at = _utc_timestamp()
     results: list[dict[str, object]] = []
-    for difficulty, size, puzzle_type, config_path in buckets:
+    for difficulty, size, puzzle_type, config_path in selected_buckets:
         for seed in range(seed_start, seed_start + count):
             results.append(
                 _run_batch_item(

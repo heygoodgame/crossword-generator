@@ -30,6 +30,31 @@ def build_puzzle_naming_prompt(
     answers = [c.answer for c in clues]
     answers_block = ", ".join(answers)
 
+    # 1-Across is traditionally the puzzle's "headliner" entry — the
+    # constructor's marquee word. Surface it so the title-generating LLM
+    # gives it extra weight when picking inspiration.
+    one_across = next(
+        (
+            c
+            for c in clues
+            if c.number == 1 and c.direction.lower() == "across"
+        ),
+        None,
+    )
+    one_across_block = ""
+    if one_across is not None:
+        one_across_block = (
+            "\nMARQUEE ENTRY (1-ACROSS):\n"
+            f'- {one_across.answer} — "{one_across.clue}"\n'
+            "1-Across is the puzzle's headliner — the entry crossword "
+            "constructors traditionally pick to set the tone. Give it "
+            "extra weight when choosing the title's inspiration: the "
+            "title should resonate with 1-Across in particular, "
+            "whether by sharing its vibe, riffing on its meaning, or "
+            "picking up its imagery — without ever using the answer "
+            "word itself.\n"
+        )
+
     # Theme context
     theme_block = ""
     if theme and theme.topic:
@@ -85,10 +110,13 @@ def build_puzzle_naming_prompt(
         "- The title must be 1-5 words\n"
         "- Be evocative and indirect, not literal\n"
         "- The title must NOT contain any answer word from the grid\n"
+        "- Weight 1-Across heavily as the marquee entry — the title "
+        "should resonate with it especially\n"
         "- For themed puzzles: hint at the theme concept without "
-        "giving it away\n"
+        "giving it away (1-Across still gets extra weight within the "
+        "theme)\n"
         "- For themeless puzzles: something catchy inspired by the "
-        "standout fill\n"
+        "standout fill, anchored by 1-Across\n"
         "\nEXAMPLES OF GOOD TITLES (with reasoning):\n"
         '- Theme "things that are golden" → "Midas Touch" '
         "(everything Midas touched turned to gold — oblique nod to the "
@@ -116,7 +144,8 @@ def build_puzzle_naming_prompt(
     return (
         f"{role}\n\n"
         f"PUZZLE: {puzzle_type.value.title()} crossword ({grid_size}x{grid_size})\n"
-        f"{theme_block}\n"
+        f"{theme_block}"
+        f"{one_across_block}\n"
         f"FILL WORDS: {answers_block}\n\n"
         f"SAMPLE CLUES:\n{clue_block}\n\n"
         f"{guidelines}\n\n{output_section}"
