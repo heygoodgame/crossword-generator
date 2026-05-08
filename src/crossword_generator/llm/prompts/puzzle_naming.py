@@ -53,6 +53,12 @@ def build_puzzle_naming_prompt(
             "whether by sharing its vibe, riffing on its meaning, or "
             "picking up its imagery — without ever using the answer "
             "word itself.\n"
+            f"CRITICAL: the title must NOT contain the word "
+            f'"{one_across.answer}" anywhere — not as a whole word, not '
+            f"as a substring, not in any form. Reject any title that "
+            f'includes "{one_across.answer}" and pick a different '
+            "phrasing. The same prohibition applies to every other "
+            "answer in the grid.\n"
         )
 
     # Theme context

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 
 from crossword_generator.llm.base import LLMProvider
 from crossword_generator.llm.prompts.puzzle_naming import (
@@ -62,7 +63,26 @@ class PuzzleNamingStep(PipelineStep):
                 raw_response,
             )
             try:
-                title, reasoning = _parse_title_response(raw_response)
+                candidate_title, candidate_reasoning = (
+                    _parse_title_response(raw_response)
+                )
+                offending = _title_contains_answer(
+                    candidate_title,
+                    [c.answer for c in envelope.clues],
+                )
+                if offending:
+                    last_error = (
+                        f"Title {candidate_title!r} contains answer "
+                        f"word {offending!r} as a whole word"
+                    )
+                    logger.warning(
+                        "Attempt %d: rejecting title — %s",
+                        attempt,
+                        last_error,
+                    )
+                    continue
+                title = candidate_title
+                reasoning = candidate_reasoning
                 logger.info("Title: %r — reasoning: %s", title, reasoning)
                 break
             except (json.JSONDecodeError, ValueError, KeyError) as exc:
@@ -142,3 +162,21 @@ def _parse_title_response(raw_response: str) -> tuple[str, str]:
     )
 
     return title.strip(), reasoning
+
+
+def _title_contains_answer(title: str, answers: list[str]) -> str | None:
+    """Return the first answer word that appears as a whole token in the
+    title, or None if none do.
+
+    Whole-token match is case-insensitive and ignores punctuation between
+    words. This catches "On the Rye" when RYE is an answer, but does not
+    flag titles where an answer is merely a substring (e.g. it won't
+    flag "Pressed" for the answer ESS).
+    """
+    title_tokens = {t for t in re.findall(r"[A-Za-z]+", title.lower()) if t}
+    for answer in answers:
+        if not answer:
+            continue
+        if answer.lower() in title_tokens:
+            return answer
+    return None

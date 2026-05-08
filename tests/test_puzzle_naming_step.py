@@ -17,7 +17,10 @@ from crossword_generator.models import (
     PuzzleType,
     ThemeConcept,
 )
-from crossword_generator.steps.puzzle_naming_step import PuzzleNamingStep
+from crossword_generator.steps.puzzle_naming_step import (
+    PuzzleNamingStep,
+    _title_contains_answer,
+)
 
 MOCK_GRID = [
     ["A", "B", "C", "D", "E"],
@@ -206,6 +209,70 @@ class TestPuzzleNamingStep:
         result = step.run(envelope)
 
         assert result.title == "Spacey Title"
+
+    def test_rejects_title_containing_answer_word_and_retries(self) -> None:
+        """If the LLM returns a title containing an answer word, retry."""
+        clues = [
+            ClueEntry(number=1, direction="across", answer="RYE", clue="Bread type"),
+            ClueEntry(number=2, direction="down", answer="ABC", clue="First letters"),
+        ]
+        bad = json.dumps({"why": "...", "title": "On the Rye"})
+        good = json.dumps({"why": "...", "title": "Catcher's Mitt"})
+        step = PuzzleNamingStep(
+            MockLLM(responses=[bad, good]),
+            max_retries=3,
+        )
+        envelope = _make_envelope(grid=MOCK_GRID, clues=clues)
+        result = step.run(envelope)
+
+        assert result.title == "Catcher's Mitt"
+
+    def test_rejects_title_containing_any_answer_word(self) -> None:
+        """Non-1-Across answers also disqualify a title."""
+        clues = [
+            ClueEntry(number=1, direction="across", answer="JAZZ", clue="Music"),
+            ClueEntry(number=1, direction="down", answer="ROBOT", clue="Mech"),
+        ]
+        bad = json.dumps({"title": "Robot Uprising"})
+        good = json.dumps({"title": "Digital Riffs"})
+        step = PuzzleNamingStep(
+            MockLLM(responses=[bad, good]),
+            max_retries=3,
+        )
+        envelope = _make_envelope(grid=MOCK_GRID, clues=clues)
+        result = step.run(envelope)
+
+        assert result.title == "Digital Riffs"
+
+
+class TestTitleContainsAnswer:
+    def test_flags_exact_token_match_case_insensitive(self) -> None:
+        assert _title_contains_answer("On the Rye", ["RYE"]) == "RYE"
+        assert _title_contains_answer("on the rye", ["RYE"]) == "RYE"
+        assert _title_contains_answer("ON THE RYE", ["rye"]) == "rye"
+
+    def test_ignores_substring_matches(self) -> None:
+        # ESS appears inside "Pressed" but is not a separate token.
+        assert _title_contains_answer("Pressed for Time", ["ESS"]) is None
+        # ARE appears inside "Square" but not as a token.
+        assert _title_contains_answer("Squared Away", ["ARE"]) is None
+
+    def test_handles_punctuation(self) -> None:
+        # Apostrophes split tokens, so "Catcher's" tokenizes as
+        # "catcher" + "s" — neither matches RYE.
+        assert _title_contains_answer("Catcher's Mitt", ["RYE"]) is None
+        # Hyphens also split.
+        assert _title_contains_answer("Round-Em-Up", ["LASSO"]) is None
+
+    def test_returns_first_offending_answer(self) -> None:
+        # Multiple answers could match; we only need to surface one.
+        result = _title_contains_answer(
+            "Robot Jazz Band", ["JAZZ", "ROBOT", "BAND"]
+        )
+        assert result in {"JAZZ", "ROBOT", "BAND"}
+
+    def test_empty_answers_are_skipped(self) -> None:
+        assert _title_contains_answer("Anything Goes", [""]) is None
 
 
 class TestPuzzleNamingPrompt:
