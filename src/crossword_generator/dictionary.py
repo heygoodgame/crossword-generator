@@ -122,6 +122,21 @@ class Dictionary:
             words = [w for w in words if (self._words.get(w, 0)) >= min_score]
         return words
 
+    def supported_lengths(self, *, min_score: int | None = None) -> set[int]:
+        """Return word lengths available in the loaded dictionary.
+
+        Args:
+            min_score: If provided, include only lengths with at least one word
+                at or above this score.
+        """
+        if min_score is None:
+            return set(self._by_length)
+        return {
+            length
+            for length, words in self._by_length.items()
+            if any((self._words.get(word, 0)) >= min_score for word in words)
+        }
+
     def export_plain(self, output_path: Path | str, *, min_score: int = 50) -> int:
         """Write words to a plain text file (one lowercase word per line).
 

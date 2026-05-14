@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import random
+from dataclasses import dataclass
 
 from crossword_generator.fillers.base import GridSpec
+from crossword_generator.grid_pattern_validation import is_rotationally_symmetric
 from crossword_generator.models import PuzzleType
 
 # Valid (puzzle_type, grid_size) combinations
@@ -270,6 +272,52 @@ _GRID_PATTERNS: dict[
         ], 1),
     ],
 }
+
+
+@dataclass(frozen=True)
+class WeightedGridPattern:
+    """A catalogued black-cell pattern with its selection weight."""
+
+    black_cells: tuple[tuple[int, int], ...]
+    weight: int
+    symmetric: bool
+
+
+def get_grid_patterns(
+    puzzle_type: PuzzleType | str,
+    grid_size: int,
+    *,
+    symmetric_only: bool = False,
+) -> tuple[WeightedGridPattern, ...]:
+    """Return structured weighted grid patterns for a supported mini size.
+
+    ``symmetric_only`` makes it possible for future generation experiments to
+    filter Jeff's asymmetric mini patterns without changing today's defaults.
+    """
+    pt = PuzzleType(puzzle_type)
+    key = (pt, grid_size)
+    if key not in _VALID_SPECS:
+        valid = [f"{t.value}/{s}" for (t, s) in _VALID_SPECS]
+        raise ValueError(
+            f"Unsupported puzzle_type/grid_size: {pt.value}/{grid_size}. "
+            f"Valid combinations: {', '.join(valid)}"
+        )
+
+    rows, cols = _VALID_SPECS[key]
+    if rows != cols:
+        raise ValueError("Only square grid pattern catalogs are supported")
+
+    patterns = tuple(
+        WeightedGridPattern(
+            black_cells=tuple(sorted(black_cells)),
+            weight=weight,
+            symmetric=is_rotationally_symmetric(rows, black_cells),
+        )
+        for black_cells, weight in _GRID_PATTERNS.get(key, [])
+    )
+    if symmetric_only:
+        return tuple(pattern for pattern in patterns if pattern.symmetric)
+    return patterns
 
 
 def get_grid_spec(

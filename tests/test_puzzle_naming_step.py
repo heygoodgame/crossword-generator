@@ -17,7 +17,10 @@ from crossword_generator.models import (
     PuzzleType,
     ThemeConcept,
 )
-from crossword_generator.steps.puzzle_naming_step import PuzzleNamingStep
+from crossword_generator.steps.puzzle_naming_step import (
+    PuzzleNamingStep,
+    _title_contains_answer,
+)
 
 MOCK_GRID = [
     ["A", "B", "C", "D", "E"],
@@ -88,14 +91,32 @@ def _make_envelope(
 
 class TestPuzzleNamingStep:
     def test_happy_path(self) -> None:
-        """LLM returns valid JSON, title is set on envelope."""
-        response = json.dumps({"title": "Midas Touch"})
+        """LLM returns valid JSON, title and reasoning are set on envelope."""
+        response = json.dumps(
+            {
+                "why": "Everything Midas touched turned to gold.",
+                "title": "Midas Touch",
+            }
+        )
         step = PuzzleNamingStep(MockLLM(response=response))
         envelope = _make_envelope(grid=MOCK_GRID, clues=MOCK_CLUES)
         result = step.run(envelope)
 
         assert result.title == "Midas Touch"
+        assert result.title_reasoning == (
+            "Everything Midas touched turned to gold."
+        )
         assert "puzzle-naming" in result.step_history
+
+    def test_missing_why_field_is_tolerated(self) -> None:
+        """LLM omits 'why' — title still extracted, reasoning is empty."""
+        response = json.dumps({"title": "Stoic Choice"})
+        step = PuzzleNamingStep(MockLLM(response=response))
+        envelope = _make_envelope(grid=MOCK_GRID, clues=MOCK_CLUES)
+        result = step.run(envelope)
+
+        assert result.title == "Stoic Choice"
+        assert result.title_reasoning == ""
 
     def test_step_name(self) -> None:
         step = PuzzleNamingStep(MockLLM())
@@ -114,7 +135,7 @@ class TestPuzzleNamingStep:
         assert result.title == "Second Try"
 
     def test_total_failure_falls_back(self) -> None:
-        """All retries fail — falls back to generic title."""
+        """All retries fail — falls back to generic title, no reasoning."""
         step = PuzzleNamingStep(
             MockLLM(response="garbage"),
             max_retries=2,
@@ -123,6 +144,7 @@ class TestPuzzleNamingStep:
         result = step.run(envelope)
 
         assert result.title == "Mini Crossword"
+        assert result.title_reasoning == ""
 
     def test_fallback_for_midi(self) -> None:
         """Fallback title uses puzzle type."""
@@ -188,6 +210,70 @@ class TestPuzzleNamingStep:
 
         assert result.title == "Spacey Title"
 
+    def test_rejects_title_containing_answer_word_and_retries(self) -> None:
+        """If the LLM returns a title containing an answer word, retry."""
+        clues = [
+            ClueEntry(number=1, direction="across", answer="RYE", clue="Bread type"),
+            ClueEntry(number=2, direction="down", answer="ABC", clue="First letters"),
+        ]
+        bad = json.dumps({"why": "...", "title": "On the Rye"})
+        good = json.dumps({"why": "...", "title": "Catcher's Mitt"})
+        step = PuzzleNamingStep(
+            MockLLM(responses=[bad, good]),
+            max_retries=3,
+        )
+        envelope = _make_envelope(grid=MOCK_GRID, clues=clues)
+        result = step.run(envelope)
+
+        assert result.title == "Catcher's Mitt"
+
+    def test_rejects_title_containing_any_answer_word(self) -> None:
+        """Non-1-Across answers also disqualify a title."""
+        clues = [
+            ClueEntry(number=1, direction="across", answer="JAZZ", clue="Music"),
+            ClueEntry(number=1, direction="down", answer="ROBOT", clue="Mech"),
+        ]
+        bad = json.dumps({"title": "Robot Uprising"})
+        good = json.dumps({"title": "Digital Riffs"})
+        step = PuzzleNamingStep(
+            MockLLM(responses=[bad, good]),
+            max_retries=3,
+        )
+        envelope = _make_envelope(grid=MOCK_GRID, clues=clues)
+        result = step.run(envelope)
+
+        assert result.title == "Digital Riffs"
+
+
+class TestTitleContainsAnswer:
+    def test_flags_exact_token_match_case_insensitive(self) -> None:
+        assert _title_contains_answer("On the Rye", ["RYE"]) == "RYE"
+        assert _title_contains_answer("on the rye", ["RYE"]) == "RYE"
+        assert _title_contains_answer("ON THE RYE", ["rye"]) == "rye"
+
+    def test_ignores_substring_matches(self) -> None:
+        # ESS appears inside "Pressed" but is not a separate token.
+        assert _title_contains_answer("Pressed for Time", ["ESS"]) is None
+        # ARE appears inside "Square" but not as a token.
+        assert _title_contains_answer("Squared Away", ["ARE"]) is None
+
+    def test_handles_punctuation(self) -> None:
+        # Apostrophes split tokens, so "Catcher's" tokenizes as
+        # "catcher" + "s" — neither matches RYE.
+        assert _title_contains_answer("Catcher's Mitt", ["RYE"]) is None
+        # Hyphens also split.
+        assert _title_contains_answer("Round-Em-Up", ["LASSO"]) is None
+
+    def test_returns_first_offending_answer(self) -> None:
+        # Multiple answers could match; we only need to surface one.
+        result = _title_contains_answer(
+            "Robot Jazz Band", ["JAZZ", "ROBOT", "BAND"]
+        )
+        assert result in {"JAZZ", "ROBOT", "BAND"}
+
+    def test_empty_answers_are_skipped(self) -> None:
+        assert _title_contains_answer("Anything Goes", [""]) is None
+
 
 class TestPuzzleNamingPrompt:
     def test_themed_prompt_includes_theme_context(self) -> None:
@@ -236,3 +322,28 @@ class TestPuzzleNamingPrompt:
 
         assert "JSON" in prompt
         assert '"title"' in prompt
+
+    def test_prompt_highlights_1_across_as_marquee(self) -> None:
+        """The prompt singles out 1-Across with extra weight."""
+        prompt = build_puzzle_naming_prompt(
+            PuzzleType.MINI, 5, MOCK_CLUES, MOCK_GRID
+        )
+
+        assert "MARQUEE ENTRY (1-ACROSS)" in prompt
+        # The 1-Across answer (ABCDE) and clue ("First row") appear in
+        # the marquee block.
+        assert "ABCDE" in prompt
+        assert "First row" in prompt
+        # And the guideline calls out the 1-Across weighting.
+        assert "1-Across" in prompt
+
+    def test_prompt_handles_missing_1_across(self) -> None:
+        """Gracefully omits the marquee block if no 1-Across exists."""
+        clues_without_1_across = [
+            c for c in MOCK_CLUES if not (c.number == 1 and c.direction == "across")
+        ]
+        prompt = build_puzzle_naming_prompt(
+            PuzzleType.MINI, 5, clues_without_1_across, MOCK_GRID
+        )
+
+        assert "MARQUEE ENTRY (1-ACROSS)" not in prompt

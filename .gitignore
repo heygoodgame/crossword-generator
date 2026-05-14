@@ -50,7 +50,11 @@ coverage.xml
 output/*.puz
 output/*.ipuz
 output/*.json
+output/batches/
 !output/.gitkeep
+
+# JavaScript dependencies
+node_modules/
 
 # Ollama model files
 *.gguf

@@ -107,8 +107,8 @@ class ClaudeConfig(BaseModel):
     model: str = "claude-haiku-4-5-20251001"
     theme_model: str = ""
     fill_selection_model: str = ""
-    clue_generation_model: str = "claude-sonnet-4-5-20241022"
-    clue_grading_model: str = "claude-sonnet-4-5-20241022"
+    clue_generation_model: str = "claude-sonnet-4-6"
+    clue_grading_model: str = "claude-sonnet-4-6"
     max_tokens: int = 4096
     timeout: int = 120
 

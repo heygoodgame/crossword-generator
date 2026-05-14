@@ -4,6 +4,19 @@
 
 Crossword Generator — an automated pipeline for generating mini (5x5, 7x7) and midi (9x9–11x11) crossword puzzles. Python 3.11+, managed with uv.
 
+## Repo-Local Skills
+
+For generator batch work, dictionary updates, fill-quality rules, and data-store
+uploads, load the repo-local skill:
+
+- `.claude/skills/crossword-generator/SKILL.md`
+- `.claude/skills/crossword-generator/references/generator-workflow.md`
+
+Codex has the same guidance mirrored at:
+
+- `.codex/skills/crossword-generator/SKILL.md`
+- `.codex/skills/crossword-generator/references/generator-workflow.md`
+
 ## Key Commands
 
 ```bash

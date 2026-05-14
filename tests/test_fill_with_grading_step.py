@@ -80,6 +80,26 @@ class SequentialMockFiller(GridFiller):
         return self._call_count
 
 
+class RecordingFiller(GridFiller):
+    """Records fill calls and returns a fixed grid."""
+
+    def __init__(self, grid: list[list[str]]) -> None:
+        self._grid = grid
+        self.specs: list[GridSpec] = []
+
+    @property
+    def name(self) -> str:
+        return "recording"
+
+    def fill(self, spec: GridSpec) -> FilledGrid:
+        self.specs.append(spec)
+        return FilledGrid(grid=self._grid)
+
+    @property
+    def call_count(self) -> int:
+        return len(self.specs)
+
+
 # Dictionary that knows the high-quality grid words
 GOOD_WORDS = {
     "STARE": 80,
@@ -96,6 +116,32 @@ GOOD_WORDS = {
     "PARSE": 75,
     "ENTER": 80,
 }
+
+
+def _make_easy_length_dict() -> Dictionary:
+    """Create a dictionary with supported lengths matching hgg-easy-flat-55."""
+    words = {
+        "AAA": 55,
+        "AAAA": 55,
+        "AAAAA": 55,
+        "AAAAAA": 55,
+        "AAAAAAA": 55,
+        **GOOD_WORDS,
+    }
+    return Dictionary(words, min_word_score=0, min_2letter_score=0)
+
+
+def _incompatible_9x9_spec() -> GridSpec:
+    """9x9 pattern containing 8- and 9-letter slots."""
+    return GridSpec(rows=9, cols=9, black_cells=[(0, 8)])
+
+
+def _compatible_9x9_spec() -> GridSpec:
+    """9x9 cross pattern whose extracted slots are all 4 letters."""
+    black_cells = [(4, c) for c in range(9)] + [
+        (r, 4) for r in range(9) if r != 4
+    ]
+    return GridSpec(rows=9, cols=9, black_cells=black_cells)
 
 
 class TestPassOnFirstTry:
@@ -383,6 +429,112 @@ class TestGridPatternFallback:
         )
         with pytest.raises(FillError, match="All grid variants exhausted"):
             step.run(envelope)
+
+
+class TestDictionaryAwareGridCompatibility:
+    """Tests for dictionary-supported slot-length grid filtering."""
+
+    def test_skips_unsupported_9x9_pattern_before_filler(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        dictionary = _make_easy_length_dict()
+        grader = FillGrader(dictionary, min_passing_score=0)
+        filler = RecordingFiller(HIGH_QUALITY_GRID)
+        step = FillWithGradingStep(
+            filler,
+            grader,
+            dictionary=dictionary,
+            max_retries=1,
+            max_grid_variants=1,
+        )
+
+        monkeypatch.setattr(
+            "crossword_generator.steps.fill_step.get_grid_spec",
+            lambda *_args, **_kwargs: _incompatible_9x9_spec(),
+        )
+
+        envelope = PuzzleEnvelope(
+            puzzle_type=PuzzleType.MIDI,
+            grid_size=9,
+            metadata={"seed": 1},
+        )
+        with pytest.raises(
+            FillError,
+            match=r"1 incompatible pattern\(s\) skipped; "
+            r"0 filler attempt\(s\) failed; 0 total filler attempt",
+        ):
+            step.run(envelope)
+
+        assert filler.call_count == 0
+
+    def test_non_themed_generation_advances_to_compatible_variant(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        dictionary = _make_easy_length_dict()
+        grader = FillGrader(dictionary, min_passing_score=0)
+        filler = RecordingFiller(HIGH_QUALITY_GRID)
+        step = FillWithGradingStep(
+            filler,
+            grader,
+            dictionary=dictionary,
+            max_retries=1,
+            max_grid_variants=2,
+        )
+
+        specs = [_incompatible_9x9_spec(), _compatible_9x9_spec()]
+
+        def fake_get_grid_spec(*_args: object, seed: int | None = None) -> GridSpec:
+            assert seed is not None
+            return specs[seed - 1]
+
+        monkeypatch.setattr(
+            "crossword_generator.steps.fill_step.get_grid_spec",
+            fake_get_grid_spec,
+        )
+
+        envelope = PuzzleEnvelope(
+            puzzle_type=PuzzleType.MIDI,
+            grid_size=9,
+            metadata={"seed": 1},
+        )
+        result = step.run(envelope)
+
+        assert result.fill is not None
+        assert filler.call_count == 1
+        assert filler.specs[0].black_cells == _compatible_9x9_spec().black_cells
+
+    def test_all_incompatible_variants_raise_clear_error(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        dictionary = _make_easy_length_dict()
+        grader = FillGrader(dictionary, min_passing_score=0)
+        filler = RecordingFiller(HIGH_QUALITY_GRID)
+        step = FillWithGradingStep(
+            filler,
+            grader,
+            dictionary=dictionary,
+            max_retries=1,
+            max_grid_variants=3,
+        )
+
+        monkeypatch.setattr(
+            "crossword_generator.steps.fill_step.get_grid_spec",
+            lambda *_args, **_kwargs: _incompatible_9x9_spec(),
+        )
+
+        envelope = PuzzleEnvelope(
+            puzzle_type=PuzzleType.MIDI,
+            grid_size=9,
+            metadata={"seed": 1},
+        )
+        with pytest.raises(
+            FillError,
+            match=r"3 incompatible pattern\(s\) skipped; "
+            r"0 filler attempt\(s\) failed; 0 total filler attempt",
+        ):
+            step.run(envelope)
+
+        assert filler.call_count == 0
 
 
 class TestGenerateSubsets:

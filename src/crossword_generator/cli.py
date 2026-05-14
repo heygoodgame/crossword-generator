@@ -2,9 +2,13 @@
 
 from __future__ import annotations
 
+import json
 import logging
 import random
+import subprocess
 import sys
+import time
+from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 
 import click
@@ -150,6 +154,291 @@ def generate(
         # Print the grid
         for row in result.fill.grid:
             click.echo(" ".join(c if c != "." else "\u2588" for c in row))
+
+
+@main.command(name="generate-pilot-batch")
+@click.option(
+    "--output-root",
+    type=click.Path(),
+    default="output/batches/phase-2b-pilot",
+    help="Root directory for generated puzzles, logs, and manifest.",
+)
+@click.option(
+    "--batch-id",
+    default="phase-2b-pilot",
+    help="Batch identifier recorded in the manifest and used downstream "
+    "by save-generated-puzzles.",
+)
+@click.option(
+    "--count",
+    type=int,
+    default=5,
+    help="Number of puzzles per difficulty/size bucket.",
+)
+@click.option(
+    "--seed-start",
+    type=int,
+    default=1,
+    help="First deterministic seed for every bucket.",
+)
+@click.option(
+    "--buckets",
+    default=None,
+    help="Comma-separated subset of buckets to run, formatted "
+    "<difficulty>/<size> (e.g. 'easy/9,hard/9'). Defaults to all buckets.",
+)
+@click.option(
+    "--llm",
+    "llm_provider",
+    type=click.Choice(["ollama", "claude"]),
+    default="claude",
+    help="LLM provider to use.",
+)
+@click.option(
+    "--per-pattern-attempts",
+    type=int,
+    default=1,
+    help="Batch-mode CSP attempts per grid pattern before trying next variant.",
+)
+@click.option(
+    "--max-grid-variants",
+    type=int,
+    default=200,
+    help="Batch-mode maximum grid variants per puzzle.",
+)
+@click.option(
+    "--timeout-5",
+    type=int,
+    default=15,
+    help="Batch-mode CSP timeout in seconds for 5x5 grids.",
+)
+@click.option(
+    "--timeout-7",
+    type=int,
+    default=30,
+    help="Batch-mode CSP timeout in seconds for 7x7 grids.",
+)
+@click.option(
+    "--timeout-9",
+    type=int,
+    default=120,
+    help="Batch-mode CSP timeout in seconds for 9x9 grids.",
+)
+@click.option(
+    "-v",
+    "--verbose",
+    is_flag=True,
+    default=False,
+    help="Also stream detailed logs to stderr.",
+)
+def generate_pilot_batch(
+    output_root: str,
+    batch_id: str,
+    count: int,
+    seed_start: int,
+    buckets: str | None,
+    llm_provider: str,
+    per_pattern_attempts: int,
+    max_grid_variants: int,
+    timeout_5: int,
+    timeout_7: int,
+    timeout_9: int,
+    verbose: bool,
+) -> None:
+    """Generate the Phase 2B pilot batch and write a JSON manifest."""
+    _setup_logging(verbose)
+
+    project_root = find_project_root()
+    root = Path(output_root)
+    if not root.is_absolute():
+        root = project_root / root
+    logs_dir = root / "logs"
+    logs_dir.mkdir(parents=True, exist_ok=True)
+
+    all_buckets = [
+        ("easy", 5, "mini", project_root / "config.easy.yaml"),
+        ("easy", 7, "mini", project_root / "config.easy.yaml"),
+        ("easy", 9, "midi", project_root / "config.easy.yaml"),
+        ("hard", 5, "mini", project_root / "config.hard.yaml"),
+        ("hard", 7, "mini", project_root / "config.hard.yaml"),
+        ("hard", 9, "midi", project_root / "config.hard.yaml"),
+    ]
+    if buckets:
+        wanted = {tag.strip() for tag in buckets.split(",") if tag.strip()}
+        unknown = wanted - {f"{d}/{s}" for d, s, _, _ in all_buckets}
+        if unknown:
+            raise click.BadParameter(
+                f"Unknown bucket(s): {', '.join(sorted(unknown))}. "
+                f"Valid: {', '.join(f'{d}/{s}' for d, s, _, _ in all_buckets)}"
+            )
+        selected_buckets = [
+            b for b in all_buckets if f"{b[0]}/{b[1]}" in wanted
+        ]
+    else:
+        selected_buckets = all_buckets
+
+    started_at = _utc_timestamp()
+    results: list[dict[str, object]] = []
+    for difficulty, size, puzzle_type, config_path in selected_buckets:
+        for seed in range(seed_start, seed_start + count):
+            results.append(
+                _run_batch_item(
+                    difficulty=difficulty,
+                    size=size,
+                    puzzle_type=puzzle_type,
+                    seed=seed,
+                    config_path=config_path,
+                    output_root=root,
+                    logs_dir=logs_dir,
+                    llm_provider=llm_provider,
+                    per_pattern_attempts=per_pattern_attempts,
+                    max_grid_variants=max_grid_variants,
+                    timeout_by_size={5: timeout_5, 7: timeout_7, 9: timeout_9},
+                )
+            )
+            status = "ok" if results[-1]["success"] else "failed"
+            click.echo(
+                f"{difficulty} {size}x{size} seed {seed}: {status} "
+                f"({results[-1]['runtime_seconds']}s)"
+            )
+
+    manifest = {
+        "batch": batch_id,
+        "started_at": started_at,
+        "finished_at": _utc_timestamp(),
+        "output_root": str(root),
+        "logs_dir": str(logs_dir),
+        "count_per_bucket": count,
+        "seed_start": seed_start,
+        "llm_provider": llm_provider,
+        "batch_fill": {
+            "per_pattern_attempts": per_pattern_attempts,
+            "max_grid_variants": max_grid_variants,
+            "timeout_by_size": {"5": timeout_5, "7": timeout_7, "9": timeout_9},
+        },
+        "results": results,
+        "summary": _summarize_batch_results(results),
+    }
+    manifest_path = root / "manifest.json"
+    manifest_path.write_text(json.dumps(manifest, indent=2) + "\n")
+    click.echo(f"Manifest: {manifest_path}")
+
+
+@main.command(name="save-generated-puzzles")
+@click.option(
+    "--manifest",
+    "manifest_path",
+    type=click.Path(exists=True),
+    required=True,
+    help="Batch manifest produced by generate-pilot-batch.",
+)
+@click.option(
+    "--batch-id",
+    default=None,
+    help="Override the manifest batch id for data-store metadata and keys.",
+)
+@click.option(
+    "--api-base",
+    default=None,
+    help="Override HEYGG_API_BASE_URL for this upload.",
+)
+@click.option(
+    "--mini-game-key",
+    type=click.Choice(["minicrossword", "crosswordle"]),
+    default="minicrossword",
+    help="Game key for 5x5 and 7x7 generated puzzles.",
+)
+@click.option(
+    "--midi-game-key",
+    type=click.Choice(["midicrossword", "crosswordle"]),
+    default="midicrossword",
+    help="Game key for 9x9 generated puzzles.",
+)
+@click.option(
+    "--generator-version",
+    default=None,
+    help="Generator version metadata override.",
+)
+@click.option(
+    "--generator-commit",
+    default=None,
+    help="Generator git commit metadata override.",
+)
+@click.option(
+    "--replace-existing",
+    is_flag=True,
+    default=False,
+    help="PATCH existing duplicate-key records instead of skipping them.",
+)
+@click.option(
+    "--dry-run",
+    is_flag=True,
+    default=False,
+    help="Build and validate records without calling the HeyGG API.",
+)
+def save_generated_puzzles(
+    manifest_path: str,
+    batch_id: str | None,
+    api_base: str | None,
+    mini_game_key: str,
+    midi_game_key: str,
+    generator_version: str | None,
+    generator_commit: str | None,
+    replace_existing: bool,
+    dry_run: bool,
+) -> None:
+    """Save generated puzzle candidates to the HeyGG admin data store."""
+    from crossword_generator.data_store import (
+        bulk_save_generated_puzzles,
+        records_from_manifest,
+    )
+
+    project_root = find_project_root()
+    manifest = Path(manifest_path)
+    resolved_version = generator_version or _generator_version()
+    resolved_commit = generator_commit or _generator_commit(project_root)
+    records = records_from_manifest(
+        manifest,
+        batch_id=batch_id,
+        generator_version=resolved_version,
+        generator_commit=resolved_commit,
+        mini_game_key=mini_game_key,
+        midi_game_key=midi_game_key,
+    )
+
+    click.echo(f"Prepared {len(records)} generated puzzle record(s).")
+    if not records:
+        return
+
+    if dry_run:
+        click.echo("Dry run: no HeyGG API calls made.")
+        for record in records[:5]:
+            click.echo(f"  {record['game_key']} {record['key']}")
+        if len(records) > 5:
+            click.echo(f"  ... {len(records) - 5} more")
+        return
+
+    try:
+        results = bulk_save_generated_puzzles(
+            records,
+            replace_existing=replace_existing,
+            api_base=api_base,
+        )
+    except KeyError as exc:
+        missing = exc.args[0]
+        click.echo(f"Missing required environment variable: {missing}", err=True)
+        sys.exit(1)
+    except Exception as exc:
+        click.echo(f"Save failed: {exc}", err=True)
+        sys.exit(1)
+
+    counts: dict[str, int] = {}
+    for result in results:
+        counts[result.action] = counts.get(result.action, 0) + 1
+    click.echo(
+        "Saved generated puzzles: "
+        + ", ".join(f"{action}={count}" for action, count in sorted(counts.items()))
+    )
 
 
 @main.command(name="generate-themes")
@@ -524,6 +813,418 @@ def export_dictionary(
 
     count = dictionary.export_plain(out, min_score=min_score)
     click.echo(f"Exported {count} words (min_score={min_score}) to {out}")
+
+
+@main.command(name="prepare-dictionaries")
+@click.option(
+    "--easy-source",
+    type=click.Path(exists=True),
+    required=True,
+    help="Path to Jeff's WordpleteCulledJYC.txt source file.",
+)
+@click.option(
+    "--easy-extra-source",
+    "easy_extra_sources",
+    type=click.Path(exists=True),
+    multiple=True,
+    help="Additional source file to merge into the easy dictionary.",
+)
+@click.option(
+    "--easy-exclude-source",
+    "easy_exclude_sources",
+    type=click.Path(exists=True),
+    multiple=True,
+    help="Plain or semicolon-delimited word list to exclude from easy output.",
+)
+@click.option(
+    "--hard-source",
+    type=click.Path(exists=True),
+    default="dictionaries/HggCuratedCrosswordList.txt",
+    help="Path to the curated hard source dictionary.",
+)
+@click.option(
+    "--easy-output",
+    type=click.Path(),
+    default="dictionaries/hgg-easy-flat-55.txt",
+    help="Output path for the normalized easy dictionary.",
+)
+@click.option(
+    "--hard-output",
+    type=click.Path(),
+    default="dictionaries/hgg-hard-flat-55.txt",
+    help="Output path for the normalized hard dictionary.",
+)
+@click.option(
+    "--score",
+    type=int,
+    default=55,
+    help="Flat score to assign to every output entry.",
+)
+def prepare_dictionaries(
+    easy_source: str,
+    easy_extra_sources: tuple[str, ...],
+    easy_exclude_sources: tuple[str, ...],
+    hard_source: str,
+    easy_output: str,
+    hard_output: str,
+    score: int,
+) -> None:
+    """Prepare flat-score easy and hard dictionaries for batch experiments."""
+    from crossword_generator.dictionary_prep import (
+        format_summary,
+        load_excluded_words,
+        prepare_flat_dictionary,
+    )
+
+    project_root = find_project_root()
+    def resolve_path(path: str) -> Path:
+        resolved = Path(path)
+        return resolved if resolved.is_absolute() else project_root / resolved
+
+    resolved_extra_sources = [
+        resolve_path(source) for source in easy_extra_sources
+    ]
+    resolved_exclude_sources = [
+        resolve_path(source) for source in easy_exclude_sources
+    ]
+    excluded_easy_words = load_excluded_words(resolved_exclude_sources)
+    jobs = [
+        (
+            "Easy dictionary",
+            Path(easy_source),
+            Path(easy_output),
+            resolved_extra_sources,
+            excluded_easy_words,
+        ),
+        ("Hard dictionary", Path(hard_source), Path(hard_output)),
+    ]
+
+    for label, source, output, *extras in jobs:
+        if not source.is_absolute():
+            source = project_root / source
+        if not output.is_absolute():
+            output = project_root / output
+
+        extra_sources = extras[0] if extras else ()
+        excluded_words = extras[1] if len(extras) > 1 else ()
+        summary = prepare_flat_dictionary(
+            source,
+            output,
+            score=score,
+            extra_input_paths=extra_sources,
+            exclude_words=excluded_words,
+        )
+        click.echo(f"{label}:")
+        click.echo(format_summary(summary))
+        click.echo("")
+
+
+@main.command(name="validate-mini-patterns")
+def validate_mini_patterns() -> None:
+    """Validate catalogued 5x5 and 7x7 mini grid patterns."""
+    from crossword_generator.grid_pattern_validation import (
+        summarize_validations,
+        validate_weighted_patterns,
+    )
+    from crossword_generator.grid_specs import get_grid_patterns
+    from crossword_generator.models import PuzzleType
+
+    failures = 0
+    for size, expected_count, expected_weight in ((5, 34, 95), (7, 50, 86)):
+        patterns = [
+            (list(pattern.black_cells), pattern.weight)
+            for pattern in get_grid_patterns(PuzzleType.MINI, size)
+        ]
+        results = validate_weighted_patterns(size, patterns)
+        summary = summarize_validations(results)
+        asymmetric = [
+            str(result.index) for result in results if not result.symmetric
+        ]
+
+        click.echo(
+            f"{size}x{size}: patterns={summary['patterns']} "
+            f"total_weight={summary['total_weight']} "
+            f"valid={summary['valid']} invalid={summary['invalid']} "
+            f"symmetric={summary['symmetric']} "
+            f"asymmetric={summary['asymmetric']}"
+        )
+        click.echo(
+            "  asymmetric pattern indexes: "
+            + (", ".join(asymmetric) if asymmetric else "none")
+        )
+
+        if (
+            summary["patterns"] != expected_count
+            or summary["total_weight"] != expected_weight
+            or summary["invalid"] != 0
+        ):
+            failures += 1
+            for result in results:
+                if result.errors:
+                    click.echo(
+                        f"  pattern {result.index} errors: "
+                        + "; ".join(result.errors),
+                        err=True,
+                    )
+
+    if failures:
+        sys.exit(1)
+
+
+class _BatchLogHandler(logging.Handler):
+    """Captures log records needed for batch manifest metadata."""
+
+    def __init__(self) -> None:
+        super().__init__(level=logging.INFO)
+        self.skipped_incompatible_variants = 0
+        self.fill_attempts = 0
+        self.grid_variants_seen: set[int] = set()
+
+    def emit(self, record: logging.LogRecord) -> None:
+        message = record.getMessage()
+        if message.startswith("Fill attempt ") and "grid variant" in message:
+            self.fill_attempts += 1
+            variant = _extract_grid_variant(message)
+            if variant is not None:
+                self.grid_variants_seen.add(variant)
+        elif message.startswith("Trying grid variant "):
+            variant = _extract_grid_variant(message)
+            if variant is not None:
+                self.grid_variants_seen.add(variant)
+
+        if (
+            "skipped: slot lengths" in message
+            and "unsupported by dictionary" in message
+        ):
+            self.skipped_incompatible_variants += 1
+            variant = _extract_grid_variant(message)
+            if variant is not None:
+                self.grid_variants_seen.add(variant)
+
+
+def _run_batch_item(
+    *,
+    difficulty: str,
+    size: int,
+    puzzle_type: str,
+    seed: int,
+    config_path: Path,
+    output_root: Path,
+    logs_dir: Path,
+    llm_provider: str,
+    per_pattern_attempts: int,
+    max_grid_variants: int,
+    timeout_by_size: dict[int, int],
+) -> dict[str, object]:
+    bucket_dir = output_root / difficulty / f"{size}x{size}"
+    bucket_dir.mkdir(parents=True, exist_ok=True)
+    output_path = bucket_dir / f"seed-{seed:03d}.ipuz"
+    log_path = logs_dir / f"{difficulty}-{size}x{size}-seed-{seed:03d}.log"
+    if output_path.exists():
+        output_path.unlink()
+
+    config = load_config(config_path)
+    config.puzzle.type = puzzle_type
+    config.puzzle.grid_size = size
+    config.llm.provider = llm_provider
+    config.output.directory = str(bucket_dir / "intermediates" / f"seed-{seed:03d}")
+    config.output.formats = ["ipuz"]
+    config.fill.max_retries = per_pattern_attempts
+    config.fill.max_grid_variants = max_grid_variants
+    config.fill.csp.timeout_by_size = timeout_by_size
+    if puzzle_type == "midi" and size == 9:
+        config.theme.enabled = False
+
+    logger = logging.getLogger()
+    file_handler = logging.FileHandler(log_path, mode="w")
+    file_handler.setFormatter(
+        logging.Formatter(
+            "%(asctime)s %(name)s %(levelname)s %(message)s",
+            datefmt="%H:%M:%S",
+        )
+    )
+    capture_handler = _BatchLogHandler()
+    logger.addHandler(file_handler)
+    logger.addHandler(capture_handler)
+
+    started = time.monotonic()
+    result: dict[str, object] = {
+        "difficulty": difficulty,
+        "size": size,
+        "seed": seed,
+        "output_path": str(output_path),
+        "log_path": str(log_path),
+        "success": False,
+        "fill_score": None,
+        "clue_score": None,
+        "title": None,
+        "title_reasoning": None,
+        "runtime_seconds": 0.0,
+        "fill_seconds": None,
+        "clue_seconds": None,
+        "total_seconds": 0.0,
+        "grid_variants": 0,
+        "fill_attempts": 0,
+        "skipped_incompatible_variants": 0,
+        "failure_category": None,
+        "error_message": None,
+    }
+    try:
+        pipeline, envelope = create_pipeline(
+            config, seed=seed, output_file=output_path
+        )
+        completed = pipeline.run(envelope)
+        result.update(
+            {
+                "success": output_path.exists(),
+                "fill_score": (
+                    completed.fill.quality_score if completed.fill else None
+                ),
+                "clue_score": (
+                    completed.clue_grade_report.overall_score
+                    if completed.clue_grade_report
+                    else None
+                ),
+                "title": completed.title or None,
+                "title_reasoning": completed.title_reasoning or None,
+                "fill_seconds": _metadata_timing(
+                    completed, "grid-fill-with-grading"
+                ),
+                "clue_seconds": _metadata_timing(
+                    completed, "clue-generation-with-grading"
+                ),
+                "error_message": "; ".join(completed.errors) or None,
+            }
+        )
+    except Exception as exc:
+        logging.getLogger(__name__).exception(
+            "Batch item failed: %s %sx%s seed %s",
+            difficulty,
+            size,
+            size,
+            seed,
+        )
+        result["error_message"] = str(exc)
+    finally:
+        runtime = time.monotonic() - started
+        result["runtime_seconds"] = round(runtime, 3)
+        result["total_seconds"] = round(runtime, 3)
+        result["grid_variants"] = len(capture_handler.grid_variants_seen)
+        result["fill_attempts"] = capture_handler.fill_attempts
+        result["skipped_incompatible_variants"] = (
+            capture_handler.skipped_incompatible_variants
+        )
+        result["failure_category"] = _failure_category(result)
+        logger.removeHandler(file_handler)
+        logger.removeHandler(capture_handler)
+        file_handler.close()
+
+    return result
+
+
+def _summarize_batch_results(
+    results: list[dict[str, object]]
+) -> dict[str, dict[str, float | int | None]]:
+    summaries: dict[str, dict[str, float | int | None]] = {}
+    bucket_keys = sorted(
+        {f"{r['difficulty']}-{r['size']}x{r['size']}" for r in results}
+    )
+    for key in bucket_keys:
+        bucket = [
+            r for r in results
+            if f"{r['difficulty']}-{r['size']}x{r['size']}" == key
+        ]
+        successes = [r for r in bucket if r["success"]]
+        clue_scores = [
+            float(r["clue_score"])
+            for r in successes
+            if r["clue_score"] is not None
+        ]
+        runtimes = [float(r["runtime_seconds"]) for r in bucket]
+        summaries[key] = {
+            "total": len(bucket),
+            "successes": len(successes),
+            "failures": len(bucket) - len(successes),
+            "success_rate": round(len(successes) / len(bucket), 3) if bucket else None,
+            "average_runtime_seconds": (
+                round(sum(runtimes) / len(runtimes), 3) if runtimes else None
+            ),
+            "average_clue_score": (
+                round(sum(clue_scores) / len(clue_scores), 3)
+                if clue_scores
+                else None
+            ),
+        }
+    return summaries
+
+
+def _metadata_timing(envelope: object, step_name: str) -> float | None:
+    metadata = getattr(envelope, "metadata", {})
+    timings = metadata.get("step_timings_seconds", {})
+    value = timings.get(step_name)
+    return float(value) if value is not None else None
+
+
+def _extract_grid_variant(message: str) -> int | None:
+    marker = "grid variant "
+    if marker not in message:
+        marker = "Grid variant "
+    if marker not in message:
+        return None
+    tail = message.split(marker, 1)[1]
+    digits = []
+    for char in tail:
+        if char.isdigit():
+            digits.append(char)
+        else:
+            break
+    return int("".join(digits)) if digits else None
+
+
+def _failure_category(result: dict[str, object]) -> str | None:
+    if result.get("success"):
+        return None
+    error = str(result.get("error_message") or "").lower()
+    if int(result.get("skipped_incompatible_variants") or 0) > 0 and int(
+        result.get("fill_attempts") or 0
+    ) == 0:
+        return "incompatible_grid_patterns"
+    if "timed out" in error:
+        return "fill_timeout"
+    if "could not fill grid" in error or "fill" in error:
+        return "fill_failed"
+    if "clue" in error or "anthropic" in error or "model" in error:
+        return "clue_generation_failed"
+    if error:
+        return "pipeline_failed"
+    return "unknown"
+
+
+def _utc_timestamp() -> str:
+    from datetime import UTC, datetime
+
+    return datetime.now(tz=UTC).isoformat()
+
+
+def _generator_version() -> str:
+    try:
+        return version("crossword-generator")
+    except PackageNotFoundError:
+        return "0.1.0"
+
+
+def _generator_commit(project_root: Path) -> str | None:
+    try:
+        completed = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=project_root,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    except (OSError, subprocess.CalledProcessError):
+        return None
+    return completed.stdout.strip() or None
 
 
 def _setup_logging(verbose: bool) -> None:

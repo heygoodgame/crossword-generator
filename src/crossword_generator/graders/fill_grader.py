@@ -45,6 +45,8 @@ class FillGrader:
             word_grades, grid_size=grid_size
         )
         passing = overall_score >= self._min_passing_score
+        if "terminal_s_variants" in grid_penalties:
+            passing = False
 
         summary_parts = [
             f"{len(word_grades)} words,",
@@ -113,6 +115,10 @@ class FillGrader:
         if duplicate_pairs > 0:
             grid_penalties["duplicate_words"] = 30.0 * duplicate_pairs
 
+        terminal_s_pairs = _terminal_s_variant_count(seen)
+        if terminal_s_pairs > 0:
+            grid_penalties["terminal_s_variants"] = 100.0 * terminal_s_pairs
+
         # High unknown ratio
         unknown_count = sum(1 for wg in word_grades if wg.dictionary_score is None)
         if len(word_grades) > 0 and unknown_count / len(word_grades) > 0.2:
@@ -123,3 +129,19 @@ class FillGrader:
 
         overall = max(0.0, min(100.0, raw_score - sum(grid_penalties.values())))
         return overall, grid_penalties
+
+
+def _terminal_s_variant_count(word_counts: dict[str, int]) -> int:
+    """Count answer pairs that only differ by one terminal S.
+
+    This intentionally handles only the simple plural-like case Jeff called
+    out, such as OPAH/OPAHS. Irregular morphology like EAT/ATE is out of scope.
+    """
+    words = set(word_counts)
+    count = 0
+    for word in words:
+        if len(word) <= 1 or not word.endswith("S"):
+            continue
+        if word[:-1] in words:
+            count += word_counts[word] * word_counts[word[:-1]]
+    return count
