@@ -823,6 +823,20 @@ def export_dictionary(
     help="Path to Jeff's WordpleteCulledJYC.txt source file.",
 )
 @click.option(
+    "--easy-extra-source",
+    "easy_extra_sources",
+    type=click.Path(exists=True),
+    multiple=True,
+    help="Additional source file to merge into the easy dictionary.",
+)
+@click.option(
+    "--easy-exclude-source",
+    "easy_exclude_sources",
+    type=click.Path(exists=True),
+    multiple=True,
+    help="Plain or semicolon-delimited word list to exclude from easy output.",
+)
+@click.option(
     "--hard-source",
     type=click.Path(exists=True),
     default="dictionaries/HggCuratedCrosswordList.txt",
@@ -848,6 +862,8 @@ def export_dictionary(
 )
 def prepare_dictionaries(
     easy_source: str,
+    easy_extra_sources: tuple[str, ...],
+    easy_exclude_sources: tuple[str, ...],
     hard_source: str,
     easy_output: str,
     hard_output: str,
@@ -856,22 +872,48 @@ def prepare_dictionaries(
     """Prepare flat-score easy and hard dictionaries for batch experiments."""
     from crossword_generator.dictionary_prep import (
         format_summary,
+        load_excluded_words,
         prepare_flat_dictionary,
     )
 
     project_root = find_project_root()
+    def resolve_path(path: str) -> Path:
+        resolved = Path(path)
+        return resolved if resolved.is_absolute() else project_root / resolved
+
+    resolved_extra_sources = [
+        resolve_path(source) for source in easy_extra_sources
+    ]
+    resolved_exclude_sources = [
+        resolve_path(source) for source in easy_exclude_sources
+    ]
+    excluded_easy_words = load_excluded_words(resolved_exclude_sources)
     jobs = [
-        ("Easy dictionary", Path(easy_source), Path(easy_output)),
+        (
+            "Easy dictionary",
+            Path(easy_source),
+            Path(easy_output),
+            resolved_extra_sources,
+            excluded_easy_words,
+        ),
         ("Hard dictionary", Path(hard_source), Path(hard_output)),
     ]
 
-    for label, source, output in jobs:
+    for label, source, output, *extras in jobs:
         if not source.is_absolute():
             source = project_root / source
         if not output.is_absolute():
             output = project_root / output
 
-        summary = prepare_flat_dictionary(source, output, score=score)
+        extra_sources = extras[0] if extras else ()
+        excluded_words = extras[1] if len(extras) > 1 else ()
+        summary = prepare_flat_dictionary(
+            source,
+            output,
+            score=score,
+            extra_input_paths=extra_sources,
+            exclude_words=excluded_words,
+        )
         click.echo(f"{label}:")
         click.echo(format_summary(summary))
         click.echo("")

@@ -14,20 +14,31 @@ Prepare both dictionaries from the source inputs:
 
 ```bash
 uv run crossword-generator prepare-dictionaries \
-  --easy-source /private/tmp/crossword-generator-thread/19dd6724cd3c4827_ANGjdJ8p_WordpleteCulledJYC.txt
+  --easy-source dictionaries/hgg-easy-flat-55.txt \
+  --easy-extra-source dictionaries/Wordplete-PrevalentCulled-8-9-length.txt \
+  --easy-exclude-source dictionaries/XwiJeffChenList-NotFamilyFriendly.txt \
+  --easy-exclude-source dictionaries/Wordplete-PrevalentCulled-8-9-length-Removed.txt \
+  --easy-output dictionaries/hgg-easy-prevalent-flat-55.txt
 ```
 
 Default outputs:
 
-- `dictionaries/hgg-easy-flat-55.txt` from Jeff's `WordpleteCulledJYC.txt`
+- `dictionaries/hgg-easy-prevalent-flat-55.txt` from the prior Easy
+  3-7-letter flat dictionary plus Jeff's prevalent 8-9-letter Easy list
 - `dictionaries/hgg-hard-flat-55.txt` from `dictionaries/HggCuratedCrosswordList.txt`
 
 The command logs input rows, output rows, malformed rows, invalid words,
-duplicates, and the flat score used.
+excluded words, duplicates, and the flat score used.
 
 The initial run produced 8,967 easy rows and 201,978 hard rows. The hard source
 had one invalid alphanumeric entry, `catch22;50`, which was skipped because the
 current generator word format uses letters only.
+
+The prevalent 8-9-letter Easy merge excludes the high-confidence unsuitable
+entries listed in `dictionaries/Wordplete-PrevalentCulled-8-9-length-Removed.txt`.
+The May 13 merge produced 18,593 Easy rows after excluding 146 entries via
+the existing family-unfriendly list plus the high-confidence removals from the
+new attachment.
 
 ## Configs
 
@@ -57,7 +68,7 @@ uv run python - <<'PY'
 from crossword_generator.dictionary import Dictionary
 
 for path in (
-    "dictionaries/hgg-easy-flat-55.txt",
+    "dictionaries/hgg-easy-prevalent-flat-55.txt",
     "dictionaries/hgg-hard-flat-55.txt",
 ):
     d = Dictionary.load(path, min_word_score=55, min_2letter_score=55)

@@ -1,0 +1,93 @@
+ABORTION;controversial medical/political topic
+ABORTIONS;controversial medical/political topic
+ABORTIVE;controversial medical/political stem
+ADDICTED;addiction/substance topic
+ADDICTION;addiction/substance topic
+ALCOHOLIC;addiction/substance topic
+ASSASSIN;violence
+ASSASSINS;violence
+ASSAULTED;violence
+ASSAULTS;violence
+BAREBACK;existing not-family-friendly filter
+BITCHING;existing not-family-friendly filter
+BLACKFACE;existing not-family-friendly filter
+BLOODBATH;violence
+BLOODIED;violence
+BLOODILY;violence
+BLOODLUST;violence
+BLOODSHED;violence
+BUTTOCKS;anatomical/sexual reference
+CANCEROUS;disease
+CIGARETTE;tobacco
+CYBERSEX;existing not-family-friendly filter
+DAMNABLE;existing not-family-friendly filter
+DAMNATION;existing not-family-friendly filter
+DEATHBED;morbid topic
+DEATHTRAP;morbid topic
+DISEASED;disease
+DISEASES;disease
+DRUNKARD;addiction/substance topic
+DRUNKENLY;addiction/substance topic
+ENSLAVED;controversial historical topic
+EROTICISM;sexual reference
+EROTICIZE;sexual reference
+FATALITY;morbid topic
+FINGERING;existing not-family-friendly filter
+GODDAMNED;existing not-family-friendly filter
+GUATEMALA;tough geography
+GUNFIGHT;violence
+GUNPOINT;violence
+GUNPOWDER;weapon reference
+GUNSHOTS;violence
+HANDGUNS;weapon reference
+HARDCORE;existing not-family-friendly filter
+HOLOCAUST;controversial historical topic
+HOMICIDE;violence
+HOMICIDES;violence
+KILLINGS;violence
+LEWDNESS;existing not-family-friendly filter
+MASOCHIST;existing not-family-friendly filter
+MASSACRE;violence
+MASSACRED;violence
+MASSACRES;violence
+MOLESTER;existing not-family-friendly filter
+MURDERED;violence
+MURDERER;violence
+MURDERERS;violence
+MURDERESS;violence
+MURDERING;violence
+MURDEROUS;violence
+OBSCENELY;existing not-family-friendly filter
+OBSCENITY;existing not-family-friendly filter
+PENTAGRAM;potentially controversial occult/religious reference
+PEEPSHOW;existing not-family-friendly filter
+PLASTERED;drunkenness slang
+REDSKINS;existing not-family-friendly filter
+RETARDED;existing not-family-friendly filter
+RIFLEMAN;weapon reference
+SCREWING;existing not-family-friendly filter
+SEXINESS;sexual reference
+SEXUALITY;sexual reference
+SEXUALLY;sexual reference
+SHOOTERS;violence
+SHOOTING;violence
+SHOOTINGS;violence
+SHOOTOUT;violence
+SHOTGUNS;weapon reference
+STRIPPER;existing not-family-friendly filter
+STRIPPERS;existing not-family-friendly filter
+SUBHUMAN;existing not-family-friendly filter
+SUICIDES;self-harm
+TERRORISM;violence
+TERRORIST;violence
+TESTICLE;existing not-family-friendly filter
+THREESOME;existing not-family-friendly filter
+VENEREAL;sexual disease
+VIBRATOR;existing not-family-friendly filter
+VIOLENCE;violence
+VIOLENTLY;violence
+VOMITING;illness/body function
+WEAPONRY;weapon reference
+XINJIANG;tough/controversial geography
+YUGOSLAV;tough/outdated geography
+ZIMBABWE;tough geography

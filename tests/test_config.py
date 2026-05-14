@@ -69,7 +69,10 @@ class TestLoadConfig:
     @pytest.mark.parametrize(
         ("filename", "dictionary_path"),
         [
-            ("config.easy.yaml", "dictionaries/hgg-easy-flat-55.txt"),
+            (
+                "config.easy.yaml",
+                "dictionaries/hgg-easy-prevalent-flat-55.txt",
+            ),
             ("config.hard.yaml", "dictionaries/hgg-hard-flat-55.txt"),
         ],
     )

@@ -109,6 +109,81 @@ class TestGridLevelPenalties:
         if "duplicate_words" in report.penalties_applied:
             assert report.penalties_applied["duplicate_words"] == 30.0
 
+    def test_terminal_s_variant_penalty_fails_fill(self) -> None:
+        grader = FillGrader(
+            _make_dict(
+                {
+                    "OPAH": 80,
+                    "OPAHS": 80,
+                    "OO": 80,
+                    "PP": 80,
+                    "AA": 80,
+                    "HH": 80,
+                }
+            ),
+            min_passing_score=0,
+        )
+        grid = [
+            ["O", "P", "A", "H", "."],
+            ["O", "P", "A", "H", "S"],
+        ]
+
+        report = grader.grade(grid)
+
+        assert report.penalties_applied["terminal_s_variants"] == 100.0
+        assert report.passing is False
+
+    def test_terminal_s_variant_counts_each_pair(self) -> None:
+        grader = FillGrader(
+            _make_dict(
+                {
+                    "ABC": 80,
+                    "ABCS": 80,
+                    "DEF": 80,
+                    "DEFS": 80,
+                    "AD": 80,
+                    "BE": 80,
+                    "CF": 80,
+                    "CS": 80,
+                }
+            ),
+            min_passing_score=0,
+        )
+        grid = [
+            ["A", "B", "C", "."],
+            ["A", "B", "C", "S"],
+            ["D", "E", "F", "."],
+            ["D", "E", "F", "S"],
+        ]
+
+        report = grader.grade(grid)
+
+        assert report.penalties_applied["terminal_s_variants"] == 200.0
+        assert report.passing is False
+
+    def test_irregular_word_relationships_are_not_terminal_s_variants(
+        self,
+    ) -> None:
+        grader = FillGrader(
+            _make_dict(
+                {
+                    "EAT": 80,
+                    "ATE": 80,
+                    "EA": 80,
+                    "AT": 80,
+                }
+            ),
+            min_passing_score=0,
+        )
+        grid = [
+            ["E", "A", "T"],
+            ["A", "T", "E"],
+        ]
+
+        report = grader.grade(grid)
+
+        assert "terminal_s_variants" not in report.penalties_applied
+
     def test_high_unknown_ratio_penalty(self) -> None:
         # All words unknown → high_unknown_ratio
         grader = FillGrader(_make_dict({}))
