@@ -131,6 +131,47 @@ class TestClaudeProvider:
                 provider = ClaudeProvider(config)
             assert provider.is_available() is True
 
+    def test_override_env_var_takes_precedence(self, config: ClaudeConfig) -> None:
+        with patch.dict(
+            os.environ,
+            {
+                "ANTHROPIC_API_KEY": "default-key",
+                "ANTHROPIC_API_KEY_CROSSWORD_GENERATOR": "override-key",
+            },
+        ):
+            with patch("anthropic.Anthropic") as mock_cls:
+                from crossword_generator.llm.claude_provider import ClaudeProvider
+
+                ClaudeProvider(config)
+
+        mock_cls.assert_called_once_with(api_key="override-key", timeout=120)
+
+    def test_falls_back_to_default_env_var(self, config: ClaudeConfig) -> None:
+        env = {k: v for k, v in os.environ.items()}
+        env.pop("ANTHROPIC_API_KEY_CROSSWORD_GENERATOR", None)
+        env["ANTHROPIC_API_KEY"] = "default-key"
+        with patch.dict(os.environ, env, clear=True):
+            with patch("anthropic.Anthropic") as mock_cls:
+                from crossword_generator.llm.claude_provider import ClaudeProvider
+
+                ClaudeProvider(config)
+
+        mock_cls.assert_called_once_with(api_key="default-key", timeout=120)
+
+    def test_is_available_true_with_override_only(
+        self, config: ClaudeConfig
+    ) -> None:
+        with patch.dict(
+            os.environ,
+            {"ANTHROPIC_API_KEY_CROSSWORD_GENERATOR": "override-key"},
+            clear=True,
+        ):
+            with patch("anthropic.Anthropic"):
+                from crossword_generator.llm.claude_provider import ClaudeProvider
+
+                provider = ClaudeProvider(config)
+                assert provider.is_available() is True
+
     def test_import_error_when_anthropic_missing(self, config: ClaudeConfig) -> None:
         import importlib
         import sys

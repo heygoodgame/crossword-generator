@@ -15,8 +15,10 @@ logger = logging.getLogger(__name__)
 class ClaudeProvider(LLMProvider):
     """LLM provider backed by the Anthropic Claude API.
 
-    Requires the ``anthropic`` package (optional dependency) and
-    the ``ANTHROPIC_API_KEY`` environment variable.
+    Requires the ``anthropic`` package (optional dependency) and an
+    API key. Prefers ``ANTHROPIC_API_KEY_CROSSWORD_GENERATOR`` when set
+    (so individuals can scope a dedicated key to this project), and
+    falls back to ``ANTHROPIC_API_KEY``.
     """
 
     def __init__(self, config: ClaudeConfig) -> None:
@@ -24,7 +26,10 @@ class ClaudeProvider(LLMProvider):
         try:
             import anthropic
 
-            self._client = anthropic.Anthropic(timeout=config.timeout)
+            api_key = _resolve_api_key()
+            self._client = anthropic.Anthropic(
+                api_key=api_key, timeout=config.timeout
+            )
         except ImportError as exc:
             raise ImportError(
                 "The 'anthropic' package is required for the Claude provider. "
@@ -72,10 +77,21 @@ class ClaudeProvider(LLMProvider):
         except ImportError:
             logger.debug("anthropic package not installed")
             return False
-        if not os.environ.get("ANTHROPIC_API_KEY"):
-            logger.debug("ANTHROPIC_API_KEY not set")
+        if _resolve_api_key() is None:
+            logger.debug(
+                "No API key set "
+                "(checked ANTHROPIC_API_KEY_CROSSWORD_GENERATOR, ANTHROPIC_API_KEY)"
+            )
             return False
         return True
+
+
+def _resolve_api_key() -> str | None:
+    override = os.environ.get("ANTHROPIC_API_KEY_CROSSWORD_GENERATOR")
+    if override:
+        logger.debug("Using ANTHROPIC_API_KEY_CROSSWORD_GENERATOR for Claude API")
+        return override
+    return os.environ.get("ANTHROPIC_API_KEY") or None
 
 
 def _is_overload_error(exc: Exception) -> bool:
