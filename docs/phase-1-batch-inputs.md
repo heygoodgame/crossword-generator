@@ -8,7 +8,10 @@ crossword-midi-and-mini.
 
 The generator dictionary loader expects one entry per line as `WORD;SCORE`.
 Phase 1 uses a flat score of `55` so the fill solver tests the curated word
-sets rather than old score gradients.
+sets rather than old score gradients. During preparation, true scored 7-, 8-,
+and 9-letter source rows below `60` are filtered out before the remaining words
+are flattened. Previously flattened `;55` source dictionaries are treated as
+flat inputs, not as source-scored rows.
 
 Prepare both dictionaries from the source inputs:
 
@@ -25,20 +28,30 @@ Default outputs:
 
 - `dictionaries/hgg-easy-prevalent-flat-55.txt` from the prior Easy
   3-7-letter flat dictionary plus Jeff's prevalent 8-9-letter Easy list
-- `dictionaries/hgg-hard-flat-55.txt` from `dictionaries/HggCuratedCrosswordList.txt`
+- `dictionaries/hgg-hard-flat-55.txt` from the prepared Easy/prevalent list for
+  3-5 letter entries and `dictionaries/HggCuratedCrosswordList.txt` for 6+
+  entries
 
 The command logs input rows, output rows, malformed rows, invalid words,
-excluded words, duplicates, and the flat score used.
+excluded words, rows below the source-score floor, duplicates, and the flat
+score used.
 
-The initial run produced 8,967 easy rows and 201,978 hard rows. The hard source
-had one invalid alphanumeric entry, `catch22;50`, which was skipped because the
-current generator word format uses letters only.
+The initial run produced 8,967 easy rows and 201,978 hard rows before the
+long-word source-score floor was added. With the 7-/8-/9-letter source-score
+floor, the May 14 run produced 18,593 Easy prevalent rows and 134,721 hard
+rows. The May 15 hard dictionary now keeps short fill accessible by taking
+3-5 letter entries from Easy/prevalent and 6+ entries from the hard source,
+producing 128,758 hard rows. The hard source had one invalid alphanumeric
+entry, `catch22;50`, which was skipped because the current generator word
+format uses letters only.
 
 The prevalent 8-9-letter Easy merge excludes the high-confidence unsuitable
 entries listed in `dictionaries/Wordplete-PrevalentCulled-8-9-length-Removed.txt`.
-The May 13 merge produced 18,593 Easy rows after excluding 146 entries via
-the existing family-unfriendly list plus the high-confidence removals from the
-new attachment.
+The May 13 merge produced 18,593 Easy rows after excluding 146 entries via the
+existing family-unfriendly list plus the high-confidence removals from the new
+attachment. The May 14 source-score floor intentionally leaves the prior flat
+Easy 3-7 source intact because those `;55` values are normalized fill scores,
+not original source quality scores.
 
 ## Configs
 
@@ -50,6 +63,8 @@ Use these committed configs for difficulty-specific runs:
 Both configs point `dictionary.path` and `fill.csp.dictionary_path` at the same
 flat-score dictionary. Their score thresholds are `55`, and `quality_tiers` is
 `[55]` so a flat `55` dictionary is not filtered out by the old tier ladder.
+Easy config also sets `fill.max_long_entries_8_9: 3`, which skips 9x9 grid
+variants with too many long slots before CSP fill.
 
 Ollama remains the repo default for clue generation. Phase 1 prep and
 validation do not require an LLM. For future generation runs, Claude remains
@@ -96,6 +111,11 @@ Initial validation found all catalogued patterns valid. Symmetry split:
 
 - 5x5 Mini: 9 symmetric, 25 asymmetric
 - 7x7 Mini: 18 symmetric, 32 asymmetric
+
+The 9x9 midi catalog uses curated mirror-style patterns from Jeff's feedback
+instead of procedural rotational patterns. This intentionally avoids
+windmill-like rotational symmetry and keeps long 8-/9-letter slots sparse for
+Easy midi generation.
 
 Run the targeted test subset:
 

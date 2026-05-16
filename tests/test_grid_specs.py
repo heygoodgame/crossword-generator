@@ -177,6 +177,58 @@ class TestMiniGridPatternCatalog:
         )
 
 
+class TestMidiGridPatternCatalog:
+    def test_midi_9_uses_curated_feedback_patterns(self) -> None:
+        patterns = get_grid_patterns(PuzzleType.MIDI, 9)
+
+        assert len(patterns) == 47
+        assert sum(pattern.weight for pattern in patterns) == 84
+        assert any(pattern.symmetric for pattern in patterns)
+        assert any(
+            _is_vertically_mirrored(pattern.black_cells, size=9)
+            and not pattern.symmetric
+            for pattern in patterns
+        )
+        assert all(
+            pattern.symmetric
+            or _is_vertically_mirrored(pattern.black_cells, size=9)
+            for pattern in patterns
+        )
+        assert all(
+            _top_bottom_flipped(pattern.black_cells, size=9)
+            in {other.black_cells for other in patterns}
+            for pattern in patterns
+        )
+
+    def test_midi_9_patterns_avoid_corner_perimeter_black_triples(self) -> None:
+        assert any(
+            _has_perimeter_black_run(pattern.black_cells, size=9, run_length=3)
+            for pattern in get_grid_patterns(PuzzleType.MIDI, 9)
+        )
+        for pattern in get_grid_patterns(PuzzleType.MIDI, 9):
+            assert not _has_corner_perimeter_black_run(
+                pattern.black_cells,
+                size=9,
+                run_length=3,
+            )
+
+    def test_midi_9_patterns_are_structurally_valid(self) -> None:
+        patterns = [
+            (list(pattern.black_cells), pattern.weight)
+            for pattern in get_grid_patterns(PuzzleType.MIDI, 9)
+        ]
+        results = validate_weighted_patterns(9, patterns)
+        assert all(result.valid for result in results)
+
+    def test_midi_9_patterns_keep_long_slot_pressure_bounded(self) -> None:
+        assert any(
+            _long_slot_count(pattern.black_cells, size=9) == 4
+            for pattern in get_grid_patterns(PuzzleType.MIDI, 9)
+        )
+        for pattern in get_grid_patterns(PuzzleType.MIDI, 9):
+            assert _long_slot_count(pattern.black_cells, size=9) <= 4
+
+
 def _assert_valid_grid_structure(spec: "GridSpec") -> None:  # noqa: F821
     """Assert that all word slots in the grid are at least 2 letters long."""
     black = set(spec.black_cells)
@@ -215,3 +267,94 @@ def _assert_valid_grid_structure(spec: "GridSpec") -> None:  # noqa: F821
                     f"Down slot at col {c} has length {length} < 3 "
                     f"(black_cells={spec.black_cells})"
                 )
+
+
+def _is_vertically_mirrored(
+    black_cells: tuple[tuple[int, int], ...],
+    *,
+    size: int,
+) -> bool:
+    black = set(black_cells)
+    return all((r, size - 1 - c) in black for r, c in black)
+
+
+def _top_bottom_flipped(
+    black_cells: tuple[tuple[int, int], ...],
+    *,
+    size: int,
+) -> tuple[tuple[int, int], ...]:
+    return tuple(sorted((size - 1 - r, c) for r, c in black_cells))
+
+
+def _has_perimeter_black_run(
+    black_cells: tuple[tuple[int, int], ...],
+    *,
+    size: int,
+    run_length: int,
+) -> bool:
+    black = set(black_cells)
+    for start in range(size - run_length + 1):
+        if all((0, c) in black for c in range(start, start + run_length)):
+            return True
+        if all((size - 1, c) in black for c in range(start, start + run_length)):
+            return True
+        if all((r, 0) in black for r in range(start, start + run_length)):
+            return True
+        if all((r, size - 1) in black for r in range(start, start + run_length)):
+            return True
+    return False
+
+
+def _has_corner_perimeter_black_run(
+    black_cells: tuple[tuple[int, int], ...],
+    *,
+    size: int,
+    run_length: int,
+) -> bool:
+    black = set(black_cells)
+    edge_runs = [
+        ((0, c) for c in range(run_length)),
+        ((r, 0) for r in range(run_length)),
+        ((0, c) for c in range(size - run_length, size)),
+        ((r, size - 1) for r in range(run_length)),
+        ((size - 1, c) for c in range(run_length)),
+        ((r, 0) for r in range(size - run_length, size)),
+        ((size - 1, c) for c in range(size - run_length, size)),
+        ((r, size - 1) for r in range(size - run_length, size)),
+    ]
+    return any(all(cell in black for cell in run) for run in edge_runs)
+
+
+def _long_slot_count(
+    black_cells: tuple[tuple[int, int], ...],
+    *,
+    size: int,
+) -> int:
+    black = set(black_cells)
+    count = 0
+
+    for r in range(size):
+        c = 0
+        while c < size:
+            if (r, c) in black:
+                c += 1
+                continue
+            start = c
+            while c < size and (r, c) not in black:
+                c += 1
+            if c - start in {8, 9}:
+                count += 1
+
+    for c in range(size):
+        r = 0
+        while r < size:
+            if (r, c) in black:
+                r += 1
+                continue
+            start = r
+            while r < size and (r, c) not in black:
+                r += 1
+            if r - start in {8, 9}:
+                count += 1
+
+    return count

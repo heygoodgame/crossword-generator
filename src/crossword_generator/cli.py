@@ -860,6 +860,16 @@ def export_dictionary(
     default=55,
     help="Flat score to assign to every output entry.",
 )
+@click.option(
+    "--long-word-min-source-score",
+    type=int,
+    default=60,
+    show_default=True,
+    help=(
+        "Minimum source score for scored 7-, 8-, and 9-letter entries. "
+        "Use 0 to disable this length-specific source-score filter."
+    ),
+)
 def prepare_dictionaries(
     easy_source: str,
     easy_extra_sources: tuple[str, ...],
@@ -868,15 +878,18 @@ def prepare_dictionaries(
     easy_output: str,
     hard_output: str,
     score: int,
+    long_word_min_source_score: int,
 ) -> None:
     """Prepare flat-score easy and hard dictionaries for batch experiments."""
     from crossword_generator.dictionary_prep import (
         format_summary,
         load_excluded_words,
         prepare_flat_dictionary,
+        prepare_length_mixed_flat_dictionary,
     )
 
     project_root = find_project_root()
+
     def resolve_path(path: str) -> Path:
         resolved = Path(path)
         return resolved if resolved.is_absolute() else project_root / resolved
@@ -888,35 +901,46 @@ def prepare_dictionaries(
         resolve_path(source) for source in easy_exclude_sources
     ]
     excluded_easy_words = load_excluded_words(resolved_exclude_sources)
-    jobs = [
-        (
-            "Easy dictionary",
-            Path(easy_source),
-            Path(easy_output),
-            resolved_extra_sources,
-            excluded_easy_words,
-        ),
-        ("Hard dictionary", Path(hard_source), Path(hard_output)),
-    ]
+    min_source_score_by_length = (
+        {
+            7: long_word_min_source_score,
+            8: long_word_min_source_score,
+            9: long_word_min_source_score,
+        }
+        if long_word_min_source_score > 0
+        else {}
+    )
+    easy_source_path = resolve_path(easy_source)
+    easy_output_path = resolve_path(easy_output)
+    hard_source_path = resolve_path(hard_source)
+    hard_output_path = resolve_path(hard_output)
 
-    for label, source, output, *extras in jobs:
-        if not source.is_absolute():
-            source = project_root / source
-        if not output.is_absolute():
-            output = project_root / output
+    easy_summary = prepare_flat_dictionary(
+        easy_source_path,
+        easy_output_path,
+        score=score,
+        extra_input_paths=resolved_extra_sources,
+        exclude_words=excluded_easy_words,
+        min_source_score_by_length=min_source_score_by_length,
+        flat_score_input_paths=[easy_source_path],
+    )
+    click.echo("Easy dictionary:")
+    click.echo(format_summary(easy_summary))
+    click.echo("")
 
-        extra_sources = extras[0] if extras else ()
-        excluded_words = extras[1] if len(extras) > 1 else ()
-        summary = prepare_flat_dictionary(
-            source,
-            output,
-            score=score,
-            extra_input_paths=extra_sources,
-            exclude_words=excluded_words,
-        )
-        click.echo(f"{label}:")
-        click.echo(format_summary(summary))
-        click.echo("")
+    hard_summary = prepare_length_mixed_flat_dictionary(
+        easy_output_path,
+        hard_source_path,
+        hard_output_path,
+        score=score,
+        short_max_length=5,
+        long_min_length=6,
+        min_source_score_by_length=min_source_score_by_length,
+        flat_score_input_paths=[easy_output_path],
+    )
+    click.echo("Hard dictionary:")
+    click.echo(format_summary(hard_summary))
+    click.echo("")
 
 
 @main.command(name="validate-mini-patterns")

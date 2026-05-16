@@ -204,6 +204,7 @@ def create_pipeline(
         dictionary=dictionary,
         max_retries=config.fill.max_retries,
         max_grid_variants=config.fill.max_grid_variants,
+        max_long_entries_8_9=config.fill.max_long_entries_8_9,
         retry_on_fail=config.grading.fill.retry_on_fail,
         collect_boards=config.grading.fill.collect_boards,
         llm_select=config.grading.fill.llm_select,

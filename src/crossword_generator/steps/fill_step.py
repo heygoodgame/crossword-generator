@@ -211,6 +211,12 @@ def _unsupported_slot_lengths(
     return sorted({slot.length for slot in slots if slot.length not in supported})
 
 
+def _long_entry_count_8_9(spec: GridSpec) -> int:
+    """Return the number of 8- and 9-letter slots in a grid."""
+    slots = extract_slots(spec.rows, spec.cols, set(spec.black_cells))
+    return sum(1 for slot in slots if slot.length in {8, 9})
+
+
 def _grid_seed_for_variant(
     base_seed: int | None,
     grid_variant: int,
@@ -377,6 +383,7 @@ class FillWithGradingStep(PipelineStep):
         dictionary: Dictionary | None = None,
         max_retries: int = 5,
         max_grid_variants: int = 100,
+        max_long_entries_8_9: int | None = None,
         retry_on_fail: bool = True,
         collect_boards: int = 1,
         llm_select: bool = False,
@@ -387,6 +394,7 @@ class FillWithGradingStep(PipelineStep):
         self._dictionary = dictionary
         self._max_retries = max_retries
         self._max_grid_variants = max_grid_variants
+        self._max_long_entries_8_9 = max_long_entries_8_9
         self._retry_on_fail = retry_on_fail
         self._collect_boards = collect_boards
         self._llm_select = llm_select
@@ -804,6 +812,20 @@ class FillWithGradingStep(PipelineStep):
                 envelope.puzzle_type, envelope.grid_size, seed=grid_seed
             )
 
+            long_entry_count = _long_entry_count_8_9(spec)
+            if (
+                self._max_long_entries_8_9 is not None
+                and long_entry_count > self._max_long_entries_8_9
+            ):
+                logger.info(
+                    "Grid variant %d skipped: %d slots of length 8-9 exceeds "
+                    "configured cap of %d",
+                    grid_variant,
+                    long_entry_count,
+                    self._max_long_entries_8_9,
+                )
+                continue
+
             unsupported = (
                 _unsupported_slot_lengths(spec, self._dictionary)
                 if not has_theme
@@ -880,6 +902,21 @@ class FillWithGradingStep(PipelineStep):
             spec = get_grid_spec(
                 envelope.puzzle_type, envelope.grid_size, seed=grid_seed
             )
+
+            long_entry_count = _long_entry_count_8_9(spec)
+            if (
+                self._max_long_entries_8_9 is not None
+                and long_entry_count > self._max_long_entries_8_9
+            ):
+                incompatible_skips += 1
+                logger.info(
+                    "Grid variant %d skipped: %d slots of length 8-9 exceeds "
+                    "configured cap of %d",
+                    grid_variant,
+                    long_entry_count,
+                    self._max_long_entries_8_9,
+                )
+                continue
 
             unsupported = (
                 _unsupported_slot_lengths(spec, self._dictionary)

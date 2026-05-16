@@ -28,6 +28,7 @@ class TestConfigDefaults:
         cfg = Config()
         assert cfg.fill.provider == "csp"
         assert cfg.fill.max_retries == 5
+        assert cfg.fill.max_long_entries_8_9 is None
 
     def test_default_grading(self) -> None:
         cfg = Config()
@@ -88,6 +89,10 @@ class TestLoadConfig:
         assert cfg.fill.csp.dictionary_path == dictionary_path
         assert cfg.fill.csp.min_word_score == 55
         assert cfg.fill.csp.quality_tiers == [55]
+        if filename == "config.easy.yaml":
+            assert cfg.fill.max_long_entries_8_9 == 3
+        else:
+            assert cfg.fill.max_long_entries_8_9 is None
         assert cfg.theme.enabled is False
         assert cfg.llm.claude.clue_generation_model == "claude-sonnet-4-6"
         assert cfg.llm.claude.clue_grading_model == "claude-sonnet-4-6"

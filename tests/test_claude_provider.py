@@ -10,6 +10,10 @@ import pytest
 from crossword_generator.config import ClaudeConfig
 
 
+class FakeOverloadedError(RuntimeError):
+    pass
+
+
 @pytest.fixture
 def config() -> ClaudeConfig:
     return ClaudeConfig(
@@ -75,6 +79,39 @@ class TestClaudeProvider:
             temperature=0.3,
             messages=[{"role": "user", "content": "prompt"}],
         )
+
+    def test_generate_retries_overload_errors(self, config: ClaudeConfig) -> None:
+        with patch.dict(
+            os.environ,
+            {
+                "ANTHROPIC_API_KEY": "test-key",
+                "CROSSWORD_CLAUDE_OVERLOAD_RETRIES": "2",
+            },
+        ):
+            with (
+                patch("anthropic.Anthropic") as mock_cls,
+                patch("crossword_generator.llm.claude_provider.time.sleep") as sleep,
+            ):
+                mock_client = MagicMock()
+                mock_cls.return_value = mock_client
+                mock_text_block = MagicMock()
+                mock_text_block.text = "Recovered response"
+                mock_message = MagicMock()
+                mock_message.content = [mock_text_block]
+
+                from crossword_generator.llm.claude_provider import ClaudeProvider
+
+                provider = ClaudeProvider(config)
+                mock_client.messages.create.side_effect = [
+                    FakeOverloadedError("overloaded"),
+                    mock_message,
+                ]
+
+                result = provider.generate("prompt")
+
+        assert result == "Recovered response"
+        assert mock_client.messages.create.call_count == 2
+        sleep.assert_called_once_with(10)
 
     def test_is_available_false_when_no_api_key(self, config: ClaudeConfig) -> None:
         with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key"}):

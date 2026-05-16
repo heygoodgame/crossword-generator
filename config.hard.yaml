@@ -1,5 +1,5 @@
 # Phase 1 hard batch-generation config.
-# Uses HggCuratedCrosswordList-derived flat-score dictionary.
+# Uses accessible Easy/prevalent short fill plus curated hard longer fill.
 
 puzzle:
   type: mini

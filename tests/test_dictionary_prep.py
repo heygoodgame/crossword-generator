@@ -6,6 +6,7 @@ from crossword_generator.dictionary import Dictionary
 from crossword_generator.dictionary_prep import (
     load_excluded_words,
     prepare_flat_dictionary,
+    prepare_length_mixed_flat_dictionary,
 )
 
 
@@ -35,6 +36,115 @@ def test_prepare_scored_dictionary_flattens_scores(tmp_path: Path) -> None:
 
     assert summary.output_count == 2
     assert output.read_text().splitlines() == ["APPLE;55", "BANANA;55"]
+
+
+def test_prepare_dictionary_filters_scored_words_by_length(
+    tmp_path: Path,
+) -> None:
+    source = tmp_path / "scored.txt"
+    output = tmp_path / "flat.txt"
+    source.write_text(
+        "sevenss;59\n"
+        "eighties;59\n"
+        "ninetieth;60\n"
+        "sixsix;50\n"
+        "unscored\n"
+    )
+
+    summary = prepare_flat_dictionary(
+        source,
+        output,
+        score=55,
+        min_source_score_by_length={7: 60, 8: 60, 9: 60},
+    )
+
+    assert summary.output_count == 3
+    assert summary.skipped_below_source_score == 2
+    assert output.read_text().splitlines() == [
+        "NINETIETH;55",
+        "SIXSIX;55",
+        "UNSCORED;55",
+    ]
+
+
+def test_prepare_dictionary_ignores_scores_from_flat_inputs(
+    tmp_path: Path,
+) -> None:
+    source = tmp_path / "flat.txt"
+    output = tmp_path / "prepared.txt"
+    source.write_text("sevenss;55\neighties;55\nninetieth;55\n")
+
+    summary = prepare_flat_dictionary(
+        source,
+        output,
+        score=55,
+        min_source_score_by_length={7: 60, 8: 60, 9: 60},
+        flat_score_input_paths=[source],
+    )
+
+    assert summary.output_count == 3
+    assert summary.skipped_below_source_score == 0
+    assert output.read_text().splitlines() == [
+        "EIGHTIES;55",
+        "NINETIETH;55",
+        "SEVENSS;55",
+    ]
+
+
+def test_prepare_dictionary_filters_by_word_length(tmp_path: Path) -> None:
+    source = tmp_path / "words.txt"
+    output = tmp_path / "flat.txt"
+    source.write_text("ape\napple\nbanana\ncucumber\n")
+
+    summary = prepare_flat_dictionary(
+        source,
+        output,
+        score=55,
+        min_word_length=4,
+        max_word_length=6,
+    )
+
+    assert summary.output_count == 2
+    assert summary.skipped_outside_length == 2
+    assert output.read_text().splitlines() == ["APPLE;55", "BANANA;55"]
+
+
+def test_prepare_length_mixed_dictionary_uses_easy_shorts_and_hard_longs(
+    tmp_path: Path,
+) -> None:
+    easy_source = tmp_path / "easy.txt"
+    hard_source = tmp_path / "hard.txt"
+    output = tmp_path / "mixed.txt"
+    easy_source.write_text("ACE;55\nPITT;55\nAGAR;55\nPUZZLER;55\n")
+    hard_source.write_text(
+        "NAFF;70\n"
+        "ENYA;70\n"
+        "BRADPITT;70\n"
+        "LONGWORD;59\n"
+        "LONGGOOD;60\n"
+    )
+
+    summary = prepare_length_mixed_flat_dictionary(
+        easy_source,
+        hard_source,
+        output,
+        score=55,
+        short_max_length=5,
+        long_min_length=6,
+        min_source_score_by_length={8: 60},
+        flat_score_input_paths=[easy_source],
+    )
+
+    assert summary.output_count == 5
+    assert summary.skipped_below_source_score == 1
+    assert summary.skipped_outside_length == 3
+    assert output.read_text().splitlines() == [
+        "ACE;55",
+        "AGAR;55",
+        "BRADPITT;55",
+        "LONGGOOD;55",
+        "PITT;55",
+    ]
 
 
 def test_prepare_dictionary_skips_duplicates_and_malformed_rows(

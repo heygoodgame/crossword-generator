@@ -61,6 +61,7 @@ class FillConfig(BaseModel):
     provider: str = "csp"
     max_retries: int = 5
     max_grid_variants: int = 100
+    max_long_entries_8_9: int | None = None
     csp: CSPFillerConfig = CSPFillerConfig()
 
 

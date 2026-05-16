@@ -144,6 +144,11 @@ def _compatible_9x9_spec() -> GridSpec:
     return GridSpec(rows=9, cols=9, black_cells=black_cells)
 
 
+def _long_heavy_9x9_spec() -> GridSpec:
+    """9x9 open grid containing many 9-letter slots."""
+    return GridSpec(rows=9, cols=9, black_cells=[])
+
+
 class TestPassOnFirstTry:
     def test_passes_on_first_attempt(self) -> None:
         dictionary = _make_dict(GOOD_WORDS)
@@ -530,6 +535,40 @@ class TestDictionaryAwareGridCompatibility:
         with pytest.raises(
             FillError,
             match=r"3 incompatible pattern\(s\) skipped; "
+            r"0 filler attempt\(s\) failed; 0 total filler attempt",
+        ):
+            step.run(envelope)
+
+        assert filler.call_count == 0
+
+    def test_skips_grid_exceeding_long_entry_cap(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        dictionary = _make_dict({**GOOD_WORDS, "AAAAAAAAA": 60})
+        grader = FillGrader(dictionary, min_passing_score=0)
+        filler = RecordingFiller(HIGH_QUALITY_GRID)
+        step = FillWithGradingStep(
+            filler,
+            grader,
+            dictionary=dictionary,
+            max_retries=1,
+            max_grid_variants=1,
+            max_long_entries_8_9=3,
+        )
+
+        monkeypatch.setattr(
+            "crossword_generator.steps.fill_step.get_grid_spec",
+            lambda *_args, **_kwargs: _long_heavy_9x9_spec(),
+        )
+
+        envelope = PuzzleEnvelope(
+            puzzle_type=PuzzleType.MIDI,
+            grid_size=9,
+            metadata={"seed": 1},
+        )
+        with pytest.raises(
+            FillError,
+            match=r"1 incompatible pattern\(s\) skipped; "
             r"0 filler attempt\(s\) failed; 0 total filler attempt",
         ):
             step.run(envelope)

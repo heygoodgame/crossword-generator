@@ -336,7 +336,9 @@ def _request_json(
     timeout: int = 60,
 ) -> dict[str, Any]:
     resolved_api_base = (api_base or API_BASE).rstrip("/")
-    resolved_token = token or os.environ["HEYGG_ADMIN_API_TOKEN"]
+    resolved_token = token or os.environ.get("HEYGG_ADMIN_TOKEN") or os.environ[
+        "HEYGG_ADMIN_API_TOKEN"
+    ]
     url = f"{resolved_api_base}{path}"
     headers = {
         "Authorization": f"Bearer {resolved_token}",

@@ -17,6 +17,7 @@ fill:
   provider: csp
   max_retries: 5
   max_grid_variants: 100
+  max_long_entries_8_9: 3
   csp:
     dictionary_path: dictionaries/hgg-easy-prevalent-flat-55.txt
     min_word_score: 55

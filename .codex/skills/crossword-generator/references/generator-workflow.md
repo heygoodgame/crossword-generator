@@ -12,6 +12,12 @@ Current emphasis:
 - Easy puzzles should favor accessible, one-word fill.
 - Easy 9x9 generation uses Jeff Chen's prevalent 8/9-letter Easy attachment
   merged with the prior Easy 3-7 list.
+- 9x9 midi generation uses expanded Jeff-feedback mirror-style and
+  regular-symmetry patterns with safe top-to-bottom flips and conservative
+  cheater-square variants, while avoiding three-black-square perimeter runs
+  that press into a corner and procedural rotational windmill patterns that
+  can read as swastika-like.
+- Easy 9x9 generation skips grids with more than three 8-/9-letter slots.
 - Avoid unsuitable or controversial fill before clue generation and upload.
 - Preserve reproducible batch manifests and deterministic data-store keys.
 
@@ -61,6 +67,11 @@ Current Hard config points both paths at:
 dictionaries/hgg-hard-flat-55.txt
 ```
 
+The hard flat dictionary is length-mixed: 3-, 4-, and 5-letter entries come
+from the prepared Easy/prevalent list, while 6+ entries come from
+`dictionaries/HggCuratedCrosswordList.txt`. This keeps short fill accessible
+and avoids leaning on crosswordese-heavy hard-list glue.
+
 Flat dictionaries use `WORD;55` rows and `quality_tiers: [55]`.
 
 Easy dictionary preparation:
@@ -72,11 +83,22 @@ uv run crossword-generator prepare-dictionaries \
   --easy-exclude-source dictionaries/XwiJeffChenList-NotFamilyFriendly.txt \
   --easy-exclude-source dictionaries/Wordplete-PrevalentCulled-8-9-length-Removed.txt \
   --easy-output dictionaries/hgg-easy-prevalent-flat-55.txt \
-  --hard-source dictionaries/hgg-hard-flat-55.txt \
+  --hard-source dictionaries/HggCuratedCrosswordList.txt \
   --hard-output dictionaries/hgg-hard-flat-55.txt
 ```
 
-The prevalent Easy merge produced 18,593 rows after excluding 146 entries.
+By default, preparation filters true scored 7-, 8-, and 9-letter source rows
+below `60` before flattening accepted entries to `;55`. Previously flattened
+`WORD;55` Easy inputs are treated as flat dictionaries, not original source
+scores. Use
+`--long-word-min-source-score 0` only when intentionally disabling that
+long-word source-score floor.
+
+The May 14 prevalent Easy merge produced 18,593 rows after excluding 146 entries
+while preserving the prior flat 3-7-letter Easy source. The May 15 hard
+dictionary run produced 128,758 rows after taking short entries from Easy and
+longer entries from the hard source, while filtering 67,257 scored long rows
+below the source-score floor.
 
 ## Fill Quality Rules
 
@@ -102,6 +124,18 @@ and, where relevant, `tests/test_fill_with_grading_step.py`.
 
 `generate-pilot-batch` creates manifest-driven batches. Despite the name, it is
 the current production batch runner.
+
+Grid selection notes:
+
+- 5x5 and 7x7 minis use weighted pattern catalogs from `grid_specs.py`.
+- 9x9 midis use a Jeff-feedback catalog with mirror-style and regular-symmetry
+  examples, top-to-bottom flips, and validated cheater-square variants, not the
+  procedural rotational generator. Catalog validation rejects patterns with
+  three consecutive black squares pressed into any corner along a perimeter
+  edge; non-corner perimeter triples remain allowed to match Jeff's examples.
+- `config.easy.yaml` sets `fill.max_long_entries_8_9: 3`, so Easy 9x9 variants
+  with more than three long slots are skipped before filling.
+- 10x10 and 11x11 midis still fall back to procedural pattern generation.
 
 Recommended Easy batch:
 
