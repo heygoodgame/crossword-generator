@@ -14,11 +14,21 @@ class LLMProvider(ABC):
         """Name of this LLM provider."""
 
     @abstractmethod
-    def generate(self, prompt: str, **kwargs: object) -> str:
+    def generate(
+        self,
+        prompt: str,
+        *,
+        system: str | None = None,
+        **kwargs: object,
+    ) -> str:
         """Generate a response from the LLM.
 
         Args:
-            prompt: The input prompt.
+            prompt: The user-facing prompt (per-call dynamic content).
+            system: Optional static system prompt (role, rubric, output
+                format). Providers that support prompt caching SHOULD
+                cache this block; it is the same static text across many
+                calls so cache hits make sense.
             **kwargs: Provider-specific options (model, temperature, etc.).
 
         Returns:

@@ -11,7 +11,7 @@ from crossword_generator.exporters.numbering import (
 )
 from crossword_generator.llm.base import LLMProvider
 from crossword_generator.llm.prompts.clue_evaluation import (
-    build_clue_evaluation_prompt,
+    build_clue_evaluation_messages,
 )
 from crossword_generator.models import ClueGrade, ClueGradeReport, PuzzleEnvelope
 
@@ -54,7 +54,7 @@ class ClueGrader:
         crossing_words = compute_crossing_words(entries, grid)
 
         # Build evaluation prompt
-        prompt = build_clue_evaluation_prompt(
+        system_text, user_text = build_clue_evaluation_messages(
             clues=envelope.clues,
             crossing_words=crossing_words,
             puzzle_type=envelope.puzzle_type,
@@ -72,7 +72,7 @@ class ClueGrader:
                 self._max_parse_retries,
                 self._llm.name,
             )
-            raw_response = self._llm.generate(prompt)
+            raw_response = self._llm.generate(user_text, system=system_text)
             logger.debug(
                 "Raw evaluation response (%d chars): %.200s",
                 len(raw_response),

@@ -22,7 +22,35 @@ _CATEGORY_HINTS: list[str] = [
 ]
 
 
-def build_theme_generation_prompt(
+_ROLE = (
+    "You are an expert crossword puzzle constructor designing a theme "
+    "for a themed crossword puzzle."
+)
+
+_GUIDELINES = (
+    "GUIDELINES:\n"
+    "- Choose an accessible, fun theme topic that a broad "
+    "audience will enjoy.\n"
+    "- Theme entries should be common words or well-known "
+    "phrases (no obscure vocabulary).\n"
+    "- Each seed entry must be a SINGLE WORD (no spaces, "
+    "no hyphens) that fits in the grid.\n"
+    "- The revealer must also be a single word.\n"
+    "- Wordplay types include: literal (entries share a "
+    "theme), hidden word, homophones, double meanings, "
+    "category members.\n"
+    "- The revealer should work as both a standalone crossword "
+    "entry AND as the 'aha moment' for the theme.\n"
+    "- The revealer_clue MUST start with a real, standalone clue "
+    "for the revealer word (e.g., 'Completely destroyed' for "
+    "SHATTERED), then optionally add a theme hint after a comma "
+    "or 'or'. Use natural phrasing like 'a hint to some other "
+    "answers in this puzzle' — never use the phrase 'theme entries.' "
+    "Never write a clue that ONLY describes the theme connection."
+)
+
+
+def build_theme_generation_messages(
     grid_size: int,
     available_slot_lengths: list[int] | None = None,
     num_seed_entries: int = 3,
@@ -30,35 +58,33 @@ def build_theme_generation_prompt(
     num_candidates: int | None = None,
     avoid_topics: list[str] | None = None,
     max_avoid_in_prompt: int = 30,
-) -> str:
-    """Build a prompt that asks the LLM to generate a crossword theme concept.
+) -> tuple[str, str]:
+    """Build (system, user) messages for theme generation.
 
-    Args:
-        grid_size: The grid dimension (e.g., 9 for a 9x9 grid).
-        available_slot_lengths: Distinct slot lengths available in the grid.
-            Used only to constrain the revealer. Seed entries are no longer
-            constrained to specific slot lengths.
-        num_seed_entries: How many themed seed entries to generate.
-        slot_counts: Optional mapping of slot length to number of slots
-            available in the grid. No longer used for constraining seeds.
-        num_candidates: If set, ask for this many candidate entries instead
-            of exactly num_seed_entries. Not all will be used in the grid.
-        avoid_topics: Previously-generated topics to avoid (for dedup).
-        max_avoid_in_prompt: Maximum number of avoid topics to include in
-            the prompt. When exceeded, shows a sample with a note.
-
-    Returns:
-        A prompt string ready to send to the LLM.
+    The system text holds the constructor role, length constraints, and
+    guidelines — these vary only with ``grid_size``, so within a batch
+    of same-size puzzles the cache hits cleanly. Per-call data
+    (avoid_topics, surplus instructions) lives in the user text so
+    retries can append error feedback without invalidating the cache.
     """
-    # When generating surplus candidates, ask for more
     effective_count = num_candidates if num_candidates else num_seed_entries
 
-    # Revealer is still constrained to available slot lengths
     revealer_max = grid_size
     if available_slot_lengths:
         revealer_max = max(available_slot_lengths)
 
-    # Build a dynamic example
+    length_constraint = (
+        f"LENGTH CONSTRAINTS:\n"
+        f"- The revealer must be at most {revealer_max} letters long and should be\n"
+        f"  one of the longer entries.\n"
+        f"- Seed entries should be between 3 and {grid_size} letters long.\n"
+        f"\n"
+        f"LENGTH DISTRIBUTION (critical — count letters carefully):\n"
+        f"- At least 3 entries MUST be exactly 3 letters long (e.g., OWL, BAT, FLY).\n"
+        f"- At least 2 entries should be 4-5 letters long.\n"
+        f"- Include 2-3 entries of 6-{grid_size} letters."
+    )
+
     example_entries, example_revealer = _pick_example_entries(grid_size)
     example_output = json.dumps(
         {
@@ -74,43 +100,15 @@ def build_theme_generation_prompt(
         indent=2,
     )
 
-    role = (
-        "You are an expert crossword puzzle constructor designing a theme "
-        "for a themed crossword puzzle."
+    output_section = (
+        "OUTPUT FORMAT:\n"
+        "Return ONLY a JSON object with these fields. "
+        "No other text before or after.\n"
+        f"\nExample:\n{example_output}\n"
     )
 
-    length_constraint = (
-        f"LENGTH CONSTRAINTS:\n"
-        f"- The revealer must be at most {revealer_max} letters long and should be\n"
-        f"  one of the longer entries.\n"
-        f"- Seed entries should be between 3 and {grid_size} letters long.\n"
-        f"\n"
-        f"LENGTH DISTRIBUTION (critical — count letters carefully):\n"
-        f"- At least 3 entries MUST be exactly 3 letters long (e.g., OWL, BAT, FLY).\n"
-        f"- At least 2 entries should be 4-5 letters long.\n"
-        f"- Include 2-3 entries of 6-{grid_size} letters."
-    )
-
-    guidelines = (
-        "GUIDELINES:\n"
-        "- Choose an accessible, fun theme topic that a broad "
-        "audience will enjoy.\n"
-        "- Theme entries should be common words or well-known "
-        "phrases (no obscure vocabulary).\n"
-        "- Each seed entry must be a SINGLE WORD (no spaces, "
-        "no hyphens) that fits in the grid.\n"
-        "- The revealer must also be a single word.\n"
-        "- Wordplay types include: literal (entries share a "
-        "theme), hidden word, homophones, double meanings, "
-        "category members.\n"
-        "- The revealer should work as both a standalone crossword "
-        "entry AND as the 'aha moment' for the theme.\n"
-        "- The revealer_clue MUST start with a real, standalone clue "
-        "for the revealer word (e.g., 'Completely destroyed' for "
-        "SHATTERED), then optionally add a theme hint after a comma "
-        "or 'or'. Use natural phrasing like 'a hint to some other "
-        "answers in this puzzle' — never use the phrase 'theme entries.' "
-        "Never write a clue that ONLY describes the theme connection."
+    system_text = "\n\n".join(
+        [_ROLE, length_constraint, _GUIDELINES, output_section]
     )
 
     avoid_section = ""
@@ -119,7 +117,6 @@ def build_theme_generation_prompt(
         cap_note = ""
         total = len(avoid_topics)
         if total > max_avoid_in_prompt:
-            # Show recent + random sample of older topics
             recent = avoid_topics[-15:]
             older = avoid_topics[:-15]
             sampled = random.sample(older, min(15, len(older)))
@@ -136,14 +133,12 @@ def build_theme_generation_prompt(
             f"{cap_note}"
         )
 
-        # Anti-pattern warning
         avoid_section += (
             "\nDo NOT use 'Things that are [adjective]' or "
             "'Things that can be [past participle]' — those patterns "
             "have been heavily overused. Be creative and specific.\n"
         )
 
-        # Rotating category hint
         hint_index = len(avoid_topics) % len(_CATEGORY_HINTS)
         category = _CATEGORY_HINTS[hint_index]
         avoid_section += (
@@ -158,21 +153,41 @@ def build_theme_generation_prompt(
             f"for the grid)."
         )
 
-    output_section = (
-        "OUTPUT FORMAT:\n"
-        "Return ONLY a JSON object with these fields. "
-        "No other text before or after.\n"
-        f"\nExample:\n{example_output}\n"
-        f"\nGenerate a theme with exactly {effective_count} "
+    user_text = (
+        f"{avoid_section}\n"
+        f"Generate a theme with exactly {effective_count} "
         f"seed entries for a {grid_size}x{grid_size} crossword "
         f"grid.{surplus_note} Return ONLY the JSON object, "
         f"no explanations."
     )
 
-    return (
-        f"{role}\n\n{length_constraint}\n\n"
-        f"{guidelines}\n{avoid_section}\n{output_section}"
+    return system_text, user_text
+
+
+def build_theme_generation_prompt(
+    grid_size: int,
+    available_slot_lengths: list[int] | None = None,
+    num_seed_entries: int = 3,
+    slot_counts: dict[int, int] | None = None,
+    num_candidates: int | None = None,
+    avoid_topics: list[str] | None = None,
+    max_avoid_in_prompt: int = 30,
+) -> str:
+    """Build a single-string prompt (system+user concatenated).
+
+    Kept for backward compatibility. Prefer
+    ``build_theme_generation_messages`` to enable prompt caching.
+    """
+    system_text, user_text = build_theme_generation_messages(
+        grid_size=grid_size,
+        available_slot_lengths=available_slot_lengths,
+        num_seed_entries=num_seed_entries,
+        slot_counts=slot_counts,
+        num_candidates=num_candidates,
+        avoid_topics=avoid_topics,
+        max_avoid_in_prompt=max_avoid_in_prompt,
     )
+    return f"{system_text}\n\n{user_text}"
 
 
 # Example words by length for building dynamic examples
@@ -194,9 +209,8 @@ def _pick_example_entries(
 
     Returns words that demonstrate length variation in the example.
     """
-    # Pick seed entries — lead with 3-letter words to model the distribution
     entries: list[str] = []
-    target_lengths = [3, 3, 3, 4, 5]  # emphasize 3-letter words in example
+    target_lengths = [3, 3, 3, 4, 5]
     for length in target_lengths:
         if length <= grid_size and length in _EXAMPLES_BY_LENGTH:
             words = _EXAMPLES_BY_LENGTH[length]
@@ -204,7 +218,6 @@ def _pick_example_entries(
             if word not in entries:
                 entries.append(word)
 
-    # Fill remaining if needed
     while len(entries) < 5:
         for length in sorted(_EXAMPLES_BY_LENGTH.keys()):
             if length <= grid_size:
@@ -218,8 +231,7 @@ def _pick_example_entries(
         else:
             break
 
-    # Pick revealer — prefer longer word
-    revealer = "SOAR"  # fallback
+    revealer = "SOAR"
     for length in sorted(_EXAMPLES_BY_LENGTH.keys(), reverse=True):
         if length <= grid_size and length in _EXAMPLES_BY_LENGTH:
             for word in _EXAMPLES_BY_LENGTH[length]:

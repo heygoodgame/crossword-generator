@@ -23,12 +23,19 @@ class OllamaProvider(LLMProvider):
     def name(self) -> str:
         return "ollama"
 
-    def generate(self, prompt: str, **kwargs: object) -> str:
+    def generate(
+        self,
+        prompt: str,
+        *,
+        system: str | None = None,
+        **kwargs: object,
+    ) -> str:
         model = kwargs.get("model", self._config.model)
         temperature = kwargs.get("temperature", 0.7)
         response = self._client.generate(
             model=str(model),
             prompt=prompt,
+            system=system,
             options={"temperature": float(temperature)},  # type: ignore[arg-type]
         )
         return response["response"]

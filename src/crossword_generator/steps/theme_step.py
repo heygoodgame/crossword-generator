@@ -10,7 +10,7 @@ from crossword_generator.fillers.csp import extract_slots
 from crossword_generator.grid_specs import get_grid_spec
 from crossword_generator.llm.base import LLMProvider
 from crossword_generator.llm.prompts.theme_generation import (
-    build_theme_generation_prompt,
+    build_theme_generation_messages,
 )
 from crossword_generator.models import PuzzleEnvelope, PuzzleType, ThemeConcept
 from crossword_generator.steps.base import PipelineStep
@@ -64,7 +64,7 @@ def generate_single_theme(
     slots = extract_slots(spec.rows, spec.cols, black)
     available_lengths = sorted({s.length for s in slots})
 
-    prompt = build_theme_generation_prompt(
+    system_text, base_user_text = build_theme_generation_messages(
         grid_size=grid_size,
         available_slot_lengths=available_lengths,
         num_seed_entries=num_seed_entries,
@@ -78,7 +78,7 @@ def generate_single_theme(
 
     theme: ThemeConcept | None = None
     last_error = ""
-    current_prompt = prompt
+    current_user_text = base_user_text
     use_surplus = num_candidates > num_seed_entries
 
     for attempt in range(1, max_retries + 1):
@@ -88,7 +88,7 @@ def generate_single_theme(
             max_retries,
             llm.name,
         )
-        raw_response = llm.generate(current_prompt)
+        raw_response = llm.generate(current_user_text, system=system_text)
         logger.debug(
             "Raw LLM response (%d chars): %.200s",
             len(raw_response),
@@ -104,7 +104,7 @@ def generate_single_theme(
                 attempt,
                 last_error,
             )
-            current_prompt = _retry_prompt(prompt, last_error)
+            current_user_text = _retry_prompt(base_user_text, last_error)
             continue
 
         # Hard dedup: reject exact normalized duplicates
@@ -117,7 +117,7 @@ def generate_single_theme(
             )
             logger.warning("Attempt %d: %s", attempt, last_error)
             theme = None
-            current_prompt = _retry_prompt(prompt, last_error)
+            current_user_text = _retry_prompt(base_user_text, last_error)
             continue
 
         # Fuzzy dedup: reject topics with high word-overlap
@@ -133,7 +133,7 @@ def generate_single_theme(
                 )
                 logger.warning("Attempt %d: %s", attempt, last_error)
                 theme = None
-                current_prompt = _retry_prompt(prompt, last_error)
+                current_user_text = _retry_prompt(base_user_text, last_error)
                 continue
 
         validation_errors = _validate_theme_entries(
@@ -151,7 +151,7 @@ def generate_single_theme(
                 last_error,
             )
             theme = None
-            current_prompt = _retry_prompt(prompt, last_error)
+            current_user_text = _retry_prompt(base_user_text, last_error)
             continue
 
         # When generating surplus, move seed_entries → candidate_entries
@@ -302,10 +302,14 @@ def _parse_theme_response(raw_response: str) -> ThemeConcept:
     )
 
 
-def _retry_prompt(original_prompt: str, error: str) -> str:
-    """Build a retry prompt that includes the error from the previous attempt."""
+def _retry_prompt(original_user_text: str, error: str) -> str:
+    """Build a retry user message that appends previous-attempt feedback.
+
+    Only the user text is mutated on retry; the cached system prompt
+    stays identical so the prompt cache continues to hit.
+    """
     return (
-        f"{original_prompt}\n\n"
+        f"{original_user_text}\n\n"
         f"IMPORTANT: Your previous attempt was rejected because: {error}\n"
         f"Please fix these issues. Count the letters in each word carefully."
     )

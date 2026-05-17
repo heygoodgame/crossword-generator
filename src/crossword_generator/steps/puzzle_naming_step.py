@@ -8,7 +8,7 @@ import re
 
 from crossword_generator.llm.base import LLMProvider
 from crossword_generator.llm.prompts.puzzle_naming import (
-    build_puzzle_naming_prompt,
+    build_puzzle_naming_messages,
 )
 from crossword_generator.models import PuzzleEnvelope
 from crossword_generator.steps.base import PipelineStep
@@ -37,7 +37,7 @@ class PuzzleNamingStep(PipelineStep):
 
         assert envelope.fill is not None
 
-        prompt = build_puzzle_naming_prompt(
+        system_text, user_text = build_puzzle_naming_messages(
             puzzle_type=envelope.puzzle_type,
             grid_size=envelope.grid_size,
             clues=envelope.clues,
@@ -56,7 +56,7 @@ class PuzzleNamingStep(PipelineStep):
                 self._max_retries,
                 self._llm.name,
             )
-            raw_response = self._llm.generate(prompt)
+            raw_response = self._llm.generate(user_text, system=system_text)
             logger.debug(
                 "Raw LLM response (%d chars): %.200s",
                 len(raw_response),

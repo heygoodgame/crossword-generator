@@ -11,7 +11,9 @@ from crossword_generator.exporters.numbering import (
 )
 from crossword_generator.graders.clue_grader import ClueGrader
 from crossword_generator.llm.base import LLMProvider
-from crossword_generator.llm.prompts.clue_generation import build_clue_repair_prompt
+from crossword_generator.llm.prompts.clue_generation import (
+    build_clue_repair_messages,
+)
 from crossword_generator.models import ClueEntry, ClueGrade, PuzzleEnvelope
 from crossword_generator.steps.base import PipelineStep
 from crossword_generator.steps.clue_step import ClueGenerationStep
@@ -183,7 +185,7 @@ class ClueWithGradingStep(PipelineStep):
         entries = compute_numbering(grid)
         crossing_words = compute_crossing_words(entries, grid)
 
-        prompt = build_clue_repair_prompt(
+        system_text, user_text = build_clue_repair_messages(
             entries_to_repair=entries_to_repair,
             all_clues=envelope.clues,
             crossing_words=crossing_words,
@@ -193,7 +195,7 @@ class ClueWithGradingStep(PipelineStep):
 
         # Call LLM for repair
         try:
-            raw_response = self._llm.generate(prompt)
+            raw_response = self._llm.generate(user_text, system=system_text)
             repaired_clues = _parse_repair_response(
                 raw_response, entries_to_repair
             )

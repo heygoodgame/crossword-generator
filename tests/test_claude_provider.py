@@ -54,6 +54,38 @@ class TestClaudeProvider:
             messages=[{"role": "user", "content": "Write a clue for OCEAN"}],
         )
 
+    def test_generate_with_system_caches_block(
+        self, config: ClaudeConfig
+    ) -> None:
+        with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key"}):
+            with patch("anthropic.Anthropic") as mock_cls:
+                mock_client = MagicMock()
+                mock_cls.return_value = mock_client
+                mock_text_block = MagicMock()
+                mock_text_block.text = "ok"
+                mock_message = MagicMock()
+                mock_message.content = [mock_text_block]
+                mock_client.messages.create.return_value = mock_message
+
+                from crossword_generator.llm.claude_provider import ClaudeProvider
+
+                provider = ClaudeProvider(config)
+                provider.generate("user payload", system="static rubric")
+
+        mock_client.messages.create.assert_called_once_with(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=4096,
+            temperature=0.7,
+            messages=[{"role": "user", "content": "user payload"}],
+            system=[
+                {
+                    "type": "text",
+                    "text": "static rubric",
+                    "cache_control": {"type": "ephemeral"},
+                }
+            ],
+        )
+
     def test_generate_with_custom_kwargs(self, config: ClaudeConfig) -> None:
         with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key"}):
             with patch("anthropic.Anthropic") as mock_cls:

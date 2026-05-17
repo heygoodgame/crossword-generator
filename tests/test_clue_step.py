@@ -71,6 +71,8 @@ class MockLLM(LLMProvider):
 
     def generate(self, prompt: str, **kwargs: object) -> str:
         self._call_count += 1
+        self.last_prompt = prompt
+        self.last_system = kwargs.get("system")
         if self._responses:
             return self._responses.pop(0)
         return self._response or ""
@@ -115,6 +117,29 @@ class TestClueGenerationStep:
     def test_step_name(self) -> None:
         step = ClueGenerationStep(MockLLM())
         assert step.name == "clue-generation"
+
+    def test_passes_cacheable_system_prompt(self) -> None:
+        """Step splits prompt into static system + dynamic user."""
+        from crossword_generator.exporters.numbering import compute_numbering
+
+        entries = compute_numbering(MOCK_GRID)
+        mock_response = _build_mock_clue_json(entries)
+
+        llm = MockLLM(response=mock_response)
+        step = ClueGenerationStep(llm)
+        envelope = _make_envelope(grid=MOCK_GRID)
+        step.run(envelope)
+
+        # Static rubric (role + guidelines + output format) goes to system
+        assert llm.last_system is not None
+        assert "expert crossword puzzle constructor" in llm.last_system
+        assert "GUIDELINES:" in llm.last_system
+        assert "OUTPUT FORMAT:" in llm.last_system
+
+        # Per-puzzle entries go to the user prompt
+        assert "ENTRIES TO CLUE:" in llm.last_prompt
+        # And shouldn't be in system (else cache invalidates per puzzle)
+        assert "ENTRIES TO CLUE:" not in llm.last_system
 
     def test_step_history_updated(self) -> None:
         from crossword_generator.exporters.numbering import compute_numbering

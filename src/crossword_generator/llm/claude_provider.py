@@ -40,20 +40,42 @@ class ClaudeProvider(LLMProvider):
     def name(self) -> str:
         return "claude"
 
-    def generate(self, prompt: str, **kwargs: object) -> str:
+    def generate(
+        self,
+        prompt: str,
+        *,
+        system: str | None = None,
+        **kwargs: object,
+    ) -> str:
         model = str(kwargs.get("model", self._config.model))
         temperature = float(kwargs.get("temperature", 0.7))
         max_overload_retries = int(
             os.environ.get("CROSSWORD_CLAUDE_OVERLOAD_RETRIES", "6")
         )
+
+        # Build request kwargs. When a static system prompt is provided,
+        # pass it as a cache-eligible block so repeated calls with the
+        # same rubric hit the prompt cache. Anthropic silently skips
+        # caching for blocks below the per-model minimum, so this is
+        # always safe to send.
+        request_kwargs: dict[str, object] = {
+            "model": model,
+            "max_tokens": self._config.max_tokens,
+            "temperature": temperature,
+            "messages": [{"role": "user", "content": prompt}],
+        }
+        if system:
+            request_kwargs["system"] = [
+                {
+                    "type": "text",
+                    "text": system,
+                    "cache_control": {"type": "ephemeral"},
+                }
+            ]
+
         for attempt in range(max_overload_retries + 1):
             try:
-                message = self._client.messages.create(
-                    model=model,
-                    max_tokens=self._config.max_tokens,
-                    temperature=temperature,
-                    messages=[{"role": "user", "content": prompt}],
-                )
+                message = self._client.messages.create(**request_kwargs)
                 break
             except Exception as exc:
                 if (

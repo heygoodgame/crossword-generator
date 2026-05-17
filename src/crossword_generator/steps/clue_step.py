@@ -12,7 +12,7 @@ from crossword_generator.exporters.numbering import (
 )
 from crossword_generator.llm.base import LLMProvider
 from crossword_generator.llm.prompts.clue_generation import (
-    build_clue_generation_prompt,
+    build_clue_generation_messages,
 )
 from crossword_generator.models import ClueEntry, PuzzleEnvelope
 from crossword_generator.steps.base import PipelineStep
@@ -47,7 +47,7 @@ class ClueGenerationStep(PipelineStep):
         crossing_words = compute_crossing_words(entries, grid)
 
         # Build prompt
-        prompt = build_clue_generation_prompt(
+        system_text, user_text = build_clue_generation_messages(
             entries=entries,
             crossing_words=crossing_words,
             puzzle_type=envelope.puzzle_type,
@@ -65,7 +65,7 @@ class ClueGenerationStep(PipelineStep):
                 self._max_retries,
                 self._llm.name,
             )
-            raw_response = self._llm.generate(prompt)
+            raw_response = self._llm.generate(user_text, system=system_text)
             logger.debug(
                 "Raw LLM response (%d chars): %.200s",
                 len(raw_response),

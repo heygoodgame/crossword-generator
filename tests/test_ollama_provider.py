@@ -32,6 +32,7 @@ class TestOllamaProvider:
         mock_client.generate.assert_called_once_with(
             model="llama3",
             prompt="Write a clue for OCEAN",
+            system=None,
             options={"temperature": 0.7},
         )
 
@@ -50,7 +51,24 @@ class TestOllamaProvider:
         mock_client.generate.assert_called_once_with(
             model="mistral",
             prompt="prompt",
+            system=None,
             options={"temperature": 0.3},
+        )
+
+    def test_generate_passes_system_through(self, config: OllamaConfig) -> None:
+        with patch("crossword_generator.llm.ollama_provider.ollama.Client") as mock_cls:
+            mock_client = MagicMock()
+            mock_cls.return_value = mock_client
+            mock_client.generate.return_value = {"response": "ok"}
+
+            provider = OllamaProvider(config)
+            provider.generate("user payload", system="static rubric")
+
+        mock_client.generate.assert_called_once_with(
+            model="llama3",
+            prompt="user payload",
+            system="static rubric",
+            options={"temperature": 0.7},
         )
 
     def test_is_available_true(self, config: OllamaConfig) -> None:
