@@ -106,10 +106,10 @@ class ClaudeConfig(BaseModel):
     """
 
     model: str = "claude-haiku-4-5-20251001"
-    theme_model: str = ""
+    theme_model: str = "claude-sonnet-4-6"
     fill_selection_model: str = ""
     clue_generation_model: str = "claude-sonnet-4-6"
-    clue_grading_model: str = "claude-sonnet-4-6"
+    clue_grading_model: str = "claude-haiku-4-5-20251001"
     max_tokens: int = 4096
     timeout: int = 120
 

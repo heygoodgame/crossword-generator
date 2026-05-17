@@ -43,8 +43,11 @@ class TestConfigDefaults:
         assert cfg.llm.ollama.base_url == "http://localhost:11434"
         assert cfg.llm.ollama.model == "llama3"
         assert cfg.llm.ollama.timeout == 120
+        assert cfg.llm.claude.theme_model == "claude-sonnet-4-6"
         assert cfg.llm.claude.clue_generation_model == "claude-sonnet-4-6"
-        assert cfg.llm.claude.clue_grading_model == "claude-sonnet-4-6"
+        assert (
+            cfg.llm.claude.clue_grading_model == "claude-haiku-4-5-20251001"
+        )
 
     def test_default_output(self) -> None:
         cfg = Config()
@@ -94,8 +97,11 @@ class TestLoadConfig:
         else:
             assert cfg.fill.max_long_entries_8_9 is None
         assert cfg.theme.enabled is False
+        assert cfg.llm.claude.theme_model == "claude-sonnet-4-6"
         assert cfg.llm.claude.clue_generation_model == "claude-sonnet-4-6"
-        assert cfg.llm.claude.clue_grading_model == "claude-sonnet-4-6"
+        assert (
+            cfg.llm.claude.clue_grading_model == "claude-haiku-4-5-20251001"
+        )
         rejected_model = "claude-sonnet-4-5" + "-20241022"
         assert rejected_model not in (project_root / filename).read_text()
 
