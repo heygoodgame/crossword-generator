@@ -55,14 +55,13 @@ def test_prepare_dictionary_filters_scored_words_by_length(
         source,
         output,
         score=55,
-        min_source_score_by_length={7: 60, 8: 60, 9: 60},
+        min_source_score_by_length={6: 60, 7: 60, 8: 60, 9: 60},
     )
 
-    assert summary.output_count == 3
-    assert summary.skipped_below_source_score == 2
+    assert summary.output_count == 2
+    assert summary.skipped_below_source_score == 3
     assert output.read_text().splitlines() == [
         "NINETIETH;55",
-        "SIXSIX;55",
         "UNSCORED;55",
     ]
 
@@ -78,7 +77,7 @@ def test_prepare_dictionary_ignores_scores_from_flat_inputs(
         source,
         output,
         score=55,
-        min_source_score_by_length={7: 60, 8: 60, 9: 60},
+        min_source_score_by_length={6: 60, 7: 60, 8: 60, 9: 60},
         flat_score_input_paths=[source],
     )
 
@@ -119,6 +118,8 @@ def test_prepare_length_mixed_dictionary_uses_easy_shorts_and_hard_longs(
     hard_source.write_text(
         "NAFF;70\n"
         "ENYA;70\n"
+        "SIXBAD;59\n"
+        "SIXOKS;60\n"
         "BRADPITT;70\n"
         "LONGWORD;59\n"
         "LONGGOOD;60\n"
@@ -131,12 +132,12 @@ def test_prepare_length_mixed_dictionary_uses_easy_shorts_and_hard_longs(
         score=55,
         short_max_length=5,
         long_min_length=6,
-        min_source_score_by_length={8: 60},
+        min_source_score_by_length={6: 60, 8: 60},
         flat_score_input_paths=[easy_source],
     )
 
-    assert summary.output_count == 5
-    assert summary.skipped_below_source_score == 1
+    assert summary.output_count == 6
+    assert summary.skipped_below_source_score == 2
     assert summary.skipped_outside_length == 3
     assert output.read_text().splitlines() == [
         "ACE;55",
@@ -144,6 +145,41 @@ def test_prepare_length_mixed_dictionary_uses_easy_shorts_and_hard_longs(
         "BRADPITT;55",
         "LONGGOOD;55",
         "PITT;55",
+        "SIXOKS;55",
+    ]
+
+
+def test_prepare_length_mixed_dictionary_can_cap_long_words(
+    tmp_path: Path,
+) -> None:
+    easy_source = tmp_path / "easy.txt"
+    hard_source = tmp_path / "hard.txt"
+    output = tmp_path / "mixed.txt"
+    easy_source.write_text("ABACUS;55\nPUZZLER;55\n")
+    hard_source.write_text(
+        "SEVENOK;60\n"
+        "SEVENNO;59\n"
+        "EIGHTEEN;60\n"
+    )
+
+    summary = prepare_length_mixed_flat_dictionary(
+        easy_source,
+        hard_source,
+        output,
+        score=55,
+        short_max_length=6,
+        long_min_length=7,
+        long_max_length=7,
+        min_source_score_by_length={7: 60, 8: 60},
+        flat_score_input_paths=[easy_source],
+    )
+
+    assert summary.output_count == 2
+    assert summary.skipped_below_source_score == 1
+    assert summary.skipped_outside_length == 2
+    assert output.read_text().splitlines() == [
+        "ABACUS;55",
+        "SEVENOK;55",
     ]
 
 

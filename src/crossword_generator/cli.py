@@ -255,14 +255,7 @@ def generate_pilot_batch(
     logs_dir = root / "logs"
     logs_dir.mkdir(parents=True, exist_ok=True)
 
-    all_buckets = [
-        ("easy", 5, "mini", project_root / "config.easy.yaml"),
-        ("easy", 7, "mini", project_root / "config.easy.yaml"),
-        ("easy", 9, "midi", project_root / "config.easy.yaml"),
-        ("hard", 5, "mini", project_root / "config.hard.yaml"),
-        ("hard", 7, "mini", project_root / "config.hard.yaml"),
-        ("hard", 9, "midi", project_root / "config.hard.yaml"),
-    ]
+    all_buckets = _batch_bucket_configs(project_root)
     if buckets:
         wanted = {tag.strip() for tag in buckets.split(",") if tag.strip()}
         unknown = wanted - {f"{d}/{s}" for d, s, _, _ in all_buckets}
@@ -855,6 +848,15 @@ def export_dictionary(
     help="Output path for the normalized hard dictionary.",
 )
 @click.option(
+    "--hard-7-output",
+    type=click.Path(),
+    default="dictionaries/hgg-hard-7x7-flat-55.txt",
+    help=(
+        "Output path for the 7x7 hard dictionary: 3-6 letter Easy/prevalent "
+        "entries plus 7-letter curated hard entries."
+    ),
+)
+@click.option(
     "--score",
     type=int,
     default=55,
@@ -866,7 +868,7 @@ def export_dictionary(
     default=60,
     show_default=True,
     help=(
-        "Minimum source score for scored 7-, 8-, and 9-letter entries. "
+        "Minimum source score for scored 6-, 7-, 8-, and 9-letter entries. "
         "Use 0 to disable this length-specific source-score filter."
     ),
 )
@@ -877,6 +879,7 @@ def prepare_dictionaries(
     hard_source: str,
     easy_output: str,
     hard_output: str,
+    hard_7_output: str,
     score: int,
     long_word_min_source_score: int,
 ) -> None:
@@ -903,6 +906,7 @@ def prepare_dictionaries(
     excluded_easy_words = load_excluded_words(resolved_exclude_sources)
     min_source_score_by_length = (
         {
+            6: long_word_min_source_score,
             7: long_word_min_source_score,
             8: long_word_min_source_score,
             9: long_word_min_source_score,
@@ -914,6 +918,7 @@ def prepare_dictionaries(
     easy_output_path = resolve_path(easy_output)
     hard_source_path = resolve_path(hard_source)
     hard_output_path = resolve_path(hard_output)
+    hard_7_output_path = resolve_path(hard_7_output)
 
     easy_summary = prepare_flat_dictionary(
         easy_source_path,
@@ -935,11 +940,28 @@ def prepare_dictionaries(
         score=score,
         short_max_length=5,
         long_min_length=6,
+        exclude_words=excluded_easy_words,
         min_source_score_by_length=min_source_score_by_length,
         flat_score_input_paths=[easy_output_path],
     )
     click.echo("Hard dictionary:")
     click.echo(format_summary(hard_summary))
+    click.echo("")
+
+    hard_7_summary = prepare_length_mixed_flat_dictionary(
+        easy_output_path,
+        hard_source_path,
+        hard_7_output_path,
+        score=score,
+        short_max_length=6,
+        long_min_length=7,
+        long_max_length=7,
+        exclude_words=excluded_easy_words,
+        min_source_score_by_length=min_source_score_by_length,
+        flat_score_input_paths=[easy_output_path],
+    )
+    click.echo("Hard 7x7 dictionary:")
+    click.echo(format_summary(hard_7_summary))
     click.echo("")
 
 
@@ -1180,6 +1202,17 @@ def _summarize_batch_results(
             ),
         }
     return summaries
+
+
+def _batch_bucket_configs(project_root: Path) -> list[tuple[str, int, str, Path]]:
+    return [
+        ("easy", 5, "mini", project_root / "config.easy.yaml"),
+        ("easy", 7, "mini", project_root / "config.easy.yaml"),
+        ("easy", 9, "midi", project_root / "config.easy.yaml"),
+        ("hard", 5, "mini", project_root / "config.hard.yaml"),
+        ("hard", 7, "mini", project_root / "config.hard7.yaml"),
+        ("hard", 9, "midi", project_root / "config.hard.yaml"),
+    ]
 
 
 def _metadata_timing(envelope: object, step_name: str) -> float | None:

@@ -200,6 +200,19 @@ class TestMidiGridPatternCatalog:
             for pattern in patterns
         )
 
+    def test_midi_9_regular_symmetry_patterns_include_left_right_flips(
+        self,
+    ) -> None:
+        patterns = get_grid_patterns(PuzzleType.MIDI, 9)
+        pattern_set = {pattern.black_cells for pattern in patterns}
+        regular_patterns = [pattern for pattern in patterns if pattern.symmetric]
+
+        assert regular_patterns
+        assert all(
+            _left_right_flipped(pattern.black_cells, size=9) in pattern_set
+            for pattern in regular_patterns
+        )
+
     def test_midi_9_patterns_avoid_corner_perimeter_black_triples(self) -> None:
         assert any(
             _has_perimeter_black_run(pattern.black_cells, size=9, run_length=3)
@@ -284,6 +297,14 @@ def _top_bottom_flipped(
     size: int,
 ) -> tuple[tuple[int, int], ...]:
     return tuple(sorted((size - 1 - r, c) for r, c in black_cells))
+
+
+def _left_right_flipped(
+    black_cells: tuple[tuple[int, int], ...],
+    *,
+    size: int,
+) -> tuple[tuple[int, int], ...]:
+    return tuple(sorted((r, size - 1 - c) for r, c in black_cells))
 
 
 def _has_perimeter_black_run(

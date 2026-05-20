@@ -1,6 +1,7 @@
 """Tests for batch CLI helpers."""
 
 from crossword_generator.cli import (
+    _batch_bucket_configs,
     _extract_grid_variant,
     _failure_category,
     _summarize_batch_results,
@@ -67,3 +68,14 @@ def test_failure_category_for_incompatible_patterns() -> None:
     )
 
     assert category == "incompatible_grid_patterns"
+
+
+def test_hard_7x7_batch_uses_dedicated_config(tmp_path) -> None:
+    configs = {
+        f"{difficulty}/{size}": config_path.name
+        for difficulty, size, _, config_path in _batch_bucket_configs(tmp_path)
+    }
+
+    assert configs["hard/7"] == "config.hard7.yaml"
+    assert configs["hard/5"] == "config.hard.yaml"
+    assert configs["hard/9"] == "config.hard.yaml"

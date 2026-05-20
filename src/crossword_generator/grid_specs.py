@@ -30,6 +30,24 @@ def _flip_top_to_bottom(
     return sorted((size - 1 - r, c) for r, c in black_cells)
 
 
+def _flip_left_to_right(
+    black_cells: list[tuple[int, int]],
+    *,
+    size: int,
+) -> list[tuple[int, int]]:
+    return sorted((r, size - 1 - c) for r, c in black_cells)
+
+
+def _unique_pattern_variants(
+    *patterns: list[tuple[int, int]],
+) -> tuple[list[tuple[int, int]], ...]:
+    variants: dict[tuple[tuple[int, int], ...], list[tuple[int, int]]] = {}
+    for pattern in patterns:
+        normalized = tuple(sorted(pattern))
+        variants.setdefault(normalized, list(normalized))
+    return tuple(variants.values())
+
+
 def _slot_lengths(size: int, black_cells: tuple[tuple[int, int], ...]) -> list[int]:
     black = set(black_cells)
     lengths: list[int] = []
@@ -244,7 +262,11 @@ def _make_midi_9_catalog() -> list[tuple[list[tuple[int, int]], int]]:
                     patterns[candidate] = max(patterns.get(candidate, 0), weight)
 
     for base in _MIDI_9_REGULAR_SYMMETRY_PATTERNS:
-        for source in (base, _flip_top_to_bottom(base, size=9)):
+        for source in _unique_pattern_variants(
+            base,
+            _flip_left_to_right(base, size=9),
+            _flip_top_to_bottom(base, size=9),
+        ):
             for motif in _MIDI_9_ROTATIONAL_ADDITIVE_MOTIFS:
                 candidate = tuple(sorted(set(source) | set(motif)))
                 if _is_safe_midi_9_pattern(candidate):

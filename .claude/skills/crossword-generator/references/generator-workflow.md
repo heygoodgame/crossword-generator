@@ -12,8 +12,11 @@ Current emphasis:
 - Easy puzzles should favor accessible, one-word fill.
 - Easy 9x9 generation uses Jeff Chen's prevalent 8/9-letter Easy attachment
   merged with the prior Easy 3-7 list.
+- Hard 7x7 generation uses Easy/prevalent fill for 3-6 letter entries and
+  only 60+ curated hard-source entries for 7-letter answers.
 - 9x9 midi generation uses expanded Jeff-feedback mirror-style and
-  regular-symmetry patterns with safe top-to-bottom flips and conservative
+  regular-symmetry patterns with safe top-to-bottom flips for mirror patterns,
+  left-right flips for regular-symmetry patterns, and conservative
   cheater-square variants, while avoiding three-black-square perimeter runs
   that press into a corner and procedural rotational windmill patterns that
   can read as swastika-like.
@@ -53,6 +56,7 @@ Use committed difficulty configs:
 
 - `config.easy.yaml`
 - `config.hard.yaml`
+- `config.hard7.yaml`
 
 Current Easy config points both `dictionary.path` and
 `fill.csp.dictionary_path` at:
@@ -67,14 +71,26 @@ Current Hard config points both paths at:
 dictionaries/hgg-hard-flat-55.txt
 ```
 
+Current Hard 7x7 config points both paths at:
+
+```text
+dictionaries/hgg-hard-7x7-flat-55.txt
+```
+
 The hard flat dictionary is length-mixed: 3-, 4-, and 5-letter entries come
 from the prepared Easy/prevalent list, while 6+ entries come from
 `dictionaries/HggCuratedCrosswordList.txt`. This keeps short fill accessible
 and avoids leaning on crosswordese-heavy hard-list glue.
 
+The hard 7x7 flat dictionary is also length-mixed, but with a stricter split:
+3-, 4-, 5-, and 6-letter entries come from the prepared Easy/prevalent list,
+while 7-letter entries come from `dictionaries/HggCuratedCrosswordList.txt`
+with the same 60+ source-score floor. `generate-pilot-batch` selects
+`config.hard7.yaml` only for the `hard/7` bucket.
+
 Flat dictionaries use `WORD;55` rows and `quality_tiers: [55]`.
 
-Easy dictionary preparation:
+Dictionary preparation:
 
 ```bash
 uv run crossword-generator prepare-dictionaries \
@@ -82,23 +98,30 @@ uv run crossword-generator prepare-dictionaries \
   --easy-extra-source dictionaries/Wordplete-PrevalentCulled-8-9-length.txt \
   --easy-exclude-source dictionaries/XwiJeffChenList-NotFamilyFriendly.txt \
   --easy-exclude-source dictionaries/Wordplete-PrevalentCulled-8-9-length-Removed.txt \
+  --easy-exclude-source dictionaries/HggGeneratedSafetyExclude.txt \
   --easy-output dictionaries/hgg-easy-prevalent-flat-55.txt \
   --hard-source dictionaries/HggCuratedCrosswordList.txt \
-  --hard-output dictionaries/hgg-hard-flat-55.txt
+  --hard-output dictionaries/hgg-hard-flat-55.txt \
+  --hard-7-output dictionaries/hgg-hard-7x7-flat-55.txt
 ```
 
-By default, preparation filters true scored 7-, 8-, and 9-letter source rows
+By default, preparation filters true scored 6-, 7-, 8-, and 9-letter source rows
 below `60` before flattening accepted entries to `;55`. Previously flattened
 `WORD;55` Easy inputs are treated as flat dictionaries, not original source
 scores. Use
 `--long-word-min-source-score 0` only when intentionally disabling that
 long-word source-score floor.
 
-The May 14 prevalent Easy merge produced 18,593 rows after excluding 146 entries
-while preserving the prior flat 3-7-letter Easy source. The May 15 hard
-dictionary run produced 128,758 rows after taking short entries from Easy and
-longer entries from the hard source, while filtering 67,257 scored long rows
-below the source-score floor.
+The May 18 dictionary run produced:
+
+- Easy/prevalent: 18,586 rows after excluding 153 entries.
+- Hard: 116,843 rows after taking 3-5 letter entries from Easy/prevalent and
+  6+ entries from the hard source.
+- Hard 7x7: 7,192 rows after taking 3-6 letter entries from Easy/prevalent and
+  7-letter entries from the hard source.
+
+Both hard outputs filtered 79,167 scored 6-9-letter rows below the source-score
+floor across their relevant length ranges.
 
 ## Fill Quality Rules
 
@@ -129,7 +152,8 @@ Grid selection notes:
 
 - 5x5 and 7x7 minis use weighted pattern catalogs from `grid_specs.py`.
 - 9x9 midis use a Jeff-feedback catalog with mirror-style and regular-symmetry
-  examples, top-to-bottom flips, and validated cheater-square variants, not the
+  examples, top-to-bottom flips for mirror patterns, left-right flips for
+  regular-symmetry patterns, and validated cheater-square variants, not the
   procedural rotational generator. Catalog validation rejects patterns with
   three consecutive black squares pressed into any corner along a perimeter
   edge; non-corner perimeter triples remain allowed to match Jeff's examples.

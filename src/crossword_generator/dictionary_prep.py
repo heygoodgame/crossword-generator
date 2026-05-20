@@ -101,6 +101,7 @@ def prepare_length_mixed_flat_dictionary(
     short_extra_input_paths: Sequence[Path | str] = (),
     short_max_length: int = 5,
     long_min_length: int = 6,
+    long_max_length: int | None = None,
     exclude_words: Collection[str] = (),
     min_source_score_by_length: Mapping[int, int] | None = None,
     flat_score_input_paths: Collection[Path | str] = (),
@@ -124,6 +125,7 @@ def prepare_length_mixed_flat_dictionary(
         min_source_score_by_length=min_source_score_by_length,
         flat_score_input_paths=flat_score_input_paths,
         min_word_length=long_min_length,
+        max_word_length=long_max_length,
     )
     short_collection.extend(long_collection)
     _write_flat_words(dst, short_collection.words, score)
