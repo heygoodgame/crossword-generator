@@ -3,7 +3,7 @@
 import pytest
 
 from crossword_generator.grid_pattern_validation import (
-    summarize_validations,
+    validate_pattern,
     validate_weighted_patterns,
 )
 from crossword_generator.grid_specs import get_grid_patterns, get_grid_spec
@@ -59,7 +59,6 @@ class TestGetGridSpec:
         for seed in range(100):
             spec = get_grid_spec(PuzzleType.MINI, 7, seed=seed)
             patterns_seen.add(tuple(sorted(spec.black_cells)))
-        # With 4 patterns and 100 seeds, we should see more than 1
         assert len(patterns_seen) > 1
 
     def test_weighted_selection_mini_5(self) -> None:
@@ -138,7 +137,7 @@ class TestGetGridSpec:
 class TestMiniGridPatternCatalog:
     @pytest.mark.parametrize(
         ("size", "expected_count", "expected_weight"),
-        [(5, 34, 95), (7, 50, 86)],
+        [(5, 34, 95), (7, 38, 77)],
     )
     def test_attachment_pattern_counts_and_weights(
         self,
@@ -160,21 +159,31 @@ class TestMiniGridPatternCatalog:
         assert all(result.valid for result in results)
 
     @pytest.mark.parametrize("size", [5, 7])
-    def test_catalog_reports_symmetric_and_asymmetric_patterns(
+    def test_catalog_reports_catalog_symmetry(
         self, size: int
     ) -> None:
         patterns = get_grid_patterns(PuzzleType.MINI, size)
-        summary = summarize_validations(
-            validate_weighted_patterns(
-                size,
-                [(list(pattern.black_cells), pattern.weight) for pattern in patterns],
-            )
-        )
-        assert summary["symmetric"] > 0
-        assert summary["asymmetric"] > 0
+        assert any(pattern.rotationally_symmetric for pattern in patterns)
+        if size == 5:
+            assert any(not pattern.symmetric for pattern in patterns)
+        else:
+            assert all(pattern.symmetric for pattern in patterns)
         assert len(get_grid_patterns(PuzzleType.MINI, size, symmetric_only=True)) == (
-            summary["symmetric"]
+            sum(1 for pattern in patterns if pattern.symmetric)
         )
+
+    def test_mini_7_patterns_apply_jeff_feedback_rules(self) -> None:
+        patterns = get_grid_patterns(PuzzleType.MINI, 7)
+        center = (3, 3)
+
+        assert all(pattern.symmetries for pattern in patterns)
+
+        for pattern in patterns:
+            if center in pattern.black_cells:
+                continue
+
+            candidate = tuple(sorted(set(pattern.black_cells) | {center}))
+            assert not validate_pattern(7, candidate).valid
 
 
 class TestMidiGridPatternCatalog:
@@ -183,10 +192,10 @@ class TestMidiGridPatternCatalog:
 
         assert len(patterns) == 47
         assert sum(pattern.weight for pattern in patterns) == 84
-        assert any(pattern.symmetric for pattern in patterns)
+        assert any(pattern.rotationally_symmetric for pattern in patterns)
         assert any(
             _is_vertically_mirrored(pattern.black_cells, size=9)
-            and not pattern.symmetric
+            and not pattern.rotationally_symmetric
             for pattern in patterns
         )
         assert all(
@@ -205,7 +214,9 @@ class TestMidiGridPatternCatalog:
     ) -> None:
         patterns = get_grid_patterns(PuzzleType.MIDI, 9)
         pattern_set = {pattern.black_cells for pattern in patterns}
-        regular_patterns = [pattern for pattern in patterns if pattern.symmetric]
+        regular_patterns = [
+            pattern for pattern in patterns if pattern.rotationally_symmetric
+        ]
 
         assert regular_patterns
         assert all(

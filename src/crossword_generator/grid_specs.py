@@ -48,6 +48,84 @@ def _unique_pattern_variants(
     return tuple(variants.values())
 
 
+def _pattern_symmetries(
+    size: int,
+    black_cells: list[tuple[int, int]] | tuple[tuple[int, int], ...],
+) -> tuple[str, ...]:
+    """Return every visually acceptable symmetry present in a square pattern."""
+    black = set(black_cells)
+    last = size - 1
+    symmetries: list[str] = []
+
+    checks = (
+        (
+            "rotational",
+            lambda r, c: (last - r, last - c),
+        ),
+        (
+            "vertical",
+            lambda r, c: (r, last - c),
+        ),
+        (
+            "horizontal",
+            lambda r, c: (last - r, c),
+        ),
+        (
+            "main_diagonal",
+            lambda r, c: (c, r),
+        ),
+        (
+            "anti_diagonal",
+            lambda r, c: (last - c, last - r),
+        ),
+    )
+
+    for name, transform in checks:
+        if all(transform(r, c) in black for r, c in black):
+            symmetries.append(name)
+
+    return tuple(symmetries)
+
+
+def _add_center_black_if_valid(
+    size: int,
+    black_cells: tuple[tuple[int, int], ...],
+) -> tuple[tuple[int, int], ...]:
+    center = (size // 2, size // 2)
+    if center in black_cells:
+        return black_cells
+
+    candidate = tuple(sorted(set(black_cells) | {center}))
+    validation = validate_pattern(size, candidate)
+    if validation.valid:
+        return candidate
+
+    return black_cells
+
+
+def _make_mini_7_catalog(
+    patterns: list[tuple[list[tuple[int, int]], int]],
+) -> list[tuple[list[tuple[int, int]], int]]:
+    """Apply Jeff's 7x7 feedback to the raw attachment-derived catalog."""
+    transformed: dict[tuple[tuple[int, int], ...], int] = {}
+
+    for black_cells, weight in patterns:
+        normalized = tuple(sorted(black_cells))
+        if not _pattern_symmetries(7, normalized):
+            continue
+
+        updated = _add_center_black_if_valid(7, normalized)
+        transformed[updated] = transformed.get(updated, 0) + weight
+
+    return [
+        (list(black_cells), weight)
+        for black_cells, weight in sorted(
+            transformed.items(),
+            key=lambda item: (-item[1], item[0]),
+        )
+    ]
+
+
 def _slot_lengths(size: int, black_cells: tuple[tuple[int, int], ...]) -> list[int]:
     black = set(black_cells)
     lengths: list[int] = []
@@ -326,8 +404,10 @@ _GRID_PATTERNS: dict[
         ([(0, 4), (4, 4)], 1),
         ([(3, 0), (3, 4), (4, 0), (4, 4)], 1),
     ],
-    # 7x7: 50 patterns with frequency-based weights.
-    (PuzzleType.MINI, 7): [
+    # 7x7: raw frequency-based catalog with Jeff feedback applied:
+    # - discard truly asymmetric patterns
+    # - add the center black square whenever doing so preserves 3+ letter slots
+    (PuzzleType.MINI, 7): _make_mini_7_catalog([
         # --- 13x frequency ---
         ([
             (0, 0), (0, 1), (0, 2), (1, 0), (1, 1),
@@ -528,7 +608,7 @@ _GRID_PATTERNS: dict[
             (0, 3), (1, 3), (5, 0), (5, 6), (6, 0),
             (6, 1), (6, 5), (6, 6),
         ], 1),
-    ],
+    ]),
     # 9x9 midi: curated mirror-style and regular-symmetry examples from
     # Jeff's feedback, expanded with top-to-bottom flips and conservative
     # cheater-square variants.
@@ -546,6 +626,8 @@ class WeightedGridPattern:
     black_cells: tuple[tuple[int, int], ...]
     weight: int
     symmetric: bool
+    rotationally_symmetric: bool
+    symmetries: tuple[str, ...]
 
 
 def get_grid_patterns(
@@ -576,7 +658,9 @@ def get_grid_patterns(
         WeightedGridPattern(
             black_cells=tuple(sorted(black_cells)),
             weight=weight,
-            symmetric=is_rotationally_symmetric(rows, black_cells),
+            symmetric=bool(_pattern_symmetries(rows, black_cells)),
+            rotationally_symmetric=is_rotationally_symmetric(rows, black_cells),
+            symmetries=_pattern_symmetries(rows, black_cells),
         )
         for black_cells, weight in _GRID_PATTERNS.get(key, [])
     )

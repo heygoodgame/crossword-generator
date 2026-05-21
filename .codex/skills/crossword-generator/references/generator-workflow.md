@@ -14,6 +14,9 @@ Current emphasis:
   merged with the prior Easy 3-7 list.
 - Hard 7x7 generation uses Easy/prevalent fill for 3-6 letter entries and
   only 60+ curated hard-source entries for 7-letter answers.
+- 7x7 mini generation applies Jeff's pattern feedback: discard truly
+  asymmetric grids, keep rotational/mirror/diagonal symmetry, and add the
+  center black square whenever doing so does not create short slots.
 - 9x9 midi generation uses expanded Jeff-feedback mirror-style and
   regular-symmetry patterns with safe top-to-bottom flips for mirror patterns,
   left-right flips for regular-symmetry patterns, and conservative
@@ -240,6 +243,9 @@ the current production batch runner.
 Grid selection notes:
 
 - 5x5 and 7x7 minis use weighted pattern catalogs from `grid_specs.py`.
+- 7x7 minis start from the raw weighted catalog, then apply Jeff's feedback:
+  reject truly asymmetric patterns and add the central black square when the
+  resulting grid remains structurally valid.
 - 9x9 midis use a Jeff-feedback catalog with mirror-style and regular-symmetry
   examples, top-to-bottom flips for mirror patterns, left-right flips for
   regular-symmetry patterns, and validated cheater-square variants, not the
