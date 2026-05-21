@@ -908,10 +908,31 @@ def prepare_dictionaries(
     resolved_exclude_sources = [
         resolve_path(source) for source in easy_exclude_sources
     ]
+
+    # Auto-discover the two thumbs-down lists that `consolidate-list`
+    # writes. Operators don't need to remember to pass these as flags;
+    # they get unioned in if (and only if) the file is on disk. Easy
+    # thumbs-down propagates only to easy; hard thumbs-down lands only
+    # on hard — matches the "easy reject ≠ hard reject" semantic.
+    thumbs_easy = project_root / "dictionaries" / "HggThumbsDownEasy.txt"
+    thumbs_hard = project_root / "dictionaries" / "HggThumbsDownHard.txt"
+    if thumbs_easy.exists():
+        resolved_exclude_sources.append(thumbs_easy)
+    extra_hard_exclude: set[str] = (
+        load_excluded_words([thumbs_hard]) if thumbs_hard.exists() else set()
+    )
+
     excluded_easy_words = load_excluded_words(resolved_exclude_sources)
     easy_include_words: set[str] = set()
     hard_include_words: set[str] = set()
-    hard_exclude_words: set[str] = set(excluded_easy_words)
+    hard_exclude_words: set[str] = set(excluded_easy_words) | extra_hard_exclude
+
+    if thumbs_easy.exists() or thumbs_hard.exists():
+        click.echo(
+            f"Thumbs-down lists auto-discovered: "
+            f"easy={'+' + str(len(load_excluded_words([thumbs_easy]))) if thumbs_easy.exists() else 'none'}, "
+            f"hard={'+' + str(len(extra_hard_exclude)) if thumbs_hard.exists() else 'none'}"
+        )
 
     min_source_score_by_length = (
         {

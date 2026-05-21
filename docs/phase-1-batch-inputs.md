@@ -28,6 +28,12 @@ uv run crossword-generator prepare-dictionaries \
   --hard-7-output dictionaries/hgg-hard-7x7-flat-55.txt
 ```
 
+`dictionaries/HggThumbsDownEasy.txt` and `HggThumbsDownHard.txt` (written
+by `crossword-generator consolidate-list`) are picked up automatically
+if present — no flag needed. Easy thumbs-down rows are excluded only
+from the easy dictionary; hard thumbs-down rows are excluded only from
+the hard dictionaries.
+
 Default outputs:
 
 - `dictionaries/hgg-easy-prevalent-flat-55.txt` from the prior Easy
