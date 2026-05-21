@@ -872,15 +872,6 @@ def export_dictionary(
         "Use 0 to disable this length-specific source-score filter."
     ),
 )
-@click.option(
-    "--apply-overrides/--no-apply-overrides",
-    default=False,
-    show_default=True,
-    help=(
-        "Fetch active word-list override records from the HeyGG admin API and "
-        "apply them while preparing dictionaries."
-    ),
-)
 def prepare_dictionaries(
     easy_source: str,
     easy_extra_sources: tuple[str, ...],
@@ -891,9 +882,13 @@ def prepare_dictionaries(
     hard_7_output: str,
     score: int,
     long_word_min_source_score: int,
-    apply_overrides: bool,
 ) -> None:
-    """Prepare flat-score easy and hard dictionaries for batch experiments."""
+    """Prepare flat-score easy and hard dictionaries for batch experiments.
+
+    All input dictionaries (including exclude sources) come from committed
+    .txt files. Use `crossword-generator consolidate-list` to refresh those
+    files from hey-you before running this command.
+    """
     from crossword_generator.dictionary_prep import (
         format_summary,
         load_excluded_words,
@@ -916,37 +911,7 @@ def prepare_dictionaries(
     excluded_easy_words = load_excluded_words(resolved_exclude_sources)
     easy_include_words: set[str] = set()
     hard_include_words: set[str] = set()
-    hard_exclude_words: set[str] = set()
-
-    if apply_overrides:
-        from crossword_generator.data_store import fetch_word_list_overrides
-
-        easy_overrides = fetch_word_list_overrides("easy")
-        hard_overrides = fetch_word_list_overrides("hard")
-        all_overrides = fetch_word_list_overrides("all")
-
-        base_exclude_count = len(excluded_easy_words)
-        excluded_easy_words = (
-            set(excluded_easy_words)
-            | set(easy_overrides.exclude)
-            | set(all_overrides.exclude)
-        )
-        hard_exclude_words = (
-            set(excluded_easy_words)
-            | set(hard_overrides.exclude)
-            | set(all_overrides.exclude)
-        )
-        easy_include_words = set(easy_overrides.include) | set(all_overrides.include)
-        hard_include_words = set(hard_overrides.include) | set(all_overrides.include)
-
-        click.echo(
-            "Overrides applied: "
-            f"easy +{len(easy_include_words)} / "
-            f"-{len(excluded_easy_words) - base_exclude_count}; "
-            f"hard +{len(hard_include_words)} / -{len(hard_exclude_words)}"
-        )
-    else:
-        hard_exclude_words = set(excluded_easy_words)
+    hard_exclude_words: set[str] = set(excluded_easy_words)
 
     min_source_score_by_length = (
         {
@@ -1012,6 +977,92 @@ def prepare_dictionaries(
     click.echo("Hard 7x7 dictionary:")
     click.echo(format_summary(hard_7_summary))
     click.echo("")
+
+
+@main.command(name="consolidate-list")
+@click.argument("slug", required=False)
+@click.option(
+    "--dry-run",
+    is_flag=True,
+    default=False,
+    help="Fetch and diff without writing files or marking consolidated on the server.",
+)
+@click.option(
+    "--api-base",
+    default=None,
+    help=(
+        "Override the HeyGG admin API base URL. Defaults to the "
+        "HEYGG_API_BASE_URL env var or https://id-beta.hey.gg/api."
+    ),
+)
+def consolidate_list(slug: str | None, dry_run: bool, api_base: str | None) -> None:
+    """Pull crossword_lists state from hey-you into the committed .txt files.
+
+    Without an argument, consolidates every registered list. Pass a slug
+    (e.g. `hgg-curated`) to operate on just that one. Always prints an
+    added/removed diff; only writes when --dry-run is not set.
+
+    Auth: requires HEYGG_ADMIN_TOKEN (or HEYGG_ADMIN_API_TOKEN) with the
+    `puzzles.edit` permission.
+    """
+    from crossword_generator.consolidate_list import (
+        ConsolidateError,
+        consolidate_one,
+        list_registered_lists,
+    )
+
+    project_root = find_project_root()
+
+    if slug:
+        slugs = [slug]
+    else:
+        try:
+            registered = list_registered_lists(api_base=api_base)
+        except ConsolidateError as exc:
+            click.echo(f"ERROR: {exc}", err=True)
+            sys.exit(1)
+        slugs = [str(item["slug"]) for item in registered if item.get("slug")]
+        if not slugs:
+            click.echo("No registered crossword lists found.", err=True)
+            sys.exit(1)
+
+    label = "DRY RUN — " if dry_run else ""
+    click.echo(f"{label}Consolidating {len(slugs)} list(s) from {api_base or 'default API'}")
+    click.echo("")
+
+    exit_code = 0
+    for current_slug in slugs:
+        try:
+            summary = consolidate_one(
+                current_slug,
+                project_root,
+                api_base=api_base,
+                dry_run=dry_run,
+            )
+        except ConsolidateError as exc:
+            click.echo(f"  {current_slug}: ERROR — {exc}", err=True)
+            exit_code = 1
+            continue
+
+        status = (
+            "wrote" if summary.wrote
+            else "no changes" if not dry_run
+            else f"would write" if (summary.added or summary.removed)
+            else "no changes"
+        )
+        click.echo(
+            f"  {summary.slug}: +{summary.added} / -{summary.removed} "
+            f"({summary.total_after} active) → {summary.file_path} [{status}]"
+        )
+
+    click.echo("")
+    if dry_run:
+        click.echo("Dry run — no files written, no server state changed.")
+    else:
+        click.echo("Done. Review `git diff` and commit when ready.")
+
+    if exit_code:
+        sys.exit(exit_code)
 
 
 @main.command(name="validate-mini-patterns")

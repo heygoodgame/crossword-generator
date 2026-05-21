@@ -4,47 +4,20 @@ from pathlib import Path
 
 from click.testing import CliRunner
 
-from crossword_generator import data_store
 from crossword_generator.cli import main
-from crossword_generator.data_store import WordListOverrides
 
 
-def test_prepare_dictionaries_applies_word_list_overrides(
-    tmp_path: Path,
-    monkeypatch,
-) -> None:
+def test_prepare_dictionaries_writes_easy_and_hard(tmp_path: Path) -> None:
+    """Without overrides, hard excludes mirror easy excludes from .txt sources."""
     easy_source = tmp_path / "easy.txt"
     hard_source = tmp_path / "hard.txt"
+    exclude_source = tmp_path / "exclude.txt"
     easy_output = tmp_path / "easy-out.txt"
     hard_output = tmp_path / "hard-out.txt"
     hard_7_output = tmp_path / "hard-7-out.txt"
     easy_source.write_text("APPLE;55\nULSTER;55\nTYPHOID;55\n")
     hard_source.write_text("PUZZLE;60\nSEVENOK;60\n")
-
-    overrides = {
-        "easy": WordListOverrides(
-            list_scope="easy",
-            include=frozenset({"NEWEASY"}),
-            exclude=frozenset({"ULSTER"}),
-        ),
-        "hard": WordListOverrides(
-            list_scope="hard",
-            include=frozenset({"HARDLY"}),
-            exclude=frozenset(),
-        ),
-        "all": WordListOverrides(
-            list_scope="all",
-            include=frozenset(),
-            exclude=frozenset({"TYPHOID"}),
-        ),
-    }
-    calls: list[str] = []
-
-    def fake_fetch(list_scope: str):
-        calls.append(list_scope)
-        return overrides[list_scope]
-
-    monkeypatch.setattr(data_store, "fetch_word_list_overrides", fake_fetch)
+    exclude_source.write_text("ULSTER\nTYPHOID\n")
 
     result = CliRunner().invoke(
         main,
@@ -52,6 +25,8 @@ def test_prepare_dictionaries_applies_word_list_overrides(
             "prepare-dictionaries",
             "--easy-source",
             str(easy_source),
+            "--easy-exclude-source",
+            str(exclude_source),
             "--hard-source",
             str(hard_source),
             "--easy-output",
@@ -60,17 +35,10 @@ def test_prepare_dictionaries_applies_word_list_overrides(
             str(hard_output),
             "--hard-7-output",
             str(hard_7_output),
-            "--apply-overrides",
         ],
     )
 
     assert result.exit_code == 0, result.output
-    assert calls == ["easy", "hard", "all"]
-    assert easy_output.read_text().splitlines() == [
-        "APPLE;55",
-        "NEWEASY;55",
-    ]
-    assert "HARDLY;55" in hard_output.read_text().splitlines()
-    assert "HARDLY;55" in hard_7_output.read_text().splitlines()
+    assert easy_output.read_text().splitlines() == ["APPLE;55"]
     assert "ULSTER;55" not in hard_output.read_text()
     assert "TYPHOID;55" not in hard_output.read_text()
