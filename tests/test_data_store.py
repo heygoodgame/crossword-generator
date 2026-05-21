@@ -13,6 +13,7 @@ from crossword_generator.data_store import (
     DataStoreApiError,
     DataStoreError,
     bulk_save_generated_puzzles,
+    fetch_word_list_overrides,
     make_record,
     records_from_manifest,
 )
@@ -70,6 +71,53 @@ def test_make_record_rejects_invalid_key() -> None:
             seed=1,
             key="bad key",
         )
+
+
+def test_fetch_word_list_overrides_reads_paginated_admin_records(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls: list[tuple[str, str]] = []
+
+    def fake_request(
+        method: str,
+        path: str,
+        body: dict[str, Any] | None = None,
+        *,
+        api_base: str | None = None,
+        token: str | None = None,
+        timeout: int = 60,
+    ) -> dict[str, Any]:
+        calls.append((method, path))
+        if "page=1&" in path:
+            return {
+                "data": [
+                    {"data": {"word": "ulster", "action": "exclude"}},
+                    {"data": {"word": "newword", "action": "include"}},
+                ],
+                "meta": {"last_page": 2},
+            }
+        return {
+            "data": [{"data": {"word": "typhoid", "action": "exclude"}}],
+            "meta": {"last_page": 2},
+        }
+
+    monkeypatch.setattr(data_store, "_request_json", fake_request)
+
+    overrides = fetch_word_list_overrides("easy", token="token")
+
+    assert overrides.list_scope == "easy"
+    assert overrides.include == frozenset({"NEWWORD"})
+    assert overrides.exclude == frozenset({"ULSTER", "TYPHOID"})
+    assert calls[0][0] == "GET"
+    assert calls[0][1].startswith("/admin/data-store/records?")
+    assert "collection=word-list-overrides" in calls[0][1]
+    assert "filters%5Blist_scope%5D=easy" in calls[0][1]
+    assert len(calls) == 2
+
+
+def test_fetch_word_list_overrides_rejects_unknown_scope() -> None:
+    with pytest.raises(DataStoreError, match="Invalid list_scope"):
+        fetch_word_list_overrides("medium", token="token")
 
 
 def test_records_from_manifest_reads_successful_ipuz_files(tmp_path: Path) -> None:

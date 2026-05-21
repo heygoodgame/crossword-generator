@@ -18,9 +18,11 @@ API_BASE = os.environ.get(
 ).rstrip("/")
 NAMESPACE = "crosswords"
 COLLECTION = "generated-puzzles"
+WORD_LIST_OVERRIDES_COLLECTION = "word-list-overrides"
 AUTHOR = "crossword-generator"
 KEY_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,190}$")
 MAX_BULK_RECORDS = 100
+VALID_WORD_LIST_SCOPES = frozenset({"easy", "hard", "all"})
 
 
 class DataStoreError(RuntimeError):
@@ -43,6 +45,84 @@ class SaveResult:
     action: str
     key: str
     response: dict[str, Any]
+
+
+@dataclass(frozen=True)
+class WordListOverrides:
+    """Active include/exclude overrides for a generator list scope."""
+
+    list_scope: str
+    include: frozenset[str]
+    exclude: frozenset[str]
+
+
+def fetch_word_list_overrides(
+    list_scope: str,
+    *,
+    status: str = "active",
+    api_base: str | None = None,
+    token: str | None = None,
+    timeout: int = 60,
+) -> WordListOverrides:
+    """Fetch include/exclude overrides for a list scope via the admin API."""
+    if list_scope not in VALID_WORD_LIST_SCOPES:
+        raise DataStoreError(
+            f"Invalid list_scope: {list_scope!r}. "
+            f"Expected one of: {sorted(VALID_WORD_LIST_SCOPES)}"
+        )
+
+    include: set[str] = set()
+    exclude: set[str] = set()
+    page = 1
+    last_page = 1
+
+    while page <= last_page:
+        query = urlencode(
+            {
+                "namespace": NAMESPACE,
+                "collection": WORD_LIST_OVERRIDES_COLLECTION,
+                "status": status,
+                "filters[list_scope]": list_scope,
+                "page": page,
+                "per_page": 100,
+                "sort": "key",
+            }
+        )
+        response = _request_json(
+            "GET",
+            f"/admin/data-store/records?{query}",
+            api_base=api_base,
+            token=token,
+            timeout=timeout,
+        )
+
+        records = response.get("data", [])
+        if not isinstance(records, list):
+            raise DataStoreError(
+                f"Unexpected word-list override response shape: {response}"
+            )
+        for record in records:
+            parsed = _ensure_dict(record)
+            data = _ensure_dict(parsed.get("data", {}))
+            word = str(data.get("word") or "").upper()
+            action = str(data.get("action") or "")
+            if not word:
+                continue
+            if action == "include":
+                include.add(word)
+            elif action == "exclude":
+                exclude.add(word)
+
+        meta = response.get("meta", {})
+        if isinstance(meta, dict):
+            last_page = int(meta.get("last_page") or page)
+        page += 1
+
+    return WordListOverrides(
+        list_scope=list_scope,
+        include=frozenset(include),
+        exclude=frozenset(exclude),
+    )
 
 
 def make_record(

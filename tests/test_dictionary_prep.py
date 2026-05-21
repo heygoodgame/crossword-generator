@@ -38,6 +38,28 @@ def test_prepare_scored_dictionary_flattens_scores(tmp_path: Path) -> None:
     assert output.read_text().splitlines() == ["APPLE;55", "BANANA;55"]
 
 
+def test_prepare_dictionary_adds_explicit_words(
+    tmp_path: Path,
+) -> None:
+    source = tmp_path / "scored.txt"
+    output = tmp_path / "flat.txt"
+    source.write_text("apple;50\n")
+
+    summary = prepare_flat_dictionary(
+        source,
+        output,
+        score=55,
+        extra_words={"banana", "CARROT", "bad word", "apple"},
+        exclude_words={"CARROT"},
+    )
+
+    assert summary.output_count == 2
+    assert summary.skipped_excluded == 1
+    assert summary.skipped_invalid_word == 1
+    assert summary.duplicates == 1
+    assert output.read_text().splitlines() == ["APPLE;55", "BANANA;55"]
+
+
 def test_prepare_dictionary_filters_scored_words_by_length(
     tmp_path: Path,
 ) -> None:
@@ -180,6 +202,36 @@ def test_prepare_length_mixed_dictionary_can_cap_long_words(
     assert output.read_text().splitlines() == [
         "ABACUS;55",
         "SEVENOK;55",
+    ]
+
+
+def test_prepare_length_mixed_dictionary_adds_explicit_short_and_long_words(
+    tmp_path: Path,
+) -> None:
+    easy_source = tmp_path / "easy.txt"
+    hard_source = tmp_path / "hard.txt"
+    output = tmp_path / "mixed.txt"
+    easy_source.write_text("ACE;55\n")
+    hard_source.write_text("PUZZLE;60\n")
+
+    summary = prepare_length_mixed_flat_dictionary(
+        easy_source,
+        hard_source,
+        output,
+        score=55,
+        short_max_length=5,
+        long_min_length=6,
+        short_extra_words={"PITT", "PUZZLER"},
+        long_extra_words={"BRADPITT", "PITT"},
+    )
+
+    assert summary.output_count == 4
+    assert summary.skipped_outside_length == 2
+    assert output.read_text().splitlines() == [
+        "ACE;55",
+        "BRADPITT;55",
+        "PITT;55",
+        "PUZZLE;55",
     ]
 
 

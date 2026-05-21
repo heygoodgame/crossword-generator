@@ -62,6 +62,7 @@ def prepare_flat_dictionary(
     *,
     score: int = 55,
     extra_input_paths: Sequence[Path | str] = (),
+    extra_words: Collection[str] = (),
     exclude_words: Collection[str] = (),
     min_source_score_by_length: Mapping[int, int] | None = None,
     flat_score_input_paths: Collection[Path | str] = (),
@@ -87,6 +88,15 @@ def prepare_flat_dictionary(
         min_word_length=min_word_length,
         max_word_length=max_word_length,
     )
+    if extra_words:
+        collection.extend(
+            _collect_explicit_words(
+                extra_words,
+                exclude_words=exclude_words,
+                min_word_length=min_word_length,
+                max_word_length=max_word_length,
+            )
+        )
     _write_flat_words(dst, collection.words, score)
 
     return _summary_from_collection(collection, dst, score)
@@ -99,6 +109,8 @@ def prepare_length_mixed_flat_dictionary(
     *,
     score: int = 55,
     short_extra_input_paths: Sequence[Path | str] = (),
+    short_extra_words: Collection[str] = (),
+    long_extra_words: Collection[str] = (),
     short_max_length: int = 5,
     long_min_length: int = 6,
     long_max_length: int | None = None,
@@ -119,6 +131,14 @@ def prepare_length_mixed_flat_dictionary(
         flat_score_input_paths=flat_score_input_paths,
         max_word_length=short_max_length,
     )
+    if short_extra_words:
+        short_collection.extend(
+            _collect_explicit_words(
+                short_extra_words,
+                exclude_words=exclude_words,
+                max_word_length=short_max_length,
+            )
+        )
     long_collection = _collect_words(
         long_paths,
         exclude_words=exclude_words,
@@ -127,6 +147,15 @@ def prepare_length_mixed_flat_dictionary(
         min_word_length=long_min_length,
         max_word_length=long_max_length,
     )
+    if long_extra_words:
+        long_collection.extend(
+            _collect_explicit_words(
+                long_extra_words,
+                exclude_words=exclude_words,
+                min_word_length=long_min_length,
+                max_word_length=long_max_length,
+            )
+        )
     short_collection.extend(long_collection)
     _write_flat_words(dst, short_collection.words, score)
 
@@ -197,6 +226,42 @@ def _parse_word_and_score(line: str) -> tuple[str, int | None] | None:
 
 def _is_valid_crossword_word(word: str) -> bool:
     return word.isascii() and word.isalpha()
+
+
+def _collect_explicit_words(
+    words: Collection[str],
+    *,
+    exclude_words: Collection[str] = (),
+    min_word_length: int | None = None,
+    max_word_length: int | None = None,
+) -> _WordCollection:
+    exclusions = {word.upper() for word in exclude_words}
+    collection = _WordCollection(input_paths=tuple(), words=set())
+
+    for raw_word in words:
+        collection.total_lines += 1
+        word = str(raw_word).strip().upper()
+        if not word:
+            continue
+        collection.nonempty_lines += 1
+        if not _is_valid_crossword_word(word):
+            collection.skipped_invalid_word += 1
+            continue
+        if min_word_length is not None and len(word) < min_word_length:
+            collection.skipped_outside_length += 1
+            continue
+        if max_word_length is not None and len(word) > max_word_length:
+            collection.skipped_outside_length += 1
+            continue
+        if word in exclusions:
+            collection.skipped_excluded += 1
+            continue
+        if word in collection.words:
+            collection.duplicates += 1
+            continue
+        collection.words.add(word)
+
+    return collection
 
 
 def _collect_words(

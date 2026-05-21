@@ -872,6 +872,15 @@ def export_dictionary(
         "Use 0 to disable this length-specific source-score filter."
     ),
 )
+@click.option(
+    "--apply-overrides/--no-apply-overrides",
+    default=False,
+    show_default=True,
+    help=(
+        "Fetch active word-list override records from the HeyGG admin API and "
+        "apply them while preparing dictionaries."
+    ),
+)
 def prepare_dictionaries(
     easy_source: str,
     easy_extra_sources: tuple[str, ...],
@@ -882,6 +891,7 @@ def prepare_dictionaries(
     hard_7_output: str,
     score: int,
     long_word_min_source_score: int,
+    apply_overrides: bool,
 ) -> None:
     """Prepare flat-score easy and hard dictionaries for batch experiments."""
     from crossword_generator.dictionary_prep import (
@@ -904,6 +914,40 @@ def prepare_dictionaries(
         resolve_path(source) for source in easy_exclude_sources
     ]
     excluded_easy_words = load_excluded_words(resolved_exclude_sources)
+    easy_include_words: set[str] = set()
+    hard_include_words: set[str] = set()
+    hard_exclude_words: set[str] = set()
+
+    if apply_overrides:
+        from crossword_generator.data_store import fetch_word_list_overrides
+
+        easy_overrides = fetch_word_list_overrides("easy")
+        hard_overrides = fetch_word_list_overrides("hard")
+        all_overrides = fetch_word_list_overrides("all")
+
+        base_exclude_count = len(excluded_easy_words)
+        excluded_easy_words = (
+            set(excluded_easy_words)
+            | set(easy_overrides.exclude)
+            | set(all_overrides.exclude)
+        )
+        hard_exclude_words = (
+            set(excluded_easy_words)
+            | set(hard_overrides.exclude)
+            | set(all_overrides.exclude)
+        )
+        easy_include_words = set(easy_overrides.include) | set(all_overrides.include)
+        hard_include_words = set(hard_overrides.include) | set(all_overrides.include)
+
+        click.echo(
+            "Overrides applied: "
+            f"easy +{len(easy_include_words)} / "
+            f"-{len(excluded_easy_words) - base_exclude_count}; "
+            f"hard +{len(hard_include_words)} / -{len(hard_exclude_words)}"
+        )
+    else:
+        hard_exclude_words = set(excluded_easy_words)
+
     min_source_score_by_length = (
         {
             6: long_word_min_source_score,
@@ -925,6 +969,7 @@ def prepare_dictionaries(
         easy_output_path,
         score=score,
         extra_input_paths=resolved_extra_sources,
+        extra_words=easy_include_words,
         exclude_words=excluded_easy_words,
         min_source_score_by_length=min_source_score_by_length,
         flat_score_input_paths=[easy_source_path],
@@ -940,7 +985,9 @@ def prepare_dictionaries(
         score=score,
         short_max_length=5,
         long_min_length=6,
-        exclude_words=excluded_easy_words,
+        short_extra_words=hard_include_words,
+        long_extra_words=hard_include_words,
+        exclude_words=hard_exclude_words,
         min_source_score_by_length=min_source_score_by_length,
         flat_score_input_paths=[easy_output_path],
     )
@@ -956,7 +1003,9 @@ def prepare_dictionaries(
         short_max_length=6,
         long_min_length=7,
         long_max_length=7,
-        exclude_words=excluded_easy_words,
+        short_extra_words=hard_include_words,
+        long_extra_words=hard_include_words,
+        exclude_words=hard_exclude_words,
         min_source_score_by_length=min_source_score_by_length,
         flat_score_input_paths=[easy_output_path],
     )
