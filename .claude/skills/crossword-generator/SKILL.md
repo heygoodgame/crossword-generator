@@ -31,6 +31,7 @@ doing non-trivial work. It documents:
 
 - Pipeline architecture and ownership map
 - Config and dictionary conventions
+- Word list management end-to-end (UI → consolidate-list → committed .txt → generator)
 - Single-puzzle and batch commands
 - Data-store upload contract and replacement workflow
 - Quality guardrails, including terminal-S duplicate variants

@@ -105,6 +105,13 @@ uv run crossword-generator prepare-dictionaries \
   --hard-7-output dictionaries/hgg-hard-7x7-flat-55.txt
 ```
 
+`prepare-dictionaries` also auto-discovers two files if they exist on
+disk: `dictionaries/HggThumbsDownEasy.txt` (unioned into easy-only
+excludes) and `dictionaries/HggThumbsDownHard.txt` (unioned into
+hard-only excludes). These are written by `consolidate-list` — see
+the Word List Management section below. No flag required; the
+operator's reference command above is unchanged.
+
 By default, preparation filters true scored 6-, 7-, 8-, and 9-letter source rows
 below `60` before flattening accepted entries to `;55`. Previously flattened
 `WORD;55` Easy inputs are treated as flat dictionaries, not original source
@@ -122,6 +129,88 @@ The May 18 dictionary run produced:
 
 Both hard outputs filtered 79,167 scored 6-9-letter rows below the source-score
 floor across their relevant length ranges.
+
+## Word List Management
+
+Master word lists are first-class entities in hey-you's MySQL
+(`crossword_lists`, `crossword_list_words`, `crossword_list_word_audits`
+— migrated 2026-05-21). Jeff manages them from two UIs that share the
+same backend:
+
+- `midicrossword.com/admin/lists` for setters (Jeff lives here)
+- `hey-you/admin/crossword-lists` for full admins
+
+The on-disk `dictionaries/*.txt` files in this repo remain authoritative
+for the generator. They are kept in sync via a deliberate operator step.
+
+### End-to-end flow
+
+```
+Jeff edits in /admin/lists  →  rows live in hey-you's MySQL
+   (add word, remove, rescore, or thumbs-down during puzzle review)
+
+Operator runs `crossword-generator consolidate-list [slug]`
+   → GET /api/admin/crossword-lists/{slug}/download for each list
+   → write to dictionaries/<file_path> (per registered file_path)
+   → POST /mark-consolidated so /admin/lists shows freshness
+
+Operator reviews `git diff dictionaries/`, commits, pushes
+
+Next `prepare-dictionaries` run picks up the new state automatically
+   (including the auto-discovered HggThumbsDown*.txt files)
+```
+
+### Registered lists (seeded 2026-05-21)
+
+| Slug | Format | Scope | Exclude? | What it is |
+|---|---|---|---|---|
+| `hgg-easy-flat-55` | scored | easy | no | 3-7 letter Easy entries flattened to 55 |
+| `wordplete-prevalent-8-9` | plain | easy | no | Prevalent 8-9 letter Wordplete entries |
+| `wordplete-prevalent-8-9-removed` | word_with_reason | easy | yes | Removed entries from the above |
+| `xwi-jeff-chen-not-family-friendly` | scored | easy | yes | XWI Jeff Chen entries flagged unsuitable |
+| `hgg-safety-exclude` | word_with_reason | easy | yes | HGG-generated safety exclude list |
+| `hgg-curated` | scored | hard | no | Main curated hard list (the bulk) |
+| `hgg-thumbs-down-easy` | word_with_reason | easy | yes | Auto-created on first thumbs-down |
+| `hgg-thumbs-down-hard` | word_with_reason | hard | yes | Auto-created on first thumbs-down |
+
+Easy-scoped exclude lists are passed as `--easy-exclude-source` flags to
+`prepare-dictionaries`. `hgg-thumbs-down-easy` / `hgg-thumbs-down-hard`
+are auto-discovered (no flag).
+
+Thumbs-down semantics:
+
+- **Easy puzzle thumbs-down** → row in `hgg-thumbs-down-easy`. Blocks
+  from the easy dictionary only; hard puzzles can still use the word.
+- **Hard puzzle thumbs-down** → row in `hgg-thumbs-down-hard`. Blocks
+  from the hard dictionaries only; easy puzzles can still use the word.
+
+### `consolidate-list` command
+
+```bash
+# Default: walk every registered list, write each .txt file, mark consolidated
+HEYGG_ADMIN_TOKEN=<token> uv run crossword-generator consolidate-list
+
+# Single slug
+uv run crossword-generator consolidate-list hgg-curated
+
+# Preview only — fetches, diffs, prints; does not write or ack
+uv run crossword-generator consolidate-list --dry-run
+
+# Beta vs prod (defaults to id-beta)
+uv run crossword-generator consolidate-list --api-base https://play.hey.gg/api
+```
+
+Diff is computed on the leading WORD-before-semicolon, so per-word score
+or note changes are not flagged as add/remove — they show up as a
+byte-level change in `git diff` if the operator wants the detail. The
+HTTP layer lives in `src/crossword_generator/consolidate_list.py`.
+
+### When NOT to use `consolidate-list`
+
+If you're experimenting locally with hand-edited `.txt` files (e.g.
+testing a new exclude rule), don't run `consolidate-list` against the
+shared environment — it will overwrite your local edits with the
+committed-from-UI state. Use `--dry-run` first if uncertain.
 
 ## Fill Quality Rules
 
