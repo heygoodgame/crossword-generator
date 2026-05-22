@@ -31,7 +31,11 @@ _GUIDELINES = (
     "- Avoid obscure trivia that solvers can't "
     "reason toward.\n"
     "- Make clues culturally accessible and "
-    "contemporary where possible."
+    "contemporary where possible.\n"
+    "- Avoid body-part, underwear, anatomy, sexuality, appearance, "
+    "identity, or demographic-based jokes. If an answer is sensitive "
+    "but acceptable, clue it neutrally rather than with a wink, "
+    "innuendo, or objectifying angle."
 )
 
 _THEME_INSTRUCTIONS = (

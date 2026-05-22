@@ -501,6 +501,21 @@ class TestThemeAnnotationsInPrompt:
         assert "one of [REVEALER ANSWER]" in prompt
         assert "grammatically unnatural" in prompt
 
+    def test_prompt_warns_against_sensitive_clue_wordplay(self) -> None:
+        """Prompt asks for neutral treatment of sensitive answers."""
+        from crossword_generator.exporters.numbering import compute_numbering
+
+        entries = compute_numbering(MOCK_GRID)
+        crossing_words = compute_crossing_words(entries, MOCK_GRID)
+
+        prompt = build_clue_generation_prompt(
+            entries, crossing_words, PuzzleType.MINI
+        )
+
+        assert "underwear" in prompt
+        assert "innuendo" in prompt
+        assert "objectifying" in prompt
+
 
 class TestRevealerClueNotSubstituted:
     """Verify the revealer clue from theme is NOT hard-substituted over LLM output."""

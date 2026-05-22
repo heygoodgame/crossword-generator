@@ -31,7 +31,10 @@ _RUBRIC = (
     "for the puzzle type?\n\n"
     "4. FAIRNESS (0-25): Does the clue avoid echoing the answer word or its "
     "roots? Does it avoid using any crossing words in the clue text? "
-    "Is the clue culturally accessible without being obscure?"
+    "Is the clue culturally accessible without being obscure? Penalize "
+    "body-part, underwear, anatomy, sexuality, appearance, identity, "
+    "or demographic-based jokes, especially when a neutral clue would "
+    "be more welcoming."
 )
 
 _THEME_EVAL_RULES = (

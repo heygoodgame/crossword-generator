@@ -6,6 +6,9 @@ import json
 
 from crossword_generator.graders.clue_grader import ClueGrader
 from crossword_generator.llm.base import LLMProvider
+from crossword_generator.llm.prompts.clue_evaluation import (
+    build_clue_evaluation_prompt,
+)
 from crossword_generator.models import (
     ClueEntry,
     FillResult,
@@ -110,6 +113,17 @@ class TestHappyPath:
         assert report.overall_score == 85.0
         assert report.clue_count == len(MOCK_CLUES)
         assert len(report.clue_grades) == len(MOCK_CLUES)
+
+    def test_evaluation_prompt_penalizes_sensitive_humor(self) -> None:
+        prompt = build_clue_evaluation_prompt(
+            MOCK_CLUES,
+            {},
+            PuzzleType.MINI,
+        )
+
+        assert "underwear" in prompt
+        assert "demographic-based jokes" in prompt
+        assert "more welcoming" in prompt
 
     def test_per_clue_scores_populated(self) -> None:
         response = _build_evaluation_json(MOCK_CLUES)  # 20+20+20+20=80

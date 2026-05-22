@@ -81,6 +81,22 @@ class PuzzleNamingStep(PipelineStep):
                         last_error,
                     )
                     continue
+                sensitive_issue = _title_has_sensitive_wordplay(
+                    candidate_title,
+                    candidate_reasoning,
+                    [c.answer for c in envelope.clues],
+                )
+                if sensitive_issue:
+                    last_error = (
+                        f"Title {candidate_title!r} uses risky sensitive "
+                        f"wordplay: {sensitive_issue}"
+                    )
+                    logger.warning(
+                        "Attempt %d: rejecting title — %s",
+                        attempt,
+                        last_error,
+                    )
+                    continue
                 title = candidate_title
                 reasoning = candidate_reasoning
                 logger.info("Title: %r — reasoning: %s", title, reasoning)
@@ -179,4 +195,79 @@ def _title_contains_answer(title: str, answers: list[str]) -> str | None:
             continue
         if answer.lower() in title_tokens:
             return answer
+    return None
+
+
+_SENSITIVE_TITLE_ANSWERS = {
+    "ASS",
+    "BOD",
+    "BODY",
+    "BRA",
+    "BRAS",
+    "BREAST",
+    "BREASTS",
+    "BUST",
+    "BUTT",
+    "CHEST",
+    "GIRDLE",
+    "HIP",
+    "HIPS",
+    "LINGERIE",
+    "NUDE",
+    "REAR",
+    "SEX",
+    "SKIN",
+    "THIGH",
+    "THIGHS",
+    "WAIST",
+}
+
+_SENSITIVE_TITLE_CUES = {
+    "anatomy",
+    "body",
+    "bosom",
+    "bust",
+    "cheeky",
+    "curves",
+    "flirty",
+    "intimate",
+    "lingerie",
+    "naughty",
+    "racy",
+    "risque",
+    "saucy",
+    "sexy",
+    "support",
+    "underwear",
+    "underwire",
+    "wink",
+    "winking",
+}
+
+
+def _title_has_sensitive_wordplay(
+    title: str,
+    reasoning: str,
+    answers: list[str],
+) -> str | None:
+    """Return a reason if title/reasoning frames sensitive fill with a wink."""
+    sensitive_answers = {
+        answer.upper()
+        for answer in answers
+        if answer and answer.upper() in _SENSITIVE_TITLE_ANSWERS
+    }
+    if not sensitive_answers:
+        return None
+
+    text_tokens = {
+        token
+        for token in re.findall(r"[A-Za-z]+", f"{title} {reasoning}".lower())
+        if token
+    }
+    risky_tokens = text_tokens & _SENSITIVE_TITLE_CUES
+    if risky_tokens:
+        return (
+            f"sensitive answer(s) {', '.join(sorted(sensitive_answers))} "
+            f"with cue(s) {', '.join(sorted(risky_tokens))}"
+        )
     return None

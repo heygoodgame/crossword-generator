@@ -20,6 +20,7 @@ from crossword_generator.models import (
 from crossword_generator.steps.puzzle_naming_step import (
     PuzzleNamingStep,
     _title_contains_answer,
+    _title_has_sensitive_wordplay,
 )
 
 MOCK_GRID = [
@@ -244,6 +245,28 @@ class TestPuzzleNamingStep:
 
         assert result.title == "Digital Riffs"
 
+    def test_rejects_sensitive_title_wordplay_and_retries(self) -> None:
+        """Suggestive title framing around sensitive fill is disallowed."""
+        clues = [
+            ClueEntry(number=1, direction="across", answer="BRA", clue="Garment"),
+            ClueEntry(number=1, direction="down", answer="ROBOT", clue="Mech"),
+        ]
+        bad = json.dumps(
+            {
+                "why": "It winks at the support garment in 1-Across.",
+                "title": "Cheeky Support",
+            }
+        )
+        good = json.dumps({"why": "Neutral title.", "title": "Everyday Items"})
+        step = PuzzleNamingStep(
+            MockLLM(responses=[bad, good]),
+            max_retries=3,
+        )
+        envelope = _make_envelope(grid=MOCK_GRID, clues=clues)
+        result = step.run(envelope)
+
+        assert result.title == "Everyday Items"
+
 
 class TestTitleContainsAnswer:
     def test_flags_exact_token_match_case_insensitive(self) -> None:
@@ -273,6 +296,38 @@ class TestTitleContainsAnswer:
 
     def test_empty_answers_are_skipped(self) -> None:
         assert _title_contains_answer("Anything Goes", [""]) is None
+
+
+class TestTitleSensitiveWordplay:
+    def test_flags_cheeky_support_for_bra(self) -> None:
+        issue = _title_has_sensitive_wordplay(
+            "Cheeky Support",
+            "Winks at BRA in 1-Across.",
+            ["BRA"],
+        )
+        assert issue is not None
+        assert "BRA" in issue
+        assert "cheeky" in issue
+
+    def test_allows_neutral_title_for_sensitive_answer(self) -> None:
+        assert (
+            _title_has_sensitive_wordplay(
+                "Everyday Items",
+                "A neutral title.",
+                ["BRA"],
+            )
+            is None
+        )
+
+    def test_allows_cue_words_without_sensitive_answers(self) -> None:
+        assert (
+            _title_has_sensitive_wordplay(
+                "Support Group",
+                "A title about community.",
+                ["ROBOT"],
+            )
+            is None
+        )
 
 
 class TestPuzzleNamingPrompt:
@@ -322,6 +377,15 @@ class TestPuzzleNamingPrompt:
 
         assert "JSON" in prompt
         assert '"title"' in prompt
+
+    def test_prompt_warns_against_sensitive_title_wordplay(self) -> None:
+        prompt = build_puzzle_naming_prompt(
+            PuzzleType.MINI, 5, MOCK_CLUES, MOCK_GRID
+        )
+
+        assert "Cheeky Support" in prompt
+        assert "BRA" in prompt
+        assert "sensitive answer" in prompt
 
     def test_prompt_highlights_1_across_as_marquee(self) -> None:
         """The prompt singles out 1-Across with extra weight."""
