@@ -247,29 +247,24 @@ def make_effective_dictionary_payload(
         "runtime_recipes": [
             {
                 "puzzle": "easy/5",
-                "game_key": "minicrossword",
                 "uses": ["hgg-easy"],
             },
             {
                 "puzzle": "easy/7",
-                "game_key": "minicrossword",
                 "uses": ["hgg-easy"],
             },
             {
                 "puzzle": "hard/5",
-                "game_key": "minicrossword",
                 "uses": ["hgg-easy"],
                 "note": "Same as Easy pending Jeff guidance.",
             },
             {
                 "puzzle": "hard/7",
-                "game_key": "minicrossword",
                 "uses": ["hgg-easy", "hgg-60"],
                 "constraint": "Exactly one 7-letter hgg-60 entry.",
             },
             {
                 "puzzle": "easy/9",
-                "game_key": "midicrossword",
                 "uses": ["hgg-easy", "hgg-60"],
                 "constraint": "All 8-9 letter entries come from hgg-60.",
             },

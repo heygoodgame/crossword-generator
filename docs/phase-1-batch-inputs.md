@@ -72,9 +72,9 @@ uv run crossword-generator publish-effective-dictionaries
 
 The endpoint is `POST /admin/crossword-effective-dictionaries/publish`.
 Backend storage should activate the received snapshot transactionally, so the
-admin UI cannot observe new HGG Easy with old HGG 60. Runtime recipes in the
-payload keep game keys explicit: `minicrossword` for 5x5/7x7 and
-`midicrossword` for 9x9. The command writes local `dictionaries/hgg-easy.txt`
+admin UI cannot observe new HGG Easy with old HGG 60. Effective dictionaries
+are shared by the mini and midi crossword games, so the snapshot and runtime
+recipes are game-agnostic. The command writes local `dictionaries/hgg-easy.txt`
 and `dictionaries/hgg-60.txt` only after the publish request succeeds; pass
 `--no-write-local` to skip that.
 

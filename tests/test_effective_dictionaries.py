@@ -71,9 +71,9 @@ def test_make_payload_packages_both_dictionaries_as_one_snapshot(
     )
 
     recipes = {recipe["puzzle"]: recipe for recipe in payload["runtime_recipes"]}
-    assert recipes["easy/5"]["game_key"] == "minicrossword"
-    assert recipes["hard/7"]["game_key"] == "minicrossword"
-    assert recipes["easy/9"]["game_key"] == "midicrossword"
+    assert "game_key" not in recipes["easy/5"]
+    assert "game_key" not in recipes["hard/7"]
+    assert "game_key" not in recipes["easy/9"]
     assert payload["metadata"]["hgg_easy_count"] == 2
     assert payload["metadata"]["hgg_60_count"] == 2
     assert payload["dictionaries"]["hgg-easy"]["contents"] == (
