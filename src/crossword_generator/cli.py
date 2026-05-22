@@ -1054,6 +1054,186 @@ def prepare_dictionaries(
     click.echo("")
 
 
+@main.command(name="publish-effective-dictionaries")
+@click.option(
+    "--easy-source",
+    type=click.Path(exists=True),
+    default="dictionaries/hgg-easy-flat-55.txt",
+    show_default=True,
+    help="Path to the Easy source list.",
+)
+@click.option(
+    "--easy-extra-source",
+    "easy_extra_sources",
+    type=click.Path(exists=True),
+    multiple=True,
+    default=("dictionaries/Wordplete-PrevalentCulled-8-9-length.txt",),
+    help="Additional source file to merge into HGG Easy.",
+)
+@click.option(
+    "--easy-exclude-source",
+    "easy_exclude_sources",
+    type=click.Path(exists=True),
+    multiple=True,
+    default=(
+        "dictionaries/XwiJeffChenList-NotFamilyFriendly.txt",
+        "dictionaries/Wordplete-PrevalentCulled-8-9-length-Removed.txt",
+        "dictionaries/HggGeneratedSafetyExclude.txt",
+    ),
+    help="Plain or semicolon-delimited word list to exclude from HGG Easy.",
+)
+@click.option(
+    "--hard-source",
+    type=click.Path(exists=True),
+    default="dictionaries/HggCuratedCrosswordList.txt",
+    show_default=True,
+    help="Path to the curated hard source dictionary.",
+)
+@click.option(
+    "--easy-output",
+    type=click.Path(),
+    default="dictionaries/hgg-easy.txt",
+    show_default=True,
+    help="Local output path to update after a successful publish.",
+)
+@click.option(
+    "--sixty-output",
+    type=click.Path(),
+    default="dictionaries/hgg-60.txt",
+    show_default=True,
+    help="Local output path to update after a successful publish.",
+)
+@click.option(
+    "--api-base",
+    default=None,
+    help=(
+        "Override the HeyGG admin API base URL. Defaults to the "
+        "HEYGG_API_BASE_URL env var or https://id-beta.hey.gg/api."
+    ),
+)
+@click.option(
+    "--generator-commit",
+    default=None,
+    help="Override the generator commit recorded in snapshot metadata.",
+)
+@click.option(
+    "--timeout",
+    type=int,
+    default=120,
+    show_default=True,
+    help="HTTP timeout for the publish request.",
+)
+@click.option(
+    "--write-local/--no-write-local",
+    default=True,
+    show_default=True,
+    help="Write hgg-easy.txt and hgg-60.txt locally after publish succeeds.",
+)
+@click.option(
+    "--dry-run",
+    is_flag=True,
+    default=False,
+    help="Build and validate the snapshot without uploading or writing outputs.",
+)
+def publish_effective_dictionaries(
+    easy_source: str,
+    easy_extra_sources: tuple[str, ...],
+    easy_exclude_sources: tuple[str, ...],
+    hard_source: str,
+    easy_output: str,
+    sixty_output: str,
+    api_base: str | None,
+    generator_commit: str | None,
+    timeout: int,
+    write_local: bool,
+    dry_run: bool,
+) -> None:
+    """Build, validate, and atomically publish HGG Easy + HGG 60."""
+    import shutil
+    import tempfile
+
+    from crossword_generator.dictionary_prep import format_summary
+    from crossword_generator.effective_dictionaries import (
+        EffectiveDictionaryError,
+        build_effective_dictionaries,
+        make_effective_dictionary_payload,
+    )
+    from crossword_generator.effective_dictionaries import (
+        publish_effective_dictionaries as publish_snapshot,
+    )
+
+    project_root = find_project_root()
+
+    def resolve_path(path: str) -> Path:
+        resolved = Path(path)
+        return resolved if resolved.is_absolute() else project_root / resolved
+
+    with tempfile.TemporaryDirectory(prefix="hgg-effective-dicts-") as temp_dir:
+        try:
+            build = build_effective_dictionaries(
+                project_root=project_root,
+                output_dir=Path(temp_dir),
+                easy_source=resolve_path(easy_source),
+                easy_extra_sources=tuple(
+                    resolve_path(source) for source in easy_extra_sources
+                ),
+                easy_exclude_sources=tuple(
+                    resolve_path(source) for source in easy_exclude_sources
+                ),
+                hard_source=resolve_path(hard_source),
+            )
+            payload = make_effective_dictionary_payload(
+                build,
+                generator_commit=generator_commit,
+            )
+        except EffectiveDictionaryError as exc:
+            click.echo(f"ERROR: {exc}", err=True)
+            sys.exit(1)
+
+        data_size = len(json.dumps(payload).encode())
+        label = "DRY RUN — " if dry_run else ""
+        click.echo(f"{label}Effective dictionary snapshot validated.")
+        click.echo("")
+        click.echo("HGG Easy dictionary:")
+        click.echo(format_summary(build.easy_summary))
+        click.echo("")
+        click.echo("HGG 60 dictionary:")
+        click.echo(format_summary(build.sixty_summary))
+        click.echo("")
+        click.echo(
+            "Snapshot payload: "
+            "endpoint=/admin/crossword-effective-dictionaries/publish "
+            f"bytes={data_size}"
+        )
+
+        if dry_run:
+            click.echo("Dry run: no API call made and no local outputs written.")
+            return
+
+        try:
+            result = publish_snapshot(
+                build,
+                api_base=api_base,
+                timeout=timeout,
+                generator_commit=generator_commit,
+            )
+        except Exception as exc:
+            click.echo(f"ERROR: publish failed: {exc}", err=True)
+            sys.exit(1)
+
+        click.echo(f"Published effective dictionaries: {result.action}")
+
+        if write_local:
+            easy_output_path = resolve_path(easy_output)
+            sixty_output_path = resolve_path(sixty_output)
+            easy_output_path.parent.mkdir(parents=True, exist_ok=True)
+            sixty_output_path.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(build.easy.path, easy_output_path)
+            shutil.copyfile(build.sixty.path, sixty_output_path)
+            click.echo(f"Wrote local output: {easy_output_path}")
+            click.echo(f"Wrote local output: {sixty_output_path}")
+
+
 @main.command(name="consolidate-list")
 @click.argument("slug", required=False)
 @click.option(

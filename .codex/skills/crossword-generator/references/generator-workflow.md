@@ -150,14 +150,31 @@ scores.
 
 The May 22 dictionary run produced:
 
-- HGG Easy: 18,321 rows, all `;50`.
+- HGG Easy: 18,320 rows, all `;50`.
 - HGG 60: 5,881 rows, all `;60` and length 7-9.
-- Hard: 116,843 rows after taking 3-5 letter entries from HGG Easy and
+- Hard: 116,840 rows after taking 3-5 letter entries from HGG Easy and
   6+ entries from the hard source.
 
 The regular Hard output still filters scored 6-9-letter rows below the
 source-score floor. Hard 7x7 composes HGG Easy and HGG 60 at runtime; the
 exact-one-60 requirement is enforced during fill grading.
+
+Effective dictionary publish:
+
+```bash
+uv run crossword-generator publish-effective-dictionaries --dry-run
+uv run crossword-generator publish-effective-dictionaries
+```
+
+`publish-effective-dictionaries` builds HGG Easy and HGG 60 into a temp
+directory, validates both lists, then posts one compact payload to
+`POST /admin/crossword-effective-dictionaries/publish`. Backend storage should
+activate that snapshot transactionally so the admin UI gets an all-or-nothing
+view; it cannot observe a newly published HGG Easy with an old HGG 60. Runtime
+recipes in the payload keep game keys explicit: `minicrossword` for 5x5/7x7 and
+`midicrossword` for 9x9. After the API write succeeds, the command writes local
+`dictionaries/hgg-easy.txt` and `dictionaries/hgg-60.txt` unless
+`--no-write-local` is passed.
 
 ## Word List Management
 
@@ -185,8 +202,13 @@ Operator runs `crossword-generator consolidate-list [slug]`
 
 Operator reviews `git diff dictionaries/`, commits, pushes
 
-Next `prepare-dictionaries` run picks up the new state automatically
+Next `publish-effective-dictionaries` run picks up the new state automatically
    (including the auto-discovered HggThumbsDown*.txt files)
+   → build/validate HGG Easy + HGG 60 together
+   → POST `/admin/crossword-effective-dictionaries/publish`
+
+Run `prepare-dictionaries` only when you also need to refresh the committed
+local dictionary artifacts, including the legacy hard flat dictionary.
 ```
 
 ### Registered lists (seeded 2026-05-21)

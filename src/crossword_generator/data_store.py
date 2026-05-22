@@ -211,6 +211,92 @@ def bulk_save_generated_puzzles(
     return results
 
 
+def save_data_store_record(
+    record: dict[str, Any],
+    *,
+    replace_existing: bool = False,
+    api_base: str | None = None,
+    token: str | None = None,
+    timeout: int = 60,
+) -> SaveResult:
+    """Create one data-store record, skipping or patching duplicate keys."""
+    validate_record(record)
+    try:
+        response = _request_json(
+            "POST",
+            "/admin/data-store/records",
+            record,
+            api_base=api_base,
+            token=token,
+            timeout=timeout,
+        )
+    except DataStoreApiError as exc:
+        if exc.status_code != 422:
+            raise
+        existing = find_existing_record(
+            namespace=str(record["namespace"]),
+            collection=str(record["collection"]),
+            game_key=str(record["game_key"]),
+            key=str(record["key"]),
+            api_base=api_base,
+            token=token,
+            timeout=timeout,
+        )
+        if existing is None:
+            raise
+        if not replace_existing:
+            return SaveResult(
+                action="skipped_duplicate",
+                key=str(record["key"]),
+                response=existing,
+            )
+
+        record_id = existing.get("id")
+        if record_id is None:
+            raise DataStoreError(
+                f"Cannot replace duplicate record without an id: {record['key']}"
+            )
+        patched = _request_json(
+            "PATCH",
+            f"/admin/data-store/records/{record_id}",
+            record,
+            api_base=api_base,
+            token=token,
+            timeout=timeout,
+        )
+        return SaveResult(
+            action="updated",
+            key=str(record["key"]),
+            response=_ensure_dict(patched.get("data", patched)),
+        )
+
+    return SaveResult(
+        action="created",
+        key=str(record["key"]),
+        response=_ensure_dict(response.get("data", response)),
+    )
+
+
+def request_admin_json(
+    method: str,
+    path: str,
+    body: dict[str, Any] | None = None,
+    *,
+    api_base: str | None = None,
+    token: str | None = None,
+    timeout: int = 60,
+) -> dict[str, Any]:
+    """Send an authenticated admin API JSON request."""
+    return _request_json(
+        method,
+        path,
+        body,
+        api_base=api_base,
+        token=token,
+        timeout=timeout,
+    )
+
+
 def list_generated_puzzle_records(
     *,
     game_key: str,
@@ -304,60 +390,12 @@ def save_generated_puzzle(
     timeout: int = 60,
 ) -> SaveResult:
     """Create one generated-puzzle record, skipping or patching duplicates."""
-    validate_record(record)
-    try:
-        response = _request_json(
-            "POST",
-            "/admin/data-store/records",
-            record,
-            api_base=api_base,
-            token=token,
-            timeout=timeout,
-        )
-    except DataStoreApiError as exc:
-        if exc.status_code != 422:
-            raise
-        existing = find_existing_record(
-            namespace=str(record["namespace"]),
-            collection=str(record["collection"]),
-            game_key=str(record["game_key"]),
-            key=str(record["key"]),
-            api_base=api_base,
-            token=token,
-            timeout=timeout,
-        )
-        if existing is None:
-            raise
-        if not replace_existing:
-            return SaveResult(
-                action="skipped_duplicate",
-                key=str(record["key"]),
-                response=existing,
-            )
-
-        record_id = existing.get("id")
-        if record_id is None:
-            raise DataStoreError(
-                f"Cannot replace duplicate record without an id: {record['key']}"
-            )
-        patched = _request_json(
-            "PATCH",
-            f"/admin/data-store/records/{record_id}",
-            record,
-            api_base=api_base,
-            token=token,
-            timeout=timeout,
-        )
-        return SaveResult(
-            action="updated",
-            key=str(record["key"]),
-            response=_ensure_dict(patched.get("data", patched)),
-        )
-
-    return SaveResult(
-        action="created",
-        key=str(record["key"]),
-        response=_ensure_dict(response.get("data", response)),
+    return save_data_store_record(
+        record,
+        replace_existing=replace_existing,
+        api_base=api_base,
+        token=token,
+        timeout=timeout,
     )
 
 

@@ -55,10 +55,28 @@ The command logs input rows, output rows, malformed rows, invalid words,
 excluded words, rows below the source-score floor, duplicates, and the flat
 score used.
 
-The May 22 dictionary run produced 18,321 HGG Easy rows, 5,881 HGG 60 rows, and
-116,843 legacy Hard rows. The hard source had one invalid alphanumeric entry,
+The May 22 beta-backed dictionary run produced 18,320 HGG Easy rows, 5,881 HGG
+60 rows, and 116,840 legacy Hard rows. The hard source had one invalid alphanumeric entry,
 `catch22;50`, which was skipped because the current generator word format uses
 letters only.
+
+To publish the effective dictionaries for admin UI read-only views, use the
+single-step publish command. It builds HGG Easy and HGG 60 into a temp directory,
+validates their invariants, then sends both lists in one compact payload to the
+admin API publish endpoint:
+
+```bash
+uv run crossword-generator publish-effective-dictionaries --dry-run
+uv run crossword-generator publish-effective-dictionaries
+```
+
+The endpoint is `POST /admin/crossword-effective-dictionaries/publish`.
+Backend storage should activate the received snapshot transactionally, so the
+admin UI cannot observe new HGG Easy with old HGG 60. Runtime recipes in the
+payload keep game keys explicit: `minicrossword` for 5x5/7x7 and
+`midicrossword` for 9x9. The command writes local `dictionaries/hgg-easy.txt`
+and `dictionaries/hgg-60.txt` only after the publish request succeeds; pass
+`--no-write-local` to skip that.
 
 The prevalent 8-9-letter Easy merge excludes the high-confidence unsuitable
 entries listed in `dictionaries/Wordplete-PrevalentCulled-8-9-length-Removed.txt`.

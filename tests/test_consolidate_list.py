@@ -80,7 +80,11 @@ def test_consolidate_one_dry_run_skips_write_and_ack(
         "fetch_list_contents",
         lambda _slug, **_kw: "NEWBIE;55\n",
     )
-    monkeypatch.setattr(cl, "mark_consolidated", lambda slug, **_kw: marked.append(slug))
+    monkeypatch.setattr(
+        cl,
+        "mark_consolidated",
+        lambda slug, **_kw: marked.append(slug),
+    )
 
     summary = cl.consolidate_one("sample", tmp_path, dry_run=True)
 
