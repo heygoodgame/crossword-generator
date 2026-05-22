@@ -108,6 +108,26 @@ class TestDictionaryLoad:
         assert d.score("EIGHTIES") == 60
         assert d.score("NINETIETH") == 60
 
+    def test_load_many_can_length_filter_additional_files(
+        self, tmp_path: Path
+    ) -> None:
+        easy = tmp_path / "easy.txt"
+        sixty = tmp_path / "sixty.txt"
+        easy.write_text("sevenup;50\nordinary;50\n")
+        sixty.write_text("sevenup;60\nhardword;60\nninechars;60\n")
+
+        d = Dictionary.load_many(
+            [easy, sixty],
+            min_word_score=50,
+            min_2letter_score=50,
+            additional_min_length=8,
+            additional_max_length=9,
+        )
+
+        assert d.score("SEVENUP") == 50
+        assert d.score("HARDWORD") == 60
+        assert d.score("NINECHARS") == 60
+
 
 class TestWordsByLengthMinScore:
     """Test words_by_length with min_score filtering."""
@@ -221,8 +241,9 @@ class TestPhase1PreparedDictionaries:
     def test_easy_dictionary_loads(self, project_root: Path) -> None:
         path = project_root / "dictionaries" / "hgg-easy.txt"
         d = Dictionary.load(path, min_word_score=50, min_2letter_score=50)
-        assert len(d) == 18320
+        assert len(d) == 18321
         assert d.score("ABACUS") == 50
+        assert d.score("BANE") == 50
         assert d.score("zoom") == 50
         assert d.score("ALCHEMY") is None
 
@@ -249,7 +270,7 @@ class TestPhase1PreparedDictionaries:
             min_word_score=50,
             min_2letter_score=50,
         )
-        assert len(d) == 24201
+        assert len(d) == 24202
         assert d.supported_lengths() == {3, 4, 5, 6, 7, 8, 9}
         assert d.score("ABACUS") == 50
         assert d.score("ACTDUMB") == 60

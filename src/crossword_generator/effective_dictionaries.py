@@ -275,7 +275,10 @@ def make_effective_dictionary_payload(
             {
                 "puzzle": "hard/9",
                 "uses": ["hgg-easy", "hgg-60"],
-                "constraint": "All 8-9 letter entries come from hgg-60.",
+                "constraint": (
+                    "Only 8-9 letter entries use hgg-60; 7-letter hgg-60 "
+                    "entries are reserved for hard/7."
+                ),
             },
         ],
         "metadata": {

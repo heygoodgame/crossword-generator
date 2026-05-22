@@ -38,10 +38,14 @@ class DictionaryConfig(BaseModel):
 
     path: str = "dictionaries/HggCuratedCrosswordList.txt"
     additional_paths: list[str] = Field(default_factory=list)
+    additional_min_length: int | None = None
+    additional_max_length: int | None = None
     min_word_score: int = 50
     min_2letter_score: int = 30
     themed_path: str = "dictionaries/HggScoredCrosswordList.txt"
     themed_additional_paths: list[str] = Field(default_factory=list)
+    themed_additional_min_length: int | None = None
+    themed_additional_max_length: int | None = None
     themed_min_word_score: int = 45
     themed_min_2letter_score: int = 30
 
@@ -51,6 +55,8 @@ class CSPFillerConfig(BaseModel):
 
     dictionary_path: str = "dictionaries/HggCuratedCrosswordList.txt"
     additional_dictionary_paths: list[str] = Field(default_factory=list)
+    additional_dictionary_min_length: int | None = None
+    additional_dictionary_max_length: int | None = None
     min_word_score: int = 50
     min_2letter_score: int = 30
     min_score_by_length: dict[int, int] = Field(default_factory=dict)

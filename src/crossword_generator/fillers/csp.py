@@ -264,6 +264,8 @@ class CSPFiller(GridFiller):
             resolved_paths,
             min_word_score=config.min_word_score,
             min_2letter_score=config.min_2letter_score,
+            additional_min_length=config.additional_dictionary_min_length,
+            additional_max_length=config.additional_dictionary_max_length,
         )
         return cls(config, dictionary)
 

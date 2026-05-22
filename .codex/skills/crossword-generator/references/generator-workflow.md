@@ -84,7 +84,8 @@ dictionaries/hgg-easy.txt
 ```
 
 Current Hard 9x9 config points both primary paths at `hgg-easy.txt` and merges
-`hgg-60.txt` through `additional_paths` / `additional_dictionary_paths`:
+only the 8-/9-letter slice of `hgg-60.txt` through `additional_paths` /
+`additional_dictionary_paths`:
 
 ```text
 dictionaries/hgg-easy.txt + dictionaries/hgg-60.txt
@@ -112,9 +113,10 @@ The master effective lists are:
 
 No derived 9x9 or Hard 7x7 dictionary files are committed. Those pools are
 composed at generation time from the two effective master lists. Hard 9x9 sets
-`fill.csp.min_score_by_length: {8: 60, 9: 60}` so long slots cannot fall back
-to 50-point entries. Hard 7x7 uses the fill grader to require exactly one
-7-letter entry with score 60.
+`fill.csp.min_score_by_length: {8: 60, 9: 60}` and length-filters the additional
+HGG 60 source to 8-/9-letter entries, so long slots cannot fall back to 50-point
+entries and 7-letter HGG 60 entries remain reserved for Hard 7x7. Hard 7x7 uses
+the fill grader to require exactly one 7-letter entry with score 60.
 
 The hard flat dictionary is length-mixed: 3-, 4-, and 5-letter entries come
 from the prepared Easy/prevalent list, while 6+ entries come from

@@ -138,6 +138,12 @@ def create_pipeline(
     if is_themed and config.dictionary.themed_path:
         dict_path = config.dictionary.themed_path
         dict_additional_paths = config.dictionary.themed_additional_paths
+        dict_additional_min_length = (
+            config.dictionary.themed_additional_min_length
+        )
+        dict_additional_max_length = (
+            config.dictionary.themed_additional_max_length
+        )
         dict_min_score = (
             config.dictionary.themed_min_word_score
             or config.dictionary.min_word_score
@@ -149,6 +155,8 @@ def create_pipeline(
     else:
         dict_path = config.dictionary.path
         dict_additional_paths = config.dictionary.additional_paths
+        dict_additional_min_length = config.dictionary.additional_min_length
+        dict_additional_max_length = config.dictionary.additional_max_length
         dict_min_score = config.dictionary.min_word_score
         dict_min_2letter = config.dictionary.min_2letter_score
 
@@ -156,6 +164,8 @@ def create_pipeline(
         [project_root / path for path in [dict_path, *dict_additional_paths]],
         min_word_score=dict_min_score,
         min_2letter_score=dict_min_2letter,
+        additional_min_length=dict_additional_min_length,
+        additional_max_length=dict_additional_max_length,
     )
     logger.info(
         "Loaded dictionary %s (%s, min_score=%d)",

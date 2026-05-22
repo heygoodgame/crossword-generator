@@ -40,6 +40,8 @@ class Dictionary:
         *,
         min_word_score: int = 50,
         min_2letter_score: int = 30,
+        min_length: int | None = None,
+        max_length: int | None = None,
     ) -> Dictionary:
         """Load a dictionary from a word;score file.
 
@@ -79,6 +81,11 @@ class Dictionary:
                 logger.warning("Empty word on line %d", line_num)
                 continue
 
+            if min_length is not None and len(word) < min_length:
+                continue
+            if max_length is not None and len(word) > max_length:
+                continue
+
             # Two-tier filtering
             if len(word) == 2:
                 if score >= min_2letter_score:
@@ -107,6 +114,8 @@ class Dictionary:
         *,
         min_word_score: int = 50,
         min_2letter_score: int = 30,
+        additional_min_length: int | None = None,
+        additional_max_length: int | None = None,
     ) -> Dictionary:
         """Load and merge multiple dictionary files.
 
@@ -117,11 +126,13 @@ class Dictionary:
             raise DictionaryError("At least one dictionary path is required")
 
         merged: dict[str, int] = {}
-        for path in paths:
+        for index, path in enumerate(paths):
             dictionary = cls.load(
                 path,
                 min_word_score=min_word_score,
                 min_2letter_score=min_2letter_score,
+                min_length=additional_min_length if index > 0 else None,
+                max_length=additional_max_length if index > 0 else None,
             )
             merged.update(dictionary._words)
 

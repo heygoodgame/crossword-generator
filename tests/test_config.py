@@ -112,6 +112,16 @@ class TestLoadConfig:
         else:
             assert cfg.dictionary.additional_paths == []
             assert cfg.fill.csp.additional_dictionary_paths == []
+        if filename == "config.hard9.yaml":
+            assert cfg.dictionary.additional_min_length == 8
+            assert cfg.dictionary.additional_max_length == 9
+            assert cfg.fill.csp.additional_dictionary_min_length == 8
+            assert cfg.fill.csp.additional_dictionary_max_length == 9
+        else:
+            assert cfg.dictionary.additional_min_length is None
+            assert cfg.dictionary.additional_max_length is None
+            assert cfg.fill.csp.additional_dictionary_min_length is None
+            assert cfg.fill.csp.additional_dictionary_max_length is None
         assert cfg.theme.enabled is False
         assert cfg.llm.claude.theme_model == "claude-sonnet-4-6"
         assert cfg.llm.claude.clue_generation_model == "claude-sonnet-4-6"
