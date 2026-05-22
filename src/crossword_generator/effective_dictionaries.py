@@ -80,6 +80,7 @@ class EffectiveDictionaryBuild:
     source_fingerprint: str
     easy_summary: DictionaryPrepSummary
     sixty_summary: DictionaryPrepSummary
+    project_root: Path
 
 
 @dataclass(frozen=True)
@@ -165,6 +166,7 @@ def build_effective_dictionaries(
         source_fingerprint=_source_fingerprint(source_files),
         easy_summary=easy_summary,
         sixty_summary=sixty_summary,
+        project_root=project_root,
     )
     validate_effective_dictionaries(build, hard_source=hard_source)
     return build
@@ -239,7 +241,10 @@ def make_effective_dictionary_payload(
         "generator_commit": commit,
         "author": AUTHOR,
         "source_fingerprint": build.source_fingerprint,
-        "source_files": [_source_file_metadata(item) for item in build.source_files],
+        "source_files": [
+            _source_file_metadata(item, build.project_root)
+            for item in build.source_files
+        ],
         "dictionaries": {
             build.easy.slug: _dictionary_payload(build.easy),
             build.sixty.slug: _dictionary_payload(build.sixty),
@@ -265,6 +270,10 @@ def make_effective_dictionary_payload(
             },
             {
                 "puzzle": "easy/9",
+                "uses": ["hgg-easy"],
+            },
+            {
+                "puzzle": "hard/9",
                 "uses": ["hgg-easy", "hgg-60"],
                 "constraint": "All 8-9 letter entries come from hgg-60.",
             },
@@ -332,15 +341,22 @@ def _dictionary_payload(dictionary: EffectiveDictionary) -> dict[str, Any]:
     }
 
 
-def _source_file_metadata(source: SourceFile) -> dict[str, Any]:
+def _source_file_metadata(source: SourceFile, project_root: Path) -> dict[str, Any]:
     body = source.path.read_bytes()
     return {
         "role": source.role,
-        "path": str(source.path),
+        "path": _relative_source_path(source.path, project_root),
         "line_count": len(source.path.read_text().splitlines()),
         "byte_count": len(body),
         "sha256": hashlib.sha256(body).hexdigest(),
     }
+
+
+def _relative_source_path(path: Path, project_root: Path) -> str:
+    try:
+        return str(path.resolve().relative_to(project_root.resolve()))
+    except ValueError:
+        return str(path)
 
 
 def _source_fingerprint(source_files: tuple[SourceFile, ...]) -> str:

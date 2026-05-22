@@ -1,5 +1,5 @@
-# Phase 1 easy 9x9 batch-generation config.
-# Uses HGG Easy only: 3-9 letters, all effective score 50.
+# Phase 1 hard 9x9 batch-generation config.
+# Uses HGG Easy plus HGG 60 for 8-/9-letter slots.
 
 puzzle:
   type: midi
@@ -7,9 +7,13 @@ puzzle:
 
 dictionary:
   path: dictionaries/hgg-easy.txt
+  additional_paths:
+    - dictionaries/hgg-60.txt
   min_word_score: 50
   min_2letter_score: 50
   themed_path: dictionaries/hgg-easy.txt
+  themed_additional_paths:
+    - dictionaries/hgg-60.txt
   themed_min_word_score: 50
   themed_min_2letter_score: 50
 
@@ -20,8 +24,13 @@ fill:
   max_long_entries_8_9: 3
   csp:
     dictionary_path: dictionaries/hgg-easy.txt
+    additional_dictionary_paths:
+      - dictionaries/hgg-60.txt
     min_word_score: 50
     min_2letter_score: 50
+    min_score_by_length:
+      8: 60
+      9: 60
     timeout: 30
     timeout_by_size:
       5: 30
@@ -58,6 +67,6 @@ theme:
   enabled: false
 
 output:
-  directory: output/review/easy9
+  directory: output/review/hard9
   formats:
     - ipuz

@@ -1569,7 +1569,7 @@ def _batch_bucket_configs(project_root: Path) -> list[tuple[str, int, str, Path]
         ("easy", 9, "midi", project_root / "config.easy9.yaml"),
         ("hard", 5, "mini", project_root / "config.easy.yaml"),
         ("hard", 7, "mini", project_root / "config.hard7.yaml"),
-        ("hard", 9, "midi", project_root / "config.hard.yaml"),
+        ("hard", 9, "midi", project_root / "config.hard9.yaml"),
     ]
 
 

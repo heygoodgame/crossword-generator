@@ -78,5 +78,5 @@ def test_hard_7x7_batch_uses_dedicated_config(tmp_path) -> None:
 
     assert configs["hard/7"] == "config.hard7.yaml"
     assert configs["hard/5"] == "config.easy.yaml"
-    assert configs["hard/9"] == "config.hard.yaml"
+    assert configs["hard/9"] == "config.hard9.yaml"
     assert configs["easy/9"] == "config.easy9.yaml"

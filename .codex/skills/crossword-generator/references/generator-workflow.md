@@ -13,8 +13,9 @@ Current emphasis:
 - HGG Easy is a single 3-9 letter effective list, scored `;50`, with known
   source-score 60 entries removed.
 - HGG 60 is a single 7-9 letter effective list, scored `;60`.
-- Easy 9x9 generation uses HGG Easy for 3-7 letter fill and HGG 60 for all
-  8-/9-letter fill. Seven-letter HGG 60 entries are reserved for Hard 7x7.
+- Easy 9x9 generation uses HGG Easy only. Hard 9x9 uses HGG Easy for 3-7
+  letter fill and HGG 60 for all 8-/9-letter fill. Seven-letter HGG 60 entries
+  are reserved for Hard 7x7.
 - Hard 5x5 uses the same HGG Easy config as Easy minis.
 - Hard 7x7 generation uses HGG Easy plus a board-level rule requiring exactly
   one 7-letter HGG 60 entry.
@@ -67,6 +68,7 @@ Use committed difficulty configs:
 - `config.easy9.yaml`
 - `config.hard.yaml`
 - `config.hard7.yaml`
+- `config.hard9.yaml`
 
 Current Easy config points both `dictionary.path` and
 `fill.csp.dictionary_path` at:
@@ -75,7 +77,13 @@ Current Easy config points both `dictionary.path` and
 dictionaries/hgg-easy.txt
 ```
 
-Current Easy 9x9 config points both primary paths at `hgg-easy.txt` and merges
+Current Easy 9x9 config points both primary paths at:
+
+```text
+dictionaries/hgg-easy.txt
+```
+
+Current Hard 9x9 config points both primary paths at `hgg-easy.txt` and merges
 `hgg-60.txt` through `additional_paths` / `additional_dictionary_paths`:
 
 ```text
@@ -103,9 +111,9 @@ The master effective lists are:
   as `WORD;60`.
 
 No derived 9x9 or Hard 7x7 dictionary files are committed. Those pools are
-composed at generation time from the two effective master lists. Easy 9x9 also
-sets `fill.csp.min_score_by_length: {8: 60, 9: 60}` so long slots cannot fall
-back to 50-point entries. Hard 7x7 uses the fill grader to require exactly one
+composed at generation time from the two effective master lists. Hard 9x9 sets
+`fill.csp.min_score_by_length: {8: 60, 9: 60}` so long slots cannot fall back
+to 50-point entries. Hard 7x7 uses the fill grader to require exactly one
 7-letter entry with score 60.
 
 The hard flat dictionary is length-mixed: 3-, 4-, and 5-letter entries come
@@ -114,8 +122,8 @@ from the prepared Easy/prevalent list, while 6+ entries come from
 and avoids leaning on crosswordese-heavy hard-list glue.
 
 `generate-pilot-batch` selects `config.easy9.yaml` for the `easy/9` bucket,
-`config.easy.yaml` for `easy/5`, `easy/7`, and `hard/5`, and
-`config.hard7.yaml` for `hard/7`.
+`config.hard9.yaml` for the `hard/9` bucket, `config.easy.yaml` for `easy/5`,
+`easy/7`, and `hard/5`, and `config.hard7.yaml` for `hard/7`.
 
 The HGG Easy configs use `quality_tiers: [50]`; the 60-aware configs merge
 `hgg-60.txt` so slot and board-level rules can enforce Jeff's table.

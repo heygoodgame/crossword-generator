@@ -84,6 +84,27 @@ def test_make_payload_packages_both_dictionaries_as_one_snapshot(
     )
 
 
+def test_payload_source_files_use_project_relative_paths(
+    tmp_path: Path,
+) -> None:
+    build = _build(tmp_path)
+
+    payload = make_effective_dictionary_payload(
+        build,
+        generator_commit="abc123",
+    )
+
+    paths = [entry["path"] for entry in payload["source_files"]]
+    assert paths, "expected at least one source file in payload"
+    for path in paths:
+        assert not path.startswith("/"), (
+            f"source_files path should be project-relative, got {path!r}"
+        )
+        assert path.startswith("dictionaries/"), (
+            f"expected dictionaries/-relative path, got {path!r}"
+        )
+
+
 def test_publish_effective_dictionaries_posts_one_atomic_snapshot(
     tmp_path: Path,
     monkeypatch,
