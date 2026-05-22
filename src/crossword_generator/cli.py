@@ -364,6 +364,17 @@ def generate_pilot_batch(
     help="PATCH existing duplicate-key records instead of skipping them.",
 )
 @click.option(
+    "--delete-existing-size",
+    "delete_existing_sizes",
+    type=int,
+    multiple=True,
+    help=(
+        "Delete existing generated-puzzle records for this grid size before "
+        "uploading. For 5x5/7x7 this uses --mini-game-key; for 9x9+ it uses "
+        "--midi-game-key."
+    ),
+)
+@click.option(
     "--dry-run",
     is_flag=True,
     default=False,
@@ -378,11 +389,14 @@ def save_generated_puzzles(
     generator_version: str | None,
     generator_commit: str | None,
     replace_existing: bool,
+    delete_existing_sizes: tuple[int, ...],
     dry_run: bool,
 ) -> None:
     """Save generated puzzle candidates to the HeyGG admin data store."""
     from crossword_generator.data_store import (
         bulk_save_generated_puzzles,
+        delete_generated_puzzle_records,
+        list_generated_puzzle_records,
         records_from_manifest,
     )
 
@@ -404,14 +418,41 @@ def save_generated_puzzles(
         return
 
     if dry_run:
-        click.echo("Dry run: no HeyGG API calls made.")
+        click.echo("Dry run: no HeyGG API write calls made.")
         for record in records[:5]:
             click.echo(f"  {record['game_key']} {record['key']}")
         if len(records) > 5:
             click.echo(f"  ... {len(records) - 5} more")
+        for size in delete_existing_sizes:
+            game_key = mini_game_key if size in (5, 7) else midi_game_key
+            existing = list_generated_puzzle_records(
+                game_key=game_key,
+                size=size,
+                api_base=api_base,
+            )
+            click.echo(
+                f"Dry run: would delete {len(existing)} existing "
+                f"{game_key} {size}x{size} generated record(s)."
+            )
         return
 
     try:
+        for size in delete_existing_sizes:
+            game_key = mini_game_key if size in (5, 7) else midi_game_key
+            existing = list_generated_puzzle_records(
+                game_key=game_key,
+                size=size,
+                api_base=api_base,
+            )
+            deleted = delete_generated_puzzle_records(
+                existing,
+                api_base=api_base,
+            )
+            click.echo(
+                f"Deleted existing generated puzzles: "
+                f"{game_key} {size}x{size} deleted={len(deleted)}"
+            )
+
         results = bulk_save_generated_puzzles(
             records,
             replace_existing=replace_existing,
@@ -498,8 +539,14 @@ def generate_themes(
 
     # Load dictionary
     project_root = find_project_root()
-    dictionary = Dictionary.load(
-        project_root / config.dictionary.path,
+    dictionary = Dictionary.load_many(
+        [
+            project_root / path
+            for path in [
+                config.dictionary.path,
+                *config.dictionary.additional_paths,
+            ]
+        ],
         min_word_score=config.dictionary.min_word_score,
         min_2letter_score=config.dictionary.min_2letter_score,
     )
@@ -715,8 +762,14 @@ def evaluate(
 
     # Load shared dictionary
     project_root = find_project_root()
-    dictionary = Dictionary.load(
-        project_root / config.dictionary.path,
+    dictionary = Dictionary.load_many(
+        [
+            project_root / path
+            for path in [
+                config.dictionary.path,
+                *config.dictionary.additional_paths,
+            ]
+        ],
         min_word_score=config.dictionary.min_word_score,
         min_2letter_score=config.dictionary.min_2letter_score,
     )
@@ -794,8 +847,14 @@ def export_dictionary(
     project_root = find_project_root()
 
     # Load with min_word_score=0 to get all words, then filter via export_plain
-    dictionary = Dictionary.load(
-        project_root / config.dictionary.path,
+    dictionary = Dictionary.load_many(
+        [
+            project_root / path
+            for path in [
+                config.dictionary.path,
+                *config.dictionary.additional_paths,
+            ]
+        ],
         min_word_score=0,
         min_2letter_score=0,
     )
@@ -838,8 +897,14 @@ def export_dictionary(
 @click.option(
     "--easy-output",
     type=click.Path(),
-    default="dictionaries/hgg-easy-flat-55.txt",
-    help="Output path for the normalized easy dictionary.",
+    default="dictionaries/hgg-easy.txt",
+    help="Output path for the effective HGG Easy dictionary.",
+)
+@click.option(
+    "--sixty-output",
+    type=click.Path(),
+    default="dictionaries/hgg-60.txt",
+    help="Output path for the HGG 60 dictionary.",
 )
 @click.option(
     "--hard-output",
@@ -848,19 +913,10 @@ def export_dictionary(
     help="Output path for the normalized hard dictionary.",
 )
 @click.option(
-    "--hard-7-output",
-    type=click.Path(),
-    default="dictionaries/hgg-hard-7x7-flat-55.txt",
-    help=(
-        "Output path for the 7x7 hard dictionary: 3-6 letter Easy/prevalent "
-        "entries plus 7-letter curated hard entries."
-    ),
-)
-@click.option(
     "--score",
     type=int,
-    default=55,
-    help="Flat score to assign to every output entry.",
+    default=50,
+    help="Flat score to assign to HGG Easy entries.",
 )
 @click.option(
     "--long-word-min-source-score",
@@ -878,8 +934,8 @@ def prepare_dictionaries(
     easy_exclude_sources: tuple[str, ...],
     hard_source: str,
     easy_output: str,
+    sixty_output: str,
     hard_output: str,
-    hard_7_output: str,
     score: int,
     long_word_min_source_score: int,
 ) -> None:
@@ -892,8 +948,9 @@ def prepare_dictionaries(
     from crossword_generator.dictionary_prep import (
         format_summary,
         load_excluded_words,
-        prepare_flat_dictionary,
+        prepare_hgg_easy_dictionary,
         prepare_length_mixed_flat_dictionary,
+        prepare_sixty_dictionary,
     )
 
     project_root = find_project_root()
@@ -905,7 +962,7 @@ def prepare_dictionaries(
     resolved_extra_sources = [
         resolve_path(source) for source in easy_extra_sources
     ]
-    resolved_exclude_sources = [
+    resolved_base_exclude_sources = [
         resolve_path(source) for source in easy_exclude_sources
     ]
 
@@ -916,22 +973,31 @@ def prepare_dictionaries(
     # on hard — matches the "easy reject ≠ hard reject" semantic.
     thumbs_easy = project_root / "dictionaries" / "HggThumbsDownEasy.txt"
     thumbs_hard = project_root / "dictionaries" / "HggThumbsDownHard.txt"
-    if thumbs_easy.exists():
-        resolved_exclude_sources.append(thumbs_easy)
+    base_excluded_words = load_excluded_words(resolved_base_exclude_sources)
+    extra_easy_exclude: set[str] = (
+        load_excluded_words([thumbs_easy]) if thumbs_easy.exists() else set()
+    )
     extra_hard_exclude: set[str] = (
         load_excluded_words([thumbs_hard]) if thumbs_hard.exists() else set()
     )
 
-    excluded_easy_words = load_excluded_words(resolved_exclude_sources)
-    easy_include_words: set[str] = set()
-    hard_include_words: set[str] = set()
-    hard_exclude_words: set[str] = set(excluded_easy_words) | extra_hard_exclude
+    excluded_easy_words = base_excluded_words | extra_easy_exclude
+    hard_exclude_words: set[str] = base_excluded_words | extra_hard_exclude
 
     if thumbs_easy.exists() or thumbs_hard.exists():
+        easy_count = (
+            "+" + str(len(extra_easy_exclude))
+            if thumbs_easy.exists()
+            else "none"
+        )
+        hard_count = (
+            "+" + str(len(extra_hard_exclude))
+            if thumbs_hard.exists()
+            else "none"
+        )
         click.echo(
             f"Thumbs-down lists auto-discovered: "
-            f"easy={'+' + str(len(load_excluded_words([thumbs_easy]))) if thumbs_easy.exists() else 'none'}, "
-            f"hard={'+' + str(len(extra_hard_exclude)) if thumbs_hard.exists() else 'none'}"
+            f"easy={easy_count}, hard={hard_count}"
         )
 
     min_source_score_by_length = (
@@ -946,57 +1012,45 @@ def prepare_dictionaries(
     )
     easy_source_path = resolve_path(easy_source)
     easy_output_path = resolve_path(easy_output)
+    sixty_output_path = resolve_path(sixty_output)
     hard_source_path = resolve_path(hard_source)
     hard_output_path = resolve_path(hard_output)
-    hard_7_output_path = resolve_path(hard_7_output)
 
-    easy_summary = prepare_flat_dictionary(
+    easy_summary = prepare_hgg_easy_dictionary(
         easy_source_path,
+        hard_source_path,
         easy_output_path,
         score=score,
         extra_input_paths=resolved_extra_sources,
-        extra_words=easy_include_words,
         exclude_words=excluded_easy_words,
-        min_source_score_by_length=min_source_score_by_length,
-        flat_score_input_paths=[easy_source_path],
     )
     click.echo("Easy dictionary:")
     click.echo(format_summary(easy_summary))
+    click.echo("")
+
+    sixty_summary = prepare_sixty_dictionary(
+        hard_source_path,
+        sixty_output_path,
+        score=60,
+        exclude_words=base_excluded_words,
+    )
+    click.echo("HGG 60 dictionary:")
+    click.echo(format_summary(sixty_summary))
     click.echo("")
 
     hard_summary = prepare_length_mixed_flat_dictionary(
         easy_output_path,
         hard_source_path,
         hard_output_path,
-        score=score,
+        score=55,
         short_max_length=5,
         long_min_length=6,
-        short_extra_words=hard_include_words,
-        long_extra_words=hard_include_words,
         exclude_words=hard_exclude_words,
         min_source_score_by_length=min_source_score_by_length,
         flat_score_input_paths=[easy_output_path],
     )
     click.echo("Hard dictionary:")
     click.echo(format_summary(hard_summary))
-    click.echo("")
-
-    hard_7_summary = prepare_length_mixed_flat_dictionary(
-        easy_output_path,
-        hard_source_path,
-        hard_7_output_path,
-        score=score,
-        short_max_length=6,
-        long_min_length=7,
-        long_max_length=7,
-        short_extra_words=hard_include_words,
-        long_extra_words=hard_include_words,
-        exclude_words=hard_exclude_words,
-        min_source_score_by_length=min_source_score_by_length,
-        flat_score_input_paths=[easy_output_path],
-    )
-    click.echo("Hard 7x7 dictionary:")
-    click.echo(format_summary(hard_7_summary))
     click.echo("")
 
 
@@ -1048,7 +1102,10 @@ def consolidate_list(slug: str | None, dry_run: bool, api_base: str | None) -> N
             sys.exit(1)
 
     label = "DRY RUN — " if dry_run else ""
-    click.echo(f"{label}Consolidating {len(slugs)} list(s) from {api_base or 'default API'}")
+    source_label = api_base or "default API"
+    click.echo(
+        f"{label}Consolidating {len(slugs)} list(s) from {source_label}"
+    )
     click.echo("")
 
     exit_code = 0
@@ -1068,7 +1125,7 @@ def consolidate_list(slug: str | None, dry_run: bool, api_base: str | None) -> N
         status = (
             "wrote" if summary.wrote
             else "no changes" if not dry_run
-            else f"would write" if (summary.added or summary.removed)
+            else "would write" if (summary.added or summary.removed)
             else "no changes"
         )
         click.echo(
@@ -1097,7 +1154,7 @@ def validate_mini_patterns() -> None:
     from crossword_generator.models import PuzzleType
 
     failures = 0
-    for size, expected_count, expected_weight in ((5, 34, 95), (7, 50, 86)):
+    for size, expected_count, expected_weight in ((5, 34, 95), (7, 41, 80)):
         patterns = [
             (list(pattern.black_cells), pattern.weight)
             for pattern in get_grid_patterns(PuzzleType.MINI, size)
@@ -1329,8 +1386,8 @@ def _batch_bucket_configs(project_root: Path) -> list[tuple[str, int, str, Path]
     return [
         ("easy", 5, "mini", project_root / "config.easy.yaml"),
         ("easy", 7, "mini", project_root / "config.easy.yaml"),
-        ("easy", 9, "midi", project_root / "config.easy.yaml"),
-        ("hard", 5, "mini", project_root / "config.hard.yaml"),
+        ("easy", 9, "midi", project_root / "config.easy9.yaml"),
+        ("hard", 5, "mini", project_root / "config.easy.yaml"),
         ("hard", 7, "mini", project_root / "config.hard7.yaml"),
         ("hard", 9, "midi", project_root / "config.hard.yaml"),
     ]

@@ -210,6 +210,26 @@ class TestCSPFiller:
         for word in result.words_down:
             assert small_dictionary.contains(word)
 
+    def test_min_score_by_length_blocks_lower_score_slot_words(self) -> None:
+        dictionary = Dictionary(
+            {
+                "EASYWORD": 50,
+                "HARDWORD": 60,
+            },
+            min_word_score=50,
+            min_2letter_score=50,
+        )
+        config = CSPFillerConfig(
+            timeout=10,
+            quality_tiers=[50],
+            min_score_by_length={8: 60},
+        )
+        filler = CSPFiller(config, dictionary)
+
+        result = filler.fill(GridSpec(rows=1, cols=8), seed=42)
+
+        assert result.words_across == ["HARDWORD"]
+
     def test_fill_5x5_open(self, filler: CSPFiller) -> None:
         spec = GridSpec(rows=5, cols=5)
         result = filler.fill(spec, seed=42)

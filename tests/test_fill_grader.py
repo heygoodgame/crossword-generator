@@ -242,6 +242,41 @@ class TestGridLevelPenalties:
         assert "excessive_short_glue" not in report.penalties_applied
         assert "high_unknown_ratio" not in report.penalties_applied
 
+    def test_exact_score_count_passes_with_one_matching_entry(self) -> None:
+        grader = FillGrader(
+            _make_dict(
+                {
+                    "AAAAAAA": 60,
+                    "BBBBBBB": 55,
+                    "CCCCCCC": 55,
+                    "ABC": 55,
+                    "ABCABC": 55,
+                }
+            ),
+            exact_score_count_length=7,
+            exact_score_count_min_score=60,
+            exact_score_count=1,
+        )
+
+        report = grader.grade([["A"] * 7, ["."] * 7, ["B"] * 7])
+
+        assert "exact_score_count" not in report.penalties_applied
+        assert report.passing is True
+
+    def test_exact_score_count_fails_when_too_many_entries_match(self) -> None:
+        grader = FillGrader(
+            _make_dict({"AAAAAAA": 60, "BBBBBBB": 60}),
+            min_passing_score=0,
+            exact_score_count_length=7,
+            exact_score_count_min_score=60,
+            exact_score_count=1,
+        )
+
+        report = grader.grade([["A"] * 7, ["."] * 7, ["B"] * 7])
+
+        assert report.penalties_applied["exact_score_count"] == 100.0
+        assert report.passing is False
+
 
 class TestAggregateScoring:
     def test_length_weighted_mean(self) -> None:

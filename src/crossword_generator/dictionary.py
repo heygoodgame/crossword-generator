@@ -100,6 +100,44 @@ class Dictionary:
             min_2letter_score=min_2letter_score,
         )
 
+    @classmethod
+    def load_many(
+        cls,
+        paths: list[Path | str] | tuple[Path | str, ...],
+        *,
+        min_word_score: int = 50,
+        min_2letter_score: int = 30,
+    ) -> Dictionary:
+        """Load and merge multiple dictionary files.
+
+        Later files override scores from earlier files, which lets HGG 60
+        entries remain score 60 when merged into HGG Easy.
+        """
+        if not paths:
+            raise DictionaryError("At least one dictionary path is required")
+
+        merged: dict[str, int] = {}
+        for path in paths:
+            dictionary = cls.load(
+                path,
+                min_word_score=min_word_score,
+                min_2letter_score=min_2letter_score,
+            )
+            merged.update(dictionary._words)
+
+        if not merged:
+            raise DictionaryError(
+                f"Dictionary is empty after filtering "
+                f"(min_word_score={min_word_score}, "
+                f"min_2letter_score={min_2letter_score})"
+            )
+
+        return cls(
+            merged,
+            min_word_score=min_word_score,
+            min_2letter_score=min_2letter_score,
+        )
+
     def contains(self, word: str) -> bool:
         """Check if a word is in the dictionary (case-insensitive)."""
         return word.upper() in self._words

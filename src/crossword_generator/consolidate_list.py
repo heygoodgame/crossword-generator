@@ -145,7 +145,11 @@ def consolidate_one(
     if not file_path:
         raise ConsolidateError(f"List {slug!r} has no file_path registered.")
 
-    target = project_root / file_path if not Path(file_path).is_absolute() else Path(file_path)
+    target = (
+        project_root / file_path
+        if not Path(file_path).is_absolute()
+        else Path(file_path)
+    )
     target.parent.mkdir(parents=True, exist_ok=True)
 
     new_body = fetch_list_contents(slug, api_base=api_base, token=token)

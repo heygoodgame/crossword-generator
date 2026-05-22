@@ -6,7 +6,7 @@ import logging
 from pathlib import Path
 
 import yaml
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
@@ -37,9 +37,11 @@ class DictionaryConfig(BaseModel):
     """
 
     path: str = "dictionaries/HggCuratedCrosswordList.txt"
+    additional_paths: list[str] = Field(default_factory=list)
     min_word_score: int = 50
     min_2letter_score: int = 30
     themed_path: str = "dictionaries/HggScoredCrosswordList.txt"
+    themed_additional_paths: list[str] = Field(default_factory=list)
     themed_min_word_score: int = 45
     themed_min_2letter_score: int = 30
 
@@ -48,8 +50,10 @@ class CSPFillerConfig(BaseModel):
     """Settings for the native Python CSP filler."""
 
     dictionary_path: str = "dictionaries/HggCuratedCrosswordList.txt"
+    additional_dictionary_paths: list[str] = Field(default_factory=list)
     min_word_score: int = 50
     min_2letter_score: int = 30
+    min_score_by_length: dict[int, int] = Field(default_factory=dict)
     timeout: int = 30
     timeout_by_size: dict[int, int] | None = None
     quality_tiers: list[int] = [58, 52, 45]
@@ -72,6 +76,9 @@ class FillGradingConfig(BaseModel):
     retry_on_fail: bool = True
     collect_boards: int = 1  # 1 = stop at first passing board
     llm_select: bool = False  # requires collect_boards > 1
+    exact_score_count_length: int | None = None
+    exact_score_count_min_score: int | None = None
+    exact_score_count: int | None = None
 
 
 class ClueGradingConfig(BaseModel):

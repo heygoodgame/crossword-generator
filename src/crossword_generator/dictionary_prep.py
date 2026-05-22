@@ -162,6 +162,64 @@ def prepare_length_mixed_flat_dictionary(
     return _summary_from_collection(short_collection, dst, score)
 
 
+def prepare_hgg_easy_dictionary(
+    input_path: Path | str,
+    scoring_input_path: Path | str,
+    output_path: Path | str,
+    *,
+    score: int = 50,
+    extra_input_paths: Sequence[Path | str] = (),
+    exclude_words: Collection[str] = (),
+    source_sixty_score: int = 60,
+) -> DictionaryPrepSummary:
+    """Build Jeff's effective HGG Easy list, excluding known 60-pointers."""
+    input_paths = (Path(input_path),) + tuple(Path(p) for p in extra_input_paths)
+    source_sixties = _collect_source_score_words(
+        Path(scoring_input_path),
+        min_score=source_sixty_score,
+        min_word_length=3,
+        max_word_length=9,
+    )
+    collection = _collect_words(
+        input_paths,
+        exclude_words={*exclude_words, *source_sixties},
+        min_word_length=3,
+        max_word_length=9,
+        flat_score_input_paths=input_paths,
+    )
+    dst = Path(output_path)
+    _write_flat_words(dst, collection.words, score)
+
+    return _summary_from_collection(collection, dst, score)
+
+
+def prepare_sixty_dictionary(
+    input_path: Path | str,
+    output_path: Path | str,
+    *,
+    score: int = 60,
+    source_sixty_score: int = 60,
+    min_word_length: int = 7,
+    max_word_length: int = 9,
+    exclude_words: Collection[str] = (),
+) -> DictionaryPrepSummary:
+    """Build the HGG 60 list from source-score 60 rows in the length range."""
+    dst = Path(output_path)
+    collection = _collect_words(
+        (Path(input_path),),
+        exclude_words=exclude_words,
+        min_source_score_by_length={
+            length: source_sixty_score
+            for length in range(min_word_length, max_word_length + 1)
+        },
+        min_word_length=min_word_length,
+        max_word_length=max_word_length,
+    )
+    _write_flat_words(dst, collection.words, score)
+
+    return _summary_from_collection(collection, dst, score)
+
+
 def format_summary(summary: DictionaryPrepSummary) -> str:
     """Format a summary for CLI/log output."""
     additional_inputs = ", ".join(str(p) for p in summary.input_paths[1:])
@@ -201,6 +259,35 @@ def load_excluded_words(paths: Sequence[Path | str]) -> set[str]:
             if parsed is not None:
                 word, _score = parsed
                 words.add(word.upper())
+    return words
+
+
+def _collect_source_score_words(
+    path: Path,
+    *,
+    min_score: int,
+    min_word_length: int | None = None,
+    max_word_length: int | None = None,
+) -> set[str]:
+    words: set[str] = set()
+    for raw_line in path.read_text().splitlines():
+        line = raw_line.strip()
+        if not line:
+            continue
+        parsed = _parse_word_and_score(line)
+        if parsed is None:
+            continue
+        word, score = parsed
+        word = word.upper()
+        if score is None or score < min_score:
+            continue
+        if not _is_valid_crossword_word(word):
+            continue
+        if min_word_length is not None and len(word) < min_word_length:
+            continue
+        if max_word_length is not None and len(word) > max_word_length:
+            continue
+        words.add(word)
     return words
 
 

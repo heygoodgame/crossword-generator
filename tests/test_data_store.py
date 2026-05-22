@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from typing import Any
+from urllib.parse import parse_qs, urlparse
 
 import pytest
 
@@ -13,6 +14,8 @@ from crossword_generator.data_store import (
     DataStoreApiError,
     DataStoreError,
     bulk_save_generated_puzzles,
+    delete_generated_puzzle_records,
+    list_generated_puzzle_records,
     make_record,
     records_from_manifest,
 )
@@ -204,3 +207,75 @@ def test_bulk_save_patches_duplicate_records_when_replacing(
 
     assert results[0].action == "updated"
     assert results[0].response == {"id": 123, "key": record["key"]}
+
+
+def test_list_generated_puzzle_records_paginates_and_filters(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls: list[tuple[str, str]] = []
+
+    def fake_request(
+        method: str,
+        path: str,
+        body: dict[str, Any] | None = None,
+        *,
+        api_base: str | None = None,
+        token: str | None = None,
+        timeout: int = 60,
+    ) -> dict[str, Any]:
+        calls.append((method, path))
+        query = parse_qs(urlparse(path).query)
+        if query.get("page") == ["1"]:
+            return {
+                "data": [{"id": 1, "key": "one"}],
+                "meta": {"current_page": 1, "last_page": 2},
+            }
+        return {
+            "data": [{"id": 2, "key": "two"}],
+            "meta": {"current_page": 2, "last_page": 2},
+        }
+
+    monkeypatch.setattr(data_store, "_request_json", fake_request)
+
+    records = list_generated_puzzle_records(
+        game_key="minicrossword",
+        size=7,
+        token="token",
+    )
+
+    assert [record["key"] for record in records] == ["one", "two"]
+    assert calls[0][0] == "GET"
+    assert "namespace=crosswords" in calls[0][1]
+    assert "collection=generated-puzzles" in calls[0][1]
+    assert "game_key=minicrossword" in calls[0][1]
+    assert "filters%5Bsize%5D=7" in calls[0][1]
+
+
+def test_delete_generated_puzzle_records_deletes_by_id(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls: list[tuple[str, str]] = []
+
+    def fake_request(
+        method: str,
+        path: str,
+        body: dict[str, Any] | None = None,
+        *,
+        api_base: str | None = None,
+        token: str | None = None,
+        timeout: int = 60,
+    ) -> dict[str, Any]:
+        calls.append((method, path))
+        return {}
+
+    monkeypatch.setattr(data_store, "_request_json", fake_request)
+
+    results = delete_generated_puzzle_records(
+        [{"id": 123, "key": "old"}],
+        token="token",
+        sleep_seconds=0,
+    )
+
+    assert results[0].action == "deleted"
+    assert results[0].key == "old"
+    assert calls == [("DELETE", "/admin/data-store/records/123")]

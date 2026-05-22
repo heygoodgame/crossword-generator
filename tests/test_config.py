@@ -75,10 +75,11 @@ class TestLoadConfig:
         [
             (
                 "config.easy.yaml",
-                "dictionaries/hgg-easy-prevalent-flat-55.txt",
+                "dictionaries/hgg-easy.txt",
             ),
+            ("config.easy9.yaml", "dictionaries/hgg-easy.txt"),
             ("config.hard.yaml", "dictionaries/hgg-hard-flat-55.txt"),
-            ("config.hard7.yaml", "dictionaries/hgg-hard-7x7-flat-55.txt"),
+            ("config.hard7.yaml", "dictionaries/hgg-easy.txt"),
         ],
     )
     def test_load_phase_1_configs(
@@ -89,14 +90,22 @@ class TestLoadConfig:
     ) -> None:
         cfg = load_config(project_root / filename)
         assert cfg.dictionary.path == dictionary_path
-        assert cfg.dictionary.min_word_score == 55
+        expected_score = 55 if filename == "config.hard.yaml" else 50
+        assert cfg.dictionary.min_word_score == expected_score
         assert cfg.fill.csp.dictionary_path == dictionary_path
-        assert cfg.fill.csp.min_word_score == 55
-        assert cfg.fill.csp.quality_tiers == [55]
-        if filename == "config.easy.yaml":
+        assert cfg.fill.csp.min_word_score == expected_score
+        assert cfg.fill.csp.quality_tiers == [expected_score]
+        if filename in {"config.easy.yaml", "config.easy9.yaml"}:
             assert cfg.fill.max_long_entries_8_9 == 3
         else:
             assert cfg.fill.max_long_entries_8_9 is None
+        if filename == "config.easy9.yaml":
+            assert cfg.fill.csp.min_score_by_length == {8: 60, 9: 60}
+        if filename in {"config.easy9.yaml", "config.hard7.yaml"}:
+            assert cfg.dictionary.additional_paths == ["dictionaries/hgg-60.txt"]
+            assert cfg.fill.csp.additional_dictionary_paths == [
+                "dictionaries/hgg-60.txt"
+            ]
         assert cfg.theme.enabled is False
         assert cfg.llm.claude.theme_model == "claude-sonnet-4-6"
         assert cfg.llm.claude.clue_generation_model == "claude-sonnet-4-6"

@@ -252,11 +252,16 @@ class CSPFiller(GridFiller):
     @classmethod
     def from_config(cls, config: CSPFillerConfig) -> CSPFiller:
         """Create a CSPFiller, loading the dictionary from config."""
-        dict_path = Path(config.dictionary_path)
-        if not dict_path.is_absolute():
-            dict_path = find_project_root() / dict_path
-        dictionary = Dictionary.load(
-            dict_path,
+        project_root = find_project_root()
+        paths = [Path(config.dictionary_path), *(
+            Path(path) for path in config.additional_dictionary_paths
+        )]
+        resolved_paths = [
+            path if path.is_absolute() else project_root / path
+            for path in paths
+        ]
+        dictionary = Dictionary.load_many(
+            resolved_paths,
             min_word_score=config.min_word_score,
             min_2letter_score=config.min_2letter_score,
         )
@@ -327,12 +332,18 @@ class CSPFiller(GridFiller):
                     candidates_by_slot.append([seed_word])
                     continue
 
+                min_score = max(
+                    tier_min_score,
+                    self._config.min_score_by_length.get(slot.length, 0),
+                )
                 words = self._dictionary.words_by_length(
-                    slot.length, min_score=tier_min_score
+                    slot.length, min_score=min_score
                 )
                 if not words:
-                    # Fall back to all words for this length within this tier
-                    words = self._dictionary.words_by_length(slot.length)
+                    # Fall back to all loaded words only when this length has
+                    # no explicit score floor.
+                    if slot.length not in self._config.min_score_by_length:
+                        words = self._dictionary.words_by_length(slot.length)
                 if not words:
                     if is_last_tier:
                         raise FillError(

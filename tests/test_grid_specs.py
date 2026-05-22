@@ -94,14 +94,14 @@ class TestGetGridSpec:
             _assert_valid_grid_structure(spec)
 
     def test_black_cell_count_mini_7(self) -> None:
-        """All 7x7 patterns have 4-13 black cells."""
+        """All 7x7 patterns have 4-14 black cells."""
         patterns_seen: set[tuple[tuple[int, int], ...]] = set()
         for seed in range(100):
             spec = get_grid_spec(PuzzleType.MINI, 7, seed=seed)
             patterns_seen.add(tuple(sorted(spec.black_cells)))
         for pattern in patterns_seen:
-            assert 4 <= len(pattern) <= 13, (
-                f"7x7 pattern has {len(pattern)} black cells, expected 4-13: {pattern}"
+            assert 4 <= len(pattern) <= 14, (
+                f"7x7 pattern has {len(pattern)} black cells, expected 4-14: {pattern}"
             )
 
     def test_invalid_size_raises(self) -> None:
@@ -137,7 +137,7 @@ class TestGetGridSpec:
 class TestMiniGridPatternCatalog:
     @pytest.mark.parametrize(
         ("size", "expected_count", "expected_weight"),
-        [(5, 34, 95), (7, 38, 77)],
+        [(5, 34, 95), (7, 41, 80)],
     )
     def test_attachment_pattern_counts_and_weights(
         self,
@@ -175,15 +175,47 @@ class TestMiniGridPatternCatalog:
     def test_mini_7_patterns_apply_jeff_feedback_rules(self) -> None:
         patterns = get_grid_patterns(PuzzleType.MINI, 7)
         center = (3, 3)
+        center_optional_patterns = {
+            (
+                (0, 3), (1, 3), (2, 3), (4, 0), (4, 6),
+                (5, 0), (5, 1), (5, 5), (5, 6), (6, 0),
+                (6, 1), (6, 5), (6, 6),
+            ),
+        }
 
         assert all(pattern.symmetries for pattern in patterns)
 
         for pattern in patterns:
             if center in pattern.black_cells:
                 continue
+            if pattern.black_cells in center_optional_patterns:
+                assert validate_pattern(
+                    7, tuple(sorted(set(pattern.black_cells) | {center}))
+                ).valid
+                continue
 
             candidate = tuple(sorted(set(pattern.black_cells) | {center}))
             assert not validate_pattern(7, candidate).valid
+
+    def test_mini_7_patterns_include_jeff_attachment_examples(self) -> None:
+        patterns = {
+            pattern.black_cells for pattern in get_grid_patterns(PuzzleType.MINI, 7)
+        }
+
+        assert (
+            (0, 3), (1, 3), (3, 0), (3, 1), (3, 5), (3, 6),
+            (5, 3), (6, 3),
+        ) in patterns
+        assert (
+            (0, 3), (1, 3), (2, 3), (4, 0), (4, 6), (5, 0),
+            (5, 1), (5, 5), (5, 6), (6, 0), (6, 1), (6, 5),
+            (6, 6),
+        ) in patterns
+        assert (
+            (0, 3), (1, 3), (2, 3), (3, 3), (4, 0), (4, 6),
+            (5, 0), (5, 1), (5, 5), (5, 6), (6, 0), (6, 1),
+            (6, 5), (6, 6),
+        ) in patterns
 
 
 class TestMidiGridPatternCatalog:

@@ -137,6 +137,7 @@ def create_pipeline(
     )
     if is_themed and config.dictionary.themed_path:
         dict_path = config.dictionary.themed_path
+        dict_additional_paths = config.dictionary.themed_additional_paths
         dict_min_score = (
             config.dictionary.themed_min_word_score
             or config.dictionary.min_word_score
@@ -147,11 +148,12 @@ def create_pipeline(
         )
     else:
         dict_path = config.dictionary.path
+        dict_additional_paths = config.dictionary.additional_paths
         dict_min_score = config.dictionary.min_word_score
         dict_min_2letter = config.dictionary.min_2letter_score
 
-    dictionary = Dictionary.load(
-        project_root / dict_path,
+    dictionary = Dictionary.load_many(
+        [project_root / path for path in [dict_path, *dict_additional_paths]],
         min_word_score=dict_min_score,
         min_2letter_score=dict_min_2letter,
     )
@@ -197,6 +199,9 @@ def create_pipeline(
     grader = FillGrader(
         dictionary,
         min_passing_score=config.grading.fill.min_score,
+        exact_score_count_length=config.grading.fill.exact_score_count_length,
+        exact_score_count_min_score=config.grading.fill.exact_score_count_min_score,
+        exact_score_count=config.grading.fill.exact_score_count,
     )
     fill_step = FillWithGradingStep(
         filler,

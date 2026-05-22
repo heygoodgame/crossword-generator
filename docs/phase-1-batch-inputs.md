@@ -7,13 +7,21 @@ crossword-midi-and-mini.
 ## Dictionaries
 
 The generator dictionary loader expects one entry per line as `WORD;SCORE`.
-Phase 1 uses a flat score of `55` so the fill solver tests the curated word
-sets rather than old score gradients. During preparation, true scored 6-, 7-,
-8-, and 9-letter source rows below `60` are filtered out before the remaining
-words are flattened. Previously flattened `;55` source dictionaries are treated
-as flat inputs, not as source-scored rows.
+The current Jeff-reviewed split is explicit:
 
-Prepare the Easy, Hard, and Hard 7x7 dictionaries from the source inputs:
+- `dictionaries/hgg-easy.txt`: 3-9 letter HGG Easy entries, all `;50`, with
+  known source-score 60 entries removed.
+- `dictionaries/hgg-60.txt`: 7-9 letter HGG 60 entries, all `;60`.
+
+Easy 9x9 and Hard 7x7 do not have their own dictionary files; those pools are
+composed at generation time from the two effective master lists.
+
+The legacy hard dictionary still filters true scored 6-, 7-, 8-, and 9-letter
+source rows below `60` before flattening accepted entries. Previously flattened
+`;55` Easy sources are treated as flat inputs, not original source-scored rows.
+
+Prepare the HGG Easy and HGG 60 dictionaries from the source inputs. The command
+also refreshes the legacy hard dictionary while `config.hard.yaml` still exists:
 
 ```bash
 uv run crossword-generator prepare-dictionaries \
@@ -22,10 +30,10 @@ uv run crossword-generator prepare-dictionaries \
   --easy-exclude-source dictionaries/XwiJeffChenList-NotFamilyFriendly.txt \
   --easy-exclude-source dictionaries/Wordplete-PrevalentCulled-8-9-length-Removed.txt \
   --easy-exclude-source dictionaries/HggGeneratedSafetyExclude.txt \
-  --easy-output dictionaries/hgg-easy-prevalent-flat-55.txt \
+  --easy-output dictionaries/hgg-easy.txt \
+  --sixty-output dictionaries/hgg-60.txt \
   --hard-source dictionaries/HggCuratedCrosswordList.txt \
-  --hard-output dictionaries/hgg-hard-flat-55.txt \
-  --hard-7-output dictionaries/hgg-hard-7x7-flat-55.txt
+  --hard-output dictionaries/hgg-hard-flat-55.txt
 ```
 
 `dictionaries/HggThumbsDownEasy.txt` and `HggThumbsDownHard.txt` (written
@@ -36,27 +44,21 @@ the hard dictionaries.
 
 Default outputs:
 
-- `dictionaries/hgg-easy-prevalent-flat-55.txt` from the prior Easy
-  3-7-letter flat dictionary plus Jeff's prevalent 8-9-letter Easy list
-- `dictionaries/hgg-hard-flat-55.txt` from the prepared Easy/prevalent list for
-  3-5 letter entries and `dictionaries/HggCuratedCrosswordList.txt` for 6+
-  entries
-- `dictionaries/hgg-hard-7x7-flat-55.txt` from the prepared Easy/prevalent
-  list for 3-6 letter entries and `dictionaries/HggCuratedCrosswordList.txt`
-  for 7-letter entries
+- `dictionaries/hgg-easy.txt` from the prior Easy flat dictionary plus Jeff's
+  prevalent 8-9-letter list, after removing known 60-pointers.
+- `dictionaries/hgg-60.txt` from source-score 60 entries in the curated source,
+  length 7-9.
+- `dictionaries/hgg-hard-flat-55.txt` remains the legacy hard/midi dictionary
+  until Jeff's HGG Hard list lands.
 
 The command logs input rows, output rows, malformed rows, invalid words,
 excluded words, rows below the source-score floor, duplicates, and the flat
 score used.
 
-The initial run produced 8,967 easy rows and 201,978 hard rows before the
-long-word source-score floor was added. The May 18 dictionary run produced
-18,586 Easy/prevalent rows after excluding 153 entries, 116,843 Hard rows, and
-7,192 Hard 7x7 rows. The general Hard dictionary takes 3-5 letter entries from
-Easy/prevalent and 6+ entries from the hard source. The Hard 7x7 dictionary
-takes 3-6 letter entries from Easy/prevalent and 7-letter entries from the hard
-source. The hard source had one invalid alphanumeric entry, `catch22;50`, which
-was skipped because the current generator word format uses letters only.
+The May 22 dictionary run produced 18,321 HGG Easy rows, 5,881 HGG 60 rows, and
+116,843 legacy Hard rows. The hard source had one invalid alphanumeric entry,
+`catch22;50`, which was skipped because the current generator word format uses
+letters only.
 
 The prevalent 8-9-letter Easy merge excludes the high-confidence unsuitable
 entries listed in `dictionaries/Wordplete-PrevalentCulled-8-9-length-Removed.txt`.
@@ -71,18 +73,22 @@ not original source quality scores.
 Use these committed configs for difficulty-specific runs:
 
 - `config.easy.yaml`
+- `config.easy9.yaml`
 - `config.hard.yaml`
 - `config.hard7.yaml`
 
-Both configs point `dictionary.path` and `fill.csp.dictionary_path` at the same
-flat-score dictionary. Their score thresholds are `55`, and `quality_tiers` is
-`[55]` so a flat `55` dictionary is not filtered out by the old tier ladder.
-Easy config also sets `fill.max_long_entries_8_9: 3`, which skips 9x9 grid
-variants with too many long slots before CSP fill.
+Each config points `dictionary.path` and `fill.csp.dictionary_path` at the same
+primary dictionary. HGG Easy configs use score threshold `50` and
+`quality_tiers: [50]`. `config.easy9.yaml` and `config.hard7.yaml` merge
+`dictionaries/hgg-60.txt` through `additional_paths` and
+`additional_dictionary_paths`. `config.easy9.yaml` also sets
+`fill.csp.min_score_by_length` for 8 and 9 to `60` so 9x9 Easy long slots cannot
+use 50-point entries.
 
-The batch runner uses `config.hard7.yaml` only for the `hard/7` bucket. That
-keeps Hard 7x7 short fill aligned with Easy/prevalent while letting the
-7-letter answers differ from Easy through the 60+ curated hard source.
+The batch runner uses `config.easy9.yaml` for `easy/9`, `config.easy.yaml` for
+`easy/5`, `easy/7`, and `hard/5`, and `config.hard7.yaml` only for `hard/7`.
+That matches Jeff's table while leaving `config.hard.yaml` available for the
+legacy hard/midi path until the HGG Hard list arrives.
 
 Ollama remains the repo default for clue generation. Phase 1 prep and
 validation do not require an LLM. For future generation runs, Claude remains
@@ -101,12 +107,20 @@ uv run python - <<'PY'
 from crossword_generator.dictionary import Dictionary
 
 for path in (
-    "dictionaries/hgg-easy-prevalent-flat-55.txt",
+    "dictionaries/hgg-easy.txt",
+    "dictionaries/hgg-60.txt",
     "dictionaries/hgg-hard-flat-55.txt",
-    "dictionaries/hgg-hard-7x7-flat-55.txt",
 ):
-    d = Dictionary.load(path, min_word_score=55, min_2letter_score=55)
-    print(path, len(d), d.score(next(iter(d.words_by_length(5)))))
+    d = Dictionary.load(path, min_word_score=50, min_2letter_score=50)
+    lengths = sorted(d.supported_lengths())
+    print(path, len(d), lengths)
+
+merged = Dictionary.load_many(
+    ["dictionaries/hgg-easy.txt", "dictionaries/hgg-60.txt"],
+    min_word_score=50,
+    min_2letter_score=50,
+)
+print("runtime merged", len(merged), sorted(merged.supported_lengths()))
 PY
 ```
 

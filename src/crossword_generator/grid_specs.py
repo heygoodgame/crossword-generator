@@ -105,9 +105,14 @@ def _add_center_black_if_valid(
 
 def _make_mini_7_catalog(
     patterns: list[tuple[list[tuple[int, int]], int]],
+    *,
+    center_optional_patterns: tuple[list[tuple[int, int]], ...] = (),
 ) -> list[tuple[list[tuple[int, int]], int]]:
     """Apply Jeff's 7x7 feedback to the raw attachment-derived catalog."""
     transformed: dict[tuple[tuple[int, int], ...], int] = {}
+    center_optional = {
+        tuple(sorted(pattern)) for pattern in center_optional_patterns
+    }
 
     for black_cells, weight in patterns:
         normalized = tuple(sorted(black_cells))
@@ -116,6 +121,8 @@ def _make_mini_7_catalog(
 
         updated = _add_center_black_if_valid(7, normalized)
         transformed[updated] = transformed.get(updated, 0) + weight
+        if normalized in center_optional and normalized != updated:
+            transformed[normalized] = transformed.get(normalized, 0) + weight
 
     return [
         (list(black_cells), weight)
@@ -408,6 +415,20 @@ _GRID_PATTERNS: dict[
     # - discard truly asymmetric patterns
     # - add the center black square whenever doing so preserves 3+ letter slots
     (PuzzleType.MINI, 7): _make_mini_7_catalog([
+        # --- Jeff attachment examples ---
+        # "7x7 1": reduced raw whitespace. The center square stays open
+        # because adding it would create one-letter slots.
+        ([
+            (0, 3), (1, 3), (3, 0), (3, 1), (3, 5),
+            (3, 6), (5, 3), (6, 3),
+        ], 1),
+        # "7x7 2": Utah blocks. Jeff noted this can work with or without
+        # the center square, so the exception below keeps both variants.
+        ([
+            (0, 3), (1, 3), (2, 3), (4, 0), (4, 6),
+            (5, 0), (5, 1), (5, 5), (5, 6), (6, 0),
+            (6, 1), (6, 5), (6, 6),
+        ], 1),
         # --- 13x frequency ---
         ([
             (0, 0), (0, 1), (0, 2), (1, 0), (1, 1),
@@ -608,7 +629,13 @@ _GRID_PATTERNS: dict[
             (0, 3), (1, 3), (5, 0), (5, 6), (6, 0),
             (6, 1), (6, 5), (6, 6),
         ], 1),
-    ]),
+    ], center_optional_patterns=(
+        [
+            (0, 3), (1, 3), (2, 3), (4, 0), (4, 6),
+            (5, 0), (5, 1), (5, 5), (5, 6), (6, 0),
+            (6, 1), (6, 5), (6, 6),
+        ],
+    )),
     # 9x9 midi: curated mirror-style and regular-symmetry examples from
     # Jeff's feedback, expanded with top-to-bottom flips and conservative
     # cheater-square variants.

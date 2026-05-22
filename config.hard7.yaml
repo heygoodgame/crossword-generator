@@ -1,39 +1,49 @@
 # Phase 1 hard 7x7 batch-generation config.
-# Uses Easy/prevalent 3-6 letter fill plus curated 60+ 7-letter entries.
+# Uses HGG Easy fill plus exactly one 7-letter HGG 60 entry.
+# Exactly one 7-letter entry must be a source-score 60 entry.
 
 puzzle:
   type: mini
   grid_size: 7
 
 dictionary:
-  path: dictionaries/hgg-hard-7x7-flat-55.txt
-  min_word_score: 55
-  min_2letter_score: 55
-  themed_path: dictionaries/hgg-hard-7x7-flat-55.txt
-  themed_min_word_score: 55
-  themed_min_2letter_score: 55
+  path: dictionaries/hgg-easy.txt
+  additional_paths:
+    - dictionaries/hgg-60.txt
+  min_word_score: 50
+  min_2letter_score: 50
+  themed_path: dictionaries/hgg-easy.txt
+  themed_additional_paths:
+    - dictionaries/hgg-60.txt
+  themed_min_word_score: 50
+  themed_min_2letter_score: 50
 
 fill:
   provider: csp
   max_retries: 5
   max_grid_variants: 100
   csp:
-    dictionary_path: dictionaries/hgg-hard-7x7-flat-55.txt
-    min_word_score: 55
-    min_2letter_score: 55
+    dictionary_path: dictionaries/hgg-easy.txt
+    additional_dictionary_paths:
+      - dictionaries/hgg-60.txt
+    min_word_score: 50
+    min_2letter_score: 50
     timeout: 30
     timeout_by_size:
       5: 30
       7: 120
       9: 300
-    quality_tiers: [55]
+    quality_tiers: [50]
 
 grading:
   fill:
-    min_score: 51
+    min_score: 50
     retry_on_fail: true
     collect_boards: 1
     llm_select: false
+    exact_score_count_length: 7
+    exact_score_count_min_score: 60
+    exact_score_count: 1
   clue:
     min_score: 70
     regenerate_on_fail: true

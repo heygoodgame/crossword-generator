@@ -59,8 +59,8 @@ MURDERING;violence
 MURDEROUS;violence
 OBSCENELY;existing not-family-friendly filter
 OBSCENITY;existing not-family-friendly filter
-PENTAGRAM;potentially controversial occult/religious reference
 PEEPSHOW;existing not-family-friendly filter
+PENTAGRAM;potentially controversial occult/religious reference
 PLASTERED;drunkenness slang
 REDSKINS;existing not-family-friendly filter
 RETARDED;existing not-family-friendly filter

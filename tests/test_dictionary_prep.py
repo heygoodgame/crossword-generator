@@ -6,7 +6,9 @@ from crossword_generator.dictionary import Dictionary
 from crossword_generator.dictionary_prep import (
     load_excluded_words,
     prepare_flat_dictionary,
+    prepare_hgg_easy_dictionary,
     prepare_length_mixed_flat_dictionary,
+    prepare_sixty_dictionary,
 )
 
 
@@ -202,6 +204,56 @@ def test_prepare_length_mixed_dictionary_can_cap_long_words(
     assert output.read_text().splitlines() == [
         "ABACUS;55",
         "SEVENOK;55",
+    ]
+
+
+def test_prepare_hgg_easy_dictionary_removes_known_sixty_pointers(
+    tmp_path: Path,
+) -> None:
+    easy_source = tmp_path / "easy.txt"
+    extra_source = tmp_path / "extra.txt"
+    scoring_source = tmp_path / "scored.txt"
+    output = tmp_path / "hgg-easy.txt"
+    easy_source.write_text("apple;55\nalchemy;55\n")
+    extra_source.write_text("blueberry\ncarrot\n")
+    scoring_source.write_text(
+        "apple;50\n"
+        "alchemy;60\n"
+        "blueberry;60\n"
+        "carrot;50\n"
+    )
+
+    summary = prepare_hgg_easy_dictionary(
+        easy_source,
+        scoring_source,
+        output,
+        extra_input_paths=[extra_source],
+    )
+
+    assert summary.output_count == 2
+    assert output.read_text().splitlines() == ["APPLE;50", "CARROT;50"]
+
+
+def test_prepare_sixty_dictionary_keeps_only_7_to_9_letter_sixties(
+    tmp_path: Path,
+) -> None:
+    source = tmp_path / "scored.txt"
+    output = tmp_path / "hgg-60.txt"
+    source.write_text(
+        "sixsix;60\n"
+        "sevenss;60\n"
+        "eighties;60\n"
+        "ninetieth;60\n"
+        "sevenno;50\n"
+    )
+
+    summary = prepare_sixty_dictionary(source, output)
+
+    assert summary.output_count == 3
+    assert output.read_text().splitlines() == [
+        "EIGHTIES;60",
+        "NINETIETH;60",
+        "SEVENSS;60",
     ]
 
 

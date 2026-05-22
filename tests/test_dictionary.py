@@ -89,6 +89,25 @@ class TestDictionaryLoad:
         d = Dictionary.load(small_dict_file, min_word_score=50, min_2letter_score=30)
         assert d.score("zzz") is None
 
+    def test_load_many_merges_and_preserves_later_scores(
+        self, tmp_path: Path
+    ) -> None:
+        easy = tmp_path / "easy.txt"
+        sixty = tmp_path / "sixty.txt"
+        easy.write_text("apple;50\neighties;50\n")
+        sixty.write_text("eighties;60\nninetieth;60\n")
+
+        d = Dictionary.load_many(
+            [easy, sixty],
+            min_word_score=50,
+            min_2letter_score=50,
+        )
+
+        assert len(d) == 3
+        assert d.score("APPLE") == 50
+        assert d.score("EIGHTIES") == 60
+        assert d.score("NINETIETH") == 60
+
 
 class TestWordsByLengthMinScore:
     """Test words_by_length with min_score filtering."""
@@ -200,16 +219,17 @@ class TestPhase1PreparedDictionaries:
     """Tests against the generated Phase 1 flat-score dictionaries."""
 
     def test_easy_dictionary_loads(self, project_root: Path) -> None:
-        path = project_root / "dictionaries" / "hgg-easy-flat-55.txt"
-        d = Dictionary.load(path, min_word_score=55, min_2letter_score=55)
-        assert len(d) == 8967
-        assert d.score("ABACUS") == 55
-        assert d.score("zoom") == 55
+        path = project_root / "dictionaries" / "hgg-easy.txt"
+        d = Dictionary.load(path, min_word_score=50, min_2letter_score=50)
+        assert len(d) == 18320
+        assert d.score("ABACUS") == 50
+        assert d.score("zoom") == 50
+        assert d.score("ALCHEMY") is None
 
     def test_hard_dictionary_loads(self, project_root: Path) -> None:
         path = project_root / "dictionaries" / "hgg-hard-flat-55.txt"
         d = Dictionary.load(path, min_word_score=55, min_2letter_score=55)
-        assert len(d) == 116843
+        assert len(d) == 116840
         assert d.score("ACE") == 55
         assert d.score("ADLIBS") == 55
         assert d.score("ABACUS") is None
@@ -221,18 +241,41 @@ class TestPhase1PreparedDictionaries:
     def test_hard_7x7_dictionary_uses_easy_shorts_and_curated_sevens(
         self, project_root: Path
     ) -> None:
-        path = project_root / "dictionaries" / "hgg-hard-7x7-flat-55.txt"
-        d = Dictionary.load(path, min_word_score=55, min_2letter_score=55)
-        assert len(d) == 7192
-        assert d.supported_lengths() == {3, 4, 5, 6, 7}
-        assert d.score("ABACUS") == 55
-        assert d.score("ACTDUMB") == 55
-        assert d.score("WENTDRY") is None
+        d = Dictionary.load_many(
+            [
+                project_root / "dictionaries" / "hgg-easy.txt",
+                project_root / "dictionaries" / "hgg-60.txt",
+            ],
+            min_word_score=50,
+            min_2letter_score=50,
+        )
+        assert len(d) == 24201
+        assert d.supported_lengths() == {3, 4, 5, 6, 7, 8, 9}
+        assert d.score("ABACUS") == 50
+        assert d.score("ACTDUMB") == 60
+        assert d.score("AIRLIFT") == 60
         assert d.score("AHTHEGOODOLDAYS") is None
 
-    def test_easy_dictionary_supports_lengths_3_through_7_only(
+    def test_easy_dictionary_supports_lengths_3_through_9(
         self, project_root: Path
     ) -> None:
-        path = project_root / "dictionaries" / "hgg-easy-flat-55.txt"
-        d = Dictionary.load(path, min_word_score=55, min_2letter_score=55)
-        assert d.supported_lengths() == {3, 4, 5, 6, 7}
+        path = project_root / "dictionaries" / "hgg-easy.txt"
+        d = Dictionary.load(path, min_word_score=50, min_2letter_score=50)
+        assert d.supported_lengths() == {3, 4, 5, 6, 7, 8, 9}
+
+    def test_merged_dictionary_preserves_sixties_for_8_and_9(
+        self, project_root: Path
+    ) -> None:
+        d = Dictionary.load_many(
+            [
+                project_root / "dictionaries" / "hgg-easy.txt",
+                project_root / "dictionaries" / "hgg-60.txt",
+            ],
+            min_word_score=50,
+            min_2letter_score=50,
+        )
+        assert d.supported_lengths() == {3, 4, 5, 6, 7, 8, 9}
+        assert d.score("ABSINTHE") == 60
+        assert d.score("AFTERMATH") == 60
+        assert d.words_by_length(8, min_score=60)
+        assert d.words_by_length(9, min_score=60)

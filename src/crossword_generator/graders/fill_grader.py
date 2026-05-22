@@ -24,9 +24,15 @@ class FillGrader:
         dictionary: Dictionary,
         *,
         min_passing_score: int = 51,
+        exact_score_count_length: int | None = None,
+        exact_score_count_min_score: int | None = None,
+        exact_score_count: int | None = None,
     ) -> None:
         self._dictionary = dictionary
         self._min_passing_score = min_passing_score
+        self._exact_score_count_length = exact_score_count_length
+        self._exact_score_count_min_score = exact_score_count_min_score
+        self._exact_score_count = exact_score_count
 
     def grade(self, grid: list[list[str]]) -> FillGradeReport:
         """Grade a filled grid and return a report."""
@@ -46,6 +52,8 @@ class FillGrader:
         )
         passing = overall_score >= self._min_passing_score
         if "terminal_s_variants" in grid_penalties:
+            passing = False
+        if "exact_score_count" in grid_penalties:
             passing = False
 
         summary_parts = [
@@ -123,6 +131,25 @@ class FillGrader:
         unknown_count = sum(1 for wg in word_grades if wg.dictionary_score is None)
         if len(word_grades) > 0 and unknown_count / len(word_grades) > 0.2:
             grid_penalties["high_unknown_ratio"] = 10.0
+
+        if self._exact_score_count is not None:
+            target_length = self._exact_score_count_length
+            min_score = self._exact_score_count_min_score
+            if target_length is None or min_score is None:
+                raise ValueError(
+                    "exact_score_count requires exact_score_count_length "
+                    "and exact_score_count_min_score"
+                )
+
+            matching_count = sum(
+                1
+                for wg in word_grades
+                if wg.length == target_length
+                and wg.dictionary_score is not None
+                and wg.dictionary_score >= min_score
+            )
+            if matching_count != self._exact_score_count:
+                grid_penalties["exact_score_count"] = 100.0
 
         # excessive_short_glue penalty removed: 3-letter words are
         # structurally unavoidable in 5x5–11x11 grids.

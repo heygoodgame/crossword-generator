@@ -45,6 +45,15 @@ class SaveResult:
     response: dict[str, Any]
 
 
+@dataclass(frozen=True)
+class DeleteResult:
+    """Result for one attempted data-store record delete."""
+
+    action: str
+    key: str
+    response: dict[str, Any]
+
+
 def make_record(
     puzzle: dict[str, Any],
     *,
@@ -196,6 +205,90 @@ def bulk_save_generated_puzzles(
                     )
                 )
 
+        if sleep_seconds:
+            time.sleep(sleep_seconds)
+
+    return results
+
+
+def list_generated_puzzle_records(
+    *,
+    game_key: str,
+    size: int | None = None,
+    difficulty: str | None = None,
+    api_base: str | None = None,
+    token: str | None = None,
+    timeout: int = 60,
+    per_page: int = 100,
+) -> list[dict[str, Any]]:
+    """List generated-puzzle records, paging through the admin API."""
+    filters: dict[str, str | int] = {
+        "namespace": NAMESPACE,
+        "collection": COLLECTION,
+        "game_key": game_key,
+        "per_page": per_page,
+    }
+    if size is not None:
+        filters["filters[size]"] = size
+    if difficulty is not None:
+        filters["filters[difficulty]"] = difficulty
+
+    records: list[dict[str, Any]] = []
+    page = 1
+    while True:
+        query = urlencode({**filters, "page": page})
+        response = _request_json(
+            "GET",
+            f"/admin/data-store/records?{query}",
+            api_base=api_base,
+            token=token,
+            timeout=timeout,
+        )
+        data = response.get("data", [])
+        if not isinstance(data, list):
+            raise DataStoreError(f"Unexpected list response shape: {response}")
+        records.extend(_ensure_dict(record) for record in data)
+
+        meta = response.get("meta", {})
+        if not isinstance(meta, dict):
+            break
+        current_page = int(meta.get("current_page", page))
+        last_page = int(meta.get("last_page", current_page))
+        if current_page >= last_page:
+            break
+        page = current_page + 1
+
+    return records
+
+
+def delete_generated_puzzle_records(
+    records: list[dict[str, Any]],
+    *,
+    api_base: str | None = None,
+    token: str | None = None,
+    timeout: int = 60,
+    sleep_seconds: float = 0.1,
+) -> list[DeleteResult]:
+    """Delete generated-puzzle records by id through the admin API."""
+    results: list[DeleteResult] = []
+    for record in records:
+        record_id = record.get("id")
+        if record_id is None:
+            raise DataStoreError(f"Cannot delete record without id: {record}")
+        _request_json(
+            "DELETE",
+            f"/admin/data-store/records/{record_id}",
+            api_base=api_base,
+            token=token,
+            timeout=timeout,
+        )
+        results.append(
+            DeleteResult(
+                action="deleted",
+                key=str(record.get("key", record_id)),
+                response=_ensure_dict(record),
+            )
+        )
         if sleep_seconds:
             time.sleep(sleep_seconds)
 
