@@ -26,8 +26,9 @@ class ClueWithGradingStep(PipelineStep):
 
     Wraps ClueGenerationStep and ClueGrader, looping up to max_retries attempts.
     Keeps the best-scoring clue set across all attempts.
-    After the main loop, runs a single accuracy-repair pass for any clue
-    with a dangerously low accuracy sub-score.
+    After the main loop, runs a single repair pass for any clue with a
+    dangerously low accuracy sub-score, low individual score, or explicit
+    evaluator feedback that flags a major issue.
     """
 
     def __init__(
@@ -38,12 +39,14 @@ class ClueWithGradingStep(PipelineStep):
         max_retries: int = 3,
         regenerate_on_fail: bool = True,
         accuracy_repair_threshold: float = 12,
+        individual_repair_score_threshold: float = 65,
     ) -> None:
         self._llm = llm
         self._grader = grader
         self._max_retries = max_retries
         self._regenerate_on_fail = regenerate_on_fail
         self._accuracy_repair_threshold = accuracy_repair_threshold
+        self._individual_repair_score_threshold = individual_repair_score_threshold
         self._clue_step = ClueGenerationStep(llm)
 
     @property
@@ -120,8 +123,8 @@ class ClueWithGradingStep(PipelineStep):
                 f"Clue generation failed on all {max_attempts} attempt(s)"
             )
 
-        # --- Accuracy repair pass ---
-        best_envelope = self._run_accuracy_repair(best_envelope)
+        # --- Surgical repair pass ---
+        best_envelope = self._run_clue_repair(best_envelope)
 
         # Fix step_history: clue_step already added "clue-generation",
         # replace with our composite name
@@ -145,10 +148,10 @@ class ClueWithGradingStep(PipelineStep):
             }
         )
 
-    def _run_accuracy_repair(
+    def _run_clue_repair(
         self, envelope: PuzzleEnvelope
     ) -> PuzzleEnvelope:
-        """Single repair pass: regenerate clues with low accuracy sub-scores."""
+        """Single repair pass for low-scoring or explicitly flawed clues."""
         report = envelope.clue_grade_report
         if not report or not report.clue_grades:
             return envelope
@@ -161,11 +164,7 @@ class ClueWithGradingStep(PipelineStep):
         for clue in envelope.clues:
             key = (clue.number, clue.direction)
             grade = grade_lookup.get(key)
-            if (
-                grade
-                and grade.accuracy is not None
-                and grade.accuracy < self._accuracy_repair_threshold
-            ):
+            if grade and self._should_repair_grade(grade):
                 entries_to_repair.append((clue, grade))
 
         if not entries_to_repair:
@@ -173,9 +172,8 @@ class ClueWithGradingStep(PipelineStep):
 
         repair_answers = [c.answer for c, _ in entries_to_repair]
         logger.info(
-            "Accuracy repair: %d clue(s) below threshold (%.0f): %s",
+            "Clue repair: %d clue(s) below threshold: %s",
             len(entries_to_repair),
-            self._accuracy_repair_threshold,
             ", ".join(repair_answers),
         )
 
@@ -191,6 +189,7 @@ class ClueWithGradingStep(PipelineStep):
             crossing_words=crossing_words,
             puzzle_type=envelope.puzzle_type,
             theme=envelope.theme,
+            difficulty=envelope.difficulty,
         )
 
         # Call LLM for repair
@@ -201,7 +200,7 @@ class ClueWithGradingStep(PipelineStep):
             )
         except (json.JSONDecodeError, ValueError, KeyError) as exc:
             logger.warning(
-                "Accuracy repair parse failed, keeping original clues: %s",
+                "Clue repair parse failed, keeping original clues: %s",
                 exc,
             )
             return envelope
@@ -250,6 +249,34 @@ class ClueWithGradingStep(PipelineStep):
                 "clue_grade_report": new_report,
             }
         )
+
+    def _should_repair_grade(self, grade: ClueGrade) -> bool:
+        if (
+            grade.accuracy is not None
+            and grade.accuracy < self._accuracy_repair_threshold
+        ):
+            return True
+        if grade.score < self._individual_repair_score_threshold:
+            return True
+
+        feedback = grade.feedback.lower()
+        issue_markers = (
+            "major issue",
+            "factual error",
+            "factually wrong",
+            "incorrect",
+            "not accurate",
+            "inaccurate",
+            "contains the answer",
+            "part of the answer",
+            "leaks",
+            "should not be",
+            "too obscure",
+            "ultra-current slang",
+            "forced",
+            "strained",
+        )
+        return any(marker in feedback for marker in issue_markers)
 
     def validate_input(self, envelope: PuzzleEnvelope) -> list[str]:
         errors: list[str] = []

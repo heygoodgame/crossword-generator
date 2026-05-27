@@ -2,6 +2,7 @@
 
 import pytest
 
+from crossword_generator.fillers.csp import extract_slots
 from crossword_generator.grid_pattern_validation import (
     validate_pattern,
     validate_weighted_patterns,
@@ -67,7 +68,7 @@ class TestGetGridSpec:
         for seed in range(200):
             spec = get_grid_spec(PuzzleType.MINI, 5, seed=seed)
             patterns_seen.add(tuple(sorted(spec.black_cells)))
-        # With 20 weighted patterns and 200 seeds, should see many
+        # With weighted patterns and 200 seeds, should see most of the catalog.
         assert len(patterns_seen) >= 10
 
     def test_same_seed_same_pattern(self) -> None:
@@ -137,7 +138,7 @@ class TestGetGridSpec:
 class TestMiniGridPatternCatalog:
     @pytest.mark.parametrize(
         ("size", "expected_count", "expected_weight"),
-        [(5, 34, 95), (7, 41, 80)],
+        [(5, 12, 58), (7, 18, 50)],
     )
     def test_attachment_pattern_counts_and_weights(
         self,
@@ -164,10 +165,11 @@ class TestMiniGridPatternCatalog:
     ) -> None:
         patterns = get_grid_patterns(PuzzleType.MINI, size)
         assert any(pattern.rotationally_symmetric for pattern in patterns)
-        if size == 5:
-            assert any(not pattern.symmetric for pattern in patterns)
-        else:
-            assert all(pattern.symmetric for pattern in patterns)
+        assert all(pattern.symmetric for pattern in patterns)
+        assert all(
+            "rotational" in pattern.symmetries or "vertical" in pattern.symmetries
+            for pattern in patterns
+        )
         assert len(get_grid_patterns(PuzzleType.MINI, size, symmetric_only=True)) == (
             sum(1 for pattern in patterns if pattern.symmetric)
         )
@@ -183,7 +185,7 @@ class TestMiniGridPatternCatalog:
             ),
         }
 
-        assert all(pattern.symmetries for pattern in patterns)
+        assert all(pattern.symmetric for pattern in patterns)
 
         for pattern in patterns:
             if center in pattern.black_cells:
@@ -196,6 +198,14 @@ class TestMiniGridPatternCatalog:
 
             candidate = tuple(sorted(set(pattern.black_cells) | {center}))
             assert not validate_pattern(7, candidate).valid
+
+    def test_mini_7_patterns_exclude_high_pressure_long_slots(self) -> None:
+        patterns = get_grid_patterns(PuzzleType.MINI, 7)
+
+        for pattern in patterns:
+            slots = extract_slots(7, 7, set(pattern.black_cells))
+            seven_letter_slots = sum(1 for slot in slots if slot.length == 7)
+            assert seven_letter_slots <= 4
 
     def test_mini_7_patterns_include_jeff_attachment_examples(self) -> None:
         patterns = {

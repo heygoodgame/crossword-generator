@@ -4,7 +4,12 @@ from __future__ import annotations
 
 import json
 
-from crossword_generator.models import ClueEntry, PuzzleType, ThemeConcept
+from crossword_generator.models import (
+    ClueEntry,
+    PuzzleDifficulty,
+    PuzzleType,
+    ThemeConcept,
+)
 
 _ROLE = (
     "You are an expert crossword puzzle editor evaluating clue quality. "
@@ -23,15 +28,23 @@ _RUBRIC = (
     "   IMPORTANT: If your feedback identifies a factual error in the "
     "clue, the accuracy score MUST be 9 or below. Do not give 20+ "
     "accuracy to a clue you describe as incorrect.\n\n"
-    "2. FRESHNESS (0-25): Does the clue avoid dictionary-definition staleness? "
-    "Does it use misdirection, wordplay, or a creative angle? "
-    "Would a solver find this clue interesting rather than rote?\n\n"
+    "2. FRESHNESS (0-25): Does the clue style fit the target difficulty? "
+    "For Easy clues, obvious definitions and fill-in-the-blank clues can "
+    "score highly when they are clean and welcoming. For Hard clues, reward "
+    "fair misdirection, wordplay, or creative angles that make the clue "
+    "interesting without becoming obscure.\n\n"
     "3. CRAFT (0-25): Is the language economical and the surface reading clean? "
     "Does the clue read naturally as English? Is the difficulty appropriate "
     "for the puzzle type?\n\n"
     "4. FAIRNESS (0-25): Does the clue avoid echoing the answer word or its "
     "roots? Does it avoid using any crossing words in the clue text? "
     "Is the clue culturally accessible without being obscure? Penalize "
+    "strained pop-culture references, ultra-current slang, and Hard clues "
+    "that try to create Friday/Saturday-level difficulty. Penalize "
+    "word-count tags like \"(two words)\" unless explicit word-boundary "
+    "metadata was provided, and reward explanatory tags only when they are "
+    "formatted parenthetically, e.g. \"To the ___ (in the extreme).\" "
+    "Penalize "
     "body-part, underwear, anatomy, sexuality, appearance, identity, "
     "or demographic-based jokes, especially when a neutral clue would "
     "be more welcoming."
@@ -93,15 +106,32 @@ _OUTPUT_SECTION = (
 )
 
 
-def _difficulty_note(puzzle_type: PuzzleType) -> str:
-    if puzzle_type == PuzzleType.MINI:
-        return (
-            "This is a MINI crossword (Monday-level). Clues should be "
-            "accessible and straightforward but still clever."
+def _difficulty_note(
+    puzzle_type: PuzzleType, difficulty: PuzzleDifficulty
+) -> str:
+    if difficulty == PuzzleDifficulty.EASY:
+        base = (
+            "This is an HGG Easy crossword. Reward clues that are easier than "
+            "NYT Monday: direct, obvious, familiar, and instantly solvable. "
+            "Do not penalize plain definitions or obvious fill-in-the-blank "
+            "clues for lack of cleverness. Penalize oblique definitions, "
+            "tricky wordplay, niche trivia, or lateral-thinking clues as too "
+            "hard for this audience."
         )
+    else:
+        base = (
+            "This is an HGG Hard crossword. Reward NYT Tuesday/Wednesday-level "
+            "clues: fair, broadly accessible, and a notch more challenging. "
+            "Mild misdirection, common secondary meanings, wordplay, and "
+            "occasional question-mark clues are appropriate. Penalize "
+            "Saturday-level obscurity, forced cleverness, ultra-current slang, "
+            "or trivia solvers cannot reason toward."
+        )
+    if puzzle_type == PuzzleType.MINI:
+        return f"{base} MINI clues should remain especially concise."
     return (
-        "This is a MIDI crossword (Tuesday/Wednesday-level). "
-        "Clues can use more wordplay and misdirection."
+        f"{base} MIDI clues can have a little more surface variety, within "
+        "the target difficulty."
     )
 
 
@@ -110,11 +140,12 @@ def build_clue_evaluation_messages(
     crossing_words: dict[tuple[int, str], list[str]],
     puzzle_type: PuzzleType,
     theme: ThemeConcept | None = None,
+    difficulty: PuzzleDifficulty = PuzzleDifficulty.EASY,
 ) -> tuple[str, str]:
     """Build (system, user) messages for clue quality evaluation."""
     themed = bool(theme and theme.topic)
 
-    system_parts = [_ROLE, _RUBRIC, _difficulty_note(puzzle_type)]
+    system_parts = [_ROLE, _RUBRIC, _difficulty_note(puzzle_type, difficulty)]
     if themed:
         system_parts.append(_THEME_EVAL_RULES)
     system_parts.append(_OUTPUT_SECTION)
@@ -165,6 +196,7 @@ def build_clue_evaluation_prompt(
     crossing_words: dict[tuple[int, str], list[str]],
     puzzle_type: PuzzleType,
     theme: ThemeConcept | None = None,
+    difficulty: PuzzleDifficulty = PuzzleDifficulty.EASY,
 ) -> str:
     """Build a single-string prompt (system+user concatenated).
 
@@ -172,6 +204,6 @@ def build_clue_evaluation_prompt(
     ``build_clue_evaluation_messages`` to enable prompt caching.
     """
     system_text, user_text = build_clue_evaluation_messages(
-        clues, crossing_words, puzzle_type, theme
+        clues, crossing_words, puzzle_type, theme, difficulty
     )
     return f"{system_text}\n\n{user_text}"

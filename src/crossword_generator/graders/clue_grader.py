@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 
 from crossword_generator.exporters.numbering import (
     compute_crossing_words,
@@ -59,6 +60,7 @@ class ClueGrader:
             crossing_words=crossing_words,
             puzzle_type=envelope.puzzle_type,
             theme=envelope.theme,
+            difficulty=envelope.difficulty,
         )
 
         # Call LLM with retries on parse failure
@@ -106,6 +108,10 @@ class ClueGrader:
                     f"{self._max_parse_retries} attempts."
                 ),
             )
+
+        clue_grades = _apply_deterministic_clue_penalties(
+            clue_grades, envelope.clues
+        )
 
         # Compute aggregate score
         if clue_grades:
@@ -186,3 +192,76 @@ def _parse_evaluation_response(
         )
 
     return grades
+
+
+def _apply_deterministic_clue_penalties(
+    grades: list[ClueGrade],
+    clues: list[object],
+) -> list[ClueGrade]:
+    clue_lookup = {
+        (getattr(c, "number"), getattr(c, "direction")): c for c in clues
+    }
+    adjusted: list[ClueGrade] = []
+
+    for grade in grades:
+        clue = clue_lookup.get((grade.number, grade.direction))
+        leak_feedback = None
+        if clue is not None:
+            leak_feedback = _answer_leak_feedback(
+                getattr(clue, "answer", ""),
+                getattr(clue, "clue", ""),
+            )
+
+        if leak_feedback:
+            feedback = grade.feedback
+            if feedback:
+                feedback = f"{feedback} {leak_feedback}"
+            else:
+                feedback = leak_feedback
+            accuracy = min(grade.accuracy or 0.0, 8.0)
+            fairness = min(grade.fairness or 0.0, 8.0)
+            freshness = grade.freshness or 0.0
+            craft = grade.craft or 0.0
+            adjusted.append(
+                grade.model_copy(
+                    update={
+                        "accuracy": accuracy,
+                        "fairness": fairness,
+                        "score": accuracy + freshness + craft + fairness,
+                        "feedback": feedback,
+                    }
+                )
+            )
+        else:
+            adjusted.append(grade)
+
+    return adjusted
+
+
+def _answer_leak_feedback(answer: str, clue: str) -> str | None:
+    answer_norm = _normalize(answer)
+    if len(answer_norm) < 3:
+        return None
+
+    tokens = re.findall(r"[A-Z0-9]+", clue.upper())
+    for token in tokens:
+        token_norm = _normalize(token)
+        if token_norm == answer_norm:
+            return "Deterministic check: clue contains the answer."
+        if len(token_norm) < 4:
+            continue
+        if len(answer_norm) >= 5 and (
+            answer_norm.startswith(token_norm)
+            or answer_norm.endswith(token_norm)
+            or (len(token_norm) >= 5 and token_norm in answer_norm)
+        ):
+            return (
+                "Deterministic check: clue contains a significant part "
+                "of the answer."
+            )
+
+    return None
+
+
+def _normalize(text: str) -> str:
+    return re.sub(r"[^A-Z0-9]+", "", text.upper())

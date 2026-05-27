@@ -52,7 +52,7 @@ def _pattern_symmetries(
     size: int,
     black_cells: list[tuple[int, int]] | tuple[tuple[int, int], ...],
 ) -> tuple[str, ...]:
-    """Return every visually acceptable symmetry present in a square pattern."""
+    """Return every symmetry present in a square pattern."""
     black = set(black_cells)
     last = size - 1
     symmetries: list[str] = []
@@ -87,6 +87,26 @@ def _pattern_symmetries(
     return tuple(symmetries)
 
 
+def _has_accepted_pattern_symmetry(
+    size: int,
+    black_cells: list[tuple[int, int]] | tuple[tuple[int, int], ...],
+) -> bool:
+    """Return whether a pattern has Jeff's accepted professional symmetry."""
+    symmetries = _pattern_symmetries(size, black_cells)
+    return "rotational" in symmetries or "vertical" in symmetries
+
+
+def _filter_accepted_symmetry_patterns(
+    size: int,
+    patterns: list[tuple[list[tuple[int, int]], int]],
+) -> list[tuple[list[tuple[int, int]], int]]:
+    return [
+        (black_cells, weight)
+        for black_cells, weight in patterns
+        if _has_accepted_pattern_symmetry(size, black_cells)
+    ]
+
+
 def _add_center_black_if_valid(
     size: int,
     black_cells: tuple[tuple[int, int], ...],
@@ -116,12 +136,17 @@ def _make_mini_7_catalog(
 
     for black_cells, weight in patterns:
         normalized = tuple(sorted(black_cells))
-        if not _pattern_symmetries(7, normalized):
+        if not _has_accepted_pattern_symmetry(7, normalized):
             continue
 
         updated = _add_center_black_if_valid(7, normalized)
-        transformed[updated] = transformed.get(updated, 0) + weight
-        if normalized in center_optional and normalized != updated:
+        if _slot_lengths(7, updated).count(7) <= 4:
+            transformed[updated] = transformed.get(updated, 0) + weight
+        if (
+            normalized in center_optional
+            and normalized != updated
+            and _slot_lengths(7, normalized).count(7) <= 4
+        ):
             transformed[normalized] = transformed.get(normalized, 0) + weight
 
     return [
@@ -367,8 +392,9 @@ _GRID_PATTERNS: dict[
     tuple[PuzzleType, int],
     list[tuple[list[tuple[int, int]], int]],
 ] = {
-    # 5x5: 34 patterns with frequency-based weights.
-    (PuzzleType.MINI, 5): [
+    # 5x5: raw frequency-based catalog filtered to accepted professional
+    # symmetry: regular 180-degree rotation or left-right mirror.
+    (PuzzleType.MINI, 5): _filter_accepted_symmetry_patterns(5, [
         # --- 9x frequency ---
         ([], 9),
         ([(0, 0), (4, 4)], 9),
@@ -410,10 +436,13 @@ _GRID_PATTERNS: dict[
         ([(0, 4), (1, 4), (4, 0), (4, 1)], 1),
         ([(0, 4), (4, 4)], 1),
         ([(3, 0), (3, 4), (4, 0), (4, 4)], 1),
-    ],
+    ]),
     # 7x7: raw frequency-based catalog with Jeff feedback applied:
-    # - discard truly asymmetric patterns
+    # - keep only regular 180-degree rotation or left-right mirror symmetry
+    #   (no asymmetric, diagonal-only, or up-down-only patterns)
     # - add the center black square whenever doing so preserves 3+ letter slots
+    # - drop patterns with more than four 7-letter slots because recent fill
+    #   logs showed a materially lower accepted-fill rate
     (PuzzleType.MINI, 7): _make_mini_7_catalog([
         # --- Jeff attachment examples ---
         # "7x7 1": reduced raw whitespace. The center square stays open
@@ -665,8 +694,8 @@ def get_grid_patterns(
 ) -> tuple[WeightedGridPattern, ...]:
     """Return structured weighted grid patterns for a supported mini size.
 
-    ``symmetric_only`` makes it possible for future generation experiments to
-    filter Jeff's asymmetric mini patterns without changing today's defaults.
+    ``symmetric_only`` keeps patterns with Jeff's accepted professional
+    symmetry: regular 180-degree rotation or left-right mirror.
     """
     pt = PuzzleType(puzzle_type)
     key = (pt, grid_size)
@@ -685,7 +714,7 @@ def get_grid_patterns(
         WeightedGridPattern(
             black_cells=tuple(sorted(black_cells)),
             weight=weight,
-            symmetric=bool(_pattern_symmetries(rows, black_cells)),
+            symmetric=_has_accepted_pattern_symmetry(rows, black_cells),
             rotationally_symmetric=is_rotationally_symmetric(rows, black_cells),
             symmetries=_pattern_symmetries(rows, black_cells),
         )

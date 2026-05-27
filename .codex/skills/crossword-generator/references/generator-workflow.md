@@ -10,6 +10,19 @@ admin/editor workflow review, edit, approve, or reject them.
 Current emphasis:
 
 - Easy puzzles should favor accessible, one-word fill.
+- Easy clue generation should be easier than NYT Monday: direct definitions,
+  obvious fill-in-the-blanks, and broad casual-audience accessibility.
+- Hard clue generation should target NYT Tuesday/Wednesday: fair but more
+  oblique definitions, mild wordplay, and occasional misdirection. Avoid
+  forced difficulty, strained pop-culture references, ultra-current slang, and
+  clues that need a long explanation to be fair.
+- Clue prompts omit word-count tags such as `(two words)` until the pipeline has
+  explicit word-boundary metadata. Explanatory clue tags should be
+  parenthetical, not comma/colon appendages.
+- The clue grader applies deterministic penalties for answer leakage, and the
+  repair pass also fixes low individual clue scores or explicit evaluator
+  "major issue" / "factual error" feedback even when aggregate clue score
+  passes.
 - HGG Easy is a single 3-9 letter effective list, scored `;50`, with known
   source-score 60 entries removed.
 - HGG 60 is a single 7-9 letter effective list, scored `;60`.
@@ -19,11 +32,15 @@ Current emphasis:
 - Hard 5x5 uses the same HGG Easy config as Easy minis.
 - Hard 7x7 generation uses HGG Easy plus a board-level rule requiring exactly
   one 7-letter HGG 60 entry.
-- 7x7 mini generation applies Jeff's pattern feedback: discard truly
-  asymmetric grids, keep rotational/mirror/diagonal symmetry, and add the
-  center black square whenever doing so does not create short slots. Jeff's
-  Utah-block attachment is the explicit exception: it is kept both with and
-  without the center square.
+- Mini generation applies Jeff's pattern feedback: keep only regular
+  180-degree rotational symmetry or left-right mirror symmetry; discard
+  asymmetric, diagonal-only, and up-down-only patterns. For 7x7, add the center
+  black square whenever doing so does not create short slots. Jeff's Utah-block
+  attachment is the explicit exception: it is kept both with and without the
+  center square.
+- 7x7 grids with more than four 7-letter slots are excluded. Recent fill logs
+  showed those variants produced accepted fills at a much lower rate than the
+  rest of the 7x7 catalog.
 - 9x9 midi generation uses expanded Jeff-feedback mirror-style and
   regular-symmetry patterns with safe top-to-bottom flips for mirror patterns,
   left-right flips for regular-symmetry patterns, and conservative
@@ -301,10 +318,16 @@ the current production batch runner.
 Grid selection notes:
 
 - 5x5 and 7x7 minis use weighted pattern catalogs from `grid_specs.py`.
+- Mini catalogs keep only regular 180-degree rotational symmetry or left-right
+  mirror symmetry; asymmetric, diagonal-only, and up-down-only patterns are
+  excluded.
 - 7x7 minis start from the raw weighted catalog, then apply Jeff's feedback:
-  reject truly asymmetric patterns and add the central black square when the
-  resulting grid remains structurally valid. Two late attachment examples are
-  also included; the Utah-block example appears both centered and uncentered.
+  add the central black square when the resulting grid remains structurally
+  valid. Two late attachment examples are also included; the Utah-block example
+  appears both centered and uncentered.
+- 7x7 grids with more than four 7-letter slots are excluded after center-square
+  normalization, based on Jeff's May 27 decision and the recent fill-log
+  success-rate split.
 - 9x9 midis use a Jeff-feedback catalog with mirror-style and regular-symmetry
   examples, top-to-bottom flips for mirror patterns, left-right flips for
   regular-symmetry patterns, and validated cheater-square variants, not the

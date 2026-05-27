@@ -17,6 +17,7 @@ from crossword_generator.llm.prompts.clue_generation import (
 from crossword_generator.models import (
     ClueEntry,
     FillResult,
+    PuzzleDifficulty,
     PuzzleEnvelope,
     PuzzleType,
     ThemeConcept,
@@ -515,6 +516,75 @@ class TestThemeAnnotationsInPrompt:
         assert "underwear" in prompt
         assert "innuendo" in prompt
         assert "objectifying" in prompt
+
+    def test_easy_prompt_prioritizes_obvious_clues(self) -> None:
+        """Easy guidance is easier than NYT Monday, not just mini/midi."""
+        from crossword_generator.exporters.numbering import compute_numbering
+
+        entries = compute_numbering(MOCK_GRID)
+        crossing_words = compute_crossing_words(entries, MOCK_GRID)
+
+        prompt = build_clue_generation_prompt(
+            entries,
+            crossing_words,
+            PuzzleType.MIDI,
+            difficulty=PuzzleDifficulty.EASY,
+        )
+
+        assert "easier than an NYT Monday" in prompt
+        assert "totally obvious fill-in-the-blank" in prompt
+        assert "choose instantly solvable" in prompt
+
+    def test_hard_prompt_allows_tuesday_wednesday_wordplay(self) -> None:
+        """Hard guidance is tied to difficulty, even for mini puzzles."""
+        from crossword_generator.exporters.numbering import compute_numbering
+
+        entries = compute_numbering(MOCK_GRID)
+        crossing_words = compute_crossing_words(entries, MOCK_GRID)
+
+        prompt = build_clue_generation_prompt(
+            entries,
+            crossing_words,
+            PuzzleType.MINI,
+            difficulty=PuzzleDifficulty.HARD,
+        )
+
+        assert "NYT Tuesday/Wednesday" in prompt
+        assert "mild misdirection" in prompt
+        assert "Saturday-level obscurity" in prompt
+        assert "strained pop-culture references" in prompt
+        assert "use a cleaner direct clue" in prompt
+
+    def test_prompt_disallows_word_count_tags_without_metadata(self) -> None:
+        from crossword_generator.exporters.numbering import compute_numbering
+
+        entries = compute_numbering(MOCK_GRID)
+        crossing_words = compute_crossing_words(entries, MOCK_GRID)
+
+        prompt = build_clue_generation_prompt(
+            entries,
+            crossing_words,
+            PuzzleType.MINI,
+        )
+
+        assert "Do not add word-count tags" in prompt
+        assert "word-boundary metadata" in prompt
+
+    def test_prompt_requires_parenthetical_explanatory_tags(self) -> None:
+        from crossword_generator.exporters.numbering import compute_numbering
+
+        entries = compute_numbering(MOCK_GRID)
+        crossing_words = compute_crossing_words(entries, MOCK_GRID)
+
+        prompt = build_clue_generation_prompt(
+            entries,
+            crossing_words,
+            PuzzleType.MINI,
+        )
+
+        assert "Put explanatory tags in parentheses" in prompt
+        assert "To the ___ (in the extreme)" in prompt
+        assert "Dennis ___ (pop art icon of soup cans)" in prompt
 
 
 class TestRevealerClueNotSubstituted:

@@ -5,7 +5,13 @@ from __future__ import annotations
 import json
 
 from crossword_generator.exporters.numbering import NumberedEntry
-from crossword_generator.models import ClueEntry, ClueGrade, PuzzleType, ThemeConcept
+from crossword_generator.models import (
+    ClueEntry,
+    ClueGrade,
+    PuzzleDifficulty,
+    PuzzleType,
+    ThemeConcept,
+)
 
 _ROLE = (
     "You are an expert crossword puzzle constructor "
@@ -20,18 +26,27 @@ _GUIDELINES = (
     "variant/root) in the clue.\n"
     "- DO NOT use any of an entry's crossing words "
     "in that entry's clue.\n"
-    "- Vary clue styles: mix definitional, wordplay, "
-    "trivia, fill-in-the-blank, and lateral thinking.\n"
-    "- Prefer misdirection and cleverness over "
-    "dictionary definitions.\n"
-    '- Use question marks for witty/punny clues '
-    '(e.g., "Plant manager?" for GARDENER).\n'
+    "- Vary clue styles within the target difficulty: definitional, "
+    "fill-in-the-blank, wordplay, trivia, and lateral thinking are all "
+    "available, but Easy clues should stay direct and obvious.\n"
+    "- Use misdirection and cleverness only when they fit the target "
+    "difficulty. For Easy clues, clarity beats cleverness.\n"
+    '- Use question marks for witty/punny clues only when the target '
+    'difficulty allows it (e.g., "Plant manager?" for GARDENER).\n'
     "- Keep clues concise — say exactly what's needed, "
     "no filler words.\n"
     "- Avoid obscure trivia that solvers can't "
     "reason toward.\n"
     "- Make clues culturally accessible and "
     "contemporary where possible.\n"
+    "- Do not add word-count tags like \"(two words)\" or \"(three words)\". "
+    "Use no word-count enumeration unless the pipeline provides explicit "
+    "word-boundary metadata.\n"
+    "- Put explanatory tags in parentheses, not after a comma or colon. "
+    "Use \"To the ___ (in the extreme)\" rather than "
+    "\"To the ___: in the extreme\"; use "
+    "\"Dennis ___ (pop art icon of soup cans)\" rather than "
+    "\"Dennis ___, pop art icon of soup cans\".\n"
     "- Avoid body-part, underwear, anatomy, sexuality, appearance, "
     "identity, or demographic-based jokes. If an answer is sensitive "
     "but acceptable, clue it neutrally rather than with a wink, "
@@ -101,17 +116,38 @@ _OUTPUT_SECTION = (
 )
 
 
-def _difficulty_guidance(puzzle_type: PuzzleType) -> str:
+def _difficulty_guidance(
+    puzzle_type: PuzzleType, difficulty: PuzzleDifficulty
+) -> str:
+    if difficulty == PuzzleDifficulty.EASY:
+        base = (
+            "This is an HGG Easy crossword for a very broad casual audience. "
+            "Write clues easier than an NYT Monday. Default to direct "
+            "definitions, familiar everyday meanings, and totally obvious "
+            "fill-in-the-blank clues. Avoid oblique definitions, tricky "
+            "wordplay, niche trivia, and lateral-thinking clues. If choosing "
+            "between clever and instantly solvable, choose instantly solvable."
+        )
+    else:
+        base = (
+            "This is an HGG Hard crossword. Aim for NYT Tuesday/Wednesday "
+            "difficulty: still fair and broadly accessible, but a notch more "
+            "challenging. You may use less direct definitions, common secondary "
+            "meanings, mild misdirection, wordplay, and occasional question-mark "
+            "clues. Avoid Saturday-level obscurity and trivia that solvers "
+            "cannot reason toward. Do not force difficulty with strained "
+            "pop-culture references, ultra-current slang, or clues that only "
+            "work after a long explanation. If the clever angle feels debatable, "
+            "use a cleaner direct clue."
+        )
     if puzzle_type == PuzzleType.MINI:
         return (
-            "This is a MINI crossword (like NYT Mini). Clues should be "
-            "accessible and Monday-level: straightforward but not boring. "
-            "Favor clean, clever clues over tricky ones."
+            f"{base} Because this is a MINI crossword, keep clues especially "
+            "concise."
         )
     return (
-        "This is a MIDI crossword. Clues can be trickier — "
-        "aim for Tuesday/Wednesday difficulty. Use more wordplay, "
-        "misdirection, and varied clue styles."
+        f"{base} Because this is a MIDI crossword, allow a little more surface "
+        "variety while preserving the target difficulty."
     )
 
 
@@ -120,6 +156,7 @@ def build_clue_generation_messages(
     crossing_words: dict[tuple[int, str], list[str]],
     puzzle_type: PuzzleType,
     theme: ThemeConcept | None = None,
+    difficulty: PuzzleDifficulty = PuzzleDifficulty.EASY,
 ) -> tuple[str, str]:
     """Build (system, user) messages for clue generation.
 
@@ -134,7 +171,11 @@ def build_clue_generation_messages(
     """
     themed = bool(theme and theme.topic)
 
-    system_parts = [_ROLE, _difficulty_guidance(puzzle_type), _GUIDELINES]
+    system_parts = [
+        _ROLE,
+        _difficulty_guidance(puzzle_type, difficulty),
+        _GUIDELINES,
+    ]
     if themed:
         system_parts.append(_THEME_INSTRUCTIONS)
     system_parts.append(_OUTPUT_SECTION)
@@ -204,6 +245,7 @@ def build_clue_generation_prompt(
     crossing_words: dict[tuple[int, str], list[str]],
     puzzle_type: PuzzleType,
     theme: ThemeConcept | None = None,
+    difficulty: PuzzleDifficulty = PuzzleDifficulty.EASY,
 ) -> str:
     """Build a single-string prompt (system+user concatenated).
 
@@ -211,7 +253,7 @@ def build_clue_generation_prompt(
     Prefer ``build_clue_generation_messages`` to enable prompt caching.
     """
     system_text, user_text = build_clue_generation_messages(
-        entries, crossing_words, puzzle_type, theme
+        entries, crossing_words, puzzle_type, theme, difficulty
     )
     return f"{system_text}\n\n{user_text}"
 
@@ -222,6 +264,7 @@ def build_clue_repair_prompt(
     crossing_words: dict[tuple[int, str], list[str]],
     puzzle_type: PuzzleType,
     theme: ThemeConcept | None = None,
+    difficulty: PuzzleDifficulty = PuzzleDifficulty.EASY,
 ) -> str:
     """Build a prompt to regenerate only clues with accuracy problems.
 
@@ -236,17 +279,23 @@ def build_clue_repair_prompt(
         A prompt string ready to send to the LLM.
     """
     system_text, user_text = build_clue_repair_messages(
-        entries_to_repair, all_clues, crossing_words, puzzle_type, theme
+        entries_to_repair,
+        all_clues,
+        crossing_words,
+        puzzle_type,
+        theme,
+        difficulty,
     )
     return f"{system_text}\n\n{user_text}"
 
 
 _REPAIR_ROLE = (
     "You are an expert crossword puzzle constructor. "
-    "The following clues had ACCURACY problems — they were factually wrong, "
-    "had multiple defensible answers, or had grammar/part-of-speech mismatches. "
-    "Write replacement clues that are factually correct with exactly one "
-    "defensible answer."
+    "The following clues had accuracy, fairness, or editorial quality problems. "
+    "They may be factually wrong, too strained, too obscure, leak part of the "
+    "answer, have multiple defensible answers, or have grammar/part-of-speech "
+    "mismatches. Write replacement clues that are clean, factually correct, "
+    "and have exactly one defensible answer."
 )
 
 _REPAIR_GUIDELINES = (
@@ -255,6 +304,8 @@ _REPAIR_GUIDELINES = (
     "- DO NOT use the answer word (or any close variant/root) in the clue.\n"
     "- DO NOT use any crossing words in the clue.\n"
     "- DO NOT duplicate phrasing from the existing clues listed below.\n"
+    "- Do not add word-count tags like \"(two words)\" or \"(three words)\".\n"
+    "- Put explanatory tags in parentheses, not after a comma or colon.\n"
     "- Keep clues concise and culturally accessible."
 )
 
@@ -279,11 +330,16 @@ def build_clue_repair_messages(
     crossing_words: dict[tuple[int, str], list[str]],
     puzzle_type: PuzzleType,
     theme: ThemeConcept | None = None,
+    difficulty: PuzzleDifficulty = PuzzleDifficulty.EASY,
 ) -> tuple[str, str]:
     """Build (system, user) messages for clue repair."""
     themed = bool(theme and theme.topic)
 
-    system_parts = [_REPAIR_ROLE, _difficulty_guidance(puzzle_type), _REPAIR_GUIDELINES]
+    system_parts = [
+        _REPAIR_ROLE,
+        _difficulty_guidance(puzzle_type, difficulty),
+        _REPAIR_GUIDELINES,
+    ]
     if themed:
         system_parts.append(_THEME_REPAIR_INSTRUCTIONS)
     system_parts.append(_REPAIR_OUTPUT_SECTION)

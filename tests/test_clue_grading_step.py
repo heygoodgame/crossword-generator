@@ -42,7 +42,7 @@ def _build_clue_json() -> str:
             {
                 "number": e["number"],
                 "direction": e["direction"],
-                "clue": f"Clue for {e['answer']}",
+                "clue": f"Generated clue {e['number']} {e['direction']}",
             }
             for e in EXPECTED_ENTRIES
         ]
@@ -279,7 +279,7 @@ class TestRegenerationDisabled:
         grader = ClueGrader(llm, min_passing_score=70)
         step = ClueWithGradingStep(
             llm, grader, max_retries=3, regenerate_on_fail=False,
-            accuracy_repair_threshold=0,
+            accuracy_repair_threshold=0, individual_repair_score_threshold=0,
         )
         result = step.run(_make_envelope())
 
@@ -324,7 +324,7 @@ class TestAccuracyRepair:
         )
         # Repair response: replacement clue for 1-across
         repair_json = json.dumps([
-            {"number": 1, "direction": "across", "clue": "Repaired clue for CAT"},
+            {"number": 1, "direction": "across", "clue": "Repaired feline clue"},
         ])
         # Re-grade after repair: all good now
         re_eval_json = _build_eval_json(
@@ -348,8 +348,61 @@ class TestAccuracyRepair:
             c for c in result.clues
             if c.number == 1 and c.direction == "across"
         )
-        assert clue_1a.clue == "Repaired clue for CAT"
+        assert clue_1a.clue == "Repaired feline clue"
         # 4 LLM calls: generate + grade + repair + re-grade
+        assert llm.call_count == 4
+
+    def test_repair_triggered_on_low_individual_score(self) -> None:
+        """A clue can be repaired even if the LLM overstates accuracy."""
+        clue_json = _build_clue_json()
+        items = []
+        for e in EXPECTED_ENTRIES:
+            if e["number"] == 1 and e["direction"] == "across":
+                items.append(
+                    {
+                        "number": e["number"],
+                        "direction": e["direction"],
+                        "accuracy": 18,
+                        "freshness": 15,
+                        "craft": 14,
+                        "fairness": 12,
+                        "feedback": "MAJOR ISSUES: factual error.",
+                    }
+                )
+            else:
+                items.append(
+                    {
+                        "number": e["number"],
+                        "direction": e["direction"],
+                        "accuracy": 22,
+                        "freshness": 20,
+                        "craft": 20,
+                        "fairness": 20,
+                        "feedback": "Good",
+                    }
+                )
+        eval_json = json.dumps(items)
+        repair_json = json.dumps([
+            {"number": 1, "direction": "across", "clue": "Small house pet"},
+        ])
+        re_eval_json = _build_eval_json(
+            accuracy=22, freshness=20, craft=20, fairness=20
+        )
+
+        llm = SequentialMockLLM([
+            clue_json, eval_json, repair_json, re_eval_json,
+        ])
+        grader = ClueGrader(llm, min_passing_score=70)
+        step = ClueWithGradingStep(
+            llm, grader, max_retries=1, accuracy_repair_threshold=12,
+        )
+        result = step.run(_make_envelope())
+
+        clue_1a = next(
+            c for c in result.clues
+            if c.number == 1 and c.direction == "across"
+        )
+        assert clue_1a.clue == "Small house pet"
         assert llm.call_count == 4
 
     def test_no_repair_when_all_accuracy_ok(self) -> None:
@@ -395,7 +448,7 @@ class TestAccuracyRepair:
             c for c in result.clues
             if c.number == 1 and c.direction == "across"
         )
-        assert clue_1a.clue == "Clue for CAT"
+        assert clue_1a.clue == "Generated clue 1 across"
         # 3 LLM calls: generate + grade + failed repair
         assert llm.call_count == 3
 
@@ -407,8 +460,8 @@ class TestAccuracyRepair:
             low_accuracy=5.0,
         )
         repair_json = json.dumps([
-            {"number": 1, "direction": "across", "clue": "Fixed CAT clue"},
-            {"number": 3, "direction": "down", "clue": "Fixed TED clue"},
+            {"number": 1, "direction": "across", "clue": "Fixed feline clue"},
+            {"number": 3, "direction": "down", "clue": "Fixed name clue"},
         ])
         re_eval_json = _build_eval_json(
             accuracy=22, freshness=20, craft=20, fairness=20
@@ -431,5 +484,5 @@ class TestAccuracyRepair:
             c for c in result.clues
             if c.number == 3 and c.direction == "down"
         )
-        assert clue_1a.clue == "Fixed CAT clue"
-        assert clue_3d.clue == "Fixed TED clue"
+        assert clue_1a.clue == "Fixed feline clue"
+        assert clue_3d.clue == "Fixed name clue"

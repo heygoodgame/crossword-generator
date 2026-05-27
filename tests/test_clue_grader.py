@@ -12,6 +12,7 @@ from crossword_generator.llm.prompts.clue_evaluation import (
 from crossword_generator.models import (
     ClueEntry,
     FillResult,
+    PuzzleDifficulty,
     PuzzleEnvelope,
     PuzzleType,
 )
@@ -125,6 +126,30 @@ class TestHappyPath:
         assert "demographic-based jokes" in prompt
         assert "more welcoming" in prompt
 
+    def test_easy_evaluation_rewards_plain_obvious_clues(self) -> None:
+        prompt = build_clue_evaluation_prompt(
+            MOCK_CLUES,
+            {},
+            PuzzleType.MIDI,
+            difficulty=PuzzleDifficulty.EASY,
+        )
+
+        assert "Reward clues that are easier than NYT Monday" in prompt
+        assert "Do not penalize plain definitions" in prompt
+        assert "too hard for this audience" in prompt
+
+    def test_hard_evaluation_rewards_tuesday_wednesday_clues(self) -> None:
+        prompt = build_clue_evaluation_prompt(
+            MOCK_CLUES,
+            {},
+            PuzzleType.MINI,
+            difficulty=PuzzleDifficulty.HARD,
+        )
+
+        assert "NYT Tuesday/Wednesday-level" in prompt
+        assert "Mild misdirection" in prompt
+        assert "Saturday-level obscurity" in prompt
+
     def test_per_clue_scores_populated(self) -> None:
         response = _build_evaluation_json(MOCK_CLUES)  # 20+20+20+20=80
         grader = ClueGrader(MockLLM(response=response))
@@ -173,6 +198,39 @@ class TestHappyPath:
         report = grader.grade(envelope)
 
         assert any("Good clue" in g.feedback for g in report.clue_grades)
+
+    def test_deterministic_penalty_for_answer_leakage(self) -> None:
+        leaking_clues = [
+            ClueEntry(
+                number=1,
+                direction="across",
+                answer="SMURFETTE",
+                clue="Only female in Papa Smurf's village",
+            )
+        ]
+        response = json.dumps(
+            [
+                {
+                    "number": 1,
+                    "direction": "across",
+                    "accuracy": 24,
+                    "freshness": 20,
+                    "craft": 20,
+                    "fairness": 22,
+                    "feedback": "Looks good.",
+                }
+            ]
+        )
+        grader = ClueGrader(MockLLM(response=response))
+        envelope = _make_envelope(clues=leaking_clues)
+
+        report = grader.grade(envelope)
+
+        grade = report.clue_grades[0]
+        assert grade.accuracy == 8.0
+        assert grade.fairness == 8.0
+        assert grade.score == 56.0
+        assert "significant part of the answer" in grade.feedback
 
 
 class TestFailingScores:
