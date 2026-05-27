@@ -3,6 +3,7 @@
 
 puzzle:
   type: midi
+  difficulty: easy
   grid_size: 9
 
 dictionary:

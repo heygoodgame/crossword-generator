@@ -3,6 +3,7 @@
 
 puzzle:
   type: mini
+  difficulty: hard
   grid_size: 5
 
 dictionary:

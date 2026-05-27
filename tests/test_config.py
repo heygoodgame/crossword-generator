@@ -14,6 +14,7 @@ class TestConfigDefaults:
     def test_default_puzzle(self) -> None:
         cfg = Config()
         assert cfg.puzzle.type == "mini"
+        assert cfg.puzzle.difficulty == "easy"
         assert cfg.puzzle.grid_size == 5
 
     def test_default_dictionary(self) -> None:
@@ -66,6 +67,7 @@ class TestLoadConfig:
     def test_load_example_config(self, project_root: Path) -> None:
         cfg = load_config(project_root / "config.example.yaml")
         assert cfg.puzzle.type == "mini"
+        assert cfg.puzzle.difficulty == "easy"
         assert cfg.puzzle.grid_size == 5
         assert cfg.fill.provider == "csp"
         assert cfg.llm.ollama.model == "llama3"
@@ -90,6 +92,8 @@ class TestLoadConfig:
         dictionary_path: str,
     ) -> None:
         cfg = load_config(project_root / filename)
+        expected_difficulty = "hard" if filename.startswith("config.hard") else "easy"
+        assert cfg.puzzle.difficulty == expected_difficulty
         assert cfg.dictionary.path == dictionary_path
         expected_score = 55 if filename == "config.hard.yaml" else 50
         assert cfg.dictionary.min_word_score == expected_score
@@ -134,10 +138,12 @@ class TestLoadConfig:
     def test_load_explicit_path_custom_values(self, tmp_path: Path) -> None:
         yaml_file = tmp_path / "custom.yaml"
         yaml_file.write_text(
-            "puzzle:\n  type: midi\n  grid_size: 9\ndictionary:\n  min_word_score: 40\n"
+            "puzzle:\n  type: midi\n  difficulty: hard\n  grid_size: 9\n"
+            "dictionary:\n  min_word_score: 40\n"
         )
         cfg = load_config(yaml_file)
         assert cfg.puzzle.type == "midi"
+        assert cfg.puzzle.difficulty == "hard"
         assert cfg.puzzle.grid_size == 9
         assert cfg.dictionary.min_word_score == 40
         # Unspecified sections get defaults

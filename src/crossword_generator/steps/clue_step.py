@@ -52,6 +52,7 @@ class ClueGenerationStep(PipelineStep):
             crossing_words=crossing_words,
             puzzle_type=envelope.puzzle_type,
             theme=envelope.theme,
+            difficulty=envelope.difficulty,
         )
 
         # Call LLM with retries on parse failure

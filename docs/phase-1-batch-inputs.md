@@ -150,18 +150,18 @@ uv run crossword-generator validate-mini-patterns
 
 Expected pattern inventory:
 
-- 5x5 Mini: 34 weighted patterns, total weight 95
-- 7x7 Mini: 50 weighted patterns, total weight 86
+- 5x5 Mini: 12 weighted patterns, total weight 58
+- 7x7 Mini: 18 weighted patterns, total weight 50
 
 The validation checks dimensions, positive weights, connected white cells,
-no slots shorter than three letters, and symmetry status. It also reports
-which pattern indexes are asymmetric so future generation can filter or
-down-rank them.
+no slots shorter than three letters, and symmetry status. It also reports any
+pattern indexes that do not have regular 180-degree rotational symmetry or
+left-right mirror symmetry.
 
-Initial validation found all catalogued patterns valid. Symmetry split:
+Current validation found all catalogued patterns valid. Symmetry split:
 
-- 5x5 Mini: 9 symmetric, 25 asymmetric
-- 7x7 Mini: 18 symmetric, 32 asymmetric
+- 5x5 Mini: 9 regular, 3 mirror-only, 0 unsupported
+- 7x7 Mini: 12 regular, 6 mirror-only, 0 unsupported
 
 The 9x9 midi catalog uses curated mirror-style patterns from Jeff's feedback
 instead of procedural rotational patterns. This intentionally avoids
@@ -179,9 +179,11 @@ uv run pytest tests/test_dictionary.py tests/test_dictionary_prep.py \
 
 - Whether the flat easy dictionary is large enough for acceptable 7x7 and 9x9
   fill rates needs to be measured during batch generation.
-- Asymmetric mini patterns are preserved for now, but Jeff prefers unthemed
-  mini symmetry. Future batch scripts can use the structured pattern symmetry
-  flag to filter or down-rank asymmetric patterns.
+- If Jeff sends more grid-pattern feedback, keep the mini catalog restricted to
+  regular 180-degree rotational symmetry or left-right mirror symmetry.
+- 7x7 patterns with more than four 7-letter slots are excluded after
+  center-square normalization because the recent fill logs showed a much lower
+  accepted-fill rate.
 
 ## Easy 9x9 Smoke Finding
 

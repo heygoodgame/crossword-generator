@@ -32,6 +32,12 @@ def main() -> None:
     help="Puzzle type to generate.",
 )
 @click.option(
+    "--difficulty",
+    type=click.Choice(["easy", "hard"]),
+    default=None,
+    help="Clue/fill difficulty to generate (overrides config).",
+)
+@click.option(
     "--size",
     type=int,
     default=None,
@@ -90,6 +96,7 @@ def main() -> None:
 )
 def generate(
     puzzle_type: str,
+    difficulty: str | None,
     size: int | None,
     seed: int | None,
     config_path: str | None,
@@ -108,6 +115,8 @@ def generate(
 
     # Override config with CLI options
     config.puzzle.type = puzzle_type
+    if difficulty is not None:
+        config.puzzle.difficulty = difficulty
     if size is not None:
         config.puzzle.grid_size = size
     if llm_provider is not None:
@@ -122,7 +131,8 @@ def generate(
     output_file_path = Path(output_file) if output_file else None
 
     logger.info(
-        "Generating %s crossword (%dx%d)",
+        "Generating %s %s crossword (%dx%d)",
+        config.puzzle.difficulty,
         config.puzzle.type,
         config.puzzle.grid_size,
         config.puzzle.grid_size,
@@ -139,7 +149,7 @@ def generate(
         sys.exit(1)
 
     click.echo(
-        f"Generated {result.puzzle_type.value} crossword "
+        f"Generated {result.difficulty.value} {result.puzzle_type.value} crossword "
         f"({result.grid_size}x{result.grid_size})"
     )
     if result.fill:
@@ -1334,27 +1344,39 @@ def validate_mini_patterns() -> None:
     from crossword_generator.models import PuzzleType
 
     failures = 0
-    for size, expected_count, expected_weight in ((5, 34, 95), (7, 41, 80)):
+    for size, expected_count, expected_weight in ((5, 12, 58), (7, 18, 50)):
+        catalog = get_grid_patterns(PuzzleType.MINI, size)
         patterns = [
             (list(pattern.black_cells), pattern.weight)
-            for pattern in get_grid_patterns(PuzzleType.MINI, size)
+            for pattern in catalog
         ]
         results = validate_weighted_patterns(size, patterns)
         summary = summarize_validations(results)
-        asymmetric = [
-            str(result.index) for result in results if not result.symmetric
+        unsupported = [
+            str(index)
+            for index, pattern in enumerate(catalog, start=1)
+            if not pattern.symmetric
         ]
+        regular = sum(
+            1 for pattern in catalog if "rotational" in pattern.symmetries
+        )
+        mirror_only = sum(
+            1
+            for pattern in catalog
+            if "vertical" in pattern.symmetries
+            and "rotational" not in pattern.symmetries
+        )
 
         click.echo(
             f"{size}x{size}: patterns={summary['patterns']} "
             f"total_weight={summary['total_weight']} "
             f"valid={summary['valid']} invalid={summary['invalid']} "
-            f"symmetric={summary['symmetric']} "
-            f"asymmetric={summary['asymmetric']}"
+            f"regular={regular} mirror_only={mirror_only} "
+            f"unsupported_symmetry={len(unsupported)}"
         )
         click.echo(
-            "  asymmetric pattern indexes: "
-            + (", ".join(asymmetric) if asymmetric else "none")
+            "  unsupported symmetry pattern indexes: "
+            + (", ".join(unsupported) if unsupported else "none")
         )
 
         if (
@@ -1429,6 +1451,7 @@ def _run_batch_item(
 
     config = load_config(config_path)
     config.puzzle.type = puzzle_type
+    config.puzzle.difficulty = difficulty
     config.puzzle.grid_size = size
     config.llm.provider = llm_provider
     config.output.directory = str(bucket_dir / "intermediates" / f"seed-{seed:03d}")

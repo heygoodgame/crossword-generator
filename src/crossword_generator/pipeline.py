@@ -17,7 +17,7 @@ from crossword_generator.graders.clue_grader import ClueGrader
 from crossword_generator.graders.fill_grader import FillGrader
 from crossword_generator.llm.claude_provider import ClaudeProvider
 from crossword_generator.llm.ollama_provider import OllamaProvider
-from crossword_generator.models import PuzzleEnvelope, PuzzleType
+from crossword_generator.models import PuzzleDifficulty, PuzzleEnvelope, PuzzleType
 from crossword_generator.steps.base import PipelineStep
 from crossword_generator.steps.clue_grading_step import ClueWithGradingStep
 from crossword_generator.steps.fill_step import FillWithGradingStep
@@ -285,6 +285,7 @@ def create_pipeline(
 
     envelope = PuzzleEnvelope(
         puzzle_type=PuzzleType(config.puzzle.type),
+        difficulty=PuzzleDifficulty(config.puzzle.difficulty),
         grid_size=config.puzzle.grid_size,
         theme=pre_loaded_theme,
         metadata={"seed": seed} if seed is not None else {},

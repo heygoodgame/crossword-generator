@@ -13,6 +13,11 @@ class PuzzleType(StrEnum):
     MIDI = "midi"
 
 
+class PuzzleDifficulty(StrEnum):
+    EASY = "easy"
+    HARD = "hard"
+
+
 class GridCell(BaseModel):
     """A single cell in the crossword grid."""
 
@@ -127,6 +132,7 @@ class PuzzleEnvelope(BaseModel):
     """
 
     puzzle_type: PuzzleType = PuzzleType.MINI
+    difficulty: PuzzleDifficulty = PuzzleDifficulty.EASY
     grid_size: int = 5
 
     # Step outputs (populated as the pipeline progresses)

@@ -2,6 +2,7 @@
 
 puzzle:
   type: mini        # mini or midi
+  difficulty: easy  # easy or hard
   grid_size: 5      # 5, 7 for mini; 9, 11 for midi
 
 dictionary:

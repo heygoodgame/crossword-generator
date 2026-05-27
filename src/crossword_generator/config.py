@@ -25,6 +25,7 @@ class PuzzleConfig(BaseModel):
     """Puzzle type and grid size."""
 
     type: str = "mini"
+    difficulty: str = "easy"
     grid_size: int = 5
 
 
