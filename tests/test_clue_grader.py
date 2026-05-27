@@ -232,6 +232,39 @@ class TestHappyPath:
         assert grade.score == 56.0
         assert "significant part of the answer" in grade.feedback
 
+    def test_deterministic_penalty_for_morphological_answer_leakage(self) -> None:
+        leaking_clues = [
+            ClueEntry(
+                number=1,
+                direction="across",
+                answer="HOUSEWIFE",
+                clue='"Desperate ___wives" (TV show)',
+            )
+        ]
+        response = json.dumps(
+            [
+                {
+                    "number": 1,
+                    "direction": "across",
+                    "accuracy": 22,
+                    "freshness": 18,
+                    "craft": 18,
+                    "fairness": 22,
+                    "feedback": "Looks plausible.",
+                }
+            ]
+        )
+        grader = ClueGrader(MockLLM(response=response))
+        envelope = _make_envelope(clues=leaking_clues)
+
+        report = grader.grade(envelope)
+
+        grade = report.clue_grades[0]
+        assert grade.accuracy == 8.0
+        assert grade.fairness == 8.0
+        assert grade.score == 52.0
+        assert "morphological variant" in grade.feedback
+
 
 class TestFailingScores:
     def test_low_scores_fail(self) -> None:

@@ -517,6 +517,22 @@ class TestThemeAnnotationsInPrompt:
         assert "innuendo" in prompt
         assert "objectifying" in prompt
 
+    def test_prompt_disallows_related_word_leakage(self) -> None:
+        from crossword_generator.exporters.numbering import compute_numbering
+
+        entries = compute_numbering(MOCK_GRID)
+        crossing_words = compute_crossing_words(entries, MOCK_GRID)
+
+        prompt = build_clue_generation_prompt(
+            entries,
+            crossing_words,
+            PuzzleType.MINI,
+        )
+
+        assert "related morphological variant/root" in prompt
+        assert 'HOUSEWIFE with "Desperate ___wives"' in prompt
+        assert "singular/plural forms" in prompt
+
     def test_easy_prompt_prioritizes_obvious_clues(self) -> None:
         """Easy guidance is easier than NYT Monday, not just mini/midi."""
         from crossword_generator.exporters.numbering import compute_numbering

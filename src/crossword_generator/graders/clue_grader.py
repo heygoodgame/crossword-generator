@@ -246,22 +246,61 @@ def _answer_leak_feedback(answer: str, clue: str) -> str | None:
     tokens = re.findall(r"[A-Z0-9]+", clue.upper())
     for token in tokens:
         token_norm = _normalize(token)
-        if token_norm == answer_norm:
+        token_forms = _morphological_forms(token_norm)
+        if answer_norm in token_forms:
             return "Deterministic check: clue contains the answer."
         if len(token_norm) < 4:
             continue
-        if len(answer_norm) >= 5 and (
-            answer_norm.startswith(token_norm)
-            or answer_norm.endswith(token_norm)
-            or (len(token_norm) >= 5 and token_norm in answer_norm)
-        ):
-            return (
-                "Deterministic check: clue contains a significant part "
-                "of the answer."
-            )
+        if len(answer_norm) >= 5:
+            for token_form in token_forms:
+                if len(token_form) < 4:
+                    continue
+                if (
+                    answer_norm.startswith(token_form)
+                    or answer_norm.endswith(token_form)
+                    or (len(token_form) >= 5 and token_form in answer_norm)
+                ):
+                    return (
+                        "Deterministic check: clue contains a significant "
+                        "part of the answer or a morphological variant."
+                    )
 
     return None
 
 
 def _normalize(text: str) -> str:
     return re.sub(r"[^A-Z0-9]+", "", text.upper())
+
+
+def _morphological_forms(token: str) -> set[str]:
+    """Return simple forms that catch clue/answer echo leaks.
+
+    This is intentionally conservative and only handles high-confidence
+    English endings that commonly show up in clue text, like wives/wife,
+    teaches/teach, teaching/teach, and plural -s/-es.
+    """
+    forms = {token}
+    if len(token) <= 3:
+        return forms
+
+    if token.endswith("IES") and len(token) > 4:
+        forms.add(token[:-3] + "Y")
+    if token.endswith("VES") and len(token) > 4:
+        forms.add(token[:-3] + "F")
+        forms.add(token[:-3] + "FE")
+    if token.endswith("ING") and len(token) > 5:
+        stem = token[:-3]
+        forms.add(stem)
+        if len(stem) >= 2 and stem[-1] == stem[-2]:
+            forms.add(stem[:-1])
+    if token.endswith("ED") and len(token) > 4:
+        stem = token[:-2]
+        forms.add(stem)
+        if len(stem) >= 2 and stem[-1] == stem[-2]:
+            forms.add(stem[:-1])
+    if token.endswith("ES") and len(token) > 4:
+        forms.add(token[:-2])
+    if token.endswith("S") and not token.endswith("SS") and len(token) > 4:
+        forms.add(token[:-1])
+
+    return forms
