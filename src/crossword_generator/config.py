@@ -94,6 +94,7 @@ class ClueGradingConfig(BaseModel):
     min_score: int = 70
     regenerate_on_fail: bool = True
     accuracy_repair_threshold: int = 12  # repair clues below this accuracy sub-score
+    individual_repair_score_threshold: int = 65
 
 
 class GradingConfig(BaseModel):

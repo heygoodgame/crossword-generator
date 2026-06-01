@@ -235,6 +235,9 @@ def create_pipeline(
         max_retries=3,
         regenerate_on_fail=config.grading.clue.regenerate_on_fail,
         accuracy_repair_threshold=config.grading.clue.accuracy_repair_threshold,
+        individual_repair_score_threshold=(
+            config.grading.clue.individual_repair_score_threshold
+        ),
     )
 
     # Build steps

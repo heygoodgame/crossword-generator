@@ -532,6 +532,41 @@ class TestThemeAnnotationsInPrompt:
         assert "related morphological variant/root" in prompt
         assert 'HOUSEWIFE with "Desperate ___wives"' in prompt
         assert "singular/plural forms" in prompt
+        assert 'POL with "politician"' in prompt
+
+    def test_prompt_prioritizes_accuracy_and_exact_fit(self) -> None:
+        from crossword_generator.exporters.numbering import compute_numbering
+
+        entries = compute_numbering(MOCK_GRID)
+        crossing_words = compute_crossing_words(entries, MOCK_GRID)
+
+        prompt = build_clue_generation_prompt(
+            entries,
+            crossing_words,
+            PuzzleType.MINI,
+            difficulty=PuzzleDifficulty.HARD,
+        )
+
+        assert "Accuracy is more important than cleverness" in prompt
+        assert "Fill-in-the-blank clues must fit the answer exactly" in prompt
+        assert "singular/plural" in prompt
+        assert "GOT A SAY" in prompt
+
+    def test_prompt_avoids_unpleasant_clue_wording(self) -> None:
+        from crossword_generator.exporters.numbering import compute_numbering
+
+        entries = compute_numbering(MOCK_GRID)
+        crossing_words = compute_crossing_words(entries, MOCK_GRID)
+
+        prompt = build_clue_generation_prompt(
+            entries,
+            crossing_words,
+            PuzzleType.MINI,
+        )
+
+        assert "death" in prompt
+        assert "undocumented immigrant" in prompt
+        assert "passed on" in prompt
 
     def test_easy_prompt_prioritizes_obvious_clues(self) -> None:
         """Easy guidance is easier than NYT Monday, not just mini/midi."""

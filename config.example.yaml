@@ -34,6 +34,8 @@ grading:
   clue:
     min_score: 70           # Minimum clue quality score (0-100)
     regenerate_on_fail: true
+    accuracy_repair_threshold: 12
+    individual_repair_score_threshold: 65
 
 llm:
   provider: ollama  # "ollama" or "claude"

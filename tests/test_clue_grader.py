@@ -149,6 +149,20 @@ class TestHappyPath:
         assert "NYT Tuesday/Wednesday-level" in prompt
         assert "Mild misdirection" in prompt
         assert "Saturday-level obscurity" in prompt
+        assert "Accuracy and exact answer fit are more important" in prompt
+
+    def test_evaluation_penalizes_exact_phrase_and_unpleasant_wording(self) -> None:
+        prompt = build_clue_evaluation_prompt(
+            MOCK_CLUES,
+            {},
+            PuzzleType.MINI,
+            difficulty=PuzzleDifficulty.HARD,
+        )
+
+        assert "SAINT clued as the plural Saints" in prompt
+        assert "GOT A SAY clued as if it were GOTTA SAY" in prompt
+        assert "death" in prompt
+        assert "undocumented immigrant" in prompt
 
     def test_per_clue_scores_populated(self) -> None:
         response = _build_evaluation_json(MOCK_CLUES)  # 20+20+20+20=80
@@ -264,6 +278,72 @@ class TestHappyPath:
         assert grade.fairness == 8.0
         assert grade.score == 52.0
         assert "morphological variant" in grade.feedback
+
+    def test_deterministic_penalty_for_short_answer_root_leakage(self) -> None:
+        leaking_clues = [
+            ClueEntry(
+                number=1,
+                direction="across",
+                answer="POL",
+                clue="Politician, briefly",
+            )
+        ]
+        response = json.dumps(
+            [
+                {
+                    "number": 1,
+                    "direction": "across",
+                    "accuracy": 22,
+                    "freshness": 18,
+                    "craft": 18,
+                    "fairness": 22,
+                    "feedback": "Looks plausible.",
+                }
+            ]
+        )
+        grader = ClueGrader(MockLLM(response=response))
+        envelope = _make_envelope(clues=leaking_clues)
+
+        report = grader.grade(envelope)
+
+        grade = report.clue_grades[0]
+        assert grade.accuracy == 8.0
+        assert grade.fairness == 8.0
+        assert grade.score == 52.0
+        assert "short answer root" in grade.feedback
+
+    def test_deterministic_penalty_for_unpleasant_clue_wording(self) -> None:
+        unpleasant_clues = [
+            ClueEntry(
+                number=1,
+                direction="across",
+                answer="ALIEN",
+                clue="Undocumented immigrant",
+            )
+        ]
+        response = json.dumps(
+            [
+                {
+                    "number": 1,
+                    "direction": "across",
+                    "accuracy": 22,
+                    "freshness": 18,
+                    "craft": 20,
+                    "fairness": 22,
+                    "feedback": "Looks plausible.",
+                }
+            ]
+        )
+        grader = ClueGrader(MockLLM(response=response))
+        envelope = _make_envelope(clues=unpleasant_clues)
+
+        report = grader.grade(envelope)
+
+        grade = report.clue_grades[0]
+        assert grade.craft == 8.0
+        assert grade.fairness == 8.0
+        assert grade.score == 56.0
+        assert "unpleasant wording" in grade.feedback
 
 
 class TestFailingScores:

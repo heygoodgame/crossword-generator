@@ -15,14 +15,20 @@ Current emphasis:
 - Hard clue generation should target NYT Tuesday/Wednesday: fair but more
   oblique definitions, mild wordplay, and occasional misdirection. Avoid
   forced difficulty, strained pop-culture references, ultra-current slang, and
-  clues that need a long explanation to be fair.
+  clues that need a long explanation to be fair. Accuracy and exact answer fit
+  beat cleverness: if a proper noun, song, quote, team name, idiom, or
+  fill-in-the-blank angle is not certain, use a clean direct clue instead.
+- Clues should avoid unpleasant wording such as "death" and "undocumented
+  immigrant"; if dying must be referenced, use gentle wording such as
+  "passed on."
 - Clue prompts omit word-count tags such as `(two words)` until the pipeline has
   explicit word-boundary metadata. Explanatory clue tags should be
   parenthetical, not comma/colon appendages.
 - The clue grader applies deterministic penalties for answer leakage, and the
   repair pass also fixes low individual clue scores or explicit evaluator
   "major issue" / "factual error" feedback even when aggregate clue score
-  passes.
+  passes. Hard configs use a higher individual clue repair threshold so
+  borderline Hard clues are more likely to be surgically regenerated.
 - HGG Easy is a single 3-9 letter effective list, scored `;50`, with known
   source-score 60 entries removed.
 - HGG 60 is a single 7-9 letter effective list, scored `;60`.

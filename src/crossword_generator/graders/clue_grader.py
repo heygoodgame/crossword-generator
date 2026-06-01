@@ -205,27 +205,48 @@ def _apply_deterministic_clue_penalties(
 
     for grade in grades:
         clue = clue_lookup.get((grade.number, grade.direction))
-        leak_feedback = None
+        feedback_parts: list[str] = []
+        has_answer_leak = False
+        has_editorial_issue = False
         if clue is not None:
             leak_feedback = _answer_leak_feedback(
                 getattr(clue, "answer", ""),
                 getattr(clue, "clue", ""),
             )
+            if leak_feedback:
+                feedback_parts.append(leak_feedback)
+                has_answer_leak = True
+            editorial_feedback = _editorial_clue_feedback(
+                getattr(clue, "clue", ""),
+            )
+            if editorial_feedback:
+                feedback_parts.append(editorial_feedback)
+                has_editorial_issue = True
 
-        if leak_feedback:
+        if feedback_parts:
             feedback = grade.feedback
-            if feedback:
-                feedback = f"{feedback} {leak_feedback}"
-            else:
-                feedback = leak_feedback
-            accuracy = min(grade.accuracy or 0.0, 8.0)
-            fairness = min(grade.fairness or 0.0, 8.0)
+            deterministic_feedback = " ".join(feedback_parts)
+            feedback = (
+                f"{feedback} {deterministic_feedback}"
+                if feedback
+                else deterministic_feedback
+            )
+            accuracy = grade.accuracy or 0.0
             freshness = grade.freshness or 0.0
             craft = grade.craft or 0.0
+            fairness = grade.fairness or 0.0
+            if has_answer_leak:
+                accuracy = min(accuracy, 8.0)
+                fairness = min(fairness, 8.0)
+            if has_editorial_issue:
+                craft = min(craft, 8.0)
+                fairness = min(fairness, 8.0)
             adjusted.append(
                 grade.model_copy(
                     update={
                         "accuracy": accuracy,
+                        "freshness": freshness,
+                        "craft": craft,
                         "fairness": fairness,
                         "score": accuracy + freshness + craft + fairness,
                         "feedback": feedback,
@@ -249,6 +270,15 @@ def _answer_leak_feedback(answer: str, clue: str) -> str | None:
         token_forms = _morphological_forms(token_norm)
         if answer_norm in token_forms:
             return "Deterministic check: clue contains the answer."
+        if (
+            len(answer_norm) == 3
+            and len(token_norm) >= len(answer_norm) + 4
+            and token_norm.startswith(answer_norm)
+        ):
+            return (
+                "Deterministic check: clue contains a short answer root "
+                "inside a longer word."
+            )
         if len(token_norm) < 4:
             continue
         if len(answer_norm) >= 5:
@@ -265,6 +295,23 @@ def _answer_leak_feedback(answer: str, clue: str) -> str | None:
                         "part of the answer or a morphological variant."
                     )
 
+    return None
+
+
+_UNPLEASANT_CLUE_PATTERNS = (
+    re.compile(r"\bDEATH\b", re.IGNORECASE),
+    re.compile(r"\bUNDOCUMENTED\s+IMMIGRANT(?:S)?\b", re.IGNORECASE),
+    re.compile(r"\bILLEGAL\s+IMMIGRANT(?:S)?\b", re.IGNORECASE),
+)
+
+
+def _editorial_clue_feedback(clue: str) -> str | None:
+    for pattern in _UNPLEASANT_CLUE_PATTERNS:
+        if pattern.search(clue):
+            return (
+                "Deterministic check: clue uses unpleasant wording; use a "
+                "neutral or gentle phrasing instead."
+            )
     return None
 
 

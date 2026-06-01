@@ -55,6 +55,7 @@ grading:
     min_score: 70
     regenerate_on_fail: true
     accuracy_repair_threshold: 12
+    individual_repair_score_threshold: 70
 
 llm:
   provider: ollama
