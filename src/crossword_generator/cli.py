@@ -1068,17 +1068,20 @@ def prepare_dictionaries(
 @click.option(
     "--easy-source",
     type=click.Path(exists=True),
-    default="dictionaries/hgg-easy-flat-55.txt",
+    default="dictionaries/HGGXW-Easy.txt",
     show_default=True,
-    help="Path to the Easy source list.",
+    help="Path to the Easy source list (Jeff's consolidated HGGXW Easy).",
 )
 @click.option(
     "--easy-extra-source",
     "easy_extra_sources",
     type=click.Path(exists=True),
     multiple=True,
-    default=("dictionaries/Wordplete-PrevalentCulled-8-9-length.txt",),
-    help="Additional source file to merge into HGG Easy.",
+    default=(),
+    help=(
+        "Additional source file to merge into HGG Easy. HGGXW-Easy is "
+        "already consolidated, so this is empty by default."
+    ),
 )
 @click.option(
     "--easy-exclude-source",
@@ -1087,7 +1090,6 @@ def prepare_dictionaries(
     multiple=True,
     default=(
         "dictionaries/XwiJeffChenList-NotFamilyFriendly.txt",
-        "dictionaries/Wordplete-PrevalentCulled-8-9-length-Removed.txt",
         "dictionaries/HggGeneratedSafetyExclude.txt",
     ),
     help="Plain or semicolon-delimited word list to exclude from HGG Easy.",
@@ -1095,9 +1097,19 @@ def prepare_dictionaries(
 @click.option(
     "--hard-source",
     type=click.Path(exists=True),
-    default="dictionaries/HggCuratedCrosswordList.txt",
+    default="dictionaries/HGGXW-Hard.txt",
     show_default=True,
-    help="Path to the curated hard source dictionary.",
+    help="Path to the Hard fill list (Jeff's consolidated HGGXW Hard).",
+)
+@click.option(
+    "--sixty-source",
+    type=click.Path(exists=True),
+    default="dictionaries/XwiJeffChenList.txt",
+    show_default=True,
+    help=(
+        "Scored master list providing the source-score 60 entries. "
+        "HGGXW-Easy/Hard are plain (unscored), so 60-pointers come from here."
+    ),
 )
 @click.option(
     "--easy-output",
@@ -1150,6 +1162,7 @@ def publish_effective_dictionaries(
     easy_extra_sources: tuple[str, ...],
     easy_exclude_sources: tuple[str, ...],
     hard_source: str,
+    sixty_source: str,
     easy_output: str,
     sixty_output: str,
     api_base: str | None,
@@ -1191,6 +1204,7 @@ def publish_effective_dictionaries(
                     resolve_path(source) for source in easy_exclude_sources
                 ),
                 hard_source=resolve_path(hard_source),
+                sixty_source=resolve_path(sixty_source),
             )
             payload = make_effective_dictionary_payload(
                 build,

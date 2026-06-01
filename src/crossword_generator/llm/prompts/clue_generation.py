@@ -67,7 +67,13 @@ _GUIDELINES = (
     "- Avoid body-part, underwear, anatomy, sexuality, appearance, "
     "identity, or demographic-based jokes. If an answer is sensitive "
     "but acceptable, clue it neutrally rather than with a wink, "
-    "innuendo, or objectifying angle."
+    "innuendo, or objectifying angle.\n"
+    "- Always write clues with a non-offensive mindset. When an answer "
+    "has a violent, weapon-, drug-, or otherwise negative literal "
+    "meaning, prefer a clue built on a benign alternate sense, idiom, "
+    "or pop-culture usage. For example, clue BOMB as \"Flop at the box "
+    "office\" rather than referencing an explosive device, and clue "
+    "SHOOT as \"Rats!\" rather than referencing gunfire."
 )
 
 _THEME_INSTRUCTIONS = (

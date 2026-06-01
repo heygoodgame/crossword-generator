@@ -209,6 +209,22 @@ snapshot and runtime recipes are game-agnostic. After the API write succeeds,
 the command writes local `dictionaries/hgg-easy.txt` and `dictionaries/hgg-60.txt`
 unless `--no-write-local` is passed.
 
+As of the HGGXW cutover (2026-06), the source lists are Jeff's three
+consolidated lists, registered on prod and pulled via `consolidate-list`:
+
+- `--easy-source dictionaries/HGGXW-Easy.txt` — plain Easy fill (no scores)
+- `--hard-source dictionaries/HGGXW-Hard.txt` — plain Hard fill (no scores)
+- `--sixty-source dictionaries/XwiJeffChenList.txt` — scored master; the
+  source-score-60 entries become HGG 60 and are excluded from HGG Easy.
+
+Because `HGGXW-Easy/Hard` are plain (unscored), the 60-pointers can no
+longer be read from the hard list. `--sixty-source` (the scored master
+XWordInfo list) supplies them. Easy puzzles draw from HGG Easy only; hard
+puzzles draw from HGG Easy + HGG Hard + HGG 60; the per-size 60-point
+requirements (none on 5x5, one 7-letter 60 on 7x7, 8-9-letter 60s on 9x9)
+are enforced by `config.hard7.yaml` / `config.hard9.yaml` grading against
+the flat-`;60` `hgg-60.txt`. These config files are unchanged by the cutover.
+
 ## Word List Management
 
 Master word lists are first-class entities in hey-you's MySQL

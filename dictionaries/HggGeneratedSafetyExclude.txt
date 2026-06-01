@@ -1,8 +1,58 @@
-BEHEAD;unsuitable generated fill
-CARNAL;unsuitable generated fill
-DETONATOR;unsuitable generated fill
-DIE;unsuitable generated fill
-GRENADE;unsuitable generated fill
-GUNSHOT;unsuitable generated fill
-TORTURE;unsuitable generated fill
-WENTDRY;awkward generated fill
+ABORTED;sensitive topic
+ASSAULT;violence
+ASSAULTED;violence
+ASSAULTS;violence
+BEHEADED;violence
+BEHEADING;violence
+BOMBER;weapons/violence
+BOMBINGS;weapons/violence
+BOOBY;sexual
+BOOBYTRAP;sexual/violence
+CORPSES;death
+CRIPPLE;ableist slur
+CRIPPLED;ableist slur
+EROTICIZE;sexual
+FETISH;sexual
+ISIS;extremism
+JUNKIES;drug slur
+LUNATIC;mental-health slur
+LUNATICS;mental-health slur
+MASSACRE;graphic violence
+MASSACRED;graphic violence
+MASSACRES;graphic violence
+METHADONE;drugs
+MURDERINC;violence
+MURDERONE;violence
+MURDEROUS;violence
+NARCOTIC;drugs
+NARCOTICS;drugs
+OPIOID;drugs
+OPIOIDS;drugs
+QUEER;slur risk
+SEXCHANGE;sensitive social
+SEXDRIVE;sexual
+SEXISM;sensitive social
+SEXIST;sensitive social
+SEXOLOGY;sexual
+SEXQUIZ;sexual
+SHOOTER;gun violence
+SHOOTERS;gun violence
+SHOOTING;gun violence
+SHOOTINGS;gun violence
+SHOOTOUT;gun violence
+SLAUGHTER;graphic violence
+SLAY;violence
+SLAYED;violence
+SLAYER;violence
+SLAYING;violence
+SPERMBANK;sexual
+STABBING;violence
+STRANGLE;violence
+STRANGLED;violence
+STRANGLER;violence
+STRANGLES;violence
+SUFFOCATE;violence
+TERRORISM;extremism
+TERRORIST;extremism
+TORTURE;graphic violence
+TORTURED;graphic violence

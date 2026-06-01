@@ -99,9 +99,16 @@ def build_effective_dictionaries(
     easy_extra_sources: tuple[Path, ...],
     easy_exclude_sources: tuple[Path, ...],
     hard_source: Path,
+    sixty_source: Path,
     score: int = 50,
 ) -> EffectiveDictionaryBuild:
-    """Build HGG Easy and HGG 60 into output_dir and validate the result."""
+    """Build HGG Easy and HGG 60 into output_dir and validate the result.
+
+    ``sixty_source`` is the scored master list (XwiJeffChenList.txt) that
+    provides the source-score 60 entries. ``easy_source`` / ``hard_source``
+    are Jeff's plain fill lists (HGGXW-Easy.txt / HGGXW-Hard.txt) and carry
+    no scores, so the 60-pointers must come from ``sixty_source``.
+    """
     output_dir.mkdir(parents=True, exist_ok=True)
 
     thumbs_easy = project_root / "dictionaries" / "HggThumbsDownEasy.txt"
@@ -116,14 +123,14 @@ def build_effective_dictionaries(
 
     easy_summary = prepare_hgg_easy_dictionary(
         easy_source,
-        hard_source,
+        sixty_source,
         easy_path,
         score=score,
         extra_input_paths=easy_extra_sources,
         exclude_words=excluded_easy_words,
     )
     sixty_summary = prepare_sixty_dictionary(
-        hard_source,
+        sixty_source,
         sixty_path,
         score=60,
         exclude_words=base_excluded_words,
@@ -158,6 +165,7 @@ def build_effective_dictionaries(
             else ()
         ),
         SourceFile("hard-source", hard_source),
+        SourceFile("sixty-source", sixty_source),
     )
     build = EffectiveDictionaryBuild(
         easy=easy,
@@ -168,16 +176,20 @@ def build_effective_dictionaries(
         sixty_summary=sixty_summary,
         project_root=project_root,
     )
-    validate_effective_dictionaries(build, hard_source=hard_source)
+    validate_effective_dictionaries(build, sixty_source=sixty_source)
     return build
 
 
 def validate_effective_dictionaries(
     build: EffectiveDictionaryBuild,
     *,
-    hard_source: Path,
+    sixty_source: Path,
 ) -> None:
-    """Validate the HGG Easy and HGG 60 invariants before publish."""
+    """Validate the HGG Easy and HGG 60 invariants before publish.
+
+    ``sixty_source`` is the scored master list; source-score 60 entries are
+    read from it to assert none leaked into hgg-easy.
+    """
     for dictionary in (build.easy, build.sixty):
         if not dictionary.entries:
             raise EffectiveDictionaryError(f"{dictionary.slug} is empty")
@@ -204,7 +216,7 @@ def validate_effective_dictionaries(
                 )
 
     source_sixties = _collect_source_score_words(
-        hard_source,
+        sixty_source,
         min_score=60,
         min_word_length=3,
         max_word_length=9,

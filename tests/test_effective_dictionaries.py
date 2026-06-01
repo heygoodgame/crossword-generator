@@ -15,29 +15,45 @@ from crossword_generator.effective_dictionaries import (
 )
 
 
-def _write_sources(tmp_path: Path) -> tuple[Path, Path, Path, Path, Path]:
+def _write_sources(tmp_path: Path) -> tuple[Path, Path, Path, Path, Path, Path]:
     dictionaries = tmp_path / "dictionaries"
     dictionaries.mkdir()
     easy_source = dictionaries / "easy.txt"
     easy_extra = dictionaries / "extra.txt"
     exclude_source = dictionaries / "exclude.txt"
     hard_source = dictionaries / "hard.txt"
+    sixty_source = dictionaries / "sixty.txt"
     thumbs_easy = dictionaries / "HggThumbsDownEasy.txt"
 
     easy_source.write_text("APPLE;55\nBANANA;55\nALCHEMY;55\nNOVICE;55\n")
     easy_extra.write_text("ZOOMING\n")
     exclude_source.write_text("BANANA;removed\n")
-    hard_source.write_text(
+    # Jeff's plain hard fill list (no scores).
+    hard_source.write_text("ALCHEMY\nAIRLIFT\nNOVICE\n")
+    # The scored master list providing the source-score 60 entries.
+    sixty_source.write_text(
         "ALCHEMY;60\nAIRLIFT;60\nNOVICE;50\nTOOLONGWORD;60\n"
     )
     thumbs_easy.write_text("APPLE;easy thumbs-down\n")
-    return easy_source, easy_extra, exclude_source, hard_source, dictionaries
+    return (
+        easy_source,
+        easy_extra,
+        exclude_source,
+        hard_source,
+        sixty_source,
+        dictionaries,
+    )
 
 
 def _build(tmp_path: Path) -> EffectiveDictionaryBuild:
-    easy_source, easy_extra, exclude_source, hard_source, _dictionaries = (
-        _write_sources(tmp_path)
-    )
+    (
+        easy_source,
+        easy_extra,
+        exclude_source,
+        hard_source,
+        sixty_source,
+        _dictionaries,
+    ) = _write_sources(tmp_path)
     return build_effective_dictionaries(
         project_root=tmp_path,
         output_dir=tmp_path / "out",
@@ -45,6 +61,7 @@ def _build(tmp_path: Path) -> EffectiveDictionaryBuild:
         easy_extra_sources=(easy_extra,),
         easy_exclude_sources=(exclude_source,),
         hard_source=hard_source,
+        sixty_source=sixty_source,
     )
 
 
