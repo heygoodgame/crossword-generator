@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@heygoodgame/common": "^0.2.48-codex-rbac-user-roles.2"
+  }
+}
