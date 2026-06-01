@@ -28,11 +28,12 @@ def _write_sources(tmp_path: Path) -> tuple[Path, Path, Path, Path, Path, Path]:
     easy_source.write_text("APPLE;55\nBANANA;55\nALCHEMY;55\nNOVICE;55\n")
     easy_extra.write_text("ZOOMING\n")
     exclude_source.write_text("BANANA;removed\n")
-    # Jeff's plain hard fill list (no scores).
-    hard_source.write_text("ALCHEMY\nAIRLIFT\nNOVICE\n")
+    # Jeff's plain hard fill list (no scores). BRIDGE is a hard-only fill
+    # word (not a 60-pointer) so HGG Hard should exceed HGG Easy by it.
+    hard_source.write_text("ALCHEMY\nAIRLIFT\nNOVICE\nBRIDGE\n")
     # The scored master list providing the source-score 60 entries.
     sixty_source.write_text(
-        "ALCHEMY;60\nAIRLIFT;60\nNOVICE;50\nTOOLONGWORD;60\n"
+        "ALCHEMY;60\nAIRLIFT;60\nNOVICE;50\nBRIDGE;50\nTOOLONGWORD;60\n"
     )
     thumbs_easy.write_text("APPLE;easy thumbs-down\n")
     return (
@@ -76,6 +77,20 @@ def test_build_effective_dictionaries_applies_excludes_and_scores(
     assert build.easy.length_counts == {"6": 1, "7": 1}
     assert build.sixty.length_counts == {"7": 2}
 
+    # HGG Hard = Easy fill unioned with the Hard fill, same exclusions.
+    # It must be a superset of Easy and additionally include BRIDGE.
+    hard_words = {word for word, _score in build.hard.entries}
+    easy_words = {word for word, _score in build.easy.entries}
+    assert easy_words <= hard_words
+    assert build.hard.entries == (
+        ("BRIDGE", 50),
+        ("NOVICE", 50),
+        ("ZOOMING", 50),
+    )
+    # 60-pointers must not leak into the hard fill list.
+    assert "ALCHEMY" not in hard_words
+    assert "AIRLIFT" not in hard_words
+
 
 def test_make_payload_packages_both_dictionaries_as_one_snapshot(
     tmp_path: Path,
@@ -93,12 +108,19 @@ def test_make_payload_packages_both_dictionaries_as_one_snapshot(
     assert "game_key" not in recipes["easy/9"]
     assert payload["metadata"]["hgg_easy_count"] == 2
     assert payload["metadata"]["hgg_60_count"] == 2
+    # hgg-hard is a local-only generation input; the published snapshot
+    # carries only the runtime-served dictionaries hey-you recognises.
+    assert set(payload["dictionaries"]) == {"hgg-easy", "hgg-60"}
     assert payload["dictionaries"]["hgg-easy"]["contents"] == (
         "NOVICE;50\nZOOMING;50\n"
     )
     assert payload["dictionaries"]["hgg-60"]["contents"] == (
         "AIRLIFT;60\nALCHEMY;60\n"
     )
+    # ...but the recipes still document that hard puzzles draw from hgg-hard.
+    assert recipes["hard/5"]["uses"] == ["hgg-hard"]
+    assert recipes["hard/7"]["uses"] == ["hgg-hard", "hgg-60"]
+    assert recipes["hard/9"]["uses"] == ["hgg-hard", "hgg-60"]
 
 
 def test_payload_source_files_use_project_relative_paths(

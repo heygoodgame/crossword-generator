@@ -241,7 +241,7 @@ class TestPhase1PreparedDictionaries:
     def test_easy_dictionary_loads(self, project_root: Path) -> None:
         path = project_root / "dictionaries" / "hgg-easy.txt"
         d = Dictionary.load(path, min_word_score=50, min_2letter_score=50)
-        assert len(d) == 18321
+        assert len(d) == 21480
         assert d.score("ABACUS") == 50
         assert d.score("BANE") == 50
         assert d.score("zoom") == 50
@@ -259,18 +259,20 @@ class TestPhase1PreparedDictionaries:
         assert d.score("WENTDRY") is None
         assert d.score("CATCH22") is None
 
-    def test_hard_7x7_dictionary_uses_easy_shorts_and_curated_sevens(
+    def test_hard_7x7_dictionary_uses_hard_fill_and_curated_sevens(
         self, project_root: Path
     ) -> None:
+        # Hard 7x7 composes the combined Easy+Hard fill (hgg-hard) with the
+        # source-score-60 list (hgg-60), per config.hard7.yaml.
         d = Dictionary.load_many(
             [
-                project_root / "dictionaries" / "hgg-easy.txt",
+                project_root / "dictionaries" / "hgg-hard.txt",
                 project_root / "dictionaries" / "hgg-60.txt",
             ],
             min_word_score=50,
             min_2letter_score=50,
         )
-        assert len(d) == 24202
+        assert len(d) == 34706
         assert d.supported_lengths() == {3, 4, 5, 6, 7, 8, 9}
         assert d.score("ABACUS") == 50
         assert d.score("ACTDUMB") == 60

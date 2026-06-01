@@ -1,21 +1,17 @@
-# Phase 1 hard 7x7 batch-generation config.
-# Uses HGG Easy fill plus exactly one 7-letter HGG 60 entry.
-# Exactly one 7-letter entry must be a source-score 60 entry.
+# Phase 1 hard 5x5 batch-generation config.
+# Hard 5x5 draws from the combined Easy+Hard fill (hgg-hard.txt).
+# Per Jeff: no 60-point requirement on 5x5.
 
 puzzle:
   type: mini
   difficulty: hard
-  grid_size: 7
+  grid_size: 5
 
 dictionary:
   path: dictionaries/hgg-hard.txt
-  additional_paths:
-    - dictionaries/hgg-60.txt
   min_word_score: 50
   min_2letter_score: 50
   themed_path: dictionaries/hgg-hard.txt
-  themed_additional_paths:
-    - dictionaries/hgg-60.txt
   themed_min_word_score: 50
   themed_min_2letter_score: 50
 
@@ -25,8 +21,6 @@ fill:
   max_grid_variants: 100
   csp:
     dictionary_path: dictionaries/hgg-hard.txt
-    additional_dictionary_paths:
-      - dictionaries/hgg-60.txt
     min_word_score: 50
     min_2letter_score: 50
     timeout: 30
@@ -42,9 +36,6 @@ grading:
     retry_on_fail: true
     collect_boards: 1
     llm_select: false
-    exact_score_count_length: 7
-    exact_score_count_min_score: 60
-    exact_score_count: 1
   clue:
     min_score: 70
     regenerate_on_fail: true
@@ -69,6 +60,6 @@ theme:
   enabled: false
 
 output:
-  directory: output/review/hard7
+  directory: output/review/hard5
   formats:
     - ipuz

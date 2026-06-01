@@ -1119,6 +1119,13 @@ def prepare_dictionaries(
     help="Local output path to update after a successful publish.",
 )
 @click.option(
+    "--hard-output",
+    type=click.Path(),
+    default="dictionaries/hgg-hard.txt",
+    show_default=True,
+    help="Local output path for the combined Easy+Hard fill dictionary.",
+)
+@click.option(
     "--sixty-output",
     type=click.Path(),
     default="dictionaries/hgg-60.txt",
@@ -1164,6 +1171,7 @@ def publish_effective_dictionaries(
     hard_source: str,
     sixty_source: str,
     easy_output: str,
+    hard_output: str,
     sixty_output: str,
     api_base: str | None,
     generator_commit: str | None,
@@ -1221,6 +1229,9 @@ def publish_effective_dictionaries(
         click.echo("HGG Easy dictionary:")
         click.echo(format_summary(build.easy_summary))
         click.echo("")
+        click.echo("HGG Hard dictionary (Easy + Hard fill):")
+        click.echo(format_summary(build.hard_summary))
+        click.echo("")
         click.echo("HGG 60 dictionary:")
         click.echo(format_summary(build.sixty_summary))
         click.echo("")
@@ -1249,12 +1260,15 @@ def publish_effective_dictionaries(
 
         if write_local:
             easy_output_path = resolve_path(easy_output)
+            hard_output_path = resolve_path(hard_output)
             sixty_output_path = resolve_path(sixty_output)
-            easy_output_path.parent.mkdir(parents=True, exist_ok=True)
-            sixty_output_path.parent.mkdir(parents=True, exist_ok=True)
+            for path in (easy_output_path, hard_output_path, sixty_output_path):
+                path.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(build.easy.path, easy_output_path)
+            shutil.copyfile(build.hard.path, hard_output_path)
             shutil.copyfile(build.sixty.path, sixty_output_path)
             click.echo(f"Wrote local output: {easy_output_path}")
+            click.echo(f"Wrote local output: {hard_output_path}")
             click.echo(f"Wrote local output: {sixty_output_path}")
 
 
@@ -1604,7 +1618,7 @@ def _batch_bucket_configs(project_root: Path) -> list[tuple[str, int, str, Path]
         ("easy", 5, "mini", project_root / "config.easy.yaml"),
         ("easy", 7, "mini", project_root / "config.easy.yaml"),
         ("easy", 9, "midi", project_root / "config.easy9.yaml"),
-        ("hard", 5, "mini", project_root / "config.easy.yaml"),
+        ("hard", 5, "mini", project_root / "config.hard5.yaml"),
         ("hard", 7, "mini", project_root / "config.hard7.yaml"),
         ("hard", 9, "midi", project_root / "config.hard9.yaml"),
     ]

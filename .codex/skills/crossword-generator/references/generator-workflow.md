@@ -219,11 +219,30 @@ consolidated lists, registered on prod and pulled via `consolidate-list`:
 
 Because `HGGXW-Easy/Hard` are plain (unscored), the 60-pointers can no
 longer be read from the hard list. `--sixty-source` (the scored master
-XWordInfo list) supplies them. Easy puzzles draw from HGG Easy only; hard
-puzzles draw from HGG Easy + HGG Hard + HGG 60; the per-size 60-point
-requirements (none on 5x5, one 7-letter 60 on 7x7, 8-9-letter 60s on 9x9)
-are enforced by `config.hard7.yaml` / `config.hard9.yaml` grading against
-the flat-`;60` `hgg-60.txt`. These config files are unchanged by the cutover.
+XWordInfo list) supplies them.
+
+`publish-effective-dictionaries` builds three local dictionaries:
+
+- `hgg-easy.txt` — HGG Easy fill (flat 50, source-score-60 entries removed)
+- `hgg-hard.txt` — **HGG Easy ∪ HGG Hard** fill (flat 50, same exclusions).
+  This is Jeff's "hard puzzles draw from both lists." It is a derived
+  generation input, deterministically rebuilt from the source lists every
+  run, so it is written locally only and is NOT part of the published
+  snapshot (hey-you's snapshot allowlist is `hgg-easy` + `hgg-60`).
+- `hgg-60.txt` — the source-score-60 entries (lengths 7–9) from the master.
+
+Composition by bucket:
+
+- Easy puzzles draw from `hgg-easy.txt` (`config.easy.yaml`, `config.easy9.yaml`).
+- Hard puzzles draw from `hgg-hard.txt` as the base fill:
+  - `config.hard5.yaml` — hard 5×5, no 60-pointers (per Jeff).
+  - `config.hard7.yaml` — hard 7×7, base `hgg-hard.txt` + `hgg-60.txt`;
+    grading requires exactly one 7-letter 60.
+  - `config.hard9.yaml` — hard 9×9, base `hgg-hard.txt` + `hgg-60.txt`
+    (8–9 letter slots), `min_score_by_length {8:60,9:60}`.
+
+The per-size 60-point requirements are enforced by those config grading
+rules against the flat-`;60` `hgg-60.txt`.
 
 ## Word List Management
 

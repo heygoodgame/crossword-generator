@@ -75,10 +75,12 @@ class EffectiveDictionaryBuild:
     """Result of building the effective dictionary snapshot locally."""
 
     easy: EffectiveDictionary
+    hard: EffectiveDictionary
     sixty: EffectiveDictionary
     source_files: tuple[SourceFile, ...]
     source_fingerprint: str
     easy_summary: DictionaryPrepSummary
+    hard_summary: DictionaryPrepSummary
     sixty_summary: DictionaryPrepSummary
     project_root: Path
 
@@ -119,6 +121,7 @@ def build_effective_dictionaries(
     excluded_easy_words = base_excluded_words | extra_easy_exclude
 
     easy_path = output_dir / "hgg-easy.txt"
+    hard_path = output_dir / "hgg-hard.txt"
     sixty_path = output_dir / "hgg-60.txt"
 
     easy_summary = prepare_hgg_easy_dictionary(
@@ -127,6 +130,18 @@ def build_effective_dictionaries(
         easy_path,
         score=score,
         extra_input_paths=easy_extra_sources,
+        exclude_words=excluded_easy_words,
+    )
+    # HGG Hard is Jeff's "hard puzzles draw from both lists": the Easy fill
+    # unioned with the Hard fill, flat-scored and with the source-score 60
+    # entries excluded (those come in via hgg-60 with their length rules).
+    # Same exclusions as easy so safety/thumbs-down filtering applies to both.
+    hard_summary = prepare_hgg_easy_dictionary(
+        easy_source,
+        sixty_source,
+        hard_path,
+        score=score,
+        extra_input_paths=(hard_source, *easy_extra_sources),
         exclude_words=excluded_easy_words,
     )
     sixty_summary = prepare_sixty_dictionary(
@@ -144,6 +159,15 @@ def build_effective_dictionaries(
         min_length=3,
         max_length=9,
         entries=_load_entries(easy_path),
+    )
+    hard = EffectiveDictionary(
+        slug="hgg-hard",
+        label="HGG Hard",
+        path=hard_path,
+        score=score,
+        min_length=3,
+        max_length=9,
+        entries=_load_entries(hard_path),
     )
     sixty = EffectiveDictionary(
         slug="hgg-60",
@@ -169,10 +193,12 @@ def build_effective_dictionaries(
     )
     build = EffectiveDictionaryBuild(
         easy=easy,
+        hard=hard,
         sixty=sixty,
         source_files=source_files,
         source_fingerprint=_source_fingerprint(source_files),
         easy_summary=easy_summary,
+        hard_summary=hard_summary,
         sixty_summary=sixty_summary,
         project_root=project_root,
     )
@@ -190,7 +216,7 @@ def validate_effective_dictionaries(
     ``sixty_source`` is the scored master list; source-score 60 entries are
     read from it to assert none leaked into hgg-easy.
     """
-    for dictionary in (build.easy, build.sixty):
+    for dictionary in (build.easy, build.hard, build.sixty):
         if not dictionary.entries:
             raise EffectiveDictionaryError(f"{dictionary.slug} is empty")
         words_seen: set[str] = set()
@@ -222,18 +248,33 @@ def validate_effective_dictionaries(
         max_word_length=9,
     )
     easy_words = {word for word, _score in build.easy.entries}
+    hard_words = {word for word, _score in build.hard.entries}
     sixty_words = {word for word, _score in build.sixty.entries}
-    easy_sixties = easy_words & source_sixties
-    if easy_sixties:
-        sample = ", ".join(sorted(easy_sixties)[:5])
+    # Neither the easy nor the hard fill list may contain source-score 60
+    # entries — those are supplied separately via hgg-60 with length rules.
+    for slug, words in (("hgg-easy", easy_words), ("hgg-hard", hard_words)):
+        leaked = words & source_sixties
+        if leaked:
+            sample = ", ".join(sorted(leaked)[:5])
+            raise EffectiveDictionaryError(
+                f"{slug} includes source-score 60 word(s): {sample}"
+            )
+    # hgg-60 must stay disjoint from both fill lists. (hgg-hard is a superset
+    # of hgg-easy by design, so easy/hard overlap is expected and not checked.)
+    for slug, words in (("hgg-easy", easy_words), ("hgg-hard", hard_words)):
+        overlap = words & sixty_words
+        if overlap:
+            sample = ", ".join(sorted(overlap)[:5])
+            raise EffectiveDictionaryError(
+                f"{slug} and hgg-60 overlap unexpectedly: {sample}"
+            )
+    # Sanity: hard must actually be a superset of easy (it unions the Hard
+    # fill on top of Easy). If it isn't, the union step regressed.
+    missing_from_hard = easy_words - hard_words
+    if missing_from_hard:
+        sample = ", ".join(sorted(missing_from_hard)[:5])
         raise EffectiveDictionaryError(
-            f"hgg-easy includes source-score 60 word(s): {sample}"
-        )
-    overlap = easy_words & sixty_words
-    if overlap:
-        sample = ", ".join(sorted(overlap)[:5])
-        raise EffectiveDictionaryError(
-            f"hgg-easy and hgg-60 overlap unexpectedly: {sample}"
+            f"hgg-hard is missing easy word(s) it should contain: {sample}"
         )
 
 
@@ -257,6 +298,12 @@ def make_effective_dictionary_payload(
             _source_file_metadata(item, build.project_root)
             for item in build.source_files
         ],
+        # The published snapshot carries only the runtime-served dictionaries
+        # that hey-you recognises (hgg-easy, hgg-60). hgg-hard is a derived
+        # generation INPUT — deterministically rebuilt from HGGXW-Easy +
+        # HGGXW-Hard (+ master for 60-exclusion) on every build — so it lives
+        # only as a local file and in runtime_recipes, not in this validated
+        # dictionaries block.
         "dictionaries": {
             build.easy.slug: _dictionary_payload(build.easy),
             build.sixty.slug: _dictionary_payload(build.sixty),
@@ -271,22 +318,22 @@ def make_effective_dictionary_payload(
                 "uses": ["hgg-easy"],
             },
             {
-                "puzzle": "hard/5",
-                "uses": ["hgg-easy"],
-                "note": "Same as Easy pending Jeff guidance.",
-            },
-            {
-                "puzzle": "hard/7",
-                "uses": ["hgg-easy", "hgg-60"],
-                "constraint": "Exactly one 7-letter hgg-60 entry.",
-            },
-            {
                 "puzzle": "easy/9",
                 "uses": ["hgg-easy"],
             },
             {
+                "puzzle": "hard/5",
+                "uses": ["hgg-hard"],
+                "note": "hgg-hard is Easy+Hard fill; no hgg-60 on 5x5.",
+            },
+            {
+                "puzzle": "hard/7",
+                "uses": ["hgg-hard", "hgg-60"],
+                "constraint": "Exactly one 7-letter hgg-60 entry.",
+            },
+            {
                 "puzzle": "hard/9",
-                "uses": ["hgg-easy", "hgg-60"],
+                "uses": ["hgg-hard", "hgg-60"],
                 "constraint": (
                     "Only 8-9 letter entries use hgg-60; 7-letter hgg-60 "
                     "entries are reserved for hard/7."
