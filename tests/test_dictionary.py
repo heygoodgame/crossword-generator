@@ -272,7 +272,7 @@ class TestPhase1PreparedDictionaries:
             min_word_score=50,
             min_2letter_score=50,
         )
-        assert len(d) == 34706
+        assert len(d) == 34659
         assert d.supported_lengths() == {3, 4, 5, 6, 7, 8, 9}
         assert d.score("ABACUS") == 50
         assert d.score("ACTDUMB") == 60

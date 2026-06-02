@@ -5320,7 +5320,6 @@ albano;30
 albans;30
 albany;50
 albanynewyork;50
-albanyny;60
 albarn;30
 albas;20
 albashir;50
@@ -5399,7 +5398,6 @@ albumtracks;50
 albundy;50
 albuquerque;50
 albuquerquenewmexico;50
-albuquerquenm;50
 albus;50
 albusdumbledore;50
 alc;25
@@ -6147,7 +6145,6 @@ allennuts;50
 allens;10
 allentate;50
 allentown;50
-allentownpa;50
 allenwrench;50
 allenwrenches;50
 aller;20
@@ -7280,7 +7277,6 @@ amarettos;50
 amarillo;50
 amarilloslim;50
 amarillotexas;60
-amarillotx;50
 amark;20
 amarna;30
 amaro;20
@@ -8190,7 +8186,6 @@ anagrammatical;50
 anagrammed;50
 anagrams;50
 anaheim;50
-anaheimca;50
 anaheimduck;50
 anaheimducks;50
 anail;20
@@ -8360,7 +8355,6 @@ anchopeppers;60
 anchopowder;60
 anchor;50
 anchorage;50
-anchorageak;60
 anchoragealaska;50
 anchorages;50
 anchorbolt;50
@@ -9178,7 +9172,6 @@ annanicolesmith;50
 annapaquin;50
 annapavlova;50
 annapolis;50
-annapolismd;60
 annaquindlen;50
 annarbor;50
 annas;20
@@ -12000,7 +11993,6 @@ arles;50
 arlesfrance;50
 arlington;50
 arlingtonroad;50
-arlingtonva;60
 arliss;50
 arlo;50
 arloandjanis;50
@@ -14488,7 +14480,6 @@ atheneum;50
 athenian;50
 athenians;50
 athens;50
-athensga;60
 athensgeorgia;50
 athensohio;50
 athermic;50
@@ -14575,7 +14566,6 @@ atlantabraves;50
 atlantadream;50
 atlantafalcon;60
 atlantafalcons;60
-atlantaga;50
 atlantageorgia;50
 atlantahawk;60
 atlantahawks;60
@@ -15387,9 +15377,7 @@ augurs;50
 augury;50
 august;50
 augusta;50
-augustaga;60
 augustamaine;50
-augustame;60
 augustan;50
 augustanational;50
 augustans;50
@@ -15524,7 +15512,6 @@ austinbutler;50
 austinpowers;60
 austins;50
 austintexas;50
-austintx;60
 austral;50
 australasian;50
 australia;50
@@ -18321,7 +18308,6 @@ baltimorecolt;50
 baltimorecolts;50
 baltimoreharbor;50
 baltimoremaryland;50
-baltimoremd;50
 baltimoreoriole;50
 baltimoreorioles;50
 baltimoreraven;50
@@ -20146,7 +20132,6 @@ batonethousand;60
 batonpass;50
 batonpasses;50
 batonrouge;60
-batonrougela;60
 batonrougelouisiana;60
 batons;50
 batontwirler;60
@@ -24463,7 +24448,6 @@ billingerrors;50
 billings;50
 billingsgate;50
 billingsmontana;50
-billingsmt;60
 billion;50
 billionaire;50
 billionaires;50
@@ -24997,7 +24981,6 @@ birls;20
 birman;30
 birmans;50
 birmingham;50
-birminghamal;60
 birminghamblitz;50
 birney;30
 birred;10
@@ -25107,7 +25090,6 @@ bishoprics;50
 bishops;50
 bishopsofrome;50
 bismarck;50
-bismarcknd;60
 bismillah;50
 bismol;30
 bismuth;50
@@ -27847,7 +27829,6 @@ boinking;50
 boinks;50
 bois;25
 boise;50
-boiseid;50
 boiseidaho;60
 boisterous;50
 boisterously;50
@@ -29068,7 +29049,6 @@ bostonleft;60
 bostonlefts;60
 bostonlegal;50
 bostonlettuce;50
-bostonma;60
 bostonmarathon;50
 bostonmarathons;60
 bostonmass;60
@@ -29309,7 +29289,6 @@ boulangerie;60
 boulangeries;60
 boulder;50
 boulderclay;50
-boulderco;50
 bouldercolorado;50
 boulderdam;50
 boulderers;50
@@ -29859,7 +29838,6 @@ boyziimen;50
 boyznthehood;50
 boz;50
 bozeman;50
-bozemanmt;60
 bozo;50
 bozos;50
 bozotheclown;50
@@ -32791,7 +32769,6 @@ buffaloing;50
 buffalomozzarella;60
 buffalonickel;60
 buffalonickels;60
-buffalony;50
 buffalos;50
 buffalosabre;50
 buffalosabres;50
@@ -35978,13 +35955,11 @@ cambrian;50
 cambrianperiod;50
 cambric;50
 cambridge;50
-cambridgema;50
 cambridgemass;50
 cambridgeuniversity;60
 camcorder;50
 camcorders;50
 camden;50
-camdennj;50
 camdenyards;50
 came;50
 camea;20
@@ -36940,7 +36915,6 @@ cantonesepop;50
 cantoning;50
 cantonment;50
 cantonments;50
-cantonoh;60
 cantonohio;50
 cantons;50
 cantoo;50
@@ -38387,7 +38361,6 @@ carsick;50
 carsickness;50
 carson;50
 carsoncity;50
-carsoncitynv;60
 carsondaly;50
 carsons;50
 carstarter;50
@@ -41551,8 +41524,6 @@ charlesthefirst;50
 charleston;50
 charlestonchew;50
 charlestonchews;50
-charlestonsc;60
-charlestonwv;60
 charlestown;50
 charlesv;50
 charlesvandoren;50
@@ -41597,7 +41568,6 @@ charlottebronte;50
 charlottechurch;50
 charlottehornet;50
 charlottehornets;50
-charlotteny;60
 charlotterae;50
 charlotteross;50
 charlotterusse;50
@@ -41781,7 +41751,6 @@ chatsup;50
 chatswith;50
 chattanooga;50
 chattanoogachoochoo;60
-chattanoogatn;60
 chatted;50
 chattedup;50
 chattedwith;50
@@ -42647,7 +42616,6 @@ chexmix;60
 cheyenne;50
 cheyennemountain;50
 cheyennes;50
-cheyennewy;60
 cheyennewyoming;50
 chez;50
 chezmoi;50
@@ -42693,7 +42661,6 @@ chicagodog;50
 chicagodogs;50
 chicagofire;50
 chicagohope;50
-chicagoil;60
 chicagoillinois;50
 chicagomarathon;60
 chicagopd;50
@@ -44453,7 +44420,6 @@ cincinnatibengal;50
 cincinnatibengals;50
 cincinnatichili;50
 cincinnatikid;60
-cincinnatioh;60
 cincinnatiohio;50
 cincinnatired;50
 cincinnatireds;50
@@ -45808,7 +45774,6 @@ clevelandcavalier;50
 clevelandcavaliers;50
 clevelandindian;50
 clevelandindians;50
-clevelandoh;50
 clevelandohio;50
 clever;50
 cleverat;50
@@ -48445,7 +48410,6 @@ columbianperiod;30
 columbiapictures;60
 columbiarecords;50
 columbiariver;50
-columbiasc;60
 columbiashuttle;50
 columbiauniversity;50
 columbine;50
@@ -48457,7 +48421,6 @@ columbusbluejacket;50
 columbusbluejackets;50
 columbuscrew;60
 columbusday;50
-columbusoh;50
 columbusohio;50
 column;50
 columna;50
@@ -50249,7 +50212,6 @@ concorde;50
 concordes;50
 concordgrape;60
 concordgrapes;50
-concordnh;60
 concords;50
 concourse;50
 concourses;50
@@ -58238,7 +58200,6 @@ dallasgreen;50
 dallasstar;50
 dallasstars;50
 dallastexas;50
-dallastx;60
 dallaswings;50
 dalles;30
 dalliance;50
@@ -62192,7 +62153,6 @@ denverboot;50
 denverboots;50
 denverbronco;50
 denverbroncos;50
-denverco;60
 denvermint;60
 denvernugget;50
 denvernuggets;50
@@ -62914,7 +62874,6 @@ deskworkers;50
 desman;30
 desmans;30
 desmoines;50
-desmoinesia;60
 desmoinesiowa;50
 desmond;50
 desmondtutu;60
@@ -63263,7 +63222,6 @@ detroit;50
 detroiters;50
 detroitlion;50
 detroitlions;50
-detroitmi;50
 detroitmichigan;50
 detroitpiston;60
 detroitpistons;60
@@ -69390,7 +69348,6 @@ doveinto;50
 dovekie;50
 dovelet;50
 dover;50
-doverde;60
 doverdelaware;50
 doverightin;60
 doversole;50
@@ -71752,7 +71709,6 @@ dubstep;50
 dubstepbeat;50
 dubstepbeats;50
 dubuque;50
-dubuqueia;60
 dubuqueiowa;60
 dubya;50
 duc;25
@@ -72368,7 +72324,6 @@ duresses;50
 durex;50
 durham;50
 durhambulls;50
-durhamnc;50
 durian;50
 durians;50
 during;50
@@ -75896,7 +75851,6 @@ elp;25
 elpais;50
 elpaso;50
 elpasotexas;50
-elpasotx;60
 elper;20
 elphaba;50
 elpolloloco;50
@@ -78771,7 +78725,6 @@ ericyuan;50
 eridanus;30
 erie;50
 eriecanal;50
-eriepa;30
 eries;50
 erietribes;50
 erigeron;50
@@ -79787,7 +79740,6 @@ eugenelevy;50
 eugenemccarthy;60
 eugeneonegin;60
 eugeneoneill;50
-eugeneor;60
 eugeneroche;50
 eugenes;50
 eugenetmaleska;50
@@ -82567,7 +82519,6 @@ fairandsquare;60
 fairball;50
 fairballs;50
 fairbanks;50
-fairbanksak;60
 fairbanksalaska;60
 faircatch;50
 faircatches;50
@@ -83482,7 +83433,6 @@ farfromperfect;50
 farfromthetruth;50
 farfromyouraveragejoe;50
 fargo;50
-fargond;50
 fargone;50
 fargonorthdakota;50
 farina;50
@@ -88549,7 +88499,6 @@ flintier;50
 flintiest;50
 flintlock;60
 flintlocks;60
-flintmi;50
 flintmichigan;50
 flints;50
 flintstone;50
@@ -91887,7 +91836,6 @@ frankenstorms;60
 franker;50
 frankest;50
 frankfort;50
-frankfortky;60
 frankfurt;50
 frankfurter;50
 frankfurterbuns;50
@@ -92732,7 +92680,6 @@ fresnel;50
 fresnellens;50
 fresnellenses;50
 fresno;50
-fresnoca;50
 fresnostate;50
 fret;50
 fretat;30
@@ -103303,7 +103250,6 @@ grandprix;60
 grandprize;60
 grandprizes;60
 grandrapids;50
-grandrapidsmi;60
 grandreopening;60
 grandreopenings;60
 grands;50
@@ -104214,7 +104160,6 @@ greensalads;50
 greensalsa;50
 greensand;50
 greensboro;50
-greensboronc;50
 greenscreen;60
 greenscreens;60
 greensea;50
@@ -108505,7 +108450,6 @@ hartebeest;50
 hartford;50
 hartfordconnecticut;50
 hartfordcourant;50
-hartfordct;60
 hartfordite;50
 hartley;50
 hartman;50
@@ -110661,7 +110605,6 @@ helen;50
 helena;50
 helenabonhamcarter;50
 helenamontana;50
-helenamt;50
 helenasukova;50
 helendewitt;50
 helene;50
@@ -114388,7 +114331,6 @@ honkytonkwomen;50
 honnold;50
 honolulu;50
 honoluluhawaii;50
-honoluluhi;60
 honor;50
 honorable;50
 honorabledischarge;60
@@ -115830,7 +115772,6 @@ houstoncomet;50
 houstoncomets;50
 houstonrocket;50
 houstonrockets;50
-houstontx;60
 houstonwehaveaproblem;60
 houyhnhnm;50
 houyhnhnms;50
@@ -116675,7 +116616,6 @@ huntsdown;50
 huntsman;50
 huntsmen;50
 huntsville;50
-huntsvilleal;50
 huntsvillealabama;50
 huntz;20
 hup;50
@@ -121482,7 +121422,6 @@ indianapacers;50
 indianapolis;50
 indianapoliscolt;60
 indianapoliscolts;60
-indianapolisin;60
 indianawantsme;50
 indianbread;30
 indianchief;50
@@ -127568,7 +127507,6 @@ jacksonhole;50
 jacksonian;50
 jacksonkentucky;50
 jacksonmiss;50
-jacksonms;60
 jacksonpollock;50
 jacksons;50
 jacksonville;50
@@ -130664,7 +130602,6 @@ juncture;50
 junctures;50
 june;50
 juneau;50
-juneauak;50
 juneaualaska;60
 juneauite;50
 juneauites;50
@@ -131299,7 +131236,6 @@ kansans;50
 kansas;50
 kansascity;50
 kansascitychief;50
-kansascitymo;60
 kansascityroyal;50
 kansascityroyals;50
 kansascitystar;50
@@ -132585,7 +132521,6 @@ keytosuccess;50
 keytothecity;60
 keyup;50
 keywest;50
-keywestfl;60
 keywitness;60
 keywitnesses;60
 keyword;50
@@ -134143,7 +134078,6 @@ knowwhatimsaying;60
 knowyourlimits;50
 knox;50
 knoxville;50
-knoxvilletn;60
 knt;25
 knts;25
 knuckle;50
@@ -135996,7 +135930,6 @@ lanotte;50
 lans;25
 lansbury;50
 lansing;50
-lansingmi;60
 lansingmichigan;60
 lansky;50
 lantana;50
@@ -136582,7 +136515,6 @@ lasvegans;50
 lasvegas;50
 lasvegasaces;50
 lasvegasgoldenknights;50
-lasvegasnv;60
 lasvegasraider;50
 lasvegasraiders;50
 lasvegasresort;50
@@ -139946,7 +139878,6 @@ lexicons;50
 lexie;50
 lexiko;30
 lexington;50
-lexingtonky;60
 lexingtonmass;50
 lexithompson;50
 lexluthor;60
@@ -141147,7 +141078,6 @@ lincolnera;50
 lincolnlog;50
 lincolnlogs;50
 lincolnmemorial;60
-lincolnne;60
 lincolnnebraska;50
 lincolnpark;50
 lincolnpennies;50
@@ -142045,7 +141975,6 @@ littleredwagons;50
 littlerhody;60
 littlerichard;50
 littlerock;50
-littlerockar;60
 littlerocknine;50
 littleroundtop;50
 littles;50
@@ -143281,7 +143210,6 @@ longarmofthelaw;60
 longas;50
 longball;50
 longbeach;50
-longbeachca;50
 longbed;50
 longboard;50
 longboards;50
@@ -144032,7 +143960,6 @@ losalamos;50
 losaltos;50
 losangeles;50
 losangelesangel;50
-losangelesca;60
 losangelesking;50
 losangeleskings;50
 losangeleslaker;60
@@ -144525,7 +144452,6 @@ louissachar;50
 louisv;50
 louisvi;50
 louisville;50
-louisvilleky;60
 louisvillelip;50
 louisvuitton;50
 louisxi;50
@@ -145204,7 +145130,6 @@ lubberly;50
 lubbers;50
 lubbock;50
 lubbocktexas;50
-lubbocktx;50
 lubdub;50
 lube;50
 lubed;50
@@ -146257,7 +146182,6 @@ macncheese;50
 macnee;50
 macneil;50
 macon;50
-maconga;60
 macoperatingsystems;30
 macos;50
 macosx;60
@@ -146645,7 +146569,6 @@ madisonavenue;60
 madisoncounty;50
 madisonillinois;50
 madisons;50
-madisonwi;60
 madisonwisconsin;50
 madlib;60
 madlibs;60
@@ -152527,7 +152450,6 @@ memorywipes;60
 memos;50
 memphis;50
 memphisbbq;60
-memphistn;50
 memsahib;50
 memsahibs;50
 memyselfandi;60
@@ -153024,7 +152946,6 @@ merylstreep;50
 mes;25
 mesa;50
 mesaarizona;50
-mesaaz;60
 mesabi;50
 mesalliance;50
 mesalliances;50
@@ -153629,7 +153550,6 @@ miamidade;50
 miamidadecounty;50
 miamidolphin;50
 miamidolphins;50
-miamifl;60
 miamigo;50
 miamiheat;50
 miamiink;50
@@ -154683,7 +154603,6 @@ milwaukeebrewer;50
 milwaukeebrewers;50
 milwaukeebuck;50
 milwaukeebucks;50
-milwaukeewi;60
 mime;50
 mimeartist;50
 mimeartists;50
@@ -155080,7 +154999,6 @@ minkstole;60
 minkstoles;60
 minn;25
 minneapolis;50
-minneapolismn;60
 minnehaha;50
 minnelli;50
 minnesinger;50
@@ -156436,7 +156354,6 @@ mobil;50
 mobile;50
 mobilead;60
 mobileads;60
-mobileal;50
 mobilealabama;50
 mobileapp;50
 mobileapps;50
@@ -157515,7 +157432,6 @@ montezuma;60
 montezumacastle;60
 montezumasrevenge;50
 montgomery;50
-montgomeryal;60
 montgomeryburns;50
 montgomeryclift;50
 montgomeryscott;50
@@ -157542,7 +157458,6 @@ monticello;50
 montmartre;50
 montoya;50
 montpelier;50
-montpeliervt;60
 montrachet;50
 montreal;50
 montrealcanada;50
@@ -161459,7 +161374,6 @@ nashbridges;50
 nashrambler;50
 nashua;50
 nashville;50
-nashvilletn;60
 nasi;25
 nasim;50
 nasimpedrad;50
@@ -163298,7 +163212,6 @@ newandimproved;50
 newareas;50
 newark;50
 newarknewjersey;50
-newarknj;60
 newarrivals;60
 newat;50
 newb;50
@@ -163399,7 +163312,6 @@ newguinea;50
 newhampshire;50
 newhart;50
 newhaven;50
-newhavenct;60
 newhebrides;50
 newhigh;50
 newhighs;50
@@ -163487,7 +163399,6 @@ neworder;50
 neworders;50
 neworleans;50
 neworleansjazz;50
-neworleansla;60
 neworleanspelican;60
 neworleanspelicans;60
 newpanamax;50
@@ -163752,7 +163663,6 @@ newyorkmet;50
 newyorkmets;50
 newyorkminute;60
 newyorknewyork;50
-newyorkny;60
 newyorkpops;50
 newyorkpost;50
 newyorkranger;60
@@ -165872,7 +165782,6 @@ noreturns;50
 norfolk;50
 norfolkisland;50
 norfolkjacket;50
-norfolkva;60
 norfolkvirginia;30
 norgate;50
 norgates;50
@@ -169621,7 +169530,6 @@ okisee;50
 okla;25
 oklahoma;50
 oklahomacity;50
-oklahomacityok;60
 oklahoman;50
 oklahomans;50
 oklahomasooner;50
@@ -170133,7 +170041,6 @@ olympian;50
 olympians;50
 olympias;50
 olympiasnowe;50
-olympiawa;60
 olympic;50
 olympicathlete;50
 olympicathletes;50
@@ -170189,7 +170096,6 @@ omahabeach;50
 omahahilo;50
 omahaholdem;50
 omahan;50
-omahane;50
 omahans;30
 omahas;50
 omahasteak;50
@@ -173128,7 +173034,6 @@ orkneyislands;30
 orl;25
 orlando;50
 orlandobloom;50
-orlandofl;60
 orlandojones;50
 orlandomagic;60
 orlandosentinel;50
@@ -177984,7 +177889,6 @@ parvis;50
 pas;50
 pasa;25
 pasadena;50
-pasadenaca;50
 pascal;50
 pascals;50
 pascalstriangle;50
@@ -180301,7 +180205,6 @@ penrosetiles;50
 penrosetiling;50
 pens;50
 pensacola;50
-pensacolafl;50
 pense;20
 pensee;50
 pensees;50
@@ -182042,7 +181945,6 @@ philadelphiaeagle;50
 philadelphiaeagles;50
 philadelphiaflyer;60
 philadelphiaflyers;60
-philadelphiapa;60
 philadelphiazoo;50
 philander;50
 philandered;50
@@ -182203,7 +182105,6 @@ phoenicia;50
 phoenician;50
 phoenicians;50
 phoenix;50
-phoenixaz;60
 phoenixes;50
 phoenixmercury;50
 phoenixsun;60
@@ -183148,7 +183049,6 @@ pierrederonsard;50
 pierrelenfant;50
 pierrerenoir;50
 pierres;50
-pierresd;60
 pierretrudeau;50
 pierrot;50
 pierrots;50
@@ -184299,7 +184199,6 @@ pitts;50
 pittsburgh;50
 pittsburghleft;50
 pittsburghlefts;50
-pittsburghpa;60
 pittsburghpenguin;60
 pittsburghpenguins;60
 pittsburghpirate;50
@@ -188074,7 +187973,6 @@ portishead;50
 portland;50
 portlandcement;50
 portlandia;50
-portlandor;50
 portlandoregon;50
 portlier;50
 portliest;50
@@ -192394,7 +192292,6 @@ provided;50
 provideevidence;50
 providefor;50
 providence;50
-providenceri;60
 provident;50
 providential;50
 providentially;50
@@ -192446,7 +192343,6 @@ provolone;50
 provost;50
 provostmarshal;50
 provosts;50
-provout;60
 provoutah;50
 provs;20
 prow;50
@@ -196773,7 +196669,6 @@ ral;25
 rale;25
 raleigh;50
 raleighdurham;50
-raleighnc;60
 rales;20
 ralf;25
 rall;25
@@ -201837,7 +201732,6 @@ reno;50
 renoir;50
 renoirs;50
 renonevada;50
-renonv;50
 renos;20
 renotahoe;50
 renounce;50
@@ -204378,7 +204272,6 @@ richman;50
 richmanpoorman;50
 richmond;50
 richmondbarthe;50
-richmondva;50
 richness;50
 richsoil;50
 richsource;50
@@ -205762,7 +205655,6 @@ roams;50
 roamsoff;50
 roan;50
 roanoke;50
-roanokeva;50
 roans;50
 roar;50
 roarat;50
@@ -206042,7 +205934,6 @@ roccodispirito;50
 roche;50
 rochelle;50
 rochester;50
-rochesterny;60
 rocinante;50
 rock;50
 rockabilly;60
@@ -207397,7 +207288,6 @@ rostrum;50
 rostrums;50
 roswell;50
 roswellnewmexico;50
-roswellnm;60
 rosy;50
 rosyboa;50
 rosyboas;50
@@ -209492,7 +209382,6 @@ sacral;50
 sacrament;50
 sacramental;50
 sacramento;50
-sacramentoca;60
 sacramentoking;50
 sacramentokings;50
 sacraments;50
@@ -210198,7 +210087,6 @@ saledays;50
 saleitem;50
 saleitems;50
 salem;50
-salemor;60
 salemoregon;50
 salems;50
 salemslot;50
@@ -210493,7 +210381,6 @@ saltires;50
 saltish;50
 saltlake;50
 saltlakecity;50
-saltlakecityut;60
 saltlakecityutah;50
 saltlakes;50
 saltless;50
@@ -210801,7 +210688,6 @@ sanantoniorose;50
 sanantoniospur;50
 sanantoniospurs;50
 sanantoniotexas;50
-sanantoniotx;50
 sanatarium;50
 sanatoria;50
 sanatorium;50
@@ -210918,7 +210804,6 @@ sandia;50
 sandiegan;50
 sandiegans;50
 sandiego;50
-sandiegoca;50
 sandiegocharger;50
 sandiegochargers;50
 sandiegochicken;50
@@ -211091,7 +210976,6 @@ sanity;50
 sanitycheck;60
 sanjoaquin;50
 sanjose;50
-sanjoseca;50
 sanjoseshark;50
 sanjosesharks;50
 sanjuan;50
@@ -211169,7 +211053,6 @@ santafe;50
 santafean;50
 santafeans;50
 santafenewmexico;60
-santafenm;50
 santafetrail;50
 santafilomena;50
 santahat;60
@@ -211794,7 +211677,6 @@ savanna;50
 savannah;50
 savannahcat;50
 savannahcats;50
-savannahga;50
 savannahgeorgia;50
 savannahguthrie;50
 savannahkitten;50
@@ -214611,7 +214493,6 @@ seattlesounder;50
 seattlesounders;50
 seattlesoundersfc;50
 seattlestorm;50
-seattlewa;60
 seattlewash;50
 seaturtle;60
 seaturtles;60
@@ -215089,7 +214970,6 @@ sedition;50
 seditions;50
 seditious;50
 sedona;50
-sedonaaz;60
 seduce;50
 seduced;50
 seducer;50
@@ -220131,7 +220011,6 @@ shreds;50
 shredsofdecency;50
 shrek;50
 shreveport;50
-shreveportla;60
 shrew;50
 shrewd;50
 shrewder;50
@@ -221928,7 +221807,6 @@ siouxcity;50
 siouxcityia;60
 siouxcityiowa;50
 siouxfalls;50
-siouxfallssd;50
 siouxsie;50
 siouxsieandthebanshees;60
 siouxuprising;50
@@ -228557,7 +228435,6 @@ sparkplug;60
 sparkplugs;60
 sparks;50
 sparksjoy;50
-sparksnv;60
 sparkswillfly;50
 sparky;50
 sparling;50
@@ -230551,9 +230428,7 @@ springes;50
 springfestival;50
 springfever;60
 springfield;60
-springfieldil;60
 springfieldmass;50
-springfieldmo;60
 springfieldpowerplant;50
 springfling;60
 springflings;60
@@ -234509,7 +234384,6 @@ stlouisblues;60
 stlouiscardinal;60
 stlouiscardinals;60
 stlouismissouri;50
-stlouismo;60
 stlouispizza;50
 stlouisram;60
 stlouisrams;60
@@ -235400,14 +235274,12 @@ stpaul;50
 stpauligirl;60
 stpaulis;50
 stpaulminnesota;60
-stpaulmn;60
 stpauls;50
 stpete;50
 stpeter;60
 stpeterport;50
 stpeters;50
 stpetersburg;50
-stpetersburgfl;60
 stpeterssquare;60
 stpierre;50
 stpiusv;50
@@ -240678,7 +240550,6 @@ syphoning;50
 syphons;50
 syr;25
 syracuse;50
-syracuseny;60
 syrah;50
 syrahs;50
 syrdarya;50
@@ -242448,7 +242319,6 @@ talladega;50
 talladeganights;60
 tallage;50
 tallahassee;50
-tallahasseefl;60
 tallandslim;50
 tallboy;50
 tallboys;50
@@ -242589,7 +242459,6 @@ tampabay;50
 tampabaybucs;50
 tampabayray;50
 tampabayrays;50
-tampafl;60
 tampan;50
 tampax;50
 tampdown;50
@@ -253719,7 +253588,6 @@ tole;25
 tolease;30
 toledan;50
 toledo;50
-toledooh;60
 toledoohio;50
 toledos;50
 toler;20
@@ -254666,7 +254534,6 @@ topee;20
 topees;10
 topeka;50
 topekakansas;50
-topekaks;60
 topekan;50
 topekans;50
 topend;50
@@ -257376,7 +257243,6 @@ trente;50
 trentlott;50
 trento;50
 trenton;50
-trentonnj;60
 trentreznor;50
 treo;25
 treos;20
@@ -258962,7 +258828,6 @@ tucks;50
 tucksin;50
 tucksintobed;50
 tucson;50
-tucsonaz;60
 tude;50
 tudes;50
 tudor;50
@@ -259052,7 +258917,6 @@ tully;20
 tullymonster;50
 tulsa;50
 tulsan;50
-tulsaok;50
 tulsasound;60
 tulsi;50
 tum;25
@@ -259710,7 +259574,6 @@ turves;50
 turvy;20
 tuscadero;50
 tuscaloosa;50
-tuscaloosaal;50
 tuscan;50
 tuscans;50
 tuscany;50
@@ -268896,7 +268759,6 @@ wackyweed;60
 wackywordies;50
 waco;50
 wacotexas;50
-wacotx;50
 wacs;25
 wad;50
 wadded;50
@@ -274436,7 +274298,6 @@ wiccan;50
 wiccans;50
 wichita;50
 wichitafalls;30
-wichitaks;60
 wichitalineman;60
 wick;50
 wicked;50
@@ -279205,7 +279066,6 @@ yonder;50
 yonders;50
 yonex;50
 yonkers;50
-yonkersny;60
 yonne;20
 yoo;25
 yoohoo;50
