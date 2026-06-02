@@ -278,6 +278,91 @@ class TestGridLevelPenalties:
         assert report.passing is False
 
 
+class TestHardCrossRule:
+    """No two Hard-list entries may cross each other (Jeff, 2026-06)."""
+
+    # Across row0 = CAT, down col0 = CAB; they cross at (0,0).
+    CROSS_GRID = [
+        ["C", "A", "T"],
+        ["A", ".", "."],
+        ["B", ".", "."],
+    ]
+
+    CROSS_DICT = _make_dict({"CAT": 60, "CAB": 60})
+
+    def test_two_hard_entries_crossing_fails(self) -> None:
+        grader = FillGrader(
+            self.CROSS_DICT,
+            min_passing_score=0,
+            hard_word_set=frozenset({"CAT", "CAB"}),
+        )
+
+        report = grader.grade(self.CROSS_GRID)
+
+        assert report.penalties_applied["hard_cross"] == 100.0
+        assert report.passing is False
+
+    def test_hard_crossing_easy_passes(self) -> None:
+        # Only CAT is a Hard-list entry; CAB is Easy fill.
+        grader = FillGrader(
+            self.CROSS_DICT,
+            min_passing_score=0,
+            hard_word_set=frozenset({"CAT"}),
+        )
+
+        report = grader.grade(self.CROSS_GRID)
+
+        assert "hard_cross" not in report.penalties_applied
+        assert report.passing is True
+
+    def test_no_hard_word_set_skips_rule(self) -> None:
+        # Easy puzzles pass no hard_word_set, so the rule never fires.
+        grader = FillGrader(self.CROSS_DICT, min_passing_score=0)
+
+        report = grader.grade(self.CROSS_GRID)
+
+        assert "hard_cross" not in report.penalties_applied
+        assert report.passing is True
+
+    def test_two_hard_entries_not_crossing_passes(self) -> None:
+        # AAA (across, row0) and BBB (across, row2) are both Hard-list
+        # entries but share no cell, so they do not cross.
+        grid = [
+            ["A", "A", "A"],
+            [".", ".", "."],
+            ["B", "B", "B"],
+        ]
+        grader = FillGrader(
+            _make_dict({"AAA": 60, "BBB": 60}),
+            min_passing_score=0,
+            hard_word_set=frozenset({"AAA", "BBB"}),
+        )
+
+        report = grader.grade(grid)
+
+        assert "hard_cross" not in report.penalties_applied
+        assert report.passing is True
+
+    def test_counts_each_crossing_pair_once(self) -> None:
+        # CAT (across) crosses both CAB (down col0) and TUB (down col2);
+        # all three are Hard-list entries → two distinct hard-cross pairs.
+        grid = [
+            ["C", "A", "T"],
+            ["A", ".", "U"],
+            ["B", ".", "B"],
+        ]
+        grader = FillGrader(
+            _make_dict({"CAT": 60, "CAB": 60, "TUB": 60}),
+            min_passing_score=0,
+            hard_word_set=frozenset({"CAT", "CAB", "TUB"}),
+        )
+
+        report = grader.grade(grid)
+
+        assert report.penalties_applied["hard_cross"] == 200.0
+        assert report.passing is False
+
+
 class TestAggregateScoring:
     def test_length_weighted_mean(self) -> None:
         # 5-letter word (score 80) + 3-letter word (score 60)

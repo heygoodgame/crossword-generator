@@ -86,6 +86,10 @@ class FillGradingConfig(BaseModel):
     exact_score_count_length: int | None = None
     exact_score_count_min_score: int | None = None
     exact_score_count: int | None = None
+    # Path to a plain word list (one word per line) of Jeff's Hard-list
+    # entries. When set, any grid where two of these entries cross each
+    # other is a hard fail. Set on Hard configs only.
+    hard_cross_words_path: str | None = None
 
 
 class ClueGradingConfig(BaseModel):

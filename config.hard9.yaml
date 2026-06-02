@@ -51,6 +51,8 @@ grading:
     retry_on_fail: true
     collect_boards: 1
     llm_select: false
+    # No two Hard-list entries may cross each other (Jeff, 2026-06).
+    hard_cross_words_path: dictionaries/HGGXW-Hard.txt
   clue:
     min_score: 70
     regenerate_on_fail: true

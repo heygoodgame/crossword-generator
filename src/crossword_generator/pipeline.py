@@ -107,6 +107,34 @@ class Pipeline:
         logger.debug("Saved intermediate: %s", filepath)
 
 
+def _load_hard_word_set(
+    project_root: Path, rel_path: str | None
+) -> frozenset[str] | None:
+    """Load Jeff's Hard-list words (plain, one per line) as an uppercase set.
+
+    Returns None when no path is configured (Easy puzzles), so the fill
+    grader skips the hard-cross rule entirely.
+    """
+    if not rel_path:
+        return None
+
+    path = project_root / rel_path
+    if not path.exists():
+        raise FileNotFoundError(f"Hard-cross word list not found: {path}")
+
+    words = {
+        line.split(";", 1)[0].strip().upper()
+        for line in path.read_text().splitlines()
+        if line.strip()
+    }
+    logger.info(
+        "Loaded %d Hard-list words for hard-cross rule from %s",
+        len(words),
+        rel_path,
+    )
+    return frozenset(words)
+
+
 def create_pipeline(
     config: Config,
     *,
@@ -206,12 +234,16 @@ def create_pipeline(
         filler = CSPFiller(config.fill.csp, dictionary)
     else:
         raise ValueError(f"Unknown fill provider: {config.fill.provider}")
+    hard_word_set = _load_hard_word_set(
+        project_root, config.grading.fill.hard_cross_words_path
+    )
     grader = FillGrader(
         dictionary,
         min_passing_score=config.grading.fill.min_score,
         exact_score_count_length=config.grading.fill.exact_score_count_length,
         exact_score_count_min_score=config.grading.fill.exact_score_count_min_score,
         exact_score_count=config.grading.fill.exact_score_count,
+        hard_word_set=hard_word_set,
     )
     fill_step = FillWithGradingStep(
         filler,

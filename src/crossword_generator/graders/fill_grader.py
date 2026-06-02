@@ -5,7 +5,11 @@ from __future__ import annotations
 import logging
 
 from crossword_generator.dictionary import Dictionary
-from crossword_generator.exporters.numbering import NumberedEntry, compute_numbering
+from crossword_generator.exporters.numbering import (
+    NumberedEntry,
+    compute_crossing_words,
+    compute_numbering,
+)
 from crossword_generator.models import FillGradeReport, WordGrade
 
 logger = logging.getLogger(__name__)
@@ -27,12 +31,18 @@ class FillGrader:
         exact_score_count_length: int | None = None,
         exact_score_count_min_score: int | None = None,
         exact_score_count: int | None = None,
+        hard_word_set: frozenset[str] | None = None,
     ) -> None:
         self._dictionary = dictionary
         self._min_passing_score = min_passing_score
         self._exact_score_count_length = exact_score_count_length
         self._exact_score_count_min_score = exact_score_count_min_score
         self._exact_score_count = exact_score_count
+        # Words from Jeff's Hard list. When set, any grid where two of these
+        # entries cross each other is a hard fail (see _hard_cross_count).
+        # Many Hard-list entries are proper names; crossing two of them can
+        # force an unsatisfying total guess when a solver knows neither.
+        self._hard_word_set = hard_word_set
 
     def grade(self, grid: list[list[str]]) -> FillGradeReport:
         """Grade a filled grid and return a report."""
@@ -50,10 +60,20 @@ class FillGrader:
         overall_score, grid_penalties = self._compute_aggregate(
             word_grades, grid_size=grid_size
         )
+
+        hard_cross_pairs = self._hard_cross_count(entries, grid)
+        if hard_cross_pairs > 0:
+            grid_penalties["hard_cross"] = 100.0 * hard_cross_pairs
+            overall_score = max(
+                0.0, overall_score - grid_penalties["hard_cross"]
+            )
+
         passing = overall_score >= self._min_passing_score
         if "terminal_s_variants" in grid_penalties:
             passing = False
         if "exact_score_count" in grid_penalties:
+            passing = False
+        if "hard_cross" in grid_penalties:
             passing = False
 
         summary_parts = [
@@ -101,6 +121,35 @@ class FillGrader:
             penalties=penalties,
             adjusted_score=adjusted,
         )
+
+    def _hard_cross_count(
+        self, entries: list[NumberedEntry], grid: list[list[str]]
+    ) -> int:
+        """Count crossings between two Hard-list entries.
+
+        A crossing is a single shared cell between an across entry and a
+        down entry. We count each across/down entry pair at most once even
+        if Jeff's lists ever contained a word twice. Returns 0 when no hard
+        word set is configured (e.g. Easy puzzles).
+        """
+        if not self._hard_word_set:
+            return 0
+
+        crossing_words = compute_crossing_words(entries, grid)
+        counted: set[tuple[str, str]] = set()
+        by_key = {(e.number, e.direction): e for e in entries}
+
+        for (number, direction), crossings in crossing_words.items():
+            entry = by_key[(number, direction)]
+            if entry.answer not in self._hard_word_set:
+                continue
+            for other in crossings:
+                if other not in self._hard_word_set:
+                    continue
+                pair = tuple(sorted((entry.answer, other)))
+                counted.add(pair)
+
+        return len(counted)
 
     def _compute_aggregate(
         self, word_grades: list[WordGrade], *, grid_size: int = 0

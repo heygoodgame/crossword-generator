@@ -346,6 +346,17 @@ Current hard guardrails:
 - Unknown-heavy grids are penalized.
 - Short-glue penalties were removed because 3-letter entries are structurally
   unavoidable in 5x5-11x11 grids.
+- Hard puzzles (all sizes) hard-fail any board where two Jeff Hard-list
+  entries cross each other (Jeff, 2026-06). Many Hard-list entries are proper
+  names; crossing two of them can force an unsatisfying total guess. The Hard
+  list (`dictionaries/HGGXW-Hard.txt`) is disjoint from Easy, so a "Hard-list
+  entry" is simply any answer in that file. Enforced by `FillGrader` via the
+  `hard_word_set` it receives, configured per size with
+  `grading.fill.hard_cross_words_path` (set on `config.hard5/7/9.yaml`). The
+  60-point scored-master pool (`hgg-60.txt`) is NOT treated as Hard-list for
+  this rule. Without the rule, ~80% of hard 9x9 boards crossed two Hard-list
+  entries; with it on, the large Easy pool still lets the filler find a
+  compliant board on essentially every seed.
 
 When adding new fill-quality rules, prefer the fill grader if a board should
 be rejected before clue generation. Add focused tests in `tests/test_fill_grader.py`

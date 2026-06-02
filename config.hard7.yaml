@@ -45,6 +45,8 @@ grading:
     exact_score_count_length: 7
     exact_score_count_min_score: 60
     exact_score_count: 1
+    # No two Hard-list entries may cross each other (Jeff, 2026-06).
+    hard_cross_words_path: dictionaries/HGGXW-Hard.txt
   clue:
     min_score: 70
     regenerate_on_fail: true
