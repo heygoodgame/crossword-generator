@@ -363,6 +363,52 @@ class TestHardCrossRule:
         assert report.passing is False
 
 
+class TestMinOneHardEntryRule:
+    """Every Hard puzzle must contain a Hard-list entry (Jeff, 2026-06)."""
+
+    # Two non-crossing across words: AAA (row0) and BBB (row2).
+    GRID = [
+        ["A", "A", "A"],
+        [".", ".", "."],
+        ["B", "B", "B"],
+    ]
+    DICT = _make_dict({"AAA": 60, "BBB": 60})
+
+    def test_no_hard_entry_fails(self) -> None:
+        # Neither word is a Hard-list entry → an all-Easy board, rejected.
+        grader = FillGrader(
+            self.DICT,
+            min_passing_score=0,
+            hard_word_set=frozenset({"ZZZ"}),
+        )
+
+        report = grader.grade(self.GRID)
+
+        assert report.penalties_applied["no_hard_entry"] == 100.0
+        assert report.passing is False
+
+    def test_one_hard_entry_passes(self) -> None:
+        grader = FillGrader(
+            self.DICT,
+            min_passing_score=0,
+            hard_word_set=frozenset({"AAA"}),
+        )
+
+        report = grader.grade(self.GRID)
+
+        assert "no_hard_entry" not in report.penalties_applied
+        assert report.passing is True
+
+    def test_no_hard_word_set_skips_rule(self) -> None:
+        # Easy puzzles pass no hard_word_set, so an all-Easy board is fine.
+        grader = FillGrader(self.DICT, min_passing_score=0)
+
+        report = grader.grade(self.GRID)
+
+        assert "no_hard_entry" not in report.penalties_applied
+        assert report.passing is True
+
+
 class TestAggregateScoring:
     def test_length_weighted_mean(self) -> None:
         # 5-letter word (score 80) + 3-letter word (score 60)

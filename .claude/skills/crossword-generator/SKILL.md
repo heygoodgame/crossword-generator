@@ -17,7 +17,9 @@ uploads.
 - Use Claude for production-quality clue generation unless explicitly testing
   Ollama: pass `--llm claude`.
 - Treat tokens as secrets. Pass `HEYGG_ADMIN_API_TOKEN` through the environment
-  and do not print it.
+  and do not print it. To obtain or refresh a token — or on a `401`/`403` —
+  use the `heygg-admin-auth` skill / `hgg-auth` (pick the right profile, e.g.
+  `hgg-auth exec prod -- ...`); never copy JWTs from DevTools.
 - Keep generated records in `status=draft` with `metadata.review_status=unreviewed`.
 - If replacing an already-uploaded generated candidate, use `--replace-existing`
   with the same deterministic batch/difficulty/size/seed key.

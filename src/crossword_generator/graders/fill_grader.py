@@ -38,10 +38,12 @@ class FillGrader:
         self._exact_score_count_length = exact_score_count_length
         self._exact_score_count_min_score = exact_score_count_min_score
         self._exact_score_count = exact_score_count
-        # Words from Jeff's Hard list. When set, any grid where two of these
-        # entries cross each other is a hard fail (see _hard_cross_count).
-        # Many Hard-list entries are proper names; crossing two of them can
-        # force an unsatisfying total guess when a solver knows neither.
+        # Words from Jeff's Hard list. When set (Hard puzzles), two rules
+        # apply: (1) a grid must contain at least one of these entries, else
+        # it is really an Easy puzzle (see _hard_entry_count); and (2) no two
+        # of them may cross each other (see _hard_cross_count). Many Hard-list
+        # entries are proper names; crossing two of them can force an
+        # unsatisfying total guess when a solver knows neither.
         self._hard_word_set = hard_word_set
 
     def grade(self, grid: list[list[str]]) -> FillGradeReport:
@@ -61,6 +63,12 @@ class FillGrader:
             word_grades, grid_size=grid_size
         )
 
+        if self._hard_word_set and self._hard_entry_count(entries) == 0:
+            grid_penalties["no_hard_entry"] = 100.0
+            overall_score = max(
+                0.0, overall_score - grid_penalties["no_hard_entry"]
+            )
+
         hard_cross_pairs = self._hard_cross_count(entries, grid)
         if hard_cross_pairs > 0:
             grid_penalties["hard_cross"] = 100.0 * hard_cross_pairs
@@ -72,6 +80,8 @@ class FillGrader:
         if "terminal_s_variants" in grid_penalties:
             passing = False
         if "exact_score_count" in grid_penalties:
+            passing = False
+        if "no_hard_entry" in grid_penalties:
             passing = False
         if "hard_cross" in grid_penalties:
             passing = False
@@ -121,6 +131,17 @@ class FillGrader:
             penalties=penalties,
             adjusted_score=adjusted,
         )
+
+    def _hard_entry_count(self, entries: list[NumberedEntry]) -> int:
+        """Count entries that appear in the configured Hard list.
+
+        Used to require at least one Hard-list entry in every Hard puzzle;
+        an all-Easy board is really an Easy puzzle. Returns 0 when no hard
+        word set is configured.
+        """
+        if not self._hard_word_set:
+            return 0
+        return sum(1 for e in entries if e.answer in self._hard_word_set)
 
     def _hard_cross_count(
         self, entries: list[NumberedEntry], grid: list[list[str]]

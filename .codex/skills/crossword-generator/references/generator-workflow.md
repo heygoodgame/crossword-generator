@@ -346,6 +346,23 @@ Current hard guardrails:
 - Unknown-heavy grids are penalized.
 - Short-glue penalties were removed because 3-letter entries are structurally
   unavoidable in 5x5-11x11 grids.
+- Hard puzzles (all sizes) enforce two Jeff Hard-list rules (Jeff, 2026-06),
+  both keyed off the same `hard_word_set` the grader receives. The Hard list
+  (`dictionaries/HGGXW-Hard.txt`) is disjoint from Easy, so a "Hard-list entry"
+  is simply any answer in that file. The 60-point scored-master pool
+  (`hgg-60.txt`) is NOT treated as Hard-list for either rule. The set is
+  configured per size with `grading.fill.hard_cross_words_path` (set on
+  `config.hard5/7/9.yaml`); Easy puzzles pass no set and skip both rules.
+  - `no_hard_entry` hard fail: a Hard board must contain at least one
+    Hard-list entry, else it is really an Easy puzzle. This mostly affects
+    5x5 (where ~45% of unconstrained boards came out all-Easy); 7x7/9x9
+    effectively always already include a hard entry.
+  - `hard_cross` hard fail: no two Hard-list entries may cross each other.
+    Many Hard-list entries are proper names; crossing two of them can force an
+    unsatisfying total guess. Without it, ~80% of hard 9x9 boards crossed two
+    Hard-list entries.
+  The large Easy pool lets the filler satisfy both rules on essentially every
+  seed.
 
 When adding new fill-quality rules, prefer the fill grader if a board should
 be rejected before clue generation. Add focused tests in `tests/test_fill_grader.py`
@@ -492,6 +509,23 @@ uv run crossword-generator save-generated-puzzles \
   --manifest output/batches/<batch-id>/manifest.json
 ```
 
+Get the token from `hgg-auth` (the `heygg-admin-auth` skill) rather than
+copying a JWT from DevTools. Pick the profile that matches the upload target —
+`prod` for `play.hey.gg`, `beta` for `id-beta.hey.gg` — and inject it for the
+single command, e.g. uploading to prod:
+
+```bash
+hgg-auth exec prod -- bash -c '
+  export HEYGG_API_BASE_URL="$HGG_ADMIN_BASE_URL/api"
+  uv run crossword-generator save-generated-puzzles \
+    --manifest output/batches/<batch-id>/manifest.json'
+```
+
+`hgg-auth exec <profile>` exports `HGG_ADMIN_BASE_URL` and `HEYGG_ADMIN_TOKEN`;
+the uploader reads `HEYGG_API_BASE_URL` and `HEYGG_ADMIN_TOKEN`, so set the
+former from the latter as shown. The uploader defaults the base URL to id-beta,
+so set `HEYGG_API_BASE_URL` explicitly when targeting prod.
+
 Replace existing uploaded records:
 
 ```bash
@@ -500,8 +534,11 @@ uv run crossword-generator save-generated-puzzles \
   --replace-existing
 ```
 
-Do not echo tokens or commit them. If a token returns 401, report that the
-token is visible but unauthenticated; do not retry blindly.
+Do not echo tokens or commit them. A `401 Unauthenticated` means the token is
+missing, expired, or for the wrong environment (e.g. a beta token against
+prod); a `403` means the token is valid but the user is not an admin there.
+Refresh via `hgg-auth login <profile>` (the `heygg-admin-auth` skill) and
+re-run with the matching profile — do not retry blindly with the same token.
 
 If `uv` hits a sandbox cache permission error under `/Users/neil/.cache/uv`,
 rerun the same `uv run ...` command with elevated permissions rather than
