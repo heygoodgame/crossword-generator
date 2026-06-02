@@ -7,14 +7,14 @@ puzzle:
   grid_size: 9
 
 dictionary:
-  path: dictionaries/hgg-easy.txt
+  path: dictionaries/hgg-hard.txt
   additional_paths:
     - dictionaries/hgg-60.txt
   additional_min_length: 8
   additional_max_length: 9
   min_word_score: 50
   min_2letter_score: 50
-  themed_path: dictionaries/hgg-easy.txt
+  themed_path: dictionaries/hgg-hard.txt
   themed_additional_paths:
     - dictionaries/hgg-60.txt
   themed_additional_min_length: 8
@@ -28,7 +28,7 @@ fill:
   max_grid_variants: 100
   max_long_entries_8_9: 3
   csp:
-    dictionary_path: dictionaries/hgg-easy.txt
+    dictionary_path: dictionaries/hgg-hard.txt
     additional_dictionary_paths:
       - dictionaries/hgg-60.txt
     additional_dictionary_min_length: 8

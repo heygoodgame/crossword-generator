@@ -1068,17 +1068,20 @@ def prepare_dictionaries(
 @click.option(
     "--easy-source",
     type=click.Path(exists=True),
-    default="dictionaries/hgg-easy-flat-55.txt",
+    default="dictionaries/HGGXW-Easy.txt",
     show_default=True,
-    help="Path to the Easy source list.",
+    help="Path to the Easy source list (Jeff's consolidated HGGXW Easy).",
 )
 @click.option(
     "--easy-extra-source",
     "easy_extra_sources",
     type=click.Path(exists=True),
     multiple=True,
-    default=("dictionaries/Wordplete-PrevalentCulled-8-9-length.txt",),
-    help="Additional source file to merge into HGG Easy.",
+    default=(),
+    help=(
+        "Additional source file to merge into HGG Easy. HGGXW-Easy is "
+        "already consolidated, so this is empty by default."
+    ),
 )
 @click.option(
     "--easy-exclude-source",
@@ -1087,7 +1090,6 @@ def prepare_dictionaries(
     multiple=True,
     default=(
         "dictionaries/XwiJeffChenList-NotFamilyFriendly.txt",
-        "dictionaries/Wordplete-PrevalentCulled-8-9-length-Removed.txt",
         "dictionaries/HggGeneratedSafetyExclude.txt",
     ),
     help="Plain or semicolon-delimited word list to exclude from HGG Easy.",
@@ -1095,9 +1097,19 @@ def prepare_dictionaries(
 @click.option(
     "--hard-source",
     type=click.Path(exists=True),
-    default="dictionaries/HggCuratedCrosswordList.txt",
+    default="dictionaries/HGGXW-Hard.txt",
     show_default=True,
-    help="Path to the curated hard source dictionary.",
+    help="Path to the Hard fill list (Jeff's consolidated HGGXW Hard).",
+)
+@click.option(
+    "--sixty-source",
+    type=click.Path(exists=True),
+    default="dictionaries/XwiJeffChenList.txt",
+    show_default=True,
+    help=(
+        "Scored master list providing the source-score 60 entries. "
+        "HGGXW-Easy/Hard are plain (unscored), so 60-pointers come from here."
+    ),
 )
 @click.option(
     "--easy-output",
@@ -1105,6 +1117,13 @@ def prepare_dictionaries(
     default="dictionaries/hgg-easy.txt",
     show_default=True,
     help="Local output path to update after a successful publish.",
+)
+@click.option(
+    "--hard-output",
+    type=click.Path(),
+    default="dictionaries/hgg-hard.txt",
+    show_default=True,
+    help="Local output path for the combined Easy+Hard fill dictionary.",
 )
 @click.option(
     "--sixty-output",
@@ -1150,7 +1169,9 @@ def publish_effective_dictionaries(
     easy_extra_sources: tuple[str, ...],
     easy_exclude_sources: tuple[str, ...],
     hard_source: str,
+    sixty_source: str,
     easy_output: str,
+    hard_output: str,
     sixty_output: str,
     api_base: str | None,
     generator_commit: str | None,
@@ -1191,6 +1212,7 @@ def publish_effective_dictionaries(
                     resolve_path(source) for source in easy_exclude_sources
                 ),
                 hard_source=resolve_path(hard_source),
+                sixty_source=resolve_path(sixty_source),
             )
             payload = make_effective_dictionary_payload(
                 build,
@@ -1206,6 +1228,9 @@ def publish_effective_dictionaries(
         click.echo("")
         click.echo("HGG Easy dictionary:")
         click.echo(format_summary(build.easy_summary))
+        click.echo("")
+        click.echo("HGG Hard dictionary (Easy + Hard fill):")
+        click.echo(format_summary(build.hard_summary))
         click.echo("")
         click.echo("HGG 60 dictionary:")
         click.echo(format_summary(build.sixty_summary))
@@ -1235,12 +1260,15 @@ def publish_effective_dictionaries(
 
         if write_local:
             easy_output_path = resolve_path(easy_output)
+            hard_output_path = resolve_path(hard_output)
             sixty_output_path = resolve_path(sixty_output)
-            easy_output_path.parent.mkdir(parents=True, exist_ok=True)
-            sixty_output_path.parent.mkdir(parents=True, exist_ok=True)
+            for path in (easy_output_path, hard_output_path, sixty_output_path):
+                path.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(build.easy.path, easy_output_path)
+            shutil.copyfile(build.hard.path, hard_output_path)
             shutil.copyfile(build.sixty.path, sixty_output_path)
             click.echo(f"Wrote local output: {easy_output_path}")
+            click.echo(f"Wrote local output: {hard_output_path}")
             click.echo(f"Wrote local output: {sixty_output_path}")
 
 
@@ -1590,7 +1618,7 @@ def _batch_bucket_configs(project_root: Path) -> list[tuple[str, int, str, Path]
         ("easy", 5, "mini", project_root / "config.easy.yaml"),
         ("easy", 7, "mini", project_root / "config.easy.yaml"),
         ("easy", 9, "midi", project_root / "config.easy9.yaml"),
-        ("hard", 5, "mini", project_root / "config.easy.yaml"),
+        ("hard", 5, "mini", project_root / "config.hard5.yaml"),
         ("hard", 7, "mini", project_root / "config.hard7.yaml"),
         ("hard", 9, "midi", project_root / "config.hard9.yaml"),
     ]

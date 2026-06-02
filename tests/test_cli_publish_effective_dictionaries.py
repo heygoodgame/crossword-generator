@@ -20,13 +20,16 @@ def test_publish_effective_dictionaries_dry_run_does_not_write_outputs(
     easy_extra = dictionaries / "extra.txt"
     exclude_source = dictionaries / "exclude.txt"
     hard_source = dictionaries / "hard.txt"
+    sixty_source = dictionaries / "sixty.txt"
     easy_output = dictionaries / "hgg-easy.txt"
     sixty_output = dictionaries / "hgg-60.txt"
 
     easy_source.write_text("APPLE;55\nALCHEMY;55\nNOVICE;55\n")
     easy_extra.write_text("ZOOMING\n")
     exclude_source.write_text("APPLE;removed\n")
-    hard_source.write_text("ALCHEMY;60\nAIRLIFT;60\nNOVICE;50\n")
+    # Plain hard fill list; scores live in the master sixty source.
+    hard_source.write_text("ALCHEMY\nAIRLIFT\nNOVICE\n")
+    sixty_source.write_text("ALCHEMY;60\nAIRLIFT;60\nNOVICE;50\n")
     monkeypatch.setattr(cli_module, "find_project_root", lambda: tmp_path)
 
     result = CliRunner().invoke(
@@ -37,6 +40,7 @@ def test_publish_effective_dictionaries_dry_run_does_not_write_outputs(
             "--easy-extra-source", str(easy_extra),
             "--easy-exclude-source", str(exclude_source),
             "--hard-source", str(hard_source),
+            "--sixty-source", str(sixty_source),
             "--easy-output", str(easy_output),
             "--sixty-output", str(sixty_output),
             "--generator-commit", "abc123",

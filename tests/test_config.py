@@ -81,8 +81,9 @@ class TestLoadConfig:
             ),
             ("config.easy9.yaml", "dictionaries/hgg-easy.txt"),
             ("config.hard.yaml", "dictionaries/hgg-hard-flat-55.txt"),
-            ("config.hard7.yaml", "dictionaries/hgg-easy.txt"),
-            ("config.hard9.yaml", "dictionaries/hgg-easy.txt"),
+            ("config.hard5.yaml", "dictionaries/hgg-hard.txt"),
+            ("config.hard7.yaml", "dictionaries/hgg-hard.txt"),
+            ("config.hard9.yaml", "dictionaries/hgg-hard.txt"),
         ],
     )
     def test_load_phase_1_configs(

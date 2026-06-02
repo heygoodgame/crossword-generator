@@ -209,6 +209,41 @@ snapshot and runtime recipes are game-agnostic. After the API write succeeds,
 the command writes local `dictionaries/hgg-easy.txt` and `dictionaries/hgg-60.txt`
 unless `--no-write-local` is passed.
 
+As of the HGGXW cutover (2026-06), the source lists are Jeff's three
+consolidated lists, registered on prod and pulled via `consolidate-list`:
+
+- `--easy-source dictionaries/HGGXW-Easy.txt` — plain Easy fill (no scores)
+- `--hard-source dictionaries/HGGXW-Hard.txt` — plain Hard fill (no scores)
+- `--sixty-source dictionaries/XwiJeffChenList.txt` — scored master; the
+  source-score-60 entries become HGG 60 and are excluded from HGG Easy.
+
+Because `HGGXW-Easy/Hard` are plain (unscored), the 60-pointers can no
+longer be read from the hard list. `--sixty-source` (the scored master
+XWordInfo list) supplies them.
+
+`publish-effective-dictionaries` builds three local dictionaries:
+
+- `hgg-easy.txt` — HGG Easy fill (flat 50, source-score-60 entries removed)
+- `hgg-hard.txt` — **HGG Easy ∪ HGG Hard** fill (flat 50, same exclusions).
+  This is Jeff's "hard puzzles draw from both lists." It is a derived
+  generation input, deterministically rebuilt from the source lists every
+  run, so it is written locally only and is NOT part of the published
+  snapshot (hey-you's snapshot allowlist is `hgg-easy` + `hgg-60`).
+- `hgg-60.txt` — the source-score-60 entries (lengths 7–9) from the master.
+
+Composition by bucket:
+
+- Easy puzzles draw from `hgg-easy.txt` (`config.easy.yaml`, `config.easy9.yaml`).
+- Hard puzzles draw from `hgg-hard.txt` as the base fill:
+  - `config.hard5.yaml` — hard 5×5, no 60-pointers (per Jeff).
+  - `config.hard7.yaml` — hard 7×7, base `hgg-hard.txt` + `hgg-60.txt`;
+    grading requires exactly one 7-letter 60.
+  - `config.hard9.yaml` — hard 9×9, base `hgg-hard.txt` + `hgg-60.txt`
+    (8–9 letter slots), `min_score_by_length {8:60,9:60}`.
+
+The per-size 60-point requirements are enforced by those config grading
+rules against the flat-`;60` `hgg-60.txt`.
+
 ## Word List Management
 
 Master word lists are first-class entities in hey-you's MySQL
