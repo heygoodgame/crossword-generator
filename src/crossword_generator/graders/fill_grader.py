@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from collections import defaultdict
 
 from crossword_generator.dictionary import Dictionary
 from crossword_generator.exporters.numbering import (
@@ -13,6 +14,8 @@ from crossword_generator.exporters.numbering import (
 from crossword_generator.models import FillGradeReport, WordGrade
 
 logger = logging.getLogger(__name__)
+
+_MIN_SHARED_ETYMOLOGY_PART_LENGTH = 4
 
 
 class FillGrader:
@@ -78,6 +81,8 @@ class FillGrader:
 
         passing = overall_score >= self._min_passing_score
         if "terminal_s_variants" in grid_penalties:
+            passing = False
+        if "shared_etymology" in grid_penalties:
             passing = False
         if "exact_score_count" in grid_penalties:
             passing = False
@@ -197,6 +202,12 @@ class FillGrader:
         if terminal_s_pairs > 0:
             grid_penalties["terminal_s_variants"] = 100.0 * terminal_s_pairs
 
+        shared_etymology_pairs = _shared_etymology_pair_count(
+            seen, self._dictionary
+        )
+        if shared_etymology_pairs > 0:
+            grid_penalties["shared_etymology"] = 100.0 * shared_etymology_pairs
+
         # High unknown ratio
         unknown_count = sum(1 for wg in word_grades if wg.dictionary_score is None)
         if len(word_grades) > 0 and unknown_count / len(word_grades) > 0.2:
@@ -242,3 +253,68 @@ def _terminal_s_variant_count(word_counts: dict[str, int]) -> int:
         if word[:-1] in words:
             count += word_counts[word] * word_counts[word[:-1]]
     return count
+
+
+def _shared_etymology_pair_count(
+    word_counts: dict[str, int], dictionary: Dictionary
+) -> int:
+    """Count answer pairs that reuse a dictionary-recognized lexical part.
+
+    The source word lists do not include etymology metadata, so this implements
+    Jeff's rule as a conservative compound/root check: full entries and
+    dictionary-recognized compound pieces of length 4+ may not recur in another
+    entry. Requiring a valid split keeps unrelated substrings such as STAR in
+    START from being rejected.
+    """
+    words_by_part: dict[str, set[str]] = defaultdict(set)
+    for word in word_counts:
+        for part in _etymology_parts(word, dictionary):
+            words_by_part[part].add(word)
+
+    pairs: set[tuple[str, str]] = set()
+    for words in words_by_part.values():
+        if len(words) < 2:
+            continue
+        sorted_words = sorted(words)
+        for index, left in enumerate(sorted_words):
+            for right in sorted_words[index + 1:]:
+                pairs.add((left, right))
+    return len(pairs)
+
+
+def _etymology_parts(word: str, dictionary: Dictionary) -> set[str]:
+    """Return reusable dictionary roots/compound parts for one answer."""
+    normalized = word.upper()
+    parts: set[str] = set()
+
+    full_part = _dictionary_part(normalized, dictionary)
+    if (
+        full_part is not None
+        and len(full_part) >= _MIN_SHARED_ETYMOLOGY_PART_LENGTH
+    ):
+        parts.add(full_part)
+
+    for split_at in range(3, len(normalized) - 2):
+        left = _dictionary_part(normalized[:split_at], dictionary)
+        right = _dictionary_part(normalized[split_at:], dictionary)
+        if left is None or right is None:
+            continue
+        if len(left) >= _MIN_SHARED_ETYMOLOGY_PART_LENGTH:
+            parts.add(left)
+        if len(right) >= _MIN_SHARED_ETYMOLOGY_PART_LENGTH:
+            parts.add(right)
+
+    return parts
+
+
+def _dictionary_part(word: str, dictionary: Dictionary) -> str | None:
+    """Return the dictionary form of a possible component."""
+    if len(word) < 3:
+        return None
+    if dictionary.contains(word):
+        return word
+    if word.endswith("S") and len(word) > _MIN_SHARED_ETYMOLOGY_PART_LENGTH:
+        singular = word[:-1]
+        if dictionary.contains(singular):
+            return singular
+    return None

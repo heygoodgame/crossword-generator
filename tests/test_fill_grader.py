@@ -184,6 +184,71 @@ class TestGridLevelPenalties:
 
         assert "terminal_s_variants" not in report.penalties_applied
 
+    def test_shared_entry_part_fails_fill(self) -> None:
+        grader = FillGrader(
+            _make_dict(
+                {
+                    "YOGA": 80,
+                    "YOGABALLS": 80,
+                    "BALL": 80,
+                    "YY": 80,
+                    "OO": 80,
+                    "GG": 80,
+                    "AA": 80,
+                }
+            ),
+            min_passing_score=0,
+        )
+        grid = [
+            ["Y", "O", "G", "A", "B", "A", "L", "L", "S"],
+            ["Y", "O", "G", "A", ".", ".", ".", ".", "."],
+        ]
+
+        report = grader.grade(grid)
+
+        assert report.penalties_applied["shared_etymology"] == 100.0
+        assert report.passing is False
+
+    def test_shared_compound_part_fails_fill(self) -> None:
+        grader = FillGrader(
+            _make_dict(
+                {
+                    "YOGABALLS": 80,
+                    "YOGAMAT": 80,
+                    "YOGA": 80,
+                    "BALL": 80,
+                    "MAT": 80,
+                }
+            ),
+            min_passing_score=0,
+        )
+        grid = [
+            ["Y", "O", "G", "A", "B", "A", "L", "L", "S"],
+            [".", ".", ".", ".", ".", ".", ".", ".", "."],
+            ["Y", "O", "G", "A", "M", "A", "T", ".", "."],
+        ]
+
+        report = grader.grade(grid)
+
+        assert report.penalties_applied["shared_etymology"] == 100.0
+        assert report.passing is False
+
+    def test_unrelated_substring_is_not_shared_etymology(self) -> None:
+        grader = FillGrader(
+            _make_dict({"START": 80, "STAR": 80}),
+            min_passing_score=0,
+        )
+        grid = [
+            ["S", "T", "A", "R", "T"],
+            [".", ".", ".", ".", "."],
+            ["S", "T", "A", "R", "."],
+        ]
+
+        report = grader.grade(grid)
+
+        assert "shared_etymology" not in report.penalties_applied
+        assert report.passing is True
+
     def test_high_unknown_ratio_penalty(self) -> None:
         # All words unknown → high_unknown_ratio
         grader = FillGrader(_make_dict({}))
