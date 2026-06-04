@@ -53,7 +53,12 @@ _RUBRIC = (
     "\"political.\" "
     "Is the clue culturally accessible without being obscure? Penalize "
     "strained pop-culture references, ultra-current slang, and Hard clues "
-    "that try to create Friday/Saturday-level difficulty. Penalize "
+    "that try to create Friday/Saturday-level difficulty. Apply a sliding "
+    "familiarity standard to pop-culture, celebrity, entertainment, sports, "
+    "brand, and historical references: the older or more niche the reference "
+    "is, the more broadly iconic it must be. Penalize dated references that "
+    "mostly reward one generation, fandom, or era, especially when a clean "
+    "everyday clue angle is available. Penalize "
     "word-count tags like \"(two words)\" unless explicit word-boundary "
     "metadata was provided, and reward explanatory tags only when they are "
     "formatted parenthetically, e.g. \"To the ___ (in the extreme).\" "
@@ -142,7 +147,8 @@ def _difficulty_note(
             "occasional question-mark clues are appropriate only when they are "
             "factually airtight and reasonably inferable. Penalize "
             "Saturday-level obscurity, forced cleverness, ultra-current slang, "
-            "or trivia solvers cannot reason toward."
+            "older pop-culture references that are not cross-generationally "
+            "iconic, or trivia solvers cannot reason toward."
         )
     if puzzle_type == PuzzleType.MINI:
         return f"{base} MINI clues should remain especially concise."

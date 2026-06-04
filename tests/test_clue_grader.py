@@ -149,7 +149,21 @@ class TestHappyPath:
         assert "NYT Tuesday/Wednesday-level" in prompt
         assert "Mild misdirection" in prompt
         assert "Saturday-level obscurity" in prompt
+        assert "cross-generationally iconic" in prompt
         assert "Accuracy and exact answer fit are more important" in prompt
+
+    def test_evaluation_penalizes_dated_niche_references(self) -> None:
+        prompt = build_clue_evaluation_prompt(
+            MOCK_CLUES,
+            {},
+            PuzzleType.MINI,
+            difficulty=PuzzleDifficulty.HARD,
+        )
+
+        assert "sliding familiarity standard" in prompt
+        assert "older or more niche the reference" in prompt
+        assert "one generation, fandom, or era" in prompt
+        assert "everyday clue angle" in prompt
 
     def test_evaluation_penalizes_exact_phrase_and_unpleasant_wording(self) -> None:
         prompt = build_clue_evaluation_prompt(
