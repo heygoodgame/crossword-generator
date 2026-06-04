@@ -13,9 +13,11 @@ from crossword_generator.exporters.numbering import (
 from crossword_generator.llm.base import LLMProvider
 from crossword_generator.llm.prompts.clue_generation import (
     build_clue_generation_prompt,
+    build_clue_repair_prompt,
 )
 from crossword_generator.models import (
     ClueEntry,
+    ClueGrade,
     FillResult,
     PuzzleDifficulty,
     PuzzleEnvelope,
@@ -533,6 +535,8 @@ class TestThemeAnnotationsInPrompt:
         assert 'HOUSEWIFE with "Desperate ___wives"' in prompt
         assert "singular/plural forms" in prompt
         assert 'POL with "politician"' in prompt
+        assert "abbreviation expansions" in prompt
+        assert 'CEO with "executive"' in prompt
 
     def test_prompt_prioritizes_accuracy_and_exact_fit(self) -> None:
         from crossword_generator.exporters.numbering import compute_numbering
@@ -604,7 +608,27 @@ class TestThemeAnnotationsInPrompt:
         assert "mild misdirection" in prompt
         assert "Saturday-level obscurity" in prompt
         assert "strained pop-culture references" in prompt
+        assert "cross-generationally iconic" in prompt
         assert "use a cleaner direct clue" in prompt
+
+    def test_prompt_applies_sliding_familiarity_to_references(self) -> None:
+        """Older/nicher references must be especially well known."""
+        from crossword_generator.exporters.numbering import compute_numbering
+
+        entries = compute_numbering(MOCK_GRID)
+        crossing_words = compute_crossing_words(entries, MOCK_GRID)
+
+        prompt = build_clue_generation_prompt(
+            entries,
+            crossing_words,
+            PuzzleType.MIDI,
+            difficulty=PuzzleDifficulty.HARD,
+        )
+
+        assert "sliding familiarity standard" in prompt
+        assert "the older or more niche the reference is" in prompt
+        assert "one generation, fandom, or era" in prompt
+        assert "everyday meaning" in prompt
 
     def test_prompt_disallows_word_count_tags_without_metadata(self) -> None:
         from crossword_generator.exporters.numbering import compute_numbering
@@ -653,6 +677,34 @@ class TestThemeAnnotationsInPrompt:
         assert "PRIOR CLUES FOR THESE ANSWERS:" in prompt
         assert "Do not repeat any clue exactly" in prompt
         assert '- ABCDE: "First five letters"' in prompt
+
+    def test_repair_prompt_applies_sliding_familiarity_to_references(self) -> None:
+        """Repair should not replace bad references with another dated one."""
+        bad_clue = ClueEntry(
+            number=1,
+            direction="across",
+            answer="APPLE",
+            clue="Singer Fiona",
+        )
+        grade = ClueGrade(
+            number=1,
+            direction="across",
+            answer="APPLE",
+            score=55,
+            feedback="Too obscure for the audience.",
+        )
+
+        prompt = build_clue_repair_prompt(
+            [(bad_clue, grade)],
+            [bad_clue],
+            {},
+            PuzzleType.MINI,
+            difficulty=PuzzleDifficulty.HARD,
+        )
+
+        assert "sliding familiarity standard" in prompt
+        assert "the older or more niche the reference is" in prompt
+        assert "plain accurate clue" in prompt
 
 
 class TestRevealerClueNotSubstituted:

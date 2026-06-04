@@ -15,9 +15,12 @@ Current emphasis:
 - Hard clue generation should target NYT Tuesday/Wednesday: fair but more
   oblique definitions, mild wordplay, and occasional misdirection. Avoid
   forced difficulty, strained pop-culture references, ultra-current slang, and
-  clues that need a long explanation to be fair. Accuracy and exact answer fit
-  beat cleverness: if a proper noun, song, quote, team name, idiom, or
-  fill-in-the-blank angle is not certain, use a clean direct clue instead.
+  clues that need a long explanation to be fair. For pop-culture, celebrity,
+  entertainment, sports, brand, and historical references, the older or more
+  niche the reference is, the more broadly iconic it must be. Accuracy and
+  exact answer fit beat cleverness: if a proper noun, song, quote, team name,
+  idiom, or fill-in-the-blank angle is not certain, use a clean direct clue
+  instead.
 - Clues should avoid unpleasant wording such as "death" and "undocumented
   immigrant"; if dying must be referenced, use gentle wording such as
   "passed on."
@@ -55,6 +58,11 @@ Current emphasis:
   can read as swastika-like.
 - Easy 9x9 generation skips grids with more than three 8-/9-letter slots.
 - Avoid unsuitable or controversial fill before clue generation and upload.
+- For known dated or too-niche answer entries, add them to
+  `dictionaries/HggThumbsDownHard.txt` or `dictionaries/HggThumbsDownEasy.txt`
+  and rebuild effective dictionaries. Prompt guidance can handle subjective
+  clue angles, but the thumbs-down lists are the durable mechanism for answer
+  entries Jeff does not want selected at all.
 - Preserve reproducible batch manifests and deterministic data-store keys.
 
 ## Architecture

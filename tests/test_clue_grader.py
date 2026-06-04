@@ -149,7 +149,21 @@ class TestHappyPath:
         assert "NYT Tuesday/Wednesday-level" in prompt
         assert "Mild misdirection" in prompt
         assert "Saturday-level obscurity" in prompt
+        assert "cross-generationally iconic" in prompt
         assert "Accuracy and exact answer fit are more important" in prompt
+
+    def test_evaluation_penalizes_dated_niche_references(self) -> None:
+        prompt = build_clue_evaluation_prompt(
+            MOCK_CLUES,
+            {},
+            PuzzleType.MINI,
+            difficulty=PuzzleDifficulty.HARD,
+        )
+
+        assert "sliding familiarity standard" in prompt
+        assert "older or more niche the reference" in prompt
+        assert "one generation, fandom, or era" in prompt
+        assert "everyday clue angle" in prompt
 
     def test_evaluation_penalizes_exact_phrase_and_unpleasant_wording(self) -> None:
         prompt = build_clue_evaluation_prompt(
@@ -161,6 +175,8 @@ class TestHappyPath:
 
         assert "SAINT clued as the plural Saints" in prompt
         assert "GOT A SAY clued as if it were GOTTA SAY" in prompt
+        assert "abbreviation-expansion leaks" in prompt
+        assert 'CEO clued with "executive' in prompt
         assert "death" in prompt
         assert "undocumented immigrant" in prompt
 
@@ -278,6 +294,78 @@ class TestHappyPath:
         assert grade.fairness == 8.0
         assert grade.score == 52.0
         assert "morphological variant" in grade.feedback
+
+    def test_deterministic_penalty_for_related_root_answer_leakage(self) -> None:
+        leaking_clues = [
+            ClueEntry(
+                number=1,
+                direction="across",
+                answer="ISLE",
+                clue="Small island",
+            ),
+            ClueEntry(
+                number=2,
+                direction="across",
+                answer="ISLAND",
+                clue="Little isle",
+            ),
+        ]
+        response = _build_evaluation_json(
+            leaking_clues,
+            accuracy=22,
+            freshness=18,
+            craft=18,
+            fairness=22,
+        )
+        grader = ClueGrader(MockLLM(response=response))
+        envelope = _make_envelope(clues=leaking_clues)
+
+        report = grader.grade(envelope)
+
+        for grade in report.clue_grades:
+            assert grade.accuracy == 8.0
+            assert grade.fairness == 8.0
+            assert grade.score == 52.0
+            assert "related answer root" in grade.feedback
+
+    def test_deterministic_penalty_for_abbreviation_expansion_leakage(self) -> None:
+        leaking_clues = [
+            ClueEntry(
+                number=1,
+                direction="across",
+                answer="CEO",
+                clue="Top executive",
+            ),
+            ClueEntry(
+                number=2,
+                direction="across",
+                answer="CFO",
+                clue="Financial officer",
+            ),
+            ClueEntry(
+                number=3,
+                direction="across",
+                answer="FBI",
+                clue="Federal Bureau of Investigation org.",
+            )
+        ]
+        response = _build_evaluation_json(
+            leaking_clues,
+            accuracy=22,
+            freshness=18,
+            craft=18,
+            fairness=22,
+        )
+        grader = ClueGrader(MockLLM(response=response))
+        envelope = _make_envelope(clues=leaking_clues)
+
+        report = grader.grade(envelope)
+
+        for grade in report.clue_grades:
+            assert grade.accuracy == 8.0
+            assert grade.fairness == 8.0
+            assert grade.score == 52.0
+            assert "abbreviation expansion" in grade.feedback
 
     def test_deterministic_penalty_for_short_answer_root_leakage(self) -> None:
         leaking_clues = [
