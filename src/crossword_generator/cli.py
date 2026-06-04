@@ -186,6 +186,12 @@ def generate(
     help="Number of puzzles per difficulty/size bucket.",
 )
 @click.option(
+    "--bucket-counts",
+    default=None,
+    help="Comma-separated count overrides by bucket or size, e.g. "
+    "'5=5,7=2,9=7' or 'easy/5=5,hard/9=7'.",
+)
+@click.option(
     "--seed-start",
     type=int,
     default=1,
@@ -245,6 +251,7 @@ def generate_pilot_batch(
     output_root: str,
     batch_id: str,
     count: int,
+    bucket_counts: str | None,
     seed_start: int,
     buckets: str | None,
     llm_provider: str,
@@ -280,10 +287,18 @@ def generate_pilot_batch(
     else:
         selected_buckets = all_buckets
 
+    count_by_bucket = _parse_batch_count_overrides(
+        bucket_counts,
+        selected_buckets,
+        count,
+    )
+
     started_at = _utc_timestamp()
     results: list[dict[str, object]] = []
     for difficulty, size, puzzle_type, config_path in selected_buckets:
-        for seed in range(seed_start, seed_start + count):
+        bucket_tag = f"{difficulty}/{size}"
+        bucket_count = count_by_bucket[bucket_tag]
+        for seed in range(seed_start, seed_start + bucket_count):
             results.append(
                 _run_batch_item(
                     difficulty=difficulty,
@@ -312,6 +327,7 @@ def generate_pilot_batch(
         "output_root": str(root),
         "logs_dir": str(logs_dir),
         "count_per_bucket": count,
+        "bucket_counts": count_by_bucket,
         "seed_start": seed_start,
         "llm_provider": llm_provider,
         "batch_fill": {
@@ -325,6 +341,71 @@ def generate_pilot_batch(
     manifest_path = root / "manifest.json"
     manifest_path.write_text(json.dumps(manifest, indent=2) + "\n")
     click.echo(f"Manifest: {manifest_path}")
+
+
+def _parse_batch_count_overrides(
+    raw_counts: str | None,
+    selected_buckets: list[tuple[str, int, str, Path]],
+    default_count: int,
+) -> dict[str, int]:
+    if default_count < 0:
+        raise click.BadParameter("--count cannot be negative")
+
+    counts = {
+        f"{difficulty}/{size}": default_count
+        for difficulty, size, _, _ in selected_buckets
+    }
+    if not raw_counts:
+        return counts
+
+    selected_by_size: dict[int, list[str]] = {}
+    for difficulty, size, _, _ in selected_buckets:
+        selected_by_size.setdefault(size, []).append(f"{difficulty}/{size}")
+
+    for item in raw_counts.split(","):
+        entry = item.strip()
+        if not entry:
+            continue
+        if "=" not in entry:
+            raise click.BadParameter(
+                "Bucket counts must use KEY=COUNT entries, e.g. 5=5,7=2,9=7"
+            )
+        raw_key, raw_value = (part.strip().lower() for part in entry.split("=", 1))
+        try:
+            override_count = int(raw_value)
+        except ValueError as exc:
+            raise click.BadParameter(
+                f"Invalid count for {raw_key!r}: {raw_value!r}"
+            ) from exc
+        if override_count < 0:
+            raise click.BadParameter(f"Count for {raw_key!r} cannot be negative")
+
+        if raw_key in counts:
+            counts[raw_key] = override_count
+            continue
+
+        size = _parse_bucket_count_size_key(raw_key)
+        if size is None or size not in selected_by_size:
+            valid = sorted(counts) + [
+                str(size_key) for size_key in sorted(selected_by_size)
+            ]
+            raise click.BadParameter(
+                f"Unknown bucket count key {raw_key!r}. "
+                f"Valid keys: {', '.join(valid)}"
+            )
+        for bucket_tag in selected_by_size[size]:
+            counts[bucket_tag] = override_count
+
+    return counts
+
+
+def _parse_bucket_count_size_key(raw_key: str) -> int | None:
+    if raw_key.isdigit():
+        return int(raw_key)
+    left, separator, right = raw_key.partition("x")
+    if separator and left == right and left.isdigit():
+        return int(left)
+    return None
 
 
 @main.command(name="save-generated-puzzles")

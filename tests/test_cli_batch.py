@@ -4,6 +4,7 @@ from crossword_generator.cli import (
     _batch_bucket_configs,
     _extract_grid_variant,
     _failure_category,
+    _parse_batch_count_overrides,
     _summarize_batch_results,
 )
 
@@ -80,3 +81,31 @@ def test_hard_7x7_batch_uses_dedicated_config(tmp_path) -> None:
     assert configs["hard/5"] == "config.hard5.yaml"
     assert configs["hard/9"] == "config.hard9.yaml"
     assert configs["easy/9"] == "config.easy9.yaml"
+
+
+def test_parse_batch_count_overrides_applies_size_ratio(tmp_path) -> None:
+    selected_buckets = _batch_bucket_configs(tmp_path)
+
+    counts = _parse_batch_count_overrides("5=5,7=2,9=7", selected_buckets, 3)
+
+    assert counts == {
+        "easy/5": 5,
+        "easy/7": 2,
+        "easy/9": 7,
+        "hard/5": 5,
+        "hard/7": 2,
+        "hard/9": 7,
+    }
+
+
+def test_parse_batch_count_overrides_allows_exact_bucket_override(tmp_path) -> None:
+    selected_buckets = _batch_bucket_configs(tmp_path)
+
+    counts = _parse_batch_count_overrides(
+        "5=5,7=2,9=7,hard/9=8",
+        selected_buckets,
+        3,
+    )
+
+    assert counts["easy/9"] == 7
+    assert counts["hard/9"] == 8
