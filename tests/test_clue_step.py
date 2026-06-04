@@ -533,6 +533,8 @@ class TestThemeAnnotationsInPrompt:
         assert 'HOUSEWIFE with "Desperate ___wives"' in prompt
         assert "singular/plural forms" in prompt
         assert 'POL with "politician"' in prompt
+        assert "abbreviation expansions" in prompt
+        assert 'CEO with "executive"' in prompt
 
     def test_prompt_prioritizes_accuracy_and_exact_fit(self) -> None:
         from crossword_generator.exporters.numbering import compute_numbering

@@ -5,6 +5,8 @@ from __future__ import annotations
 import json
 import logging
 import re
+from functools import lru_cache
+from importlib import resources
 
 from crossword_generator.exporters.numbering import (
     compute_crossing_words,
@@ -264,12 +266,35 @@ def _answer_leak_feedback(answer: str, clue: str) -> str | None:
     if len(answer_norm) < 3:
         return None
 
-    tokens = re.findall(r"[A-Z0-9]+", clue.upper())
+    answer_forms = _lexical_forms(answer_norm)
+    answer_related_forms = _related_lexical_forms(answer_forms)
+    tokens = [_normalize(token) for token in re.findall(r"[A-Z0-9]+", clue.upper())]
+    clue_candidates = _clue_lexical_candidates(tokens)
+    for candidate in clue_candidates:
+        if candidate in answer_related_forms:
+            return (
+                "Deterministic check: clue contains a related answer root "
+                "or abbreviation expansion."
+            )
+
     for token in tokens:
-        token_norm = _normalize(token)
-        token_forms = _morphological_forms(token_norm)
-        if answer_norm in token_forms:
+        token_norm = token
+        token_forms = _lexical_forms(token_norm)
+        if answer_norm == token_norm:
             return "Deterministic check: clue contains the answer."
+        if answer_norm in token_forms or token_norm in answer_forms:
+            return (
+                "Deterministic check: clue contains a morphological variant "
+                "of the answer."
+            )
+        if _significant_form_overlap(
+            answer_forms,
+            token_forms,
+        ):
+            return (
+                "Deterministic check: clue contains a significant "
+                "answer root or morphological variant."
+            )
         if (
             len(answer_norm) == 3
             and len(token_norm) >= len(answer_norm) + 4
@@ -296,6 +321,87 @@ def _answer_leak_feedback(answer: str, clue: str) -> str | None:
                     )
 
     return None
+
+
+def _lexical_forms(token: str) -> set[str]:
+    """Return conservative morphological forms for answer/clue leakage checks."""
+    return _morphological_forms(token)
+
+
+def _related_lexical_forms(answer_forms: set[str]) -> set[str]:
+    """Return curated related roots/expansions for answer forms."""
+    related: set[str] = set()
+    family_index = _related_lexical_family_index()
+    for form in answer_forms:
+        related.update(family_index.get(form, set()))
+    return related - answer_forms
+
+
+def _clue_lexical_candidates(tokens: list[str]) -> set[str]:
+    """Return clue token and phrase forms to compare against lexical families."""
+    candidates: set[str] = set()
+    max_phrase_words = _max_related_lexical_family_words()
+    for index, token in enumerate(tokens):
+        candidates.update(_lexical_forms(token))
+        phrase = token
+        for end_index in range(index + 1, min(len(tokens), index + max_phrase_words)):
+            phrase += tokens[end_index]
+            candidates.add(phrase)
+    return candidates
+
+
+@lru_cache(maxsize=1)
+def _related_lexical_family_index() -> dict[str, set[str]]:
+    """Load editable lexical leakage families from package data."""
+    index: dict[str, set[str]] = {}
+    text = resources.files("crossword_generator.resources").joinpath(
+        "clue_leakage_families.txt"
+    ).read_text(encoding="utf-8")
+    for raw_line in text.splitlines():
+        line = raw_line.split("#", 1)[0].strip()
+        if not line:
+            continue
+        if ":" in line:
+            line = line.split(":", 1)[1]
+        forms = {
+            normalized
+            for part in line.split("|")
+            if (normalized := _normalize(part))
+        }
+        for form in tuple(forms):
+            forms.update(_morphological_forms(form))
+        for form in forms:
+            index.setdefault(form, set()).update(forms)
+    return index
+
+
+@lru_cache(maxsize=1)
+def _max_related_lexical_family_words() -> int:
+    max_words = 1
+    text = resources.files("crossword_generator.resources").joinpath(
+        "clue_leakage_families.txt"
+    ).read_text(encoding="utf-8")
+    for raw_line in text.splitlines():
+        line = raw_line.split("#", 1)[0].strip()
+        if not line:
+            continue
+        if ":" in line:
+            line = line.split(":", 1)[1]
+        for part in line.split("|"):
+            words = re.findall(r"[A-Z0-9]+", part.upper())
+            max_words = max(max_words, len(words))
+    return max_words
+
+
+def _significant_form_overlap(
+    answer_forms: set[str],
+    token_forms: set[str],
+) -> bool:
+    """Return true when answer and clue token share a meaningful root form."""
+    return any(
+        len(form) >= 4
+        for form in answer_forms & token_forms
+    )
 
 
 _UNPLEASANT_CLUE_PATTERNS = (
@@ -345,6 +451,8 @@ def _morphological_forms(token: str) -> set[str]:
         forms.add(stem)
         if len(stem) >= 2 and stem[-1] == stem[-2]:
             forms.add(stem[:-1])
+    if token.endswith("LY") and len(token) > 4:
+        forms.add(token[:-2])
     if token.endswith("ES") and len(token) > 4:
         forms.add(token[:-2])
     if token.endswith("S") and not token.endswith("SS") and len(token) > 4:

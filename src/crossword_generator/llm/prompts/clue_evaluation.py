@@ -45,6 +45,7 @@ _RUBRIC = (
     "4. FAIRNESS (0-25): Does the clue avoid echoing the answer word, answer "
     "word-parts, roots, or related morphological variants? Penalize "
     "singular/plural leaks, verb-form leaks, compound-part leaks, and "
+    "abbreviation-expansion leaks such as CEO clued with \"executive,\" plus "
     "famous-title fill-in-the-blanks that point at a different form of the "
     "answer, e.g. HOUSEWIFE clued via \"Desperate ___wives.\" Does it avoid "
     "using any crossing words in the clue text? Penalize short answer roots "
