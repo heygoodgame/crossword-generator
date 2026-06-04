@@ -43,6 +43,9 @@ _GUIDELINES = (
     "- Vary clue styles within the target difficulty: definitional, "
     "fill-in-the-blank, wordplay, trivia, and lateral thinking are all "
     "available, but Easy clues should stay direct and obvious.\n"
+    "- Do not repeat the exact same clue wording for the same answer across "
+    "different puzzles. If prior clues are listed for an answer, write a new "
+    "clue that does not exactly duplicate any of them.\n"
     "- Use misdirection and cleverness only when they fit the target "
     "difficulty. For Easy clues, clarity beats cleverness.\n"
     '- Use question marks for witty/punny clues only when the target '
@@ -182,6 +185,7 @@ def build_clue_generation_messages(
     puzzle_type: PuzzleType,
     theme: ThemeConcept | None = None,
     difficulty: PuzzleDifficulty = PuzzleDifficulty.EASY,
+    prior_clues_by_answer: dict[str, list[str]] | None = None,
 ) -> tuple[str, str]:
     """Build (system, user) messages for clue generation.
 
@@ -233,6 +237,23 @@ def build_clue_generation_messages(
         )
     entries_block = "\n".join(entry_lines)
 
+    prior_clues_block = ""
+    if prior_clues_by_answer:
+        prior_lines: list[str] = []
+        for answer in sorted(prior_clues_by_answer):
+            clues = prior_clues_by_answer[answer]
+            if not clues:
+                continue
+            quoted = "; ".join(f'"{clue}"' for clue in clues)
+            prior_lines.append(f"- {answer}: {quoted}")
+        if prior_lines:
+            prior_clues_block = (
+                "\nPRIOR CLUES FOR THESE ANSWERS:\n"
+                "Do not repeat any clue exactly for the same answer.\n"
+                + "\n".join(prior_lines)
+                + "\n"
+            )
+
     theme_context_block = ""
     if themed:
         if revealer_info:
@@ -259,6 +280,7 @@ def build_clue_generation_messages(
     user_text = (
         f"{theme_context_block}"
         f"ENTRIES TO CLUE:\n{entries_block}\n\n"
+        f"{prior_clues_block}"
         f"Now write clues for all {len(entries)} entries above."
     )
 
@@ -271,6 +293,7 @@ def build_clue_generation_prompt(
     puzzle_type: PuzzleType,
     theme: ThemeConcept | None = None,
     difficulty: PuzzleDifficulty = PuzzleDifficulty.EASY,
+    prior_clues_by_answer: dict[str, list[str]] | None = None,
 ) -> str:
     """Build a single-string prompt (system+user concatenated).
 
@@ -278,7 +301,7 @@ def build_clue_generation_prompt(
     Prefer ``build_clue_generation_messages`` to enable prompt caching.
     """
     system_text, user_text = build_clue_generation_messages(
-        entries, crossing_words, puzzle_type, theme, difficulty
+        entries, crossing_words, puzzle_type, theme, difficulty, prior_clues_by_answer
     )
     return f"{system_text}\n\n{user_text}"
 
