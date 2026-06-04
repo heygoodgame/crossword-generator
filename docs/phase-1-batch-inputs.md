@@ -208,12 +208,13 @@ that cannot possibly be filled by a constrained dictionary.
 ## Phase 2B Pilot Data Store Save
 
 Generated pilot candidates can be saved to the authenticated HeyGG admin data
-store without writing directly to the hey-you database. The staging API base is
-the default:
+store without writing directly to the hey-you database. The prod API base
+(`https://play.hey.gg/api`) is the default; override `HEYGG_API_BASE_URL` to
+target staging (`https://id-beta.hey.gg/api`):
 
 ```bash
-export HEYGG_API_BASE_URL=https://id-beta.hey.gg/api
-export HEYGG_ADMIN_API_TOKEN=<staging admin API token>
+export HEYGG_API_BASE_URL=https://play.hey.gg/api
+export HEYGG_ADMIN_API_TOKEN=<prod admin API token>
 
 uv run crossword-generator save-generated-puzzles \
   --manifest output/batches/phase-2b-pilot/manifest.json

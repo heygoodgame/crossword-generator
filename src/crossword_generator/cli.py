@@ -1137,7 +1137,7 @@ def prepare_dictionaries(
     default=None,
     help=(
         "Override the HeyGG admin API base URL. Defaults to the "
-        "HEYGG_API_BASE_URL env var or https://id-beta.hey.gg/api."
+        "HEYGG_API_BASE_URL env var or https://play.hey.gg/api."
     ),
 )
 @click.option(
@@ -1285,7 +1285,7 @@ def publish_effective_dictionaries(
     default=None,
     help=(
         "Override the HeyGG admin API base URL. Defaults to the "
-        "HEYGG_API_BASE_URL env var or https://id-beta.hey.gg/api."
+        "HEYGG_API_BASE_URL env var or https://play.hey.gg/api."
     ),
 )
 def consolidate_list(slug: str | None, dry_run: bool, api_base: str | None) -> None:

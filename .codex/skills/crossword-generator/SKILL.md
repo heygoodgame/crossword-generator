@@ -56,7 +56,7 @@ uv run crossword-generator generate-pilot-batch \
 Upload generated candidates:
 
 ```bash
-export HEYGG_API_BASE_URL=https://id-beta.hey.gg/api
+export HEYGG_API_BASE_URL=https://play.hey.gg/api
 export HEYGG_ADMIN_API_TOKEN=<token>
 
 uv run crossword-generator save-generated-puzzles \

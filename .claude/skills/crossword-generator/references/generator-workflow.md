@@ -315,8 +315,8 @@ uv run crossword-generator consolidate-list hgg-curated
 # Preview only — fetches, diffs, prints; does not write or ack
 uv run crossword-generator consolidate-list --dry-run
 
-# Beta vs prod (defaults to id-beta)
-uv run crossword-generator consolidate-list --api-base https://play.hey.gg/api
+# Prod vs beta (defaults to play.hey.gg)
+uv run crossword-generator consolidate-list --api-base https://id-beta.hey.gg/api
 ```
 
 Diff is computed on the leading WORD-before-semicolon, so per-word score
@@ -462,7 +462,7 @@ POST /admin/data-store/records/bulk
 Default API base:
 
 ```text
-https://id-beta.hey.gg/api
+https://play.hey.gg/api
 ```
 
 Record contract:
@@ -502,7 +502,7 @@ uv run crossword-generator save-generated-puzzles \
 Live upload:
 
 ```bash
-export HEYGG_API_BASE_URL=https://id-beta.hey.gg/api
+export HEYGG_API_BASE_URL=https://play.hey.gg/api
 export HEYGG_ADMIN_API_TOKEN=<token>
 
 uv run crossword-generator save-generated-puzzles \
@@ -523,8 +523,8 @@ hgg-auth exec prod -- bash -c '
 
 `hgg-auth exec <profile>` exports `HGG_ADMIN_BASE_URL` and `HEYGG_ADMIN_TOKEN`;
 the uploader reads `HEYGG_API_BASE_URL` and `HEYGG_ADMIN_TOKEN`, so set the
-former from the latter as shown. The uploader defaults the base URL to id-beta,
-so set `HEYGG_API_BASE_URL` explicitly when targeting prod.
+former from the latter as shown. The uploader defaults the base URL to
+play.hey.gg (prod), so set `HEYGG_API_BASE_URL` explicitly when targeting beta.
 
 Replace existing uploaded records:
 

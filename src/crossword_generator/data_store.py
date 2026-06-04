@@ -14,7 +14,7 @@ from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 API_BASE = os.environ.get(
-    "HEYGG_API_BASE_URL", "https://id-beta.hey.gg/api"
+    "HEYGG_API_BASE_URL", "https://play.hey.gg/api"
 ).rstrip("/")
 NAMESPACE = "crosswords"
 COLLECTION = "generated-puzzles"
