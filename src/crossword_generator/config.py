@@ -132,6 +132,12 @@ class ClaudeConfig(BaseModel):
     clue_generation_model: str = "claude-sonnet-4-6"
     clue_grading_model: str = "claude-haiku-4-5-20251001"
     clue_fact_check_model: str = "claude-sonnet-4-6"
+    thinking_enabled: bool = False
+    thinking_type: str = "adaptive"
+    thinking_display: str = "omitted"
+    effort: str = ""
+    clue_generation_thinking_enabled: bool = True
+    clue_generation_effort: str = "high"
     max_tokens: int = 4096
     timeout: int = 120
 

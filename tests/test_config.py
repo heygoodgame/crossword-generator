@@ -52,6 +52,12 @@ class TestConfigDefaults:
             cfg.llm.claude.clue_grading_model == "claude-haiku-4-5-20251001"
         )
         assert cfg.llm.claude.clue_fact_check_model == "claude-sonnet-4-6"
+        assert cfg.llm.claude.thinking_enabled is False
+        assert cfg.llm.claude.thinking_type == "adaptive"
+        assert cfg.llm.claude.thinking_display == "omitted"
+        assert cfg.llm.claude.effort == ""
+        assert cfg.llm.claude.clue_generation_thinking_enabled is True
+        assert cfg.llm.claude.clue_generation_effort == "high"
 
     def test_default_output(self) -> None:
         cfg = Config()
@@ -137,6 +143,12 @@ class TestLoadConfig:
             cfg.llm.claude.clue_grading_model == "claude-haiku-4-5-20251001"
         )
         assert cfg.llm.claude.clue_fact_check_model == "claude-sonnet-4-6"
+        assert cfg.llm.claude.thinking_enabled is False
+        assert cfg.llm.claude.thinking_type == "adaptive"
+        assert cfg.llm.claude.thinking_display == "omitted"
+        assert cfg.llm.claude.effort == ""
+        assert cfg.llm.claude.clue_generation_thinking_enabled is True
+        assert cfg.llm.claude.clue_generation_effort == "high"
         assert cfg.grading.clue.fact_check_enabled is True
         assert cfg.grading.clue.fact_check_scope == "risky"
         rejected_model = "claude-sonnet-4-5" + "-20241022"

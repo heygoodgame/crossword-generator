@@ -219,10 +219,17 @@ def create_pipeline(
         cc = config.llm.claude
 
         def _claude_for(step: str) -> ClaudeProvider:
+            updates: dict[str, object] = {}
             model = cc.model_for(step)
-            if model == cc.model:
+            if model != cc.model:
+                updates["model"] = model
+            if step == "clue_generation" and cc.clue_generation_thinking_enabled:
+                updates["thinking_enabled"] = True
+                if cc.clue_generation_effort:
+                    updates["effort"] = cc.clue_generation_effort
+            if not updates:
                 return _base_claude
-            return ClaudeProvider(cc.model_copy(update={"model": model}))
+            return ClaudeProvider(cc.model_copy(update=updates))
 
         _base_claude = ClaudeProvider(cc)
         llm_provider = _base_claude

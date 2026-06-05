@@ -55,6 +55,12 @@ llm:
     clue_generation_model: claude-sonnet-4-6
     clue_grading_model: claude-haiku-4-5-20251001
     clue_fact_check_model: claude-sonnet-4-6
+    thinking_enabled: false
+    thinking_type: adaptive
+    thinking_display: omitted
+    effort: ""
+    clue_generation_thinking_enabled: true
+    clue_generation_effort: high
     max_tokens: 4096
     timeout: 120
 

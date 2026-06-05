@@ -1,8 +1,9 @@
 """Tests for pipeline orchestration."""
 
 from pathlib import Path
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
+from crossword_generator.config import load_config
 from crossword_generator.exporters.base import Exporter
 from crossword_generator.models import (
     FillResult,
@@ -10,7 +11,7 @@ from crossword_generator.models import (
     ThemeConcept,
     ThemeFile,
 )
-from crossword_generator.pipeline import Pipeline
+from crossword_generator.pipeline import Pipeline, create_pipeline
 from crossword_generator.steps.base import PipelineStep
 
 
@@ -170,3 +171,37 @@ class TestPipeline:
         assert result.theme is not None
         assert result.theme.topic == "Pre-loaded topic"
         theme_step.run.assert_not_called()
+
+    def test_claude_clue_generation_uses_thinking(
+        self, project_root: Path
+    ) -> None:
+        cfg = load_config(project_root / "config.easy.yaml")
+        cfg.llm.provider = "claude"
+
+        def fake_provider(config: object) -> MagicMock:
+            provider = MagicMock()
+            provider._config = config
+            return provider
+
+        with patch(
+            "crossword_generator.pipeline.ClaudeProvider",
+            side_effect=fake_provider,
+        ) as provider_cls:
+            create_pipeline(cfg)
+
+        provider_configs = [call.args[0] for call in provider_cls.call_args_list]
+        clue_gen_configs = [
+            config
+            for config in provider_configs
+            if config.model == "claude-sonnet-4-6"
+            and config.thinking_enabled is True
+        ]
+        assert len(clue_gen_configs) == 1
+        assert clue_gen_configs[0].effort == "high"
+
+        grading_configs = [
+            config
+            for config in provider_configs
+            if config.model == "claude-haiku-4-5-20251001"
+        ]
+        assert all(config.thinking_enabled is False for config in grading_configs)

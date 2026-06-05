@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import os
+import sys
+from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -18,6 +20,15 @@ class FakeOverloadedError(RuntimeError):
 def config() -> ClaudeConfig:
     return ClaudeConfig(
         model="claude-haiku-4-5-20251001", max_tokens=4096, timeout=120
+    )
+
+
+@pytest.fixture(autouse=True)
+def fake_anthropic_module(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setitem(
+        sys.modules,
+        "anthropic",
+        SimpleNamespace(Anthropic=MagicMock()),
     )
 
 
@@ -111,6 +122,63 @@ class TestClaudeProvider:
             temperature=0.3,
             messages=[{"role": "user", "content": "prompt"}],
         )
+
+    def test_generate_with_thinking_uses_text_block(self, config: ClaudeConfig) -> None:
+        thinking_config = config.model_copy(
+            update={
+                "thinking_enabled": True,
+                "thinking_type": "adaptive",
+                "thinking_display": "omitted",
+                "effort": "high",
+            }
+        )
+        with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key"}):
+            with patch("anthropic.Anthropic") as mock_cls:
+                mock_client = MagicMock()
+                mock_cls.return_value = mock_client
+                mock_thinking_block = MagicMock()
+                mock_thinking_block.type = "thinking"
+                mock_text_block = MagicMock()
+                mock_text_block.type = "text"
+                mock_text_block.text = '{"clues": []}'
+                mock_message = MagicMock()
+                mock_message.content = [mock_thinking_block, mock_text_block]
+                mock_client.messages.create.return_value = mock_message
+
+                from crossword_generator.llm.claude_provider import ClaudeProvider
+
+                provider = ClaudeProvider(thinking_config)
+                result = provider.generate("prompt")
+
+        assert result == '{"clues": []}'
+        mock_client.messages.create.assert_called_once_with(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=4096,
+            temperature=0.7,
+            messages=[{"role": "user", "content": "prompt"}],
+            thinking={"type": "adaptive", "display": "omitted"},
+            output_config={"effort": "high"},
+        )
+
+    def test_generate_combines_multiple_text_blocks(self, config: ClaudeConfig) -> None:
+        with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key"}):
+            with patch("anthropic.Anthropic") as mock_cls:
+                mock_client = MagicMock()
+                mock_cls.return_value = mock_client
+                mock_message = MagicMock()
+                mock_message.content = [
+                    {"type": "thinking", "thinking": "", "signature": "abc"},
+                    {"type": "text", "text": "first"},
+                    {"type": "text", "text": " second"},
+                ]
+                mock_client.messages.create.return_value = mock_message
+
+                from crossword_generator.llm.claude_provider import ClaudeProvider
+
+                provider = ClaudeProvider(config)
+                result = provider.generate("prompt")
+
+        assert result == "first second"
 
     def test_generate_retries_overload_errors(self, config: ClaudeConfig) -> None:
         with patch.dict(

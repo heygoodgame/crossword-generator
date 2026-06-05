@@ -64,6 +64,13 @@ class ClaudeProvider(LLMProvider):
             "temperature": temperature,
             "messages": [{"role": "user", "content": prompt}],
         }
+        if self._config.thinking_enabled:
+            thinking: dict[str, str] = {"type": self._config.thinking_type}
+            if self._config.thinking_display:
+                thinking["display"] = self._config.thinking_display
+            request_kwargs["thinking"] = thinking
+        if self._config.effort:
+            request_kwargs["output_config"] = {"effort": self._config.effort}
         if system:
             request_kwargs["system"] = [
                 {
@@ -91,7 +98,7 @@ class ClaudeProvider(LLMProvider):
                     max_overload_retries,
                 )
                 time.sleep(sleep_seconds)
-        return message.content[0].text  # type: ignore[union-attr]
+        return _extract_text_content(message.content)
 
     def is_available(self) -> bool:
         try:
@@ -114,6 +121,30 @@ def _resolve_api_key() -> str | None:
         logger.debug("Using ANTHROPIC_API_KEY_CROSSWORD_GENERATOR for Claude API")
         return override
     return os.environ.get("ANTHROPIC_API_KEY") or None
+
+
+def _extract_text_content(content: object) -> str:
+    text_parts: list[str] = []
+    if not isinstance(content, list):
+        raise ValueError("Claude response content is not a list")
+
+    for block in content:
+        if isinstance(block, dict):
+            block_type = block.get("type")
+            text = block.get("text")
+        else:
+            block_type = getattr(block, "type", None)
+            text = getattr(block, "text", None)
+        if isinstance(text, str) and (
+            block_type == "text"
+            or block_type is None
+            or not isinstance(block_type, str)
+        ):
+            text_parts.append(text)
+
+    if not text_parts:
+        raise ValueError("Claude response did not contain a text block")
+    return "".join(text_parts)
 
 
 def _is_overload_error(exc: Exception) -> bool:
