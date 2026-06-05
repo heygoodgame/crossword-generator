@@ -1,4 +1,4 @@
-.PHONY: setup install test test-all lint format check-deps setup-ollama generate-mini generate-midi generate-themes clean
+.PHONY: setup install test test-all lint format check-deps setup-ollama generate-mini generate-midi generate-themes generate-weeks clean
 
 setup: install
 
@@ -35,6 +35,9 @@ generate-midi:
 
 generate-themes:
 	uv run crossword-generator generate-themes --count 10 --size 9
+
+generate-weeks:
+	./generate-puzzles.sh $(or $(WEEKS),2) $(ARGS)
 
 clean:
 	rm -rf .pytest_cache htmlcov .coverage .ruff_cache
