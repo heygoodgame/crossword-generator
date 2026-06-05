@@ -153,7 +153,7 @@ class TestClaudeProvider:
         assert result == '{"clues": []}'
         mock_client.messages.create.assert_called_once_with(
             model="claude-haiku-4-5-20251001",
-            max_tokens=4096,
+            max_tokens=8192,
             temperature=1.0,
             messages=[{"role": "user", "content": "prompt"}],
             thinking={"type": "adaptive", "display": "omitted"},

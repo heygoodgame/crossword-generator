@@ -54,9 +54,10 @@ llm:
     thinking_enabled: false
     thinking_type: adaptive
     thinking_display: omitted
+    thinking_max_tokens: 8192
     effort: ""
     clue_generation_thinking_enabled: true
-    clue_generation_effort: high
+    clue_generation_effort: medium
     max_tokens: 4096
     timeout: 120
 

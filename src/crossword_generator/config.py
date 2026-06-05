@@ -135,9 +135,10 @@ class ClaudeConfig(BaseModel):
     thinking_enabled: bool = False
     thinking_type: str = "adaptive"
     thinking_display: str = "omitted"
+    thinking_max_tokens: int = 8192
     effort: str = ""
     clue_generation_thinking_enabled: bool = True
-    clue_generation_effort: str = "high"
+    clue_generation_effort: str = "medium"
     max_tokens: int = 4096
     timeout: int = 120
 

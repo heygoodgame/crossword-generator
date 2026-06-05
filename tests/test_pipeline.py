@@ -197,7 +197,7 @@ class TestPipeline:
             and config.thinking_enabled is True
         ]
         assert len(clue_gen_configs) == 1
-        assert clue_gen_configs[0].effort == "high"
+        assert clue_gen_configs[0].effort == "medium"
 
         grading_configs = [
             config

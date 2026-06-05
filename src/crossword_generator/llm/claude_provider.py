@@ -61,7 +61,11 @@ class ClaudeProvider(LLMProvider):
         # always safe to send.
         request_kwargs: dict[str, object] = {
             "model": model,
-            "max_tokens": self._config.max_tokens,
+            "max_tokens": (
+                self._config.thinking_max_tokens
+                if self._config.thinking_enabled
+                else self._config.max_tokens
+            ),
             "temperature": temperature,
             "messages": [{"role": "user", "content": prompt}],
         }
