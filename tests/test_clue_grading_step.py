@@ -6,6 +6,7 @@ import json
 
 import pytest
 
+from crossword_generator.graders.clue_fact_checker import ClueFactChecker
 from crossword_generator.graders.clue_grader import ClueGrader
 from crossword_generator.llm.base import LLMProvider
 from crossword_generator.models import (
@@ -486,3 +487,72 @@ class TestAccuracyRepair:
         )
         assert clue_1a.clue == "Fixed feline clue"
         assert clue_3d.clue == "Fixed name clue"
+
+
+class TestFactCheckRepair:
+    """Tests for the fact-check repair pass."""
+
+    def test_fact_check_repairs_high_scoring_risky_clue(self) -> None:
+        """Fact checker can repair a clue even when normal grading passes."""
+        clue_items = []
+        for e in EXPECTED_ENTRIES:
+            clue = f"Generated clue {e['number']} {e['direction']}"
+            if e["number"] == 1 and e["direction"] == "across":
+                clue = "Hit song by Taylor Swift"
+            clue_items.append(
+                {
+                    "number": e["number"],
+                    "direction": e["direction"],
+                    "clue": clue,
+                }
+            )
+        clue_json = json.dumps(clue_items)
+        eval_json = _build_eval_json(
+            accuracy=23, freshness=22, craft=22, fairness=22
+        )
+        fact_json = json.dumps(
+            [
+                {
+                    "number": 1,
+                    "direction": "across",
+                    "status": "uncertain",
+                    "reason": "Specific song claim is not reliable enough.",
+                }
+            ]
+        )
+        repair_json = json.dumps(
+            [
+                {
+                    "number": 1,
+                    "direction": "across",
+                    "clue": "Common feline pet",
+                },
+            ]
+        )
+        re_eval_json = _build_eval_json(
+            accuracy=22, freshness=20, craft=20, fairness=20
+        )
+
+        clue_llm = SequentialMockLLM([clue_json, repair_json])
+        grade_llm = SequentialMockLLM([eval_json, re_eval_json])
+        fact_llm = SequentialMockLLM([fact_json])
+        grader = ClueGrader(grade_llm, min_passing_score=70)
+        fact_checker = ClueFactChecker(fact_llm)
+        step = ClueWithGradingStep(
+            clue_llm,
+            grader,
+            max_retries=1,
+            fact_checker=fact_checker,
+        )
+
+        result = step.run(_make_envelope())
+
+        clue_1a = next(
+            c for c in result.clues
+            if c.number == 1 and c.direction == "across"
+        )
+        assert clue_1a.clue == "Common feline pet"
+        assert result.metadata["clue_fact_check"][0]["status"] == "uncertain"
+        assert clue_llm.call_count == 2
+        assert grade_llm.call_count == 2
+        assert fact_llm.call_count == 1

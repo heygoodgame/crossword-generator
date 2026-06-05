@@ -29,6 +29,10 @@ Current emphasis:
   "major issue" / "factual error" feedback even when aggregate clue score
   passes. Hard configs use a higher individual clue repair threshold so
   borderline Hard clues are more likely to be surgically regenerated.
+- A second-pass fact-risk checker runs after normal clue grading/repair. It
+  pre-screens risky clue forms such as proper-noun trivia, titles, quotes,
+  dates, superlatives, and fill-in-the-blank phrases, then rewrites clues the
+  checker marks `uncertain` or `incorrect`.
 - HGG Easy is a single 3-9 letter effective list, scored `;50`, with known
   source-score 60 entries removed.
 - HGG 60 is a single 7-9 letter effective list, scored `;60`.
@@ -68,7 +72,7 @@ It passes a `PuzzleEnvelope` through these steps:
 2. Grid fill via `CSPFiller`.
 3. Fill grading via `FillGrader`.
 4. Clue generation via Ollama or Claude.
-5. Clue grading and repair via the configured LLM.
+5. Clue grading, repair, and fact-risk checking via the configured LLMs.
 6. Puzzle naming.
 7. IPUZ export.
 

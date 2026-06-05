@@ -36,6 +36,8 @@ grading:
     regenerate_on_fail: true
     accuracy_repair_threshold: 12
     individual_repair_score_threshold: 65
+    fact_check_enabled: true
+    fact_check_scope: risky
 
 llm:
   provider: ollama  # "ollama" or "claude"
@@ -45,6 +47,7 @@ llm:
     timeout: 120
   claude:
     model: claude-haiku-4-5-20251001
+    clue_fact_check_model: claude-sonnet-4-6
     max_tokens: 4096
     timeout: 120
 

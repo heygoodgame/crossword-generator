@@ -40,6 +40,8 @@ grading:
     min_score: 70
     regenerate_on_fail: true
     accuracy_repair_threshold: 12
+    fact_check_enabled: true
+    fact_check_scope: risky
 
 llm:
   provider: ollama
@@ -52,6 +54,7 @@ llm:
     theme_model: claude-sonnet-4-6
     clue_generation_model: claude-sonnet-4-6
     clue_grading_model: claude-haiku-4-5-20251001
+    clue_fact_check_model: claude-sonnet-4-6
     max_tokens: 4096
     timeout: 120
 

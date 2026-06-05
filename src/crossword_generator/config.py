@@ -99,6 +99,8 @@ class ClueGradingConfig(BaseModel):
     regenerate_on_fail: bool = True
     accuracy_repair_threshold: int = 12  # repair clues below this accuracy sub-score
     individual_repair_score_threshold: int = 65
+    fact_check_enabled: bool = True
+    fact_check_scope: str = "risky"  # "risky" or "all"
 
 
 class GradingConfig(BaseModel):
@@ -129,6 +131,7 @@ class ClaudeConfig(BaseModel):
     fill_selection_model: str = ""
     clue_generation_model: str = "claude-sonnet-4-6"
     clue_grading_model: str = "claude-haiku-4-5-20251001"
+    clue_fact_check_model: str = "claude-sonnet-4-6"
     max_tokens: int = 4096
     timeout: int = 120
 
@@ -137,7 +140,7 @@ class ClaudeConfig(BaseModel):
 
         Args:
             step: One of "theme", "fill_selection", "clue_generation",
-                  "clue_grading".
+                  "clue_grading", "clue_fact_check".
 
         Returns:
             The per-step model if set, otherwise the default ``model``.
