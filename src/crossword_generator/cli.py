@@ -13,6 +13,7 @@ from pathlib import Path
 
 import click
 
+from crossword_generator.clue_history import ClueHistoryIndex
 from crossword_generator.config import find_project_root, load_config
 from crossword_generator.pipeline import create_pipeline
 
@@ -186,6 +187,12 @@ def generate(
     help="Number of puzzles per difficulty/size bucket.",
 )
 @click.option(
+    "--bucket-counts",
+    default=None,
+    help="Comma-separated count overrides by bucket or size, e.g. "
+    "'5=5,7=2,9=7' or 'easy/5=5,hard/9=7'.",
+)
+@click.option(
     "--seed-start",
     type=int,
     default=1,
@@ -203,6 +210,20 @@ def generate(
     type=click.Choice(["ollama", "claude"]),
     default="claude",
     help="LLM provider to use.",
+)
+@click.option(
+    "--avoid-existing-clues",
+    is_flag=True,
+    default=False,
+    help=(
+        "Load existing generated puzzles from the HeyGG admin API and avoid "
+        "reusing exact clue wording for the same answer."
+    ),
+)
+@click.option(
+    "--api-base",
+    default=None,
+    help="Override HEYGG_API_BASE_URL when loading existing clue history.",
 )
 @click.option(
     "--per-pattern-attempts",
@@ -245,9 +266,12 @@ def generate_pilot_batch(
     output_root: str,
     batch_id: str,
     count: int,
+    bucket_counts: str | None,
     seed_start: int,
     buckets: str | None,
     llm_provider: str,
+    avoid_existing_clues: bool,
+    api_base: str | None,
     per_pattern_attempts: int,
     max_grid_variants: int,
     timeout_5: int,
@@ -280,10 +304,43 @@ def generate_pilot_batch(
     else:
         selected_buckets = all_buckets
 
+    count_by_bucket = _parse_batch_count_overrides(
+        bucket_counts,
+        selected_buckets,
+        count,
+    )
+
+    clue_history = ClueHistoryIndex()
+    if avoid_existing_clues:
+        try:
+            loaded_records = _load_existing_clue_history(
+                clue_history,
+                selected_buckets,
+                api_base=api_base,
+            )
+        except KeyError as exc:
+            missing = exc.args[0]
+            click.echo(
+                f"Missing required environment variable: {missing}",
+                err=True,
+            )
+            sys.exit(1)
+        except Exception as exc:
+            click.echo(f"Failed to load existing clue history: {exc}", err=True)
+            sys.exit(1)
+        click.echo(
+            "Loaded existing clue history: "
+            f"records={loaded_records}, "
+            f"answers={clue_history.answer_count}, "
+            f"clues={clue_history.clue_count}"
+        )
+
     started_at = _utc_timestamp()
     results: list[dict[str, object]] = []
     for difficulty, size, puzzle_type, config_path in selected_buckets:
-        for seed in range(seed_start, seed_start + count):
+        bucket_tag = f"{difficulty}/{size}"
+        bucket_count = count_by_bucket[bucket_tag]
+        for seed in range(seed_start, seed_start + bucket_count):
             results.append(
                 _run_batch_item(
                     difficulty=difficulty,
@@ -297,6 +354,7 @@ def generate_pilot_batch(
                     per_pattern_attempts=per_pattern_attempts,
                     max_grid_variants=max_grid_variants,
                     timeout_by_size={5: timeout_5, 7: timeout_7, 9: timeout_9},
+                    clue_history=clue_history,
                 )
             )
             status = "ok" if results[-1]["success"] else "failed"
@@ -312,8 +370,10 @@ def generate_pilot_batch(
         "output_root": str(root),
         "logs_dir": str(logs_dir),
         "count_per_bucket": count,
+        "bucket_counts": count_by_bucket,
         "seed_start": seed_start,
         "llm_provider": llm_provider,
+        "avoid_existing_clues": avoid_existing_clues,
         "batch_fill": {
             "per_pattern_attempts": per_pattern_attempts,
             "max_grid_variants": max_grid_variants,
@@ -325,6 +385,71 @@ def generate_pilot_batch(
     manifest_path = root / "manifest.json"
     manifest_path.write_text(json.dumps(manifest, indent=2) + "\n")
     click.echo(f"Manifest: {manifest_path}")
+
+
+def _parse_batch_count_overrides(
+    raw_counts: str | None,
+    selected_buckets: list[tuple[str, int, str, Path]],
+    default_count: int,
+) -> dict[str, int]:
+    if default_count < 0:
+        raise click.BadParameter("--count cannot be negative")
+
+    counts = {
+        f"{difficulty}/{size}": default_count
+        for difficulty, size, _, _ in selected_buckets
+    }
+    if not raw_counts:
+        return counts
+
+    selected_by_size: dict[int, list[str]] = {}
+    for difficulty, size, _, _ in selected_buckets:
+        selected_by_size.setdefault(size, []).append(f"{difficulty}/{size}")
+
+    for item in raw_counts.split(","):
+        entry = item.strip()
+        if not entry:
+            continue
+        if "=" not in entry:
+            raise click.BadParameter(
+                "Bucket counts must use KEY=COUNT entries, e.g. 5=5,7=2,9=7"
+            )
+        raw_key, raw_value = (part.strip().lower() for part in entry.split("=", 1))
+        try:
+            override_count = int(raw_value)
+        except ValueError as exc:
+            raise click.BadParameter(
+                f"Invalid count for {raw_key!r}: {raw_value!r}"
+            ) from exc
+        if override_count < 0:
+            raise click.BadParameter(f"Count for {raw_key!r} cannot be negative")
+
+        if raw_key in counts:
+            counts[raw_key] = override_count
+            continue
+
+        size = _parse_bucket_count_size_key(raw_key)
+        if size is None or size not in selected_by_size:
+            valid = sorted(counts) + [
+                str(size_key) for size_key in sorted(selected_by_size)
+            ]
+            raise click.BadParameter(
+                f"Unknown bucket count key {raw_key!r}. "
+                f"Valid keys: {', '.join(valid)}"
+            )
+        for bucket_tag in selected_by_size[size]:
+            counts[bucket_tag] = override_count
+
+    return counts
+
+
+def _parse_bucket_count_size_key(raw_key: str) -> int | None:
+    if raw_key.isdigit():
+        return int(raw_key)
+    left, separator, right = raw_key.partition("x")
+    if separator and left == right and left.isdigit():
+        return int(left)
+    return None
 
 
 @main.command(name="save-generated-puzzles")
@@ -1469,6 +1594,7 @@ def _run_batch_item(
     per_pattern_attempts: int,
     max_grid_variants: int,
     timeout_by_size: dict[int, int],
+    clue_history: ClueHistoryIndex | None = None,
 ) -> dict[str, object]:
     bucket_dir = output_root / difficulty / f"{size}x{size}"
     bucket_dir.mkdir(parents=True, exist_ok=True)
@@ -1526,9 +1652,14 @@ def _run_batch_item(
     }
     try:
         pipeline, envelope = create_pipeline(
-            config, seed=seed, output_file=output_path
+            config,
+            seed=seed,
+            output_file=output_path,
+            clue_history=clue_history,
         )
         completed = pipeline.run(envelope)
+        if output_path.exists() and clue_history is not None:
+            clue_history.add_clues(completed.clues)
         result.update(
             {
                 "success": output_path.exists(),
@@ -1575,6 +1706,35 @@ def _run_batch_item(
         file_handler.close()
 
     return result
+
+
+def _load_existing_clue_history(
+    clue_history: ClueHistoryIndex,
+    selected_buckets: list[tuple[str, int, str, Path]],
+    *,
+    api_base: str | None = None,
+) -> int:
+    from crossword_generator.data_store import list_generated_puzzle_records
+
+    loaded_records = 0
+    seen_game_keys: set[str] = set()
+    for _difficulty, size, _puzzle_type, _config_path in selected_buckets:
+        game_key = _game_key_for_size(size)
+        if game_key in seen_game_keys:
+            continue
+        seen_game_keys.add(game_key)
+        records = list_generated_puzzle_records(
+            game_key=game_key,
+            api_base=api_base,
+        )
+        loaded_records += len(records)
+        for record in records:
+            clue_history.add_record(record)
+    return loaded_records
+
+
+def _game_key_for_size(size: int) -> str:
+    return "minicrossword" if size in (5, 7) else "midicrossword"
 
 
 def _summarize_batch_results(

@@ -7,6 +7,7 @@ import time
 from datetime import UTC, datetime
 from pathlib import Path
 
+from crossword_generator.clue_history import ClueHistoryIndex
 from crossword_generator.config import Config, find_project_root
 from crossword_generator.dictionary import Dictionary
 from crossword_generator.exporters.base import Exporter
@@ -142,6 +143,7 @@ def create_pipeline(
     seed: int | None = None,
     theme_file: Path | None = None,
     output_file: Path | None = None,
+    clue_history: ClueHistoryIndex | None = None,
 ) -> tuple[Pipeline, PuzzleEnvelope]:
     """Wire up a Pipeline and initial PuzzleEnvelope from config.
 
@@ -279,6 +281,7 @@ def create_pipeline(
             config.grading.clue.individual_repair_score_threshold
         ),
         fact_checker=clue_fact_checker,
+        clue_history=clue_history,
     )
 
     # Build steps

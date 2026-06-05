@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import logging
 
+from crossword_generator.clue_history import ClueHistoryIndex, DuplicateClueHit
 from crossword_generator.exporters.numbering import (
     compute_crossing_words,
     compute_numbering,
@@ -42,6 +43,8 @@ class ClueWithGradingStep(PipelineStep):
         accuracy_repair_threshold: float = 12,
         individual_repair_score_threshold: float = 65,
         fact_checker: ClueFactChecker | None = None,
+        clue_history: ClueHistoryIndex | None = None,
+        duplicate_repair_attempts: int = 2,
     ) -> None:
         self._llm = llm
         self._grader = grader
@@ -50,7 +53,9 @@ class ClueWithGradingStep(PipelineStep):
         self._accuracy_repair_threshold = accuracy_repair_threshold
         self._individual_repair_score_threshold = individual_repair_score_threshold
         self._fact_checker = fact_checker
-        self._clue_step = ClueGenerationStep(llm)
+        self._clue_history = clue_history
+        self._duplicate_repair_attempts = duplicate_repair_attempts
+        self._clue_step = ClueGenerationStep(llm, clue_history=clue_history)
 
     @property
     def name(self) -> str:
@@ -129,6 +134,7 @@ class ClueWithGradingStep(PipelineStep):
         # --- Surgical repair pass ---
         best_envelope = self._run_clue_repair(best_envelope)
         best_envelope = self._run_fact_check_repair(best_envelope)
+        best_envelope = self._run_duplicate_clue_repairs(best_envelope)
 
         # Fix step_history: clue_step already added "clue-generation",
         # replace with our composite name
@@ -153,23 +159,35 @@ class ClueWithGradingStep(PipelineStep):
         )
 
     def _run_clue_repair(
-        self, envelope: PuzzleEnvelope
+        self,
+        envelope: PuzzleEnvelope,
+        forced_entries: list[tuple[ClueEntry, ClueGrade]] | None = None,
     ) -> PuzzleEnvelope:
         """Single repair pass for low-scoring or explicitly flawed clues."""
         report = envelope.clue_grade_report
-        if not report or not report.clue_grades:
+        forced_entries = forced_entries or []
+        if not forced_entries and (not report or not report.clue_grades):
             return envelope
 
         # Find clues with accuracy below threshold
-        grade_lookup: dict[tuple[int, str], ClueGrade] = {
-            (g.number, g.direction): g for g in report.clue_grades
-        }
+        grade_lookup: dict[tuple[int, str], ClueGrade] = {}
+        if report:
+            grade_lookup = {
+                (g.number, g.direction): g for g in report.clue_grades
+            }
         entries_to_repair: list[tuple[ClueEntry, ClueGrade]] = []
+        repair_keys: set[tuple[int, str]] = set()
         for clue in envelope.clues:
             key = (clue.number, clue.direction)
             grade = grade_lookup.get(key)
             if grade and self._should_repair_grade(grade):
                 entries_to_repair.append((clue, grade))
+                repair_keys.add(key)
+        for clue, grade in forced_entries:
+            key = (clue.number, clue.direction)
+            if key not in repair_keys:
+                entries_to_repair.append((clue, grade))
+                repair_keys.add(key)
 
         if not entries_to_repair:
             return envelope
@@ -335,6 +353,46 @@ class ClueWithGradingStep(PipelineStep):
             }
         )
 
+    def _run_duplicate_clue_repairs(
+        self, envelope: PuzzleEnvelope
+    ) -> PuzzleEnvelope:
+        if self._clue_history is None:
+            return envelope
+
+        current = envelope
+        duplicate_hits = self._clue_history.find_duplicates(current.clues)
+        for attempt in range(1, self._duplicate_repair_attempts + 1):
+            if not duplicate_hits:
+                return current
+            logger.info(
+                "Duplicate clue repair attempt %d/%d: %d exact duplicate(s)",
+                attempt,
+                self._duplicate_repair_attempts,
+                len(duplicate_hits),
+            )
+            forced_entries = [
+                (hit.clue, _duplicate_clue_grade(hit)) for hit in duplicate_hits
+            ]
+            repaired = self._run_clue_repair(
+                current,
+                forced_entries=forced_entries,
+            )
+            if repaired is current:
+                break
+            current = repaired
+            duplicate_hits = self._clue_history.find_duplicates(current.clues)
+
+        if duplicate_hits:
+            details = "; ".join(
+                f"{hit.clue.answer} = \"{hit.clue.clue}\""
+                for hit in duplicate_hits
+            )
+            raise ValueError(
+                "Exact duplicate clue(s) remain after repair attempts: "
+                f"{details}"
+            )
+        return current
+
     def _should_repair_grade(self, grade: ClueGrade) -> bool:
         if (
             grade.accuracy is not None
@@ -439,3 +497,20 @@ def _parse_repair_response(
         )
 
     return repaired
+
+
+def _duplicate_clue_grade(hit: DuplicateClueHit) -> ClueGrade:
+    return ClueGrade(
+        number=hit.clue.number,
+        direction=hit.clue.direction,
+        answer=hit.clue.answer,
+        score=0,
+        accuracy=25,
+        freshness=0,
+        craft=0,
+        fairness=20,
+        feedback=(
+            "Exact duplicate clue already used for this answer in another "
+            f"puzzle: \"{hit.existing_clue}\". Write a different clue."
+        ),
+    )

@@ -258,6 +258,14 @@ class TestBuildFillSelectionPrompt:
         assert "CLUE POTENTIAL" in prompt
         assert "AVOIDING JUNK" in prompt
 
+    def test_penalizes_dated_reference_fill(self) -> None:
+        grids = [HIGH_QUALITY_GRID]
+        prompt = build_fill_selection_prompt(grids)
+
+        assert "dated pop-culture" in prompt
+        assert "cross-generationally iconic" in prompt
+        assert "The older or more niche" in prompt
+
     def test_extract_words(self) -> None:
         words = _extract_words(HIGH_QUALITY_GRID)
         # Should find across and down words

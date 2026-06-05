@@ -1,0 +1,38 @@
+# Clue leakage lexical families.
+#
+# Format:
+#   label: related form | related form | multi word phrase
+#
+# These are conservative same-root, expansion, or abbreviation families whose
+# members should not be used to clue one another. Multi-word phrases are matched
+# as phrases; list individual component words only when that component alone is
+# too revealing for the answer.
+
+isle_island: isle | island | islander
+
+chief_executive_officer: CEO | exec | executive | chief executive officer
+chief_financial_officer: CFO | financial | finance | chief financial officer
+chief_technology_officer: CTO | technology | technical | tech | chief technology officer
+chief_operating_officer: COO | operating | operations | chief operating officer
+chief_information_officer: CIO | information | chief information officer
+chief_marketing_officer: CMO | marketing | chief marketing officer
+
+federal_bureau_of_investigation: FBI | federal bureau of investigation
+central_intelligence_agency: CIA | central intelligence agency
+internal_revenue_service: IRS | internal revenue service
+national_aeronautics_and_space_administration: NASA | national aeronautics and space administration
+
+unidentified_flying_object: UFO | unidentified flying object
+deoxyribonucleic_acid: DNA | deoxyribonucleic acid
+ribonucleic_acid: RNA | ribonucleic acid
+automated_teller_machine: ATM | automated teller machine
+estimated_time_of_arrival: ETA | estimated time of arrival
+as_soon_as_possible: ASAP | as soon as possible
+for_your_information: FYI | for your information
+cardiopulmonary_resuscitation: CPR | cardiopulmonary resuscitation
+intensive_care_unit: ICU | intensive care unit
+sport_utility_vehicle: SUV | sport utility vehicle
+application_programming_interface: API | application programming interface
+uniform_resource_locator: URL | uniform resource locator
+hypertext_markup_language: HTML | hypertext markup language
+hypertext_transfer_protocol: HTTP | hypertext transfer protocol

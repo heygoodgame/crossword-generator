@@ -24,11 +24,12 @@ _GUIDELINES = (
     "exactly one defensible answer.\n"
     "- DO NOT use the answer word, any answer word-part, or any related "
     "morphological variant/root in the clue. This includes singular/plural "
-    "forms, verb forms, compounds, and famous-title fill-in-the-blanks that "
-    "would point at a different form of the answer. For example, do not clue "
-    "HOUSEWIFE with \"Desperate ___wives\"; do not clue WIFE with \"wives\" "
-    "or \"wifely\"; do not clue TEACHER with \"teaches\" or \"teaching\"; "
-    "do not clue POL with \"politician\" or \"political\".\n"
+    "forms, verb forms, compounds, abbreviation expansions, and famous-title "
+    "fill-in-the-blanks that would point at a different form of the answer. "
+    "For example, do not clue HOUSEWIFE with \"Desperate ___wives\"; do not "
+    "clue WIFE with \"wives\" or \"wifely\"; do not clue TEACHER with "
+    "\"teaches\" or \"teaching\"; do not clue POL with \"politician\" or "
+    "\"political\"; do not clue CEO with \"executive\".\n"
     "- DO NOT use any of an entry's crossing words "
     "in that entry's clue.\n"
     "- Accuracy is more important than cleverness, freshness, or difficulty. "
@@ -43,6 +44,9 @@ _GUIDELINES = (
     "- Vary clue styles within the target difficulty: definitional, "
     "fill-in-the-blank, wordplay, trivia, and lateral thinking are all "
     "available, but Easy clues should stay direct and obvious.\n"
+    "- Do not repeat the exact same clue wording for the same answer across "
+    "different puzzles. If prior clues are listed for an answer, write a new "
+    "clue that does not exactly duplicate any of them.\n"
     "- Use misdirection and cleverness only when they fit the target "
     "difficulty. For Easy clues, clarity beats cleverness.\n"
     '- Use question marks for witty/punny clues only when the target '
@@ -51,6 +55,12 @@ _GUIDELINES = (
     "no filler words.\n"
     "- Avoid obscure trivia that solvers can't "
     "reason toward.\n"
+    "- For pop-culture, celebrity, entertainment, sports, brand, and "
+    "historical references, apply a sliding familiarity standard: the older "
+    "or more niche the reference is, the more broadly iconic it must be. "
+    "Avoid dated references that mostly reward one generation, fandom, or "
+    "era. If an answer can be clued through an everyday meaning instead, use "
+    "that angle over a stale proper-noun reference.\n"
     "- Avoid unpleasant clue wording. Do not use terms like \"death\" or "
     "\"undocumented immigrant\" in clues. If a clue must refer to dying, use "
     "a gentle euphemism like \"passed on\" rather than blunt wording.\n"
@@ -162,8 +172,10 @@ def _difficulty_guidance(
             "reasonably inferable. Avoid Saturday-level obscurity and trivia "
             "that solvers cannot reason toward. Do not force difficulty with "
             "strained pop-culture references, ultra-current slang, or clues "
-            "that only work after a long explanation. If the clever angle feels "
-            "debatable, use a cleaner direct clue."
+            "that only work after a long explanation. Older pop-culture "
+            "references are appropriate only when they are cross-generationally "
+            "iconic; otherwise choose a cleaner direct clue. If the clever "
+            "angle feels debatable, use a cleaner direct clue."
         )
     if puzzle_type == PuzzleType.MINI:
         return (
@@ -182,6 +194,7 @@ def build_clue_generation_messages(
     puzzle_type: PuzzleType,
     theme: ThemeConcept | None = None,
     difficulty: PuzzleDifficulty = PuzzleDifficulty.EASY,
+    prior_clues_by_answer: dict[str, list[str]] | None = None,
 ) -> tuple[str, str]:
     """Build (system, user) messages for clue generation.
 
@@ -233,6 +246,23 @@ def build_clue_generation_messages(
         )
     entries_block = "\n".join(entry_lines)
 
+    prior_clues_block = ""
+    if prior_clues_by_answer:
+        prior_lines: list[str] = []
+        for answer in sorted(prior_clues_by_answer):
+            clues = prior_clues_by_answer[answer]
+            if not clues:
+                continue
+            quoted = "; ".join(f'"{clue}"' for clue in clues)
+            prior_lines.append(f"- {answer}: {quoted}")
+        if prior_lines:
+            prior_clues_block = (
+                "\nPRIOR CLUES FOR THESE ANSWERS:\n"
+                "Do not repeat any clue exactly for the same answer.\n"
+                + "\n".join(prior_lines)
+                + "\n"
+            )
+
     theme_context_block = ""
     if themed:
         if revealer_info:
@@ -259,6 +289,7 @@ def build_clue_generation_messages(
     user_text = (
         f"{theme_context_block}"
         f"ENTRIES TO CLUE:\n{entries_block}\n\n"
+        f"{prior_clues_block}"
         f"Now write clues for all {len(entries)} entries above."
     )
 
@@ -271,6 +302,7 @@ def build_clue_generation_prompt(
     puzzle_type: PuzzleType,
     theme: ThemeConcept | None = None,
     difficulty: PuzzleDifficulty = PuzzleDifficulty.EASY,
+    prior_clues_by_answer: dict[str, list[str]] | None = None,
 ) -> str:
     """Build a single-string prompt (system+user concatenated).
 
@@ -278,7 +310,7 @@ def build_clue_generation_prompt(
     Prefer ``build_clue_generation_messages`` to enable prompt caching.
     """
     system_text, user_text = build_clue_generation_messages(
-        entries, crossing_words, puzzle_type, theme, difficulty
+        entries, crossing_words, puzzle_type, theme, difficulty, prior_clues_by_answer
     )
     return f"{system_text}\n\n{user_text}"
 
@@ -328,14 +360,17 @@ _REPAIR_GUIDELINES = (
     "- Each replacement clue must have exactly one defensible answer.\n"
     "- DO NOT use the answer word, any answer word-part, or any related "
     "morphological variant/root in the clue. This includes singular/plural "
-    "forms, verb forms, compounds, and famous-title fill-in-the-blanks that "
-    "would point at a different form of the answer. For example, do not clue "
-    "HOUSEWIFE with \"Desperate ___wives\"; do not clue POL with "
-    "\"politician\" or \"political\".\n"
+    "forms, verb forms, compounds, abbreviation expansions, and famous-title "
+    "fill-in-the-blanks that would point at a different form of the answer. "
+    "For example, do not clue HOUSEWIFE with \"Desperate ___wives\"; do not "
+    "clue POL with \"politician\" or \"political\"; do not clue CEO with "
+    "\"executive\".\n"
     "- Accuracy is more important than cleverness. Verify facts, grammar, "
     "number, tense, part of speech, and exact phrase match. If the old clue "
     "used a questionable proper noun, song, quote, sports team name, idiom, "
-    "or pop-culture reference, replace it with a plain accurate clue.\n"
+    "or pop-culture reference, replace it with a plain accurate clue. Apply "
+    "the same sliding familiarity standard: the older or more niche the "
+    "reference is, the more broadly iconic it must be.\n"
     "- Fill-in-the-blank clues must fit the answer exactly, including "
     "singular/plural, tense, spacing, and contractions.\n"
     "- DO NOT use any crossing words in the clue.\n"
