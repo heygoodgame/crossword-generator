@@ -37,7 +37,7 @@ target-version = "py311"
 select = ["E", "F", "I", "N", "W", "UP"]
 
 [project.optional-dependencies]
-claude = ["anthropic>=0.40"]
+claude = ["anthropic>=0.84"]
 
 [dependency-groups]
 dev = [

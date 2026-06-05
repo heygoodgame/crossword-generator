@@ -347,7 +347,19 @@ class TestHappyPath:
                 direction="across",
                 answer="FBI",
                 clue="Federal Bureau of Investigation org.",
-            )
+            ),
+            ClueEntry(
+                number=4,
+                direction="across",
+                answer="OPS",
+                clue="Military operations, briefly",
+            ),
+            ClueEntry(
+                number=5,
+                direction="across",
+                answer="EST",
+                clue="Eastern Standard Time, briefly",
+            ),
         ]
         response = _build_evaluation_json(
             leaking_clues,

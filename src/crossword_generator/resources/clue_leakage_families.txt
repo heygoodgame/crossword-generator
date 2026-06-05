@@ -9,6 +9,8 @@
 # too revealing for the answer.
 
 isle_island: isle | island | islander
+operations_ops: OPS | operation | operations
+eastern_standard_time: EST | eastern | standard | time | eastern standard | eastern standard time
 
 chief_executive_officer: CEO | exec | executive | chief executive officer
 chief_financial_officer: CFO | financial | finance | chief financial officer

@@ -269,6 +269,12 @@ def _answer_leak_feedback(answer: str, clue: str) -> str | None:
     answer_forms = _lexical_forms(answer_norm)
     answer_related_forms = _related_lexical_forms(answer_forms)
     tokens = [_normalize(token) for token in re.findall(r"[A-Z0-9]+", clue.upper())]
+    if _has_initialism_expansion(answer_norm, tokens):
+        return (
+            "Deterministic check: clue contains an abbreviation expansion "
+            "for the answer."
+        )
+
     clue_candidates = _clue_lexical_candidates(tokens)
     for candidate in clue_candidates:
         if candidate in answer_related_forms:
@@ -348,6 +354,46 @@ def _clue_lexical_candidates(tokens: list[str]) -> set[str]:
             phrase += tokens[end_index]
             candidates.add(phrase)
     return candidates
+
+
+_ABBREVIATION_SIGNAL_TOKENS = {
+    "ABBR",
+    "ABBREVIATED",
+    "ABBREVIATION",
+    "BRIEF",
+    "BRIEFLY",
+    "INITIAL",
+    "INITIALLY",
+    "INITIALS",
+    "SHORT",
+}
+
+
+def _has_initialism_expansion(answer: str, tokens: list[str]) -> bool:
+    """Return true when a clue spells out a signaled initialism answer."""
+    if not (2 <= len(answer) <= 5 and answer.isalpha()):
+        return False
+    if not _has_abbreviation_signal(tokens):
+        return False
+
+    phrase_tokens = [
+        token for token in tokens if token not in _ABBREVIATION_SIGNAL_TOKENS
+    ]
+    for index in range(0, len(phrase_tokens) - len(answer) + 1):
+        window = phrase_tokens[index : index + len(answer)]
+        if any(len(token) <= 1 for token in window):
+            continue
+        if "".join(token[0] for token in window) == answer:
+            return True
+    return False
+
+
+def _has_abbreviation_signal(tokens: list[str]) -> bool:
+    token_set = set(tokens)
+    if token_set & _ABBREVIATION_SIGNAL_TOKENS:
+        return True
+    joined = " ".join(tokens)
+    return "FOR SHORT" in joined or "IN BRIEF" in joined
 
 
 @lru_cache(maxsize=1)
