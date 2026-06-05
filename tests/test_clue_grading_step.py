@@ -6,6 +6,7 @@ import json
 
 import pytest
 
+from crossword_generator.clue_history import ClueHistoryIndex
 from crossword_generator.graders.clue_grader import ClueGrader
 from crossword_generator.llm.base import LLMProvider
 from crossword_generator.models import (
@@ -486,3 +487,40 @@ class TestAccuracyRepair:
         )
         assert clue_1a.clue == "Fixed feline clue"
         assert clue_3d.clue == "Fixed name clue"
+
+    def test_duplicate_history_hit_triggers_repair(self) -> None:
+        """Exact clue reuse gets repaired even when regular grading passes."""
+        clue_json = _build_clue_json()
+        eval_json = _build_eval_json(
+            accuracy=22, freshness=20, craft=20, fairness=20
+        )
+        repair_json = json.dumps([
+            {"number": 1, "direction": "across", "clue": "Small house pet"},
+        ])
+        re_eval_json = _build_eval_json(
+            accuracy=22, freshness=20, craft=20, fairness=20
+        )
+        history = ClueHistoryIndex()
+        history.add("CAT", "Generated clue 1 across")
+
+        llm = SequentialMockLLM([
+            clue_json,
+            eval_json,
+            repair_json,
+            re_eval_json,
+        ])
+        grader = ClueGrader(llm, min_passing_score=70)
+        step = ClueWithGradingStep(
+            llm,
+            grader,
+            max_retries=1,
+            clue_history=history,
+        )
+        result = step.run(_make_envelope())
+
+        clue_1a = next(
+            c for c in result.clues
+            if c.number == 1 and c.direction == "across"
+        )
+        assert clue_1a.clue == "Small house pet"
+        assert llm.call_count == 4

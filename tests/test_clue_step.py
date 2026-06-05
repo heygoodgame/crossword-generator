@@ -661,6 +661,23 @@ class TestThemeAnnotationsInPrompt:
         assert "To the ___ (in the extreme)" in prompt
         assert "Dennis ___ (pop art icon of soup cans)" in prompt
 
+    def test_prompt_includes_prior_clues_to_avoid(self) -> None:
+        from crossword_generator.exporters.numbering import compute_numbering
+
+        entries = compute_numbering(MOCK_GRID)
+        crossing_words = compute_crossing_words(entries, MOCK_GRID)
+
+        prompt = build_clue_generation_prompt(
+            entries,
+            crossing_words,
+            PuzzleType.MINI,
+            prior_clues_by_answer={"ABCDE": ["First five letters"]},
+        )
+
+        assert "PRIOR CLUES FOR THESE ANSWERS:" in prompt
+        assert "Do not repeat any clue exactly" in prompt
+        assert '- ABCDE: "First five letters"' in prompt
+
     def test_repair_prompt_applies_sliding_familiarity_to_references(self) -> None:
         """Repair should not replace bad references with another dated one."""
         bad_clue = ClueEntry(

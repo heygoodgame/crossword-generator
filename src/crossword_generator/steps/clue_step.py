@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import logging
 
+from crossword_generator.clue_history import ClueHistoryIndex
 from crossword_generator.exporters.numbering import (
     NumberedEntry,
     compute_crossing_words,
@@ -23,9 +24,16 @@ logger = logging.getLogger(__name__)
 class ClueGenerationStep(PipelineStep):
     """Pipeline step that generates clues for a filled grid using an LLM."""
 
-    def __init__(self, llm: LLMProvider, *, max_retries: int = 3) -> None:
+    def __init__(
+        self,
+        llm: LLMProvider,
+        *,
+        max_retries: int = 3,
+        clue_history: ClueHistoryIndex | None = None,
+    ) -> None:
         self._llm = llm
         self._max_retries = max_retries
+        self._clue_history = clue_history
 
     @property
     def name(self) -> str:
@@ -45,6 +53,13 @@ class ClueGenerationStep(PipelineStep):
         # Compute numbering and crossing words
         entries = compute_numbering(grid)
         crossing_words = compute_crossing_words(entries, grid)
+        prior_clues_by_answer = (
+            self._clue_history.avoid_clues_for_answers(
+                entry.answer for entry in entries
+            )
+            if self._clue_history is not None
+            else None
+        )
 
         # Build prompt
         system_text, user_text = build_clue_generation_messages(
@@ -53,6 +68,7 @@ class ClueGenerationStep(PipelineStep):
             puzzle_type=envelope.puzzle_type,
             theme=envelope.theme,
             difficulty=envelope.difficulty,
+            prior_clues_by_answer=prior_clues_by_answer,
         )
 
         # Call LLM with retries on parse failure
