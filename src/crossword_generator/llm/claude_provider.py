@@ -48,7 +48,8 @@ class ClaudeProvider(LLMProvider):
         **kwargs: object,
     ) -> str:
         model = str(kwargs.get("model", self._config.model))
-        temperature = float(kwargs.get("temperature", 0.7))
+        requested_temperature = float(kwargs.get("temperature", 0.7))
+        temperature = 1.0 if self._config.thinking_enabled else requested_temperature
         max_overload_retries = int(
             os.environ.get("CROSSWORD_CLAUDE_OVERLOAD_RETRIES", "6")
         )
