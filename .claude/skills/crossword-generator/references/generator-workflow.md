@@ -56,6 +56,10 @@ Current emphasis:
 - Easy 9x9 generation skips grids with more than three 8-/9-letter slots.
 - Avoid unsuitable or controversial fill before clue generation and upload.
 - Preserve reproducible batch manifests and deterministic data-store keys.
+- When asked for a generated batch across Mini Crossword and Midi Crossword
+  without explicit size counts, default to a rough 5:2:7 ratio for 5x5, 7x7,
+  and 9x9 puzzles. Midi Crossword always uses 9x9; Mini Crossword dailies are
+  five 5x5 puzzles and two 7x7 puzzles per week.
 
 ## Architecture
 
@@ -396,25 +400,25 @@ Grid selection notes:
   with more than three long slots are skipped before filling.
 - 10x10 and 11x11 midis still fall back to procedural pattern generation.
 
-Recommended Easy batch:
+Recommended cross-site Easy batch:
 
 ```bash
 uv run crossword-generator generate-pilot-batch \
   --output-root output/batches/<batch-id> \
   --batch-id <batch-id> \
   --buckets easy/5,easy/7,easy/9 \
-  --count 5 \
+  --bucket-counts 5=5,7=2,9=7 \
   --seed-start 1 \
   --llm claude
 ```
 
-Recommended full Easy/Hard pilot:
+Recommended full Easy/Hard pilot using the same cross-site size ratio:
 
 ```bash
 uv run crossword-generator generate-pilot-batch \
   --output-root output/batches/<batch-id> \
   --batch-id <batch-id> \
-  --count 5 \
+  --bucket-counts 5=5,7=2,9=7 \
   --seed-start 1 \
   --llm claude
 ```
