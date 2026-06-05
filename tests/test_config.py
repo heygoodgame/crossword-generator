@@ -37,6 +37,8 @@ class TestConfigDefaults:
         assert cfg.grading.fill.retry_on_fail is True
         assert cfg.grading.clue.min_score == 70
         assert cfg.grading.clue.regenerate_on_fail is True
+        assert cfg.grading.clue.fact_check_enabled is True
+        assert cfg.grading.clue.fact_check_scope == "risky"
 
     def test_default_llm(self) -> None:
         cfg = Config()
@@ -49,6 +51,7 @@ class TestConfigDefaults:
         assert (
             cfg.llm.claude.clue_grading_model == "claude-haiku-4-5-20251001"
         )
+        assert cfg.llm.claude.clue_fact_check_model == "claude-sonnet-4-6"
 
     def test_default_output(self) -> None:
         cfg = Config()
@@ -133,6 +136,9 @@ class TestLoadConfig:
         assert (
             cfg.llm.claude.clue_grading_model == "claude-haiku-4-5-20251001"
         )
+        assert cfg.llm.claude.clue_fact_check_model == "claude-sonnet-4-6"
+        assert cfg.grading.clue.fact_check_enabled is True
+        assert cfg.grading.clue.fact_check_scope == "risky"
         rejected_model = "claude-sonnet-4-5" + "-20241022"
         assert rejected_model not in (project_root / filename).read_text()
 

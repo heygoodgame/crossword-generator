@@ -14,6 +14,7 @@ from crossword_generator.exporters.base import Exporter
 from crossword_generator.exporters.ipuz_exporter import IpuzExporter
 from crossword_generator.exporters.puz_exporter import PuzExporter
 from crossword_generator.fillers.csp import CSPFiller
+from crossword_generator.graders.clue_fact_checker import ClueFactChecker
 from crossword_generator.graders.clue_grader import ClueGrader
 from crossword_generator.graders.fill_grader import FillGrader
 from crossword_generator.llm.claude_provider import ClaudeProvider
@@ -213,6 +214,7 @@ def create_pipeline(
         fill_select_llm = llm_provider
         clue_gen_llm = llm_provider
         clue_grade_llm = llm_provider
+        clue_fact_check_llm = llm_provider
     elif config.llm.provider == "claude":
         cc = config.llm.claude
 
@@ -228,6 +230,7 @@ def create_pipeline(
         fill_select_llm = _claude_for("fill_selection")
         clue_gen_llm = _claude_for("clue_generation")
         clue_grade_llm = _claude_for("clue_grading")
+        clue_fact_check_llm = _claude_for("clue_fact_check")
     else:
         raise ValueError(f"Unknown LLM provider: {config.llm.provider}")
 
@@ -263,6 +266,11 @@ def create_pipeline(
     clue_grader = ClueGrader(
         clue_grade_llm, min_passing_score=config.grading.clue.min_score
     )
+    clue_fact_checker = ClueFactChecker(
+        clue_fact_check_llm,
+        enabled=config.grading.clue.fact_check_enabled,
+        scope=config.grading.clue.fact_check_scope,
+    )
     clue_step = ClueWithGradingStep(
         clue_gen_llm,
         clue_grader,
@@ -272,6 +280,7 @@ def create_pipeline(
         individual_repair_score_threshold=(
             config.grading.clue.individual_repair_score_threshold
         ),
+        fact_checker=clue_fact_checker,
         clue_history=clue_history,
     )
 

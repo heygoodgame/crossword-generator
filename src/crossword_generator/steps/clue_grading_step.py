@@ -10,6 +10,7 @@ from crossword_generator.exporters.numbering import (
     compute_crossing_words,
     compute_numbering,
 )
+from crossword_generator.graders.clue_fact_checker import ClueFactChecker
 from crossword_generator.graders.clue_grader import ClueGrader
 from crossword_generator.llm.base import LLMProvider
 from crossword_generator.llm.prompts.clue_generation import (
@@ -41,6 +42,7 @@ class ClueWithGradingStep(PipelineStep):
         regenerate_on_fail: bool = True,
         accuracy_repair_threshold: float = 12,
         individual_repair_score_threshold: float = 65,
+        fact_checker: ClueFactChecker | None = None,
         clue_history: ClueHistoryIndex | None = None,
         duplicate_repair_attempts: int = 2,
     ) -> None:
@@ -50,6 +52,7 @@ class ClueWithGradingStep(PipelineStep):
         self._regenerate_on_fail = regenerate_on_fail
         self._accuracy_repair_threshold = accuracy_repair_threshold
         self._individual_repair_score_threshold = individual_repair_score_threshold
+        self._fact_checker = fact_checker
         self._clue_history = clue_history
         self._duplicate_repair_attempts = duplicate_repair_attempts
         self._clue_step = ClueGenerationStep(llm, clue_history=clue_history)
@@ -130,6 +133,7 @@ class ClueWithGradingStep(PipelineStep):
 
         # --- Surgical repair pass ---
         best_envelope = self._run_clue_repair(best_envelope)
+        best_envelope = self._run_fact_check_repair(best_envelope)
         best_envelope = self._run_duplicate_clue_repairs(best_envelope)
 
         # Fix step_history: clue_step already added "clue-generation",
@@ -188,6 +192,82 @@ class ClueWithGradingStep(PipelineStep):
         if not entries_to_repair:
             return envelope
 
+        return self._repair_entries(envelope, entries_to_repair)
+
+    def _run_fact_check_repair(
+        self, envelope: PuzzleEnvelope
+    ) -> PuzzleEnvelope:
+        """Run a second-pass fact-risk audit and repair uncertain clues."""
+        if self._fact_checker is None:
+            return envelope
+
+        fact_results = self._fact_checker.check(envelope)
+        if not fact_results:
+            return envelope
+
+        metadata = dict(envelope.metadata)
+        metadata["clue_fact_check"] = [
+            {
+                "number": result.number,
+                "direction": result.direction,
+                "answer": result.answer,
+                "clue": result.clue,
+                "status": result.status,
+                "reason": result.reason,
+                "risk_reason": result.risk_reason,
+            }
+            for result in fact_results
+        ]
+        envelope = envelope.model_copy(update={"metadata": metadata})
+
+        clue_lookup = {
+            (clue.number, clue.direction): clue for clue in envelope.clues
+        }
+        entries_to_repair: list[tuple[ClueEntry, ClueGrade]] = []
+        for result in fact_results:
+            if not result.needs_repair:
+                continue
+            clue = clue_lookup.get((result.number, result.direction))
+            if clue is None:
+                continue
+            feedback = (
+                f"Fact check {result.status}: {result.reason} "
+                f"(risk: {result.risk_reason}). Rewrite as a plain, "
+                "factually safe clue unless the factual angle is airtight."
+            )
+            entries_to_repair.append(
+                (
+                    clue,
+                    ClueGrade(
+                        number=clue.number,
+                        direction=clue.direction,
+                        answer=clue.answer,
+                        score=0.0,
+                        feedback=feedback,
+                        accuracy=0.0 if result.status == "incorrect" else 8.0,
+                        freshness=10.0,
+                        craft=10.0,
+                        fairness=10.0,
+                    ),
+                )
+            )
+
+        if not entries_to_repair:
+            return envelope
+
+        repair_answers = [c.answer for c, _ in entries_to_repair]
+        logger.info(
+            "Clue fact-check repair: %d clue(s): %s",
+            len(entries_to_repair),
+            ", ".join(repair_answers),
+        )
+        return self._repair_entries(envelope, entries_to_repair)
+
+    def _repair_entries(
+        self,
+        envelope: PuzzleEnvelope,
+        entries_to_repair: list[tuple[ClueEntry, ClueGrade]],
+    ) -> PuzzleEnvelope:
         repair_answers = [c.answer for c, _ in entries_to_repair]
         logger.info(
             "Clue repair: %d clue(s) below threshold: %s",
@@ -240,12 +320,17 @@ class ClueWithGradingStep(PipelineStep):
         )
 
         # Re-grade to get updated scores
+        previous_score = (
+            envelope.clue_grade_report.overall_score
+            if envelope.clue_grade_report
+            else 0.0
+        )
         new_report = self._grader.grade(repaired_envelope)
 
         logger.info(
             "Post-repair score: %.1f/100 (was %.1f/100)",
             new_report.overall_score,
-            report.overall_score,
+            previous_score,
         )
 
         # Update quality scores on clues
