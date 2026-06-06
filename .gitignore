@@ -69,3 +69,4 @@ data/
 
 # Logs
 *.log
+*.jsonl

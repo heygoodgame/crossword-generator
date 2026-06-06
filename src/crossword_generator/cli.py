@@ -89,6 +89,18 @@ def main() -> None:
     help="Exact output file path (extension determines format, e.g. .puz or .ipuz).",
 )
 @click.option(
+    "--llm-log-path",
+    type=click.Path(),
+    default=None,
+    help="Structured JSONL log path for LLM calls.",
+)
+@click.option(
+    "--no-llm-log",
+    is_flag=True,
+    default=False,
+    help="Disable structured LLM call logging for this run.",
+)
+@click.option(
     "-v",
     "--verbose",
     is_flag=True,
@@ -106,6 +118,8 @@ def generate(
     no_theme: bool,
     output_dir: str | None,
     output_file: str | None,
+    llm_log_path: str | None,
+    no_llm_log: bool,
     verbose: bool,
 ) -> None:
     """Generate a crossword puzzle."""
@@ -127,6 +141,10 @@ def generate(
         config.theme.enabled = False
     if output_dir is not None:
         config.output.directory = output_dir
+    if llm_log_path is not None:
+        config.llm.logging.path = llm_log_path
+    if no_llm_log:
+        config.llm.logging.enabled = False
 
     theme_path = Path(theme_file) if theme_file else None
     output_file_path = Path(output_file) if output_file else None
@@ -262,6 +280,12 @@ def generate(
     default=False,
     help="Also stream detailed logs to stderr.",
 )
+@click.option(
+    "--no-llm-log",
+    is_flag=True,
+    default=False,
+    help="Disable structured per-seed LLM call logging.",
+)
 def generate_pilot_batch(
     output_root: str,
     batch_id: str,
@@ -278,6 +302,7 @@ def generate_pilot_batch(
     timeout_7: int,
     timeout_9: int,
     verbose: bool,
+    no_llm_log: bool,
 ) -> None:
     """Generate the Phase 2B pilot batch and write a JSON manifest."""
     _setup_logging(verbose)
@@ -355,6 +380,7 @@ def generate_pilot_batch(
                     max_grid_variants=max_grid_variants,
                     timeout_by_size={5: timeout_5, 7: timeout_7, 9: timeout_9},
                     clue_history=clue_history,
+                    llm_logging_enabled=not no_llm_log,
                 )
             )
             status = "ok" if results[-1]["success"] else "failed"
@@ -374,6 +400,7 @@ def generate_pilot_batch(
         "seed_start": seed_start,
         "llm_provider": llm_provider,
         "avoid_existing_clues": avoid_existing_clues,
+        "llm_logging_enabled": not no_llm_log,
         "batch_fill": {
             "per_pattern_attempts": per_pattern_attempts,
             "max_grid_variants": max_grid_variants,
@@ -1595,13 +1622,19 @@ def _run_batch_item(
     max_grid_variants: int,
     timeout_by_size: dict[int, int],
     clue_history: ClueHistoryIndex | None = None,
+    llm_logging_enabled: bool = True,
 ) -> dict[str, object]:
     bucket_dir = output_root / difficulty / f"{size}x{size}"
     bucket_dir.mkdir(parents=True, exist_ok=True)
     output_path = bucket_dir / f"seed-{seed:03d}.ipuz"
     log_path = logs_dir / f"{difficulty}-{size}x{size}-seed-{seed:03d}.log"
+    llm_log_path = (
+        logs_dir / f"{difficulty}-{size}x{size}-seed-{seed:03d}.llm.jsonl"
+    )
     if output_path.exists():
         output_path.unlink()
+    if llm_log_path.exists():
+        llm_log_path.unlink()
 
     config = load_config(config_path)
     config.puzzle.type = puzzle_type
@@ -1613,6 +1646,8 @@ def _run_batch_item(
     config.fill.max_retries = per_pattern_attempts
     config.fill.max_grid_variants = max_grid_variants
     config.fill.csp.timeout_by_size = timeout_by_size
+    config.llm.logging.enabled = llm_logging_enabled
+    config.llm.logging.path = str(llm_log_path)
     if puzzle_type == "midi" and size == 9:
         config.theme.enabled = False
 
@@ -1635,6 +1670,7 @@ def _run_batch_item(
         "seed": seed,
         "output_path": str(output_path),
         "log_path": str(log_path),
+        "llm_log_path": str(llm_log_path) if llm_logging_enabled else None,
         "success": False,
         "fill_score": None,
         "clue_score": None,

@@ -50,14 +50,30 @@ class TestClaudeProvider:
                 mock_text_block.text = "Generated clue"
                 mock_message = MagicMock()
                 mock_message.content = [mock_text_block]
+                mock_message.usage = SimpleNamespace(
+                    input_tokens=100,
+                    output_tokens=20,
+                    cache_creation_input_tokens=50,
+                    cache_read_input_tokens=0,
+                )
                 mock_client.messages.create.return_value = mock_message
 
                 from crossword_generator.llm.claude_provider import ClaudeProvider
 
                 provider = ClaudeProvider(config)
-                result = provider.generate("Write a clue for OCEAN")
+                detailed = provider.generate_with_details("Write a clue for OCEAN")
+                result = detailed.text
 
         assert result == "Generated clue"
+        assert detailed.provider == "claude"
+        assert detailed.model == "claude-haiku-4-5-20251001"
+        assert detailed.usage == {
+            "input_tokens": 100,
+            "output_tokens": 20,
+            "cache_creation_input_tokens": 50,
+            "cache_read_input_tokens": 0,
+        }
+        assert detailed.cost["estimated_cost_usd"] == 0.0002125
         mock_client.messages.create.assert_called_once_with(
             model="claude-haiku-4-5-20251001",
             max_tokens=4096,
