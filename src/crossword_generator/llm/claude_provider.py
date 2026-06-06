@@ -7,7 +7,8 @@ import os
 import time
 
 from crossword_generator.config import ClaudeConfig
-from crossword_generator.llm.base import LLMProvider
+from crossword_generator.llm.base import LLMCallResponse, LLMProvider
+from crossword_generator.llm.costs import estimate_llm_cost
 
 logger = logging.getLogger(__name__)
 
@@ -47,6 +48,15 @@ class ClaudeProvider(LLMProvider):
         system: str | None = None,
         **kwargs: object,
     ) -> str:
+        return self.generate_with_details(prompt, system=system, **kwargs).text
+
+    def generate_with_details(
+        self,
+        prompt: str,
+        *,
+        system: str | None = None,
+        **kwargs: object,
+    ) -> LLMCallResponse:
         model = str(kwargs.get("model", self._config.model))
         requested_temperature = float(kwargs.get("temperature", 0.7))
         temperature = 1.0 if self._config.thinking_enabled else requested_temperature
@@ -103,7 +113,32 @@ class ClaudeProvider(LLMProvider):
                     max_overload_retries,
                 )
                 time.sleep(sleep_seconds)
-        return _extract_text_content(message.content)
+
+        text = _extract_text_content(message.content)
+        usage = _extract_usage(message)
+        return LLMCallResponse(
+            text=text,
+            provider=self.name,
+            model=model,
+            request={
+                **_json_safe_request_kwargs(request_kwargs),
+                "prompt": prompt,
+                "system_text": system,
+                "prompt_chars": len(prompt),
+                "system_chars": len(system) if system else 0,
+            },
+            response={
+                "id": _get_attr(message, "id"),
+                "model": _get_attr(message, "model"),
+                "role": _get_attr(message, "role"),
+                "stop_reason": _get_attr(message, "stop_reason"),
+                "stop_sequence": _get_attr(message, "stop_sequence"),
+                "text": text,
+                "text_chars": len(text),
+            },
+            usage=usage,
+            cost=estimate_llm_cost(self.name, model, usage),
+        )
 
     def is_available(self) -> bool:
         try:
@@ -150,6 +185,47 @@ def _extract_text_content(content: object) -> str:
     if not text_parts:
         raise ValueError("Claude response did not contain a text block")
     return "".join(text_parts)
+
+
+def _extract_usage(message: object) -> dict[str, int | float]:
+    usage = getattr(message, "usage", None)
+    if usage is None and isinstance(message, dict):
+        usage = message.get("usage")
+    if usage is None:
+        return {}
+
+    result: dict[str, int | float] = {}
+    keys = (
+        "input_tokens",
+        "output_tokens",
+        "cache_creation_input_tokens",
+        "cache_read_input_tokens",
+    )
+    for key in keys:
+        if isinstance(usage, dict):
+            value = usage.get(key)
+        else:
+            value = getattr(usage, key, None)
+        if isinstance(value, int | float):
+            result[key] = value
+    return result
+
+
+def _json_safe_request_kwargs(request_kwargs: dict[str, object]) -> dict[str, object]:
+    return {
+        key: value
+        for key, value in request_kwargs.items()
+        if key not in {"messages", "system"}
+    } | {
+        "messages": request_kwargs.get("messages"),
+        "system": request_kwargs.get("system"),
+    }
+
+
+def _get_attr(obj: object, name: str) -> object:
+    if isinstance(obj, dict):
+        return obj.get(name)
+    return getattr(obj, name, None)
 
 
 def _is_overload_error(exc: Exception) -> bool:

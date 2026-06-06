@@ -157,12 +157,20 @@ class ClaudeConfig(BaseModel):
         return value or self.model
 
 
+class LLMLoggingConfig(BaseModel):
+    """Structured JSONL logging for LLM requests and responses."""
+
+    enabled: bool = True
+    path: str = "output/llm-calls.jsonl"
+
+
 class LLMConfig(BaseModel):
     """LLM provider configuration."""
 
     provider: str = "ollama"  # "ollama" or "claude"
     ollama: OllamaConfig = OllamaConfig()
     claude: ClaudeConfig = ClaudeConfig()
+    logging: LLMLoggingConfig = LLMLoggingConfig()
 
 
 class ThemeConfig(BaseModel):

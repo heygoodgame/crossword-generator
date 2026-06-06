@@ -59,6 +59,8 @@ class TestConfigDefaults:
         assert cfg.llm.claude.effort == ""
         assert cfg.llm.claude.clue_generation_thinking_enabled is True
         assert cfg.llm.claude.clue_generation_effort == "medium"
+        assert cfg.llm.logging.enabled is True
+        assert cfg.llm.logging.path == "output/llm-calls.jsonl"
 
     def test_default_output(self) -> None:
         cfg = Config()

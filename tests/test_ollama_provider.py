@@ -23,12 +23,21 @@ class TestOllamaProvider:
         with patch("crossword_generator.llm.ollama_provider.ollama.Client") as mock_cls:
             mock_client = MagicMock()
             mock_cls.return_value = mock_client
-            mock_client.generate.return_value = {"response": "Test clue"}
+            mock_client.generate.return_value = {
+                "response": "Test clue",
+                "prompt_eval_count": 12,
+                "eval_count": 4,
+            }
 
             provider = OllamaProvider(config)
-            result = provider.generate("Write a clue for OCEAN")
+            detailed = provider.generate_with_details("Write a clue for OCEAN")
+            result = detailed.text
 
         assert result == "Test clue"
+        assert detailed.provider == "ollama"
+        assert detailed.model == "llama3"
+        assert detailed.usage == {"input_tokens": 12, "output_tokens": 4}
+        assert detailed.cost["estimated_cost_usd"] == 0.0
         mock_client.generate.assert_called_once_with(
             model="llama3",
             prompt="Write a clue for OCEAN",

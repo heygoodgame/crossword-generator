@@ -17,7 +17,12 @@ from crossword_generator.fillers.csp import CSPFiller
 from crossword_generator.graders.clue_fact_checker import ClueFactChecker
 from crossword_generator.graders.clue_grader import ClueGrader
 from crossword_generator.graders.fill_grader import FillGrader
+from crossword_generator.llm.base import LLMProvider
 from crossword_generator.llm.claude_provider import ClaudeProvider
+from crossword_generator.llm.logging_provider import (
+    LoggingLLMProvider,
+    resolve_llm_logging,
+)
 from crossword_generator.llm.ollama_provider import OllamaProvider
 from crossword_generator.models import PuzzleDifficulty, PuzzleEnvelope, PuzzleType
 from crossword_generator.steps.base import PipelineStep
@@ -241,6 +246,35 @@ def create_pipeline(
     else:
         raise ValueError(f"Unknown LLM provider: {config.llm.provider}")
 
+    llm_logging_enabled, llm_log_path = resolve_llm_logging(
+        config.llm.logging,
+        project_root=project_root,
+    )
+
+    def _with_llm_logging(step: str, provider: LLMProvider) -> LLMProvider:
+        return LoggingLLMProvider(
+            provider,
+            log_path=llm_log_path,
+            context={
+                "step": step,
+                "puzzle_type": config.puzzle.type,
+                "difficulty": config.puzzle.difficulty,
+                "grid_size": config.puzzle.grid_size,
+                "seed": seed,
+            },
+            enabled=llm_logging_enabled,
+        )
+
+    theme_llm = _with_llm_logging("theme", theme_llm)
+    fill_select_llm = _with_llm_logging("fill_selection", fill_select_llm)
+    puzzle_naming_llm = _with_llm_logging("puzzle_naming", clue_gen_llm)
+    clue_gen_llm = _with_llm_logging("clue_generation", clue_gen_llm)
+    clue_grade_llm = _with_llm_logging("clue_grading", clue_grade_llm)
+    clue_fact_check_llm = _with_llm_logging(
+        "clue_fact_check",
+        clue_fact_check_llm,
+    )
+
     # Build filler
     if config.fill.provider == "csp":
         filler = CSPFiller(config.fill.csp, dictionary)
@@ -317,7 +351,7 @@ def create_pipeline(
         )
         steps.append(theme_step)
 
-    naming_step = PuzzleNamingStep(clue_gen_llm)
+    naming_step = PuzzleNamingStep(puzzle_naming_llm)
 
     steps.extend([fill_step, clue_step, naming_step])
 
