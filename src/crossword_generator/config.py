@@ -137,9 +137,15 @@ class ClaudeConfig(BaseModel):
     model: str = "claude-haiku-4-5-20251001"
     theme_model: str = "claude-sonnet-4-6"
     fill_selection_model: str = ""
-    clue_generation_model: str = "claude-sonnet-4-6"
-    clue_grading_model: str = "claude-haiku-4-5-20251001"
+    # Opus 4.8 for the quality-critical generative step (Phase 3). Adaptive
+    # thinking only; the provider omits temperature for Opus 4.7/4.8.
+    clue_generation_model: str = "claude-opus-4-8"
+    # Grading is the leak/accuracy gate — Sonnet 4.6 for a stronger judge (P5).
+    clue_grading_model: str = "claude-sonnet-4-6"
     clue_fact_check_model: str = "claude-sonnet-4-6"
+    # Naming is a trivial creative task — Haiku is sufficient (P5). Empty falls
+    # back to ``model`` (also Haiku); set explicitly for clarity.
+    puzzle_naming_model: str = "claude-haiku-4-5-20251001"
     thinking_enabled: bool = False
     thinking_type: str = "adaptive"
     thinking_display: str = "omitted"
@@ -155,7 +161,7 @@ class ClaudeConfig(BaseModel):
 
         Args:
             step: One of "theme", "fill_selection", "clue_generation",
-                  "clue_grading", "clue_fact_check".
+                  "clue_grading", "clue_fact_check", "puzzle_naming".
 
         Returns:
             The per-step model if set, otherwise the default ``model``.

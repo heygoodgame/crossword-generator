@@ -76,9 +76,13 @@ class ClaudeProvider(LLMProvider):
                 if self._config.thinking_enabled
                 else self._config.max_tokens
             ),
-            "temperature": temperature,
             "messages": [{"role": "user", "content": prompt}],
         }
+        # Opus 4.7/4.8 removed the sampling params (temperature/top_p/top_k):
+        # sending them returns a 400. Only include temperature for models that
+        # still accept it (Sonnet/Haiku and older Opus).
+        if not _rejects_sampling_params(model):
+            request_kwargs["temperature"] = temperature
         if self._config.thinking_enabled:
             thinking: dict[str, str] = {"type": self._config.thinking_type}
             if self._config.thinking_display:
@@ -153,6 +157,16 @@ class ClaudeProvider(LLMProvider):
             )
             return False
         return True
+
+
+def _rejects_sampling_params(model: str) -> bool:
+    """True for models that 400 on temperature/top_p/top_k.
+
+    Opus 4.7 and 4.8 removed the sampling parameters. Sonnet/Haiku and Opus
+    4.6 and earlier still accept temperature.
+    """
+    m = model.lower()
+    return "opus-4-7" in m or "opus-4-8" in m
 
 
 def _resolve_api_key() -> str | None:

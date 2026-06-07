@@ -321,6 +321,31 @@ more money than targeted repair. The win is per-clue *repair*, not per-clue
 
 ---
 
+## Phase 3 — Upgrade `clue_generation` to Opus 4.8 ✅ DONE
+
+**Status:** Implemented. `clue_generation_model = claude-opus-4-8` in `config.py`
+and all 7 `config.*.yaml` files.
+
+**Shipped:**
+- **Provider sampling-param fix (prerequisite):** `claude_provider.py` now omits
+  `temperature` for Opus 4.7/4.8 (`_rejects_sampling_params`) — sending it 400s.
+  Sonnet/Haiku still get it. Tests: `test_opus_48_omits_temperature`,
+  `test_sonnet_keeps_temperature`.
+- Generation keeps adaptive thinking; `clue_generation_effort = medium` retained.
+- **Effort A/B (decision 3) — RUNTIME TODO:** the code is ready; run one small
+  batch at `clue_generation_effort: medium` and one at `high`, compare pre-filter
+  defect rates with `llm-logs report` + the Phase 1 detector, then lock the
+  winner in the configs. Not blocking; medium is the safe default.
+
+**Caching note:** moving generation to Opus raises the cache minimum to 4096
+tokens, so the ~700-1250-tok generation system prompt no longer caches at all
+(it partially did on Sonnet for midi). Accepted — cost is negligible and quality
+wins. See Phase 4.
+
+---
+
+### Original design (for reference)
+
 ## Phase 3 — Upgrade `clue_generation` to Opus 4.8
 
 **Goal:** Fewer defects reach the filters in the first place by using the
@@ -360,6 +385,28 @@ batch over Sonnet. Negligible at our volume.
   generation output, before repair) drops vs. the Sonnet baseline.
 
 ---
+
+## Phase 4 — Fix prompt caching to actually fire ✅ DONE (visibility shipped)
+
+**Status:** The visibility tool is shipped; the caching itself is intentionally
+left mostly as-is (the economics don't justify padding prompts).
+
+**Shipped:**
+- **`llm-logs report` command** + `llm/log_report.py`: per-(step, model) table of
+  call count, cost, token usage, and realized **cache hit rate**, plus batch
+  totals. Reproduces the audit numbers exactly on the audited batch. Run it
+  after any batch to catch caching/cost regressions. Unit tests in
+  `test_log_report.py`.
+
+**Decision (unchanged from analysis):** we accept the cache misses. The
+model-specific minimum prefix (Sonnet 2048, Haiku/Opus 4096) is above our
+system-prompt sizes for grading/fact-check/naming and now for Opus generation.
+Padding prompts purely to cross the threshold isn't worth it at ~$1-3/batch.
+The `report` command makes any future caching opportunity measurable.
+
+---
+
+### Original design (for reference)
 
 ## Phase 4 — Fix prompt caching to actually fire
 
@@ -412,6 +459,22 @@ it into the repo).
 - Any step we *intend* to cache shows `cache_read > 0` on the 2nd+ call.
 
 ---
+
+## Phase 5 — Right-size the cheap/expensive steps ✅ DONE
+
+**Status:** Implemented in `config.py` + all `config.*.yaml` + pipeline wiring.
+
+**Shipped:**
+- **`puzzle_naming` → Haiku 4.5.** Added `puzzle_naming_model` config field
+  (previously naming silently reused the clue-gen provider). Pipeline now builds
+  a dedicated `_claude_for("puzzle_naming")` provider. Default `claude-haiku-4-5`.
+- **`clue_grading` → Sonnet 4.6** (decision 4) — stronger judge for the leak/
+  accuracy gate. ~+$0.3/batch.
+- **`clue_fact_check`** stays on Sonnet (unchanged).
+
+---
+
+### Original design (for reference)
 
 ## Phase 5 — Right-size the cheap/expensive steps
 

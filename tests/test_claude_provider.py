@@ -139,6 +139,47 @@ class TestClaudeProvider:
             messages=[{"role": "user", "content": "prompt"}],
         )
 
+    def test_opus_48_omits_temperature(self, config: ClaudeConfig) -> None:
+        """Opus 4.7/4.8 reject temperature; it must not be sent."""
+        with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key"}):
+            with patch("anthropic.Anthropic") as mock_cls:
+                mock_client = MagicMock()
+                mock_cls.return_value = mock_client
+                mock_text_block = MagicMock()
+                mock_text_block.text = "ok"
+                mock_message = MagicMock()
+                mock_message.content = [mock_text_block]
+                mock_client.messages.create.return_value = mock_message
+
+                from crossword_generator.llm.claude_provider import ClaudeProvider
+
+                provider = ClaudeProvider(config)
+                provider.generate("prompt", model="claude-opus-4-8")
+
+        _, kwargs = mock_client.messages.create.call_args
+        assert kwargs["model"] == "claude-opus-4-8"
+        assert "temperature" not in kwargs
+
+    def test_sonnet_keeps_temperature(self, config: ClaudeConfig) -> None:
+        """Sonnet still accepts temperature; it must be sent."""
+        with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key"}):
+            with patch("anthropic.Anthropic") as mock_cls:
+                mock_client = MagicMock()
+                mock_cls.return_value = mock_client
+                mock_text_block = MagicMock()
+                mock_text_block.text = "ok"
+                mock_message = MagicMock()
+                mock_message.content = [mock_text_block]
+                mock_client.messages.create.return_value = mock_message
+
+                from crossword_generator.llm.claude_provider import ClaudeProvider
+
+                provider = ClaudeProvider(config)
+                provider.generate("prompt", model="claude-sonnet-4-6")
+
+        _, kwargs = mock_client.messages.create.call_args
+        assert "temperature" in kwargs
+
     def test_generate_with_thinking_uses_text_block(self, config: ClaudeConfig) -> None:
         thinking_config = config.model_copy(
             update={

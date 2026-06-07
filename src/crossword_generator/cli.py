@@ -84,6 +84,22 @@ def browse_llm_logs(
     )
 
 
+@llm_logs.command(name="report")
+@click.argument("target", required=False, type=click.Path())
+def report_llm_logs(target: str | None) -> None:
+    """Print a per-step cost and cache-effectiveness report for a batch.
+
+    TARGET is a JSONL log file or a directory of them (e.g. a batch's logs/).
+    """
+    from crossword_generator.llm.log_report import format_report, report_for_path
+
+    report = report_for_path(Path(target) if target else None)
+    if not report.steps:
+        click.echo("No LLM log records found.", err=True)
+        sys.exit(1)
+    click.echo(format_report(report))
+
+
 def _launch_llm_log_browser(
     records: list[object],
     problems: list[object],

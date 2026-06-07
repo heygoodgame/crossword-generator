@@ -47,11 +47,12 @@ class TestConfigDefaults:
         assert cfg.llm.ollama.model == "llama3"
         assert cfg.llm.ollama.timeout == 120
         assert cfg.llm.claude.theme_model == "claude-sonnet-4-6"
-        assert cfg.llm.claude.clue_generation_model == "claude-sonnet-4-6"
-        assert (
-            cfg.llm.claude.clue_grading_model == "claude-haiku-4-5-20251001"
-        )
+        assert cfg.llm.claude.clue_generation_model == "claude-opus-4-8"
+        assert cfg.llm.claude.clue_grading_model == "claude-sonnet-4-6"
         assert cfg.llm.claude.clue_fact_check_model == "claude-sonnet-4-6"
+        assert (
+            cfg.llm.claude.puzzle_naming_model == "claude-haiku-4-5-20251001"
+        )
         assert cfg.llm.claude.thinking_enabled is False
         assert cfg.llm.claude.thinking_type == "adaptive"
         assert cfg.llm.claude.thinking_display == "omitted"
@@ -141,11 +142,12 @@ class TestLoadConfig:
             assert cfg.fill.csp.additional_dictionary_max_length is None
         assert cfg.theme.enabled is False
         assert cfg.llm.claude.theme_model == "claude-sonnet-4-6"
-        assert cfg.llm.claude.clue_generation_model == "claude-sonnet-4-6"
-        assert (
-            cfg.llm.claude.clue_grading_model == "claude-haiku-4-5-20251001"
-        )
+        assert cfg.llm.claude.clue_generation_model == "claude-opus-4-8"
+        assert cfg.llm.claude.clue_grading_model == "claude-sonnet-4-6"
         assert cfg.llm.claude.clue_fact_check_model == "claude-sonnet-4-6"
+        assert (
+            cfg.llm.claude.puzzle_naming_model == "claude-haiku-4-5-20251001"
+        )
         assert cfg.llm.claude.thinking_enabled is False
         assert cfg.llm.claude.thinking_type == "adaptive"
         assert cfg.llm.claude.thinking_display == "omitted"
