@@ -17,7 +17,12 @@ from crossword_generator.llm.base import LLMProvider
 from crossword_generator.llm.prompts.clue_generation import (
     build_clue_repair_messages,
 )
-from crossword_generator.models import ClueEntry, ClueGrade, PuzzleEnvelope
+from crossword_generator.models import (
+    ClueEntry,
+    ClueGrade,
+    ClueGradeReport,
+    PuzzleEnvelope,
+)
 from crossword_generator.steps.base import PipelineStep
 from crossword_generator.steps.clue_step import ClueGenerationStep
 
@@ -42,22 +47,30 @@ class ClueWithGradingStep(PipelineStep):
         max_retries: int = 3,
         regenerate_on_fail: bool = True,
         accuracy_repair_threshold: float = 12,
+        fairness_repair_threshold: float = 15,
+        craft_repair_threshold: float = 8,
         individual_repair_score_threshold: float = 65,
+        surgical_repair_pass_ratio: float | None = 0.8,
         fact_checker: ClueFactChecker | None = None,
         clue_history: ClueHistoryIndex | None = None,
         duplicate_repair_attempts: int = 2,
         leak_repair_attempts: int = 3,
+        repair_verify_attempts: int = 2,
     ) -> None:
         self._llm = llm
         self._grader = grader
         self._max_retries = max_retries
         self._regenerate_on_fail = regenerate_on_fail
         self._accuracy_repair_threshold = accuracy_repair_threshold
+        self._fairness_repair_threshold = fairness_repair_threshold
+        self._craft_repair_threshold = craft_repair_threshold
         self._individual_repair_score_threshold = individual_repair_score_threshold
+        self._surgical_repair_pass_ratio = surgical_repair_pass_ratio
         self._fact_checker = fact_checker
         self._clue_history = clue_history
         self._duplicate_repair_attempts = duplicate_repair_attempts
         self._leak_repair_attempts = leak_repair_attempts
+        self._repair_verify_attempts = repair_verify_attempts
         self._clue_step = ClueGenerationStep(llm, clue_history=clue_history)
 
     @property
@@ -126,6 +139,19 @@ class ClueWithGradingStep(PipelineStep):
             if report.passing:
                 break
 
+            # Mostly-good shortcut: if nearly all clues already pass, stop
+            # regenerating the whole puzzle (which risks introducing new defects)
+            # and let the surgical repair pass fix the few bad clues.
+            if self._is_mostly_good(report):
+                logger.info(
+                    "Attempt %d mostly good (%d/%d clues clean); "
+                    "skipping further regeneration in favor of surgical repair",
+                    attempt,
+                    self._clean_clue_count(report),
+                    len(report.clue_grades),
+                )
+                break
+
         if best_envelope is None:
             raise ValueError(f"Clue generation failed on all {max_attempts} attempt(s)")
 
@@ -161,6 +187,31 @@ class ClueWithGradingStep(PipelineStep):
         )
 
     def _run_clue_repair(
+        self,
+        envelope: PuzzleEnvelope,
+        forced_entries: list[tuple[ClueEntry, ClueGrade]] | None = None,
+    ) -> PuzzleEnvelope:
+        """Repair low-scoring or explicitly flawed clues, then verify.
+
+        Runs an initial repair (including any ``forced_entries``), then re-checks
+        the freshly re-graded clues and repairs any that are still flagged, up to
+        ``repair_verify_attempts`` extra rounds. This catches clues a single
+        repair pass fails to fix without re-running the whole pipeline.
+        """
+        current = self._run_clue_repair_once(envelope, forced_entries)
+        # Only verify further if the first pass actually changed something —
+        # a no-op (nothing flagged, or repair parse failure) returns the same
+        # envelope object, and re-running would just repeat a failing call.
+        if current is envelope:
+            return current
+        for _ in range(self._repair_verify_attempts):
+            repaired = self._run_clue_repair_once(current)
+            if repaired is current:
+                break
+            current = repaired
+        return current
+
+    def _run_clue_repair_once(
         self,
         envelope: PuzzleEnvelope,
         forced_entries: list[tuple[ClueEntry, ClueGrade]] | None = None,
@@ -402,7 +453,9 @@ class ClueWithGradingStep(PipelineStep):
             forced_entries = [
                 (hit.clue, _duplicate_clue_grade(hit)) for hit in duplicate_hits
             ]
-            repaired = self._run_clue_repair(
+            # This method has its own attempt loop + duplicate re-check, so use
+            # the single-pass repair to avoid a nested verify loop.
+            repaired = self._run_clue_repair_once(
                 current,
                 forced_entries=forced_entries,
             )
@@ -420,15 +473,41 @@ class ClueWithGradingStep(PipelineStep):
             )
         return current
 
+    def _clean_clue_count(self, report: ClueGradeReport) -> int:
+        """Number of graded clues that would not be sent to surgical repair."""
+        return sum(1 for g in report.clue_grades if not self._should_repair_grade(g))
+
+    def _is_mostly_good(self, report: ClueGradeReport) -> bool:
+        """True when enough clues already pass that surgical repair of the rest
+        is preferable to another whole-puzzle regeneration."""
+        if self._surgical_repair_pass_ratio is None:
+            return False
+        total = len(report.clue_grades)
+        if total == 0:
+            return False
+        return self._clean_clue_count(report) / total >= (
+            self._surgical_repair_pass_ratio
+        )
+
     def _should_repair_grade(self, grade: ClueGrade) -> bool:
+        # Structured per-dimension signals take precedence over keyword matching.
         if (
             grade.accuracy is not None
             and grade.accuracy < self._accuracy_repair_threshold
         ):
             return True
+        if (
+            grade.fairness is not None
+            and grade.fairness < self._fairness_repair_threshold
+        ):
+            return True
+        if grade.craft is not None and grade.craft < self._craft_repair_threshold:
+            return True
         if grade.score < self._individual_repair_score_threshold:
             return True
 
+        # Backstop: free-text feedback markers for issues not captured by the
+        # numeric sub-scores.
         feedback = grade.feedback.lower()
         issue_markers = (
             "major issue",

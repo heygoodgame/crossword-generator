@@ -240,7 +240,36 @@ answer-in-clue instances, with a manually-reviewed false-positive rate near 0.
 
 ---
 
-## Phase 2 — Per-clue targeted repair hardening
+## Phase 2 — Per-clue targeted repair hardening ✅ DONE
+
+**Status:** Implemented on branch `clue-quality-leak-filter`. 722 tests green.
+
+**Shipped:**
+- **Structured repair thresholds** — `_should_repair_grade` now repairs on
+  explicit per-dimension sub-scores (`accuracy < 12`, `fairness < 15`,
+  `craft < 8`, `score < 65`), keeping the keyword list only as a backstop. New
+  config: `fairness_repair_threshold`, `craft_repair_threshold`.
+- **Mostly-good shortcut** — `_is_mostly_good`: when ≥ `surgical_repair_pass_ratio`
+  (default 0.8) of clues already pass, the whole-puzzle regeneration loop breaks
+  early and surgical repair fixes the few bad clues instead — avoids the
+  "fix one, break another" churn. New config: `surgical_repair_pass_ratio`.
+- **Verify-after-repair** — `_run_clue_repair` now re-checks re-graded clues and
+  repairs any still-flagged ones up to `repair_verify_attempts` (default 2)
+  extra rounds. Duplicate-repair path uses the single-pass variant to avoid
+  nested loops. New config: `repair_verify_attempts`.
+- **Collocation-FITB penalty** — the grader's FAIRNESS rubric now explicitly
+  fails (fairness 0-8) fill-in-the-blank clues whose blank + partner word form a
+  give-away collocation (`"___ sauce"` → SOY, `"Shopping ___"` → LIST). Because
+  fairness 0-8 < the new `fairness_repair_threshold`, these route automatically
+  into surgical repair — closing the loop on the semantic leak class Phase 1
+  could not catch mechanically.
+
+New tests: mostly-good shortcut (skip + regen branches), verify-after-repair,
+low-fairness→repair routing.
+
+---
+
+### Original design (for reference)
 
 **Goal:** Make repair the default response to *any* flagged clue (from grading,
 fact-check, or the Phase 1 leak filter) and stop the "fix one, break another"

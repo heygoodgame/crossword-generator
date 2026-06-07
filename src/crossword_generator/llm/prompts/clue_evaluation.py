@@ -31,7 +31,7 @@ _RUBRIC = (
     "0-9 for wrong proper nouns, wrong song/quote titles, singular/plural "
     "mismatches, tense mismatches, part-of-speech mismatches, and "
     "fill-in-the-blank clues where the exact answer does not fit. Examples: "
-    "SAINT clued as the plural Saints, BATTING clued by \"At ___\", or "
+    'SAINT clued as the plural Saints, BATTING clued by "At ___", or '
     "GOT A SAY clued as if it were GOTTA SAY.\n\n"
     "2. FRESHNESS (0-25): Does the clue style fit the target difficulty? "
     "For Easy clues, obvious definitions and fill-in-the-blank clues can "
@@ -45,14 +45,22 @@ _RUBRIC = (
     "4. FAIRNESS (0-25): Does the clue avoid echoing the answer word, answer "
     "word-parts, roots, or related morphological variants? Penalize "
     "singular/plural leaks, verb-form leaks, compound-part leaks, and "
-    "abbreviation-expansion leaks such as CEO clued with \"executive,\" plus "
-    "OPS clued with \"operations\" and EST clued with \"Eastern Standard "
-    "Time,\" "
+    'abbreviation-expansion leaks such as CEO clued with "executive," plus '
+    'OPS clued with "operations" and EST clued with "Eastern Standard '
+    'Time," '
     "famous-title fill-in-the-blanks that point at a different form of the "
-    "answer, e.g. HOUSEWIFE clued via \"Desperate ___wives.\" Does it avoid "
+    'answer, e.g. HOUSEWIFE clued via "Desperate ___wives." Does it avoid '
     "using any crossing words in the clue text? Penalize short answer roots "
-    "inside longer clue words too, e.g. POL clued with \"politician\" or "
-    "\"political.\" "
+    'inside longer clue words too, e.g. POL clued with "politician" or '
+    '"political." '
+    "CRITICAL — collocation give-aways: heavily penalize (fairness 0-8) any "
+    "fill-in-the-blank clue whose blank plus a partner word forms a common "
+    "fixed phrase or compound that uniquely gives away the answer, even when "
+    'the answer text never appears. Examples to fail: SOY clued "___ sauce," '
+    'LIST clued "Shopping ___," MILK clued "___ shake," RAIN clued "___ '
+    'forest." These are unfair because the collocation makes the answer the '
+    "only fit. Prefer a plain definition instead. A blank is only fair when "
+    "several different words could plausibly complete the phrase. "
     "Is the clue culturally accessible without being obscure? Penalize "
     "strained pop-culture references, ultra-current slang, and Hard clues "
     "that try to create Friday/Saturday-level difficulty. Apply a sliding "
@@ -61,15 +69,15 @@ _RUBRIC = (
     "is, the more broadly iconic it must be. Penalize dated references that "
     "mostly reward one generation, fandom, or era, especially when a clean "
     "everyday clue angle is available. Penalize "
-    "word-count tags like \"(two words)\" unless explicit word-boundary "
+    'word-count tags like "(two words)" unless explicit word-boundary '
     "metadata was provided, and reward explanatory tags only when they are "
-    "formatted parenthetically, e.g. \"To the ___ (in the extreme).\" "
+    'formatted parenthetically, e.g. "To the ___ (in the extreme)." '
     "Penalize "
     "body-part, underwear, anatomy, sexuality, appearance, identity, "
     "or demographic-based jokes, especially when a neutral clue would "
-    "be more welcoming. Penalize unpleasant wording such as \"death\" or "
-    "\"undocumented immigrant\"; if dying must be referenced, gentle "
-    "euphemisms like \"passed on\" are preferred."
+    'be more welcoming. Penalize unpleasant wording such as "death" or '
+    '"undocumented immigrant"; if dying must be referenced, gentle '
+    'euphemisms like "passed on" are preferred.'
 )
 
 _THEME_EVAL_RULES = (
@@ -80,8 +88,8 @@ _THEME_EVAL_RULES = (
     "- FRESHNESS penalty: if ALL theme entry clues use the same "
     "style (e.g., all cross-reference the revealer, or all use "
     "the identical formula), deduct FRESHNESS for lack of variety.\n"
-    "- FRESHNESS penalty: formulaic phrasing like \"one of "
-    "[REVEALER ANSWER]\" should be scored low — it is "
+    '- FRESHNESS penalty: formulaic phrasing like "one of '
+    '[REVEALER ANSWER]" should be scored low — it is '
     "grammatically unnatural for most theme types.\n"
     "- ACCURACY penalty: if the [REVEALER] clue claims the full "
     "revealer word has a relationship to theme entries that only "
@@ -89,16 +97,16 @@ _THEME_EVAL_RULES = (
     "precedes BAR when only GOLD does), score ACCURACY low. The "
     "connecting element may be a sub-part of the revealer, not "
     "the full answer.\n"
-    "- CRAFT penalty: a bare \"See X-Across\" or \"See X-Down\" "
+    '- CRAFT penalty: a bare "See X-Across" or "See X-Down" '
     "cross-reference with no standalone definition should score "
     "low on CRAFT. Cross-references must integrate the revealer "
     "position naturally into a real, solvable clue. Awkward "
-    "appendages like \"per X-Across\" tacked onto an otherwise "
+    'appendages like "per X-Across" tacked onto an otherwise '
     "complete clue should also be penalized.\n"
     "- [REVEALER] clue: reward clues that elegantly explain the "
-    "theme connection using natural language (e.g., \"a hint to "
-    "some other answers in this puzzle\"). Penalize FRESHNESS if "
-    "the revealer clue uses the phrase \"theme entries.\""
+    'theme connection using natural language (e.g., "a hint to '
+    'some other answers in this puzzle"). Penalize FRESHNESS if '
+    'the revealer clue uses the phrase "theme entries."'
 )
 
 _EXAMPLE_OUTPUT = json.dumps(
@@ -128,9 +136,7 @@ _OUTPUT_SECTION = (
 )
 
 
-def _difficulty_note(
-    puzzle_type: PuzzleType, difficulty: PuzzleDifficulty
-) -> str:
+def _difficulty_note(puzzle_type: PuzzleType, difficulty: PuzzleDifficulty) -> str:
     if difficulty == PuzzleDifficulty.EASY:
         base = (
             "This is an HGG Easy crossword. Reward clues that are easier than "
@@ -177,9 +183,7 @@ def build_clue_evaluation_messages(
     system_text = "\n\n".join(system_parts)
 
     revealer_answer = theme.revealer.upper() if themed else ""
-    seed_answers = (
-        {s.upper() for s in theme.seed_entries} if themed else set()
-    )
+    seed_answers = {s.upper() for s in theme.seed_entries} if themed else set()
 
     clue_lines: list[str] = []
     for clue in clues:
@@ -193,7 +197,7 @@ def build_clue_evaluation_messages(
             tag = " [REVEALER]"
         clue_lines.append(
             f"- {clue.number}-{clue.direction.upper()}: "
-            f"Answer={clue.answer}{tag}, Clue=\"{clue.clue}\" "
+            f'Answer={clue.answer}{tag}, Clue="{clue.clue}" '
             f"(crossing words: {crossing_str})"
         )
     clues_block = "\n".join(clue_lines)

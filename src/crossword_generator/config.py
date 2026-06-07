@@ -98,7 +98,15 @@ class ClueGradingConfig(BaseModel):
     min_score: int = 70
     regenerate_on_fail: bool = True
     accuracy_repair_threshold: int = 12  # repair clues below this accuracy sub-score
+    fairness_repair_threshold: int = 15  # repair clues below this fairness sub-score
+    craft_repair_threshold: int = 8  # repair clues below this craft sub-score
     individual_repair_score_threshold: int = 65
+    # Skip whole-puzzle regeneration and go straight to surgical repair when at
+    # least this fraction of clues already pass. None disables (always regen).
+    surgical_repair_pass_ratio: float = 0.8
+    # Extra repair rounds after the first surgical repair, for clues that a
+    # single repair pass fails to fix.
+    repair_verify_attempts: int = 2
     fact_check_enabled: bool = True
     fact_check_scope: str = "risky"  # "risky" or "all"
 

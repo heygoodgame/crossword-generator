@@ -318,9 +318,13 @@ def create_pipeline(
         max_retries=3,
         regenerate_on_fail=config.grading.clue.regenerate_on_fail,
         accuracy_repair_threshold=config.grading.clue.accuracy_repair_threshold,
+        fairness_repair_threshold=config.grading.clue.fairness_repair_threshold,
+        craft_repair_threshold=config.grading.clue.craft_repair_threshold,
         individual_repair_score_threshold=(
             config.grading.clue.individual_repair_score_threshold
         ),
+        surgical_repair_pass_ratio=config.grading.clue.surgical_repair_pass_ratio,
+        repair_verify_attempts=config.grading.clue.repair_verify_attempts,
         fact_checker=clue_fact_checker,
         clue_history=clue_history,
     )
