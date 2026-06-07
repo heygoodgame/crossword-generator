@@ -24,6 +24,91 @@ def main() -> None:
     """Crossword Generator — generate mini and midi crossword puzzles."""
 
 
+@main.group(name="llm-logs")
+def llm_logs() -> None:
+    """Browse and replay structured LLM call logs."""
+
+
+@llm_logs.command(name="browse")
+@click.argument("target", required=False, type=click.Path())
+@click.option("--step", default=None, help="Filter by pipeline step.")
+@click.option("--model", default=None, help="Filter by model ID.")
+@click.option("--seed", type=int, default=None, help="Filter by puzzle seed.")
+@click.option("--difficulty", default=None, help="Filter by puzzle difficulty.")
+@click.option("--size", type=int, default=None, help="Filter by puzzle grid size.")
+@click.option(
+    "--errors-only",
+    is_flag=True,
+    default=False,
+    help="Show only records with logged errors.",
+)
+@click.option(
+    "--experiment-root",
+    type=click.Path(),
+    default=None,
+    help="Directory for transient replay artifacts.",
+)
+def browse_llm_logs(
+    target: str | None,
+    step: str | None,
+    model: str | None,
+    seed: int | None,
+    difficulty: str | None,
+    size: int | None,
+    errors_only: bool,
+    experiment_root: str | None,
+) -> None:
+    """Open the terminal browser for LLM JSONL logs."""
+    from crossword_generator.llm.log_browser import LLMLogFilters, load_llm_logs
+
+    filters = LLMLogFilters(
+        step=step,
+        model=model,
+        seed=seed,
+        difficulty=difficulty,
+        size=size,
+        errors_only=errors_only,
+    )
+    records, problems = load_llm_logs(Path(target) if target else None)
+    if not records:
+        for problem in problems:
+            click.echo(_format_llm_log_problem(problem), err=True)
+        click.echo("No LLM log records found.", err=True)
+        sys.exit(1)
+
+    _launch_llm_log_browser(
+        records,
+        problems,
+        initial_filters=filters,
+        experiment_root=Path(experiment_root) if experiment_root else None,
+    )
+
+
+def _launch_llm_log_browser(
+    records: list[object],
+    problems: list[object],
+    *,
+    initial_filters: object,
+    experiment_root: Path | None,
+) -> None:
+    from crossword_generator.llm.log_tui import run_llm_log_browser
+
+    run_llm_log_browser(
+        records,  # type: ignore[arg-type]
+        problems,  # type: ignore[arg-type]
+        initial_filters=initial_filters,  # type: ignore[arg-type]
+        experiment_root=experiment_root,
+    )
+
+
+def _format_llm_log_problem(problem: object) -> str:
+    path = getattr(problem, "path", "")
+    line_number = getattr(problem, "line_number", None)
+    message = getattr(problem, "message", "")
+    line_suffix = f":{line_number}" if line_number is not None else ""
+    return f"{path}{line_suffix}: {message}"
+
+
 @main.command()
 @click.option(
     "--type",
