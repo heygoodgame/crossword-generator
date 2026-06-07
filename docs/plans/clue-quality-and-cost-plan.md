@@ -113,7 +113,43 @@ dominate cost, fixing caching saves only ~$0.10–0.20/batch — real, but minor
 
 ---
 
-## Phase 1 — Deterministic leak filter (highest leverage)
+## Phase 1 — Deterministic leak filter (highest leverage) ✅ DONE
+
+**Status:** Implemented on branch `clue-quality-leak-filter`. 718 tests green.
+
+**Shipped:**
+- `src/crossword_generator/graders/leak_detector.py` — `detect_leak` /
+  `detect_leaks` with rules: `exact`, `shared_root` (stemmer + morpheme-boundary
+  affix check + agent-noun/verb unification), `irregular` (curated map),
+  `abbrev_expansion` (expansion map + initialism). 40 unit tests.
+- Wiring in `clue_grading_step.py`: `_run_leak_repair` runs after fact-check
+  repair, repairs via the existing per-clue path, re-checks up to
+  `leak_repair_attempts` (default 3). Surviving leaks → `LEAK:` soft error.
+- Upload guard in `data_store.records_from_manifest` refuses any puzzle with a
+  `LEAK:` error; `--allow-leaks` overrides. 2 guard tests + 2 end-to-end
+  repair tests.
+- `snowballstemmer` added as a dependency.
+
+**Key finding — two leak classes:** validating against the audited batch
+revealed the leaks split into two kinds:
+1. **Direct echo** (answer/root/abbrev appears in clue text) — what this
+   detector catches. 0 false positives across 329 real generated clues.
+2. **Collocation fill-in-the-blank** (`"___ sauce"` → SOY, `"Shopping ___"` →
+   LIST) — the blank plus a partner word forms a common phrase that gives away
+   the answer. The answer text never appears, so this is **semantic, not
+   mechanical**, and the detector cannot catch it. The `SOY`/`LIST` cases from
+   the audit are this class. **Carried into Phase 2** as an LLM-judgment target
+   (the grader/fact-check should flag give-away FITB collocations), since no
+   deterministic rule covers it without a phrase lexicon.
+
+**Scope limit (documented in the module):** morphological rules require answers
+of length ≥ 4. Three-letter answers get only exact-match + abbreviation checks —
+substring/root matching on short strings produces too many coincidental false
+positives (CAT/category, EAR/early).
+
+---
+
+### Original design (for reference)
 
 **Goal:** Catch answer-in-clue, shared-root, and abbreviation-expansion leaks
 mechanically, with zero LLM cost, and route them into the existing repair path.
@@ -233,6 +269,13 @@ Surgical per-clue repair already exists *after* that loop.
    `clue_grading_step.py:328`); if a repaired clue is *still* flagged, repair it
    again up to a small cap before giving up. Mirrors the duplicate-repair
    attempt loop.
+4. **Catch collocation FITB leaks (from Phase 1 finding).** The mechanical
+   detector cannot catch give-away fill-in-the-blank clues where the answer
+   never appears as text (`"___ sauce"` → SOY, `"Shopping ___"` → LIST). Tighten
+   the grader/fact-check prompts to explicitly penalize fill-in-the-blank clues
+   whose blank + partner word form a common collocation that uniquely gives away
+   the answer, and route those flags into surgical repair. This is the LLM-
+   judgment complement to the deterministic filter.
 
 ### Non-goal
 

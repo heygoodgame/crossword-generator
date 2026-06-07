@@ -127,6 +127,51 @@ def test_records_from_manifest_reads_successful_ipuz_files(tmp_path: Path) -> No
     )
 
 
+def _leaky_manifest(tmp_path: Path) -> Path:
+    puzzle_path = tmp_path / "seed-001.ipuz"
+    puzzle_path.write_text(
+        json.dumps(
+            {
+                "version": "http://ipuz.org/v2",
+                "errors": [
+                    'LEAK: CAT (1-across) [exact] in clue "A pet cat" '
+                    '(offending: "cat")'
+                ],
+            }
+        )
+    )
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "batch": "leak-batch",
+                "results": [
+                    {
+                        "success": True,
+                        "output_path": str(puzzle_path),
+                        "difficulty": "easy",
+                        "size": 5,
+                        "seed": 1,
+                    }
+                ],
+            }
+        )
+    )
+    return manifest_path
+
+
+def test_records_from_manifest_refuses_leaked_puzzle(tmp_path: Path) -> None:
+    manifest_path = _leaky_manifest(tmp_path)
+    with pytest.raises(DataStoreError, match="clue leak"):
+        records_from_manifest(manifest_path)
+
+
+def test_records_from_manifest_allow_leaks_override(tmp_path: Path) -> None:
+    manifest_path = _leaky_manifest(tmp_path)
+    records = records_from_manifest(manifest_path, allow_leaks=True)
+    assert len(records) == 1
+
+
 def test_bulk_save_skips_duplicate_records(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

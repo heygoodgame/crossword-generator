@@ -103,6 +103,12 @@ def make_record(
     return record
 
 
+def _leak_errors(puzzle: dict[str, Any]) -> list[str]:
+    """Return any ``LEAK:`` soft errors recorded on a puzzle envelope."""
+    errors = puzzle.get("errors") or []
+    return [str(e) for e in errors if str(e).startswith("LEAK:")]
+
+
 def records_from_manifest(
     manifest_path: Path,
     *,
@@ -111,8 +117,14 @@ def records_from_manifest(
     generator_commit: str | None = None,
     mini_game_key: str = "minicrossword",
     midi_game_key: str = "midicrossword",
+    allow_leaks: bool = False,
 ) -> list[dict[str, Any]]:
-    """Build data-store records from a generated batch manifest."""
+    """Build data-store records from a generated batch manifest.
+
+    Refuses any puzzle whose envelope carries a ``LEAK:`` soft error (a clue
+    that mechanically echoes its answer survived repair) unless ``allow_leaks``
+    is set. This is the upload guard for the deterministic leak filter.
+    """
     manifest = json.loads(manifest_path.read_text())
     resolved_batch_id = batch_id or str(
         manifest.get("batch") or manifest_path.parent.name
@@ -130,6 +142,14 @@ def records_from_manifest(
             raise DataStoreError(f"Generated puzzle file not found: {output_path}")
 
         puzzle = json.loads(output_path.read_text())
+        if not allow_leaks:
+            leaks = _leak_errors(puzzle)
+            if leaks:
+                raise DataStoreError(
+                    f"Refusing to upload {output_path.name}: clue leak(s) "
+                    f"survived repair — {'; '.join(leaks)}. Fix the clue(s) or "
+                    f"pass allow_leaks=True / --allow-leaks to override."
+                )
         size = int(result["size"])
         puzzle_type = "mini" if size in (5, 7) else "midi"
         game_key = mini_game_key if puzzle_type == "mini" else midi_game_key

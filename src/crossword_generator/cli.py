@@ -627,6 +627,15 @@ def _parse_bucket_count_size_key(raw_key: str) -> int | None:
     default=False,
     help="Build and validate records without calling the HeyGG API.",
 )
+@click.option(
+    "--allow-leaks",
+    is_flag=True,
+    default=False,
+    help=(
+        "Upload puzzles even if a clue leak survived repair (LEAK: error). "
+        "Off by default — leaked puzzles are refused."
+    ),
+)
 def save_generated_puzzles(
     manifest_path: str,
     batch_id: str | None,
@@ -638,6 +647,7 @@ def save_generated_puzzles(
     replace_existing: bool,
     delete_existing_sizes: tuple[int, ...],
     dry_run: bool,
+    allow_leaks: bool,
 ) -> None:
     """Save generated puzzle candidates to the HeyGG admin data store."""
     from crossword_generator.data_store import (
@@ -658,6 +668,7 @@ def save_generated_puzzles(
         generator_commit=resolved_commit,
         mini_game_key=mini_game_key,
         midi_game_key=midi_game_key,
+        allow_leaks=allow_leaks,
     )
 
     click.echo(f"Prepared {len(records)} generated puzzle record(s).")

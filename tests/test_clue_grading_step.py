@@ -598,3 +598,86 @@ class TestDuplicateHistoryRepair:
         )
         assert clue_1a.clue == "Small house pet"
         assert llm.call_count == 4
+
+
+def _build_clue_json_with(overrides: dict[tuple[int, str], str]) -> str:
+    """Clue-gen JSON, overriding specific entries' clue text."""
+    items = []
+    for e in EXPECTED_ENTRIES:
+        key = (e["number"], e["direction"])
+        items.append(
+            {
+                "number": e["number"],
+                "direction": e["direction"],
+                "clue": overrides.get(
+                    key, f"Generated clue {e['number']} {e['direction']}"
+                ),
+            }
+        )
+    return json.dumps(items)
+
+
+def _build_repair_json(repairs: dict[tuple[int, str], str]) -> str:
+    items = [
+        {"number": n, "direction": d, "clue": clue}
+        for (n, d), clue in repairs.items()
+    ]
+    return json.dumps(items)
+
+
+class TestLeakRepair:
+    def test_leaked_clue_is_repaired_away(self) -> None:
+        """A clue echoing its answer is caught and repaired; no soft error."""
+        # 1A=CAT clued with the answer word -> exact leak.
+        clue_json = _build_clue_json_with({(1, "across"): "A pet cat"})
+        eval_json = _build_eval_json(
+            accuracy=22, freshness=21, craft=22, fairness=20
+        )
+        # Leak repair returns a clean clue, then the grader re-grades.
+        repair_json = _build_repair_json({(1, "across"): "Common pet"})
+        llm = SequentialMockLLM(
+            [clue_json, eval_json, repair_json, eval_json]
+        )
+        grader = ClueGrader(llm, min_passing_score=70)
+        step = ClueWithGradingStep(llm, grader, max_retries=1)
+
+        result = step.run(_make_envelope())
+
+        clue_1a = next(
+            c for c in result.clues
+            if c.number == 1 and c.direction == "across"
+        )
+        assert clue_1a.clue == "Common pet"
+        assert not any(e.startswith("LEAK:") for e in result.errors)
+
+    def test_surviving_leak_becomes_soft_error(self) -> None:
+        """A leak that repair fails to fix is surfaced as a LEAK: soft error."""
+        clue_json = _build_clue_json_with({(1, "across"): "A pet cat"})
+        eval_json = _build_eval_json(
+            accuracy=22, freshness=21, craft=22, fairness=20
+        )
+        # Every repair attempt still leaks "cat"; after leak_repair_attempts
+        # the leak survives and must be reported.
+        still_leaking = _build_repair_json({(1, "across"): "A wild cat"})
+        llm = SequentialMockLLM(
+            [
+                clue_json,
+                eval_json,
+                still_leaking,
+                eval_json,
+                still_leaking,
+                eval_json,
+                still_leaking,
+                eval_json,
+            ]
+        )
+        grader = ClueGrader(llm, min_passing_score=70)
+        step = ClueWithGradingStep(
+            llm, grader, max_retries=1, leak_repair_attempts=3
+        )
+
+        result = step.run(_make_envelope())
+
+        leak_errors = [e for e in result.errors if e.startswith("LEAK:")]
+        assert len(leak_errors) == 1
+        assert "CAT" in leak_errors[0]
