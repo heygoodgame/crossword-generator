@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+import threading
 from collections.abc import Iterable
 from dataclasses import dataclass, field
 from typing import Any
@@ -32,9 +33,15 @@ class DuplicateClueHit:
 
 @dataclass
 class ClueHistoryIndex:
-    """In-memory answer -> clue index built from generated puzzle records."""
+    """In-memory answer -> clue index built from generated puzzle records.
+
+    Thread-safe: a lock guards all reads and writes so the index can be shared
+    across parallel batch items (which both read it for duplicate avoidance and
+    mutate it as puzzles complete).
+    """
 
     _clues_by_answer: dict[str, dict[str, set[str]]] = field(default_factory=dict)
+    _lock: threading.Lock = field(default_factory=threading.Lock, repr=False)
 
     def add(self, answer: str, clue: str) -> None:
         answer_key = _normalize_answer(answer)
@@ -42,9 +49,10 @@ class ClueHistoryIndex:
         clue_key = normalize_clue(clue_text)
         if not answer_key or not clue_key:
             return
-        self._clues_by_answer.setdefault(answer_key, {}).setdefault(
-            clue_key, set()
-        ).add(clue_text)
+        with self._lock:
+            self._clues_by_answer.setdefault(answer_key, {}).setdefault(
+                clue_key, set()
+            ).add(clue_text)
 
     def add_clues(self, clues: Iterable[ClueEntry]) -> None:
         for clue in clues:
@@ -67,37 +75,45 @@ class ClueHistoryIndex:
         self, answers: Iterable[str], *, limit_per_answer: int = 5
     ) -> dict[str, list[str]]:
         avoid: dict[str, list[str]] = {}
-        for answer in answers:
-            answer_key = _normalize_answer(answer)
-            clue_map = self._clues_by_answer.get(answer_key, {})
-            if not clue_map:
-                continue
-            originals = sorted({c for values in clue_map.values() for c in values})
-            avoid[answer_key] = originals[:limit_per_answer]
+        with self._lock:
+            for answer in answers:
+                answer_key = _normalize_answer(answer)
+                clue_map = self._clues_by_answer.get(answer_key, {})
+                if not clue_map:
+                    continue
+                originals = sorted(
+                    {c for values in clue_map.values() for c in values}
+                )
+                avoid[answer_key] = originals[:limit_per_answer]
         return avoid
 
     def find_duplicates(self, clues: Iterable[ClueEntry]) -> list[DuplicateClueHit]:
         hits: list[DuplicateClueHit] = []
-        for clue in clues:
-            answer_key = _normalize_answer(clue.answer)
-            clue_key = normalize_clue(clue.clue)
-            existing = self._clues_by_answer.get(answer_key, {}).get(clue_key)
-            if existing:
-                hits.append(
-                    DuplicateClueHit(
-                        clue=clue,
-                        existing_clue=sorted(existing)[0],
+        with self._lock:
+            for clue in clues:
+                answer_key = _normalize_answer(clue.answer)
+                clue_key = normalize_clue(clue.clue)
+                existing = self._clues_by_answer.get(answer_key, {}).get(clue_key)
+                if existing:
+                    hits.append(
+                        DuplicateClueHit(
+                            clue=clue,
+                            existing_clue=sorted(existing)[0],
+                        )
                     )
-                )
         return hits
 
     @property
     def answer_count(self) -> int:
-        return len(self._clues_by_answer)
+        with self._lock:
+            return len(self._clues_by_answer)
 
     @property
     def clue_count(self) -> int:
-        return sum(len(clue_map) for clue_map in self._clues_by_answer.values())
+        with self._lock:
+            return sum(
+                len(clue_map) for clue_map in self._clues_by_answer.values()
+            )
 
 
 def normalize_clue(clue: str) -> str:
