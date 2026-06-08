@@ -150,6 +150,112 @@ _THEME_INSTRUCTIONS = (
     '4. Never use the phrase "theme entries."\n'
 )
 
+# Worked good-vs-bad examples, one per leak class. This block is identical
+# across every clue-generation call, so it is part of the cacheable system
+# prefix — and it teaches the rules concretely, which a flat list of "do not"
+# bullets does not. Each entry shows the answer, a BAD clue that leaks, why it
+# leaks, and a GOOD replacement.
+_LEAK_EXAMPLES = (
+    "WORKED EXAMPLES — study these. Each shows an answer, a clue that LEAKS "
+    "(never write these), why it leaks, and a clean replacement.\n"
+    "\n"
+    "1. Answer word in the clue (exact):\n"
+    '   ANSWER: OCEAN  BAD: "The ocean covers most of Earth" — uses OCEAN.\n'
+    '   GOOD: "Atlantic or Pacific"\n'
+    "\n"
+    "2. Shared root / morphological variant:\n"
+    '   ANSWER: TEACHER  BAD: "One who teaches" — teaches shares TEACH-.\n'
+    '   GOOD: "School-room leader"\n'
+    '   ANSWER: BAKING  BAD: "What a baker does" — baker shares BAK-.\n'
+    '   GOOD: "Using the oven, as cookies"\n'
+    "\n"
+    "3. Abbreviation expansion-word (any word the letters stand for, even a "
+    "generic one):\n"
+    '   ANSWER: ETA  BAD: "Arrival time, for short" — ETA = Estimated TIME of '
+    "ARRIVAL, so both 'arrival' (A) and 'time' (T) leak.\n"
+    '   GOOD: "Flight-board figure, for short"\n'
+    '   ANSWER: MCL  BAD: "Knee ligament, briefly" — MCL = Medial Collateral '
+    "LIGAMENT.\n"
+    '   GOOD: "Knee part that can tear, in brief"\n'
+    "\n"
+    "4. Shared etymology / root (different word, same origin):\n"
+    '   ANSWER: NAVAL  BAD: "Of the navy" — naval and navy share a root.\n'
+    '   GOOD: "Like a fleet\'s officers"\n'
+    '   ANSWER: KNEE  BAD: "Joint used to kneel" — kneel shares KNEE-.\n'
+    '   GOOD: "Joint above the shin"\n'
+    "\n"
+    "5. Spelling fragment (answer is the literal start/letters of a clue word):\n"
+    "   ANSWER: TRI  BAD: \"Start of 'triangle'\" — TRI is literally the first "
+    "three letters of TRIANGLE.\n"
+    '   GOOD: "Prefix for cycle or pod"\n'
+    "   (Note: 'Prefix for...' is fine here because the clue word 'cycle' does "
+    "not share letters with TRI; do not clue PRE with 'Prefix...'.)\n"
+    "\n"
+    "6. Collocation fill-in-the-blank (the blank + a partner word forms a "
+    "phrase that uniquely gives the answer):\n"
+    '   ANSWER: SOY  BAD: "___ sauce" — soy sauce is a fixed phrase.\n'
+    '   GOOD: "Tofu base"\n'
+    '   ANSWER: LIST  BAD: "Shopping ___" — shopping list is fixed.\n'
+    '   GOOD: "Itemized rundown"\n'
+    "\n"
+    "7. Singular/plural and tense leaks:\n"
+    '   ANSWER: SAINT  BAD: "New Orleans NFL player" points at SAINTS '
+    "(plural).\n"
+    '   GOOD: "Halo wearer"\n'
+    '   ANSWER: RAN  BAD: "Run a marathon" — run shares the verb stem.\n'
+    '   GOOD: "Competed in a track event, say"\n'
+    "\n"
+    "8. Crossing-word leaks (never use a word that crosses the entry):\n"
+    "   If RAP crosses RUTH, do not put RUTH (or Ruth) anywhere in RAP's "
+    "clue, and vice versa.\n"
+    "\n"
+    "9. More good clues that look easy but are clean:\n"
+    '   ANSWER: HBO  GOOD: "\\"Game of Thrones\\" network"\n'
+    '   ANSWER: VERMONT  GOOD: "New England state known for maple syrup"\n'
+    '   ANSWER: EGO  GOOD: "One\'s sense of self-importance"\n'
+    '   ANSWER: NASA  GOOD: "Moon-landing org."  (acronym clued by what it '
+    "did, not by its expansion words)\n"
+    "\n"
+    "10. Difficulty calibration — same answer, Easy vs Hard:\n"
+    '   ANSWER: OCEAN   Easy: "Atlantic or Pacific"   '
+    'Hard: "Vast expanse with a \\"floor\\" you\'ll never sweep"\n'
+    '   ANSWER: EDGE    Easy: "Border of a table"     '
+    'Hard: "Competitive advantage"\n'
+    '   ANSWER: TIER    Easy: "Wedding-cake layer"    '
+    'Hard: "Level in a ranking"\n'
+    '   ANSWER: ARC     Easy: "Curved path"           '
+    'Hard: "Rainbow\'s shape"\n'
+    "   For Easy, prefer the instantly-solvable angle; for Hard, a fair but "
+    "less direct angle is welcome — but accuracy and the leak rules above "
+    "ALWAYS take priority over difficulty.\n"
+    "\n"
+    "11. Compound / hidden-word leaks (a clue word that CONTAINS the answer):\n"
+    '   ANSWER: WIFE  BAD: "Word in \\"Desperate Housewives\\"" — housewives '
+    "contains the answer's form.\n"
+    '   GOOD: "Spouse, traditionally"\n'
+    '   ANSWER: ART  BAD: "Studio output of an artist" — artist starts with '
+    "ART.\n"
+    '   GOOD: "Museum display"\n'
+    "\n"
+    "12. Proper-noun accuracy (only use a name/title/fact if you are certain "
+    "it is exactly right):\n"
+    '   ANSWER: RUTH  GOOD: "Babe ___ (baseball legend)"  (verified pairing)\n'
+    '   ANSWER: ANDREWS  GOOD: "Julie ___ (\\"Mary Poppins\\" actress)"\n'
+    "   If unsure whether a proper noun, song, quote, team, or date is exact, "
+    "use a plain dictionary-style clue instead of risking a wrong fact.\n"
+    "\n"
+    "13. Question-mark / pun clues (Hard only, and only when airtight):\n"
+    '   ANSWER: GARDENER  Hard: "Plant manager?"  (the ? signals wordplay)\n'
+    "   Never use a ? clue on Easy, and never when the pun is a stretch.\n"
+    "\n"
+    "SELF-CHECK before finalizing EACH clue: (a) does the clue contain the "
+    "answer, any part of it, a shared root, an etymological cousin, or a "
+    "spelling fragment? (b) if the answer is an abbreviation, does the clue "
+    "contain ANY word its letters stand for? (c) does the clue use a crossing "
+    "word? (d) is it a fill-in-the-blank whose phrase gives the answer away? "
+    "If yes to any, rewrite the clue before returning it.\n"
+)
+
 _EXAMPLE_OUTPUT = json.dumps(
     [
         {"number": 1, "direction": "across", "clue": "Example clue text"},
@@ -229,6 +335,7 @@ def build_clue_generation_messages(
         _ROLE,
         _difficulty_guidance(puzzle_type, difficulty),
         _GUIDELINES,
+        _LEAK_EXAMPLES,
     ]
     if themed:
         system_parts.append(_THEME_INSTRUCTIONS)

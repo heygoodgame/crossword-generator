@@ -56,6 +56,7 @@ class ClueWithGradingStep(PipelineStep):
         duplicate_repair_attempts: int = 2,
         leak_repair_attempts: int = 3,
         repair_verify_attempts: int = 2,
+        generation_chunk_size: int = 0,
     ) -> None:
         self._llm = llm
         self._grader = grader
@@ -71,7 +72,9 @@ class ClueWithGradingStep(PipelineStep):
         self._duplicate_repair_attempts = duplicate_repair_attempts
         self._leak_repair_attempts = leak_repair_attempts
         self._repair_verify_attempts = repair_verify_attempts
-        self._clue_step = ClueGenerationStep(llm, clue_history=clue_history)
+        self._clue_step = ClueGenerationStep(
+            llm, clue_history=clue_history, chunk_size=generation_chunk_size
+        )
 
     @property
     def name(self) -> str:

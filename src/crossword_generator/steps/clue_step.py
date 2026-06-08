@@ -30,10 +30,16 @@ class ClueGenerationStep(PipelineStep):
         *,
         max_retries: int = 3,
         clue_history: ClueHistoryIndex | None = None,
+        chunk_size: int = 0,
     ) -> None:
         self._llm = llm
         self._max_retries = max_retries
         self._clue_history = clue_history
+        # 0 (or None) => one call for the whole puzzle. >0 => split into
+        # chunks of at most this many entries per LLM call. Smaller chunks
+        # let the model follow the rules more reliably across a long puzzle;
+        # the (cacheable) system prompt is shared across all chunks.
+        self._chunk_size = chunk_size or 0
 
     @property
     def name(self) -> str:
@@ -61,7 +67,49 @@ class ClueGenerationStep(PipelineStep):
             else None
         )
 
-        # Build prompt
+        # Generate in one call, or in chunks of entries (each chunk a separate
+        # LLM call sharing the cacheable system prompt).
+        if self._chunk_size and self._chunk_size < len(entries):
+            chunks = [
+                entries[i : i + self._chunk_size]
+                for i in range(0, len(entries), self._chunk_size)
+            ]
+        else:
+            chunks = [entries]
+
+        clue_entries: list[ClueEntry] = []
+        for idx, chunk in enumerate(chunks, start=1):
+            if len(chunks) > 1:
+                logger.info(
+                    "Clue generation chunk %d/%d (%d entries)",
+                    idx,
+                    len(chunks),
+                    len(chunk),
+                )
+            clue_entries.extend(
+                self._generate_for_entries(
+                    chunk,
+                    crossing_words,
+                    envelope,
+                    prior_clues_by_answer,
+                )
+            )
+
+        return envelope.model_copy(
+            update={
+                "clues": clue_entries,
+                "step_history": [*envelope.step_history, self.name],
+            }
+        )
+
+    def _generate_for_entries(
+        self,
+        entries: list[NumberedEntry],
+        crossing_words: dict[tuple[int, str], list[str]],
+        envelope: PuzzleEnvelope,
+        prior_clues_by_answer: dict[str, list[str]] | None,
+    ) -> list[ClueEntry]:
+        """Generate clues for one set of entries, retrying on parse failure."""
         system_text, user_text = build_clue_generation_messages(
             entries=entries,
             crossing_words=crossing_words,
@@ -71,10 +119,7 @@ class ClueGenerationStep(PipelineStep):
             prior_clues_by_answer=prior_clues_by_answer,
         )
 
-        # Call LLM with retries on parse failure
-        clue_entries: list[ClueEntry] | None = None
         last_error = ""
-
         for attempt in range(1, self._max_retries + 1):
             logger.info(
                 "Clue generation attempt %d/%d using %s",
@@ -89,8 +134,7 @@ class ClueGenerationStep(PipelineStep):
                 raw_response,
             )
             try:
-                clue_entries = _parse_clue_response(raw_response, entries)
-                break
+                return _parse_clue_response(raw_response, entries)
             except (json.JSONDecodeError, ValueError, KeyError) as exc:
                 last_error = str(exc)
                 logger.warning(
@@ -99,17 +143,9 @@ class ClueGenerationStep(PipelineStep):
                     last_error,
                 )
 
-        if clue_entries is None:
-            raise ValueError(
-                f"Failed to parse clue response after {self._max_retries} "
-                f"attempts. Last error: {last_error}"
-            )
-
-        return envelope.model_copy(
-            update={
-                "clues": clue_entries,
-                "step_history": [*envelope.step_history, self.name],
-            }
+        raise ValueError(
+            f"Failed to parse clue response after {self._max_retries} "
+            f"attempts. Last error: {last_error}"
         )
 
     def validate_input(self, envelope: PuzzleEnvelope) -> list[str]:

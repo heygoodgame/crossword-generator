@@ -107,6 +107,10 @@ class ClueGradingConfig(BaseModel):
     # Extra repair rounds after the first surgical repair, for clues that a
     # single repair pass fails to fix.
     repair_verify_attempts: int = 2
+    # Split clue generation into chunks of at most this many entries per LLM
+    # call (0 = one call for the whole puzzle). Smaller chunks improve rule
+    # adherence on long puzzles; the cacheable system prompt is shared.
+    generation_chunk_size: int = 0
     fact_check_enabled: bool = True
     fact_check_scope: str = "risky"  # "risky" or "all"
 

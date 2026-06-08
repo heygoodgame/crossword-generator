@@ -613,3 +613,41 @@ regenerated.
 
 New tests: NAVAL, TRI, KNEE, PRE, ART, SUN positives + READ (accepted FP);
 CARD/STAR/PART/RATE/MAIN/OVER confirmed still clean.
+
+---
+
+## Phase 8 — Few-shot prompt + batched generation experiment ✅ DONE
+
+**Trigger:** Hypothesis (Neil) that a single LLM call writing all ~30 clues at
+once degrades rule-following across the puzzle, and that with prompt caching,
+smaller per-call batches could be cost-neutral.
+
+**Shipped (both kept):**
+- **Few-shot examples block** in the generation system prompt — worked
+  good-vs-bad examples for every leak class (exact, root, abbrev expansion-word,
+  etymology, spelling-fragment, collocation FITB, plurals, crossing-words),
+  difficulty-calibration pairs, proper-noun accuracy, and a per-clue self-check.
+  This grows the system prompt from ~1,560 → ~4,200 tokens, which **crosses
+  Opus's 4,096-token cache floor** — so the generation prompt now caches
+  (it never did before). Better rule adherence AND cacheable.
+- **Batched generation** — `generation_chunk_size` config (0 = single call;
+  N = chunks of N entries per call, sharing the cached system prompt). Wired
+  config → pipeline → step, with tests.
+
+**Experiment (4 seeds × 2 arms, 9×9 midi, ~244 clues):**
+
+| Metric | Single (chunk=0) | Batched (chunk=6) |
+|---|---|---|
+| Raw pre-repair leaks | 1 / 124 (0.8%) | 0 / 120 (0%) |
+| Final leaks | 0 | 0 |
+| clue-gen cost | $0.741 | $0.890 (~+20%) |
+
+**Finding:** the **few-shot prompt was the real win** — raw leak rate is already
+~0.8% with it, and repair drives final leaks to 0. Batching shaves the last raw
+leak but costs ~20% more (extra calls aren't fully offset by caching across
+cold-cache runs) and adds latency.
+
+**Decision: default `generation_chunk_size = 0` (single call).** Batching stays
+available as a config knob for harder/larger puzzle types if a future batch
+shows a higher raw leak rate, but it is not on by default. The durable win is
+the richer cacheable prompt: **better results at ~the same price.**
