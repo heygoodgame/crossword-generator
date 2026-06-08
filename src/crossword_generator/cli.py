@@ -7,7 +7,9 @@ import logging
 import random
 import subprocess
 import sys
+import threading
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 
@@ -387,6 +389,16 @@ def generate(
     default=False,
     help="Disable structured per-seed LLM call logging.",
 )
+@click.option(
+    "--max-workers",
+    type=int,
+    default=1,
+    help=(
+        "Number of puzzles to generate concurrently. 1 (default) runs "
+        "sequentially; higher values run that many puzzles in parallel "
+        "(bounded by API rate limits)."
+    ),
+)
 def generate_pilot_batch(
     output_root: str,
     batch_id: str,
@@ -404,9 +416,12 @@ def generate_pilot_batch(
     timeout_9: int,
     verbose: bool,
     no_llm_log: bool,
+    max_workers: int,
 ) -> None:
     """Generate the Phase 2B pilot batch and write a JSON manifest."""
     _setup_logging(verbose)
+    if max_workers < 1:
+        raise click.BadParameter("--max-workers must be >= 1")
 
     project_root = find_project_root()
     root = Path(output_root)
@@ -462,33 +477,64 @@ def generate_pilot_batch(
         )
 
     started_at = _utc_timestamp()
-    results: list[dict[str, object]] = []
+
+    # Flatten all (bucket, seed) items into one work-list so they can run
+    # concurrently. Puzzles are independent; the only shared state is the
+    # thread-safe clue_history.
+    work_items: list[tuple[str, int, str, Path, int]] = []
     for difficulty, size, puzzle_type, config_path in selected_buckets:
-        bucket_tag = f"{difficulty}/{size}"
-        bucket_count = count_by_bucket[bucket_tag]
+        bucket_count = count_by_bucket[f"{difficulty}/{size}"]
         for seed in range(seed_start, seed_start + bucket_count):
-            results.append(
-                _run_batch_item(
-                    difficulty=difficulty,
-                    size=size,
-                    puzzle_type=puzzle_type,
-                    seed=seed,
-                    config_path=config_path,
-                    output_root=root,
-                    logs_dir=logs_dir,
-                    llm_provider=llm_provider,
-                    per_pattern_attempts=per_pattern_attempts,
-                    max_grid_variants=max_grid_variants,
-                    timeout_by_size={5: timeout_5, 7: timeout_7, 9: timeout_9},
-                    clue_history=clue_history,
-                    llm_logging_enabled=not no_llm_log,
-                )
-            )
-            status = "ok" if results[-1]["success"] else "failed"
-            click.echo(
-                f"{difficulty} {size}x{size} seed {seed}: {status} "
-                f"({results[-1]['runtime_seconds']}s)"
-            )
+            work_items.append((difficulty, size, puzzle_type, config_path, seed))
+
+    def _run_item(item: tuple[str, int, str, Path, int]) -> dict[str, object]:
+        difficulty, size, puzzle_type, config_path, seed = item
+        return _run_batch_item(
+            difficulty=difficulty,
+            size=size,
+            puzzle_type=puzzle_type,
+            seed=seed,
+            config_path=config_path,
+            output_root=root,
+            logs_dir=logs_dir,
+            llm_provider=llm_provider,
+            per_pattern_attempts=per_pattern_attempts,
+            max_grid_variants=max_grid_variants,
+            timeout_by_size={5: timeout_5, 7: timeout_7, 9: timeout_9},
+            clue_history=clue_history,
+            llm_logging_enabled=not no_llm_log,
+        )
+
+    def _report(result: dict[str, object]) -> None:
+        status = "ok" if result["success"] else "failed"
+        click.echo(
+            f"{result['difficulty']} {result['size']}x{result['size']} "
+            f"seed {result['seed']}: {status} "
+            f"({result['runtime_seconds']}s)"
+        )
+
+    results: list[dict[str, object]] = []
+    if max_workers <= 1:
+        for item in work_items:
+            result = _run_item(item)
+            results.append(result)
+            _report(result)
+    else:
+        workers = min(max_workers, len(work_items))
+        click.echo(
+            f"Generating {len(work_items)} puzzle(s) with {workers} worker(s)..."
+        )
+        with ThreadPoolExecutor(max_workers=workers) as executor:
+            futures = [executor.submit(_run_item, item) for item in work_items]
+            for future in as_completed(futures):
+                result = future.result()
+                results.append(result)
+                _report(result)
+
+    # Deterministic manifest order regardless of completion order.
+    results.sort(
+        key=lambda r: (str(r["difficulty"]), int(r["size"]), int(r["seed"]))
+    )
 
     manifest = {
         "batch": batch_id,
@@ -502,6 +548,7 @@ def generate_pilot_batch(
         "llm_provider": llm_provider,
         "avoid_existing_clues": avoid_existing_clues,
         "llm_logging_enabled": not no_llm_log,
+        "max_workers": max_workers,
         "batch_fill": {
             "per_pattern_attempts": per_pattern_attempts,
             "max_grid_variants": max_grid_variants,
@@ -1689,6 +1736,22 @@ def validate_mini_patterns() -> None:
         sys.exit(1)
 
 
+class _ThreadFilter(logging.Filter):
+    """Only pass log records emitted from one specific thread.
+
+    Batch items attach their file + capture handlers to the root logger. When
+    items run in parallel, this filter keeps each item's handlers from seeing
+    other items' records, so logs and per-item metrics stay isolated.
+    """
+
+    def __init__(self, thread_id: int) -> None:
+        super().__init__()
+        self._thread_id = thread_id
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        return record.thread == self._thread_id
+
+
 class _BatchLogHandler(logging.Handler):
     """Captures log records needed for batch manifest metadata."""
 
@@ -1764,6 +1827,9 @@ def _run_batch_item(
         config.theme.enabled = False
 
     logger = logging.getLogger()
+    # When items run in parallel they share the root logger, so scope each
+    # item's handlers to its own thread to keep logs/metrics from interleaving.
+    thread_filter = _ThreadFilter(threading.get_ident())
     file_handler = logging.FileHandler(log_path, mode="w")
     file_handler.setFormatter(
         logging.Formatter(
@@ -1771,7 +1837,9 @@ def _run_batch_item(
             datefmt="%H:%M:%S",
         )
     )
+    file_handler.addFilter(thread_filter)
     capture_handler = _BatchLogHandler()
+    capture_handler.addFilter(thread_filter)
     logger.addHandler(file_handler)
     logger.addHandler(capture_handler)
 

@@ -1,12 +1,37 @@
 """Tests for batch CLI helpers."""
 
+import logging
+import threading
+
 from crossword_generator.cli import (
     _batch_bucket_configs,
     _extract_grid_variant,
     _failure_category,
     _parse_batch_count_overrides,
     _summarize_batch_results,
+    _ThreadFilter,
 )
+
+
+def _make_record(thread_id: int) -> logging.LogRecord:
+    record = logging.LogRecord(
+        name="x",
+        level=logging.INFO,
+        pathname="",
+        lineno=0,
+        msg="m",
+        args=(),
+        exc_info=None,
+    )
+    record.thread = thread_id
+    return record
+
+
+def test_thread_filter_passes_only_matching_thread() -> None:
+    me = threading.get_ident()
+    log_filter = _ThreadFilter(me)
+    assert log_filter.filter(_make_record(me)) is True
+    assert log_filter.filter(_make_record(me + 1)) is False
 
 
 def test_summarize_batch_results_by_bucket() -> None:

@@ -68,3 +68,31 @@ def test_avoid_clues_for_answers_returns_only_matching_answers() -> None:
 
 def test_normalize_clue_collapses_punctuation_quotes_and_whitespace() -> None:
     assert normalize_clue(" \u201cNintendo\u201d   plumber?! ") == '"nintendo" plumber'
+
+
+def test_clue_history_is_thread_safe_under_concurrent_writes() -> None:
+    """Many threads adding clues concurrently must not lose or corrupt data."""
+    import threading
+
+    history = ClueHistoryIndex()
+    n_threads = 8
+    per_thread = 100
+
+    def worker(tid: int) -> None:
+        for i in range(per_thread):
+            history.add(f"ANS{tid}_{i}", f"Clue {tid} {i}")
+            # Interleave reads with writes to exercise the lock both ways.
+            history.find_duplicates(
+                [ClueEntry(number=1, direction="across",
+                           answer=f"ANS{tid}_{i}", clue=f"Clue {tid} {i}")]
+            )
+
+    threads = [threading.Thread(target=worker, args=(t,)) for t in range(n_threads)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+
+    # Every distinct (answer, clue) pair should be present.
+    assert history.answer_count == n_threads * per_thread
+    assert history.clue_count == n_threads * per_thread
