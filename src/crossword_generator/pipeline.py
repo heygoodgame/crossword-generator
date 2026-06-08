@@ -220,6 +220,7 @@ def create_pipeline(
         clue_gen_llm = llm_provider
         clue_grade_llm = llm_provider
         clue_fact_check_llm = llm_provider
+        puzzle_naming_provider = llm_provider
     elif config.llm.provider == "claude":
         cc = config.llm.claude
 
@@ -243,6 +244,7 @@ def create_pipeline(
         clue_gen_llm = _claude_for("clue_generation")
         clue_grade_llm = _claude_for("clue_grading")
         clue_fact_check_llm = _claude_for("clue_fact_check")
+        puzzle_naming_provider = _claude_for("puzzle_naming")
     else:
         raise ValueError(f"Unknown LLM provider: {config.llm.provider}")
 
@@ -267,7 +269,7 @@ def create_pipeline(
 
     theme_llm = _with_llm_logging("theme", theme_llm)
     fill_select_llm = _with_llm_logging("fill_selection", fill_select_llm)
-    puzzle_naming_llm = _with_llm_logging("puzzle_naming", clue_gen_llm)
+    puzzle_naming_llm = _with_llm_logging("puzzle_naming", puzzle_naming_provider)
     clue_gen_llm = _with_llm_logging("clue_generation", clue_gen_llm)
     clue_grade_llm = _with_llm_logging("clue_grading", clue_grade_llm)
     clue_fact_check_llm = _with_llm_logging(
@@ -318,9 +320,14 @@ def create_pipeline(
         max_retries=3,
         regenerate_on_fail=config.grading.clue.regenerate_on_fail,
         accuracy_repair_threshold=config.grading.clue.accuracy_repair_threshold,
+        fairness_repair_threshold=config.grading.clue.fairness_repair_threshold,
+        craft_repair_threshold=config.grading.clue.craft_repair_threshold,
         individual_repair_score_threshold=(
             config.grading.clue.individual_repair_score_threshold
         ),
+        surgical_repair_pass_ratio=config.grading.clue.surgical_repair_pass_ratio,
+        repair_verify_attempts=config.grading.clue.repair_verify_attempts,
+        generation_chunk_size=config.grading.clue.generation_chunk_size,
         fact_checker=clue_fact_checker,
         clue_history=clue_history,
     )

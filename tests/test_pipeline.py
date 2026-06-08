@@ -193,15 +193,16 @@ class TestPipeline:
         clue_gen_configs = [
             config
             for config in provider_configs
-            if config.model == "claude-sonnet-4-6"
+            if config.model == "claude-opus-4-8"
             and config.thinking_enabled is True
         ]
         assert len(clue_gen_configs) == 1
         assert clue_gen_configs[0].effort == "medium"
 
-        grading_configs = [
+        # Naming runs on Haiku and must not enable thinking.
+        naming_configs = [
             config
             for config in provider_configs
             if config.model == "claude-haiku-4-5-20251001"
         ]
-        assert all(config.thinking_enabled is False for config in grading_configs)
+        assert all(config.thinking_enabled is False for config in naming_configs)

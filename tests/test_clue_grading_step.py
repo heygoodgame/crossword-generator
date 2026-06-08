@@ -152,9 +152,7 @@ class TestHappyPath:
     def test_generate_and_grade_passes(self) -> None:
         """Generate clues -> grade -> pass on first attempt."""
         clue_json = _build_clue_json()
-        eval_json = _build_eval_json(
-            accuracy=22, freshness=21, craft=22, fairness=20
-        )
+        eval_json = _build_eval_json(accuracy=22, freshness=21, craft=22, fairness=20)
         llm = SequentialMockLLM([clue_json, eval_json])
 
         grader = ClueGrader(llm, min_passing_score=70)
@@ -187,9 +185,7 @@ class TestHappyPath:
 
     def test_quality_scores_populated_on_clues(self) -> None:
         clue_json = _build_clue_json()
-        eval_json = _build_eval_json(
-            accuracy=23, freshness=23, craft=22, fairness=22
-        )
+        eval_json = _build_eval_json(accuracy=23, freshness=23, craft=22, fairness=22)
         llm = SequentialMockLLM([clue_json, eval_json])
 
         grader = ClueGrader(llm, min_passing_score=70)
@@ -202,9 +198,7 @@ class TestHappyPath:
 
     def test_sub_scores_in_grade_report(self) -> None:
         clue_json = _build_clue_json()
-        eval_json = _build_eval_json(
-            accuracy=22, freshness=18, craft=20, fairness=15
-        )
+        eval_json = _build_eval_json(accuracy=22, freshness=18, craft=20, fairness=15)
         llm = SequentialMockLLM([clue_json, eval_json])
 
         grader = ClueGrader(llm, min_passing_score=70)
@@ -231,10 +225,14 @@ class TestRegeneration:
             accuracy=22, freshness=21, craft=22, fairness=20
         )  # 85 → pass
 
-        llm = SequentialMockLLM([
-            clue_json_1, eval_json_1,
-            clue_json_2, eval_json_2,
-        ])
+        llm = SequentialMockLLM(
+            [
+                clue_json_1,
+                eval_json_1,
+                clue_json_2,
+                eval_json_2,
+            ]
+        )
         grader = ClueGrader(llm, min_passing_score=70)
         step = ClueWithGradingStep(llm, grader, max_retries=3)
         result = step.run(_make_envelope())
@@ -243,6 +241,152 @@ class TestRegeneration:
         assert result.clue_grade_report.passing is True
         assert result.clue_grade_report.overall_score == 85.0
         assert result.errors == []
+
+
+class TestMostlyGoodShortcut:
+    def test_skips_regeneration_when_mostly_good(self) -> None:
+        """A failing puzzle with most clues clean goes straight to surgical
+        repair instead of regenerating the whole puzzle again."""
+        clue_json = _build_clue_json()
+        # Only 1 of 6 clues has low accuracy -> 5/6 clean = 0.83 >= 0.8 ratio.
+        eval_json = _build_eval_json_mixed(
+            low_accuracy_entries={(1, "across")},
+            low_accuracy=5.0,
+            normal_accuracy=22.0,
+        )
+        # Repair fixes the one bad clue; re-grade still has the low entry only
+        # if repair fails, so provide a clean re-grade.
+        repair_json = json.dumps(
+            [{"number": 1, "direction": "across", "clue": "Fixed clue"}]
+        )
+        re_eval_json = _build_eval_json(
+            accuracy=22, freshness=21, craft=22, fairness=20
+        )
+        llm = SequentialMockLLM([clue_json, eval_json, repair_json, re_eval_json])
+        grader = ClueGrader(llm, min_passing_score=70)
+        # max_retries=3 would allow 3 regenerations; mostly-good must stop it
+        # after the first attempt (1 generate + 1 grade), then surgical repair.
+        step = ClueWithGradingStep(
+            llm, grader, max_retries=3, surgical_repair_pass_ratio=0.8
+        )
+        result = step.run(_make_envelope())
+
+        clue_1a = next(
+            c for c in result.clues if c.number == 1 and c.direction == "across"
+        )
+        assert clue_1a.clue == "Fixed clue"
+        # No second whole-puzzle regeneration happened.
+        assert llm.call_count == 4
+
+    def test_regenerates_when_many_clues_bad(self) -> None:
+        """When too many clues are bad, the whole puzzle is regenerated."""
+        clue_json = _build_clue_json()
+        # 3 of 6 bad -> only 0.5 clean < 0.8 -> should regenerate.
+        eval_bad = _build_eval_json_mixed(
+            low_accuracy_entries={
+                (1, "across"),
+                (1, "down"),
+                (2, "down"),
+            },
+            low_accuracy=5.0,
+        )
+        eval_good = _build_eval_json(accuracy=22, freshness=21, craft=22, fairness=20)
+        llm = SequentialMockLLM([clue_json, eval_bad, clue_json, eval_good])
+        grader = ClueGrader(llm, min_passing_score=70)
+        step = ClueWithGradingStep(
+            llm, grader, max_retries=3, surgical_repair_pass_ratio=0.8
+        )
+        result = step.run(_make_envelope())
+
+        assert result.clue_grade_report is not None
+        assert result.clue_grade_report.passing is True
+
+
+class TestFairnessRepair:
+    def test_low_fairness_triggers_repair(self) -> None:
+        """A clue with low fairness (e.g. a collocation give-away the grader
+        flags) is routed to surgical repair via the fairness threshold."""
+        clue_json = _build_clue_json()
+        # All accuracy fine, but 1A fairness is very low -> must repair.
+        items = []
+        for e in EXPECTED_ENTRIES:
+            low = (e["number"], e["direction"]) == (1, "across")
+            items.append(
+                {
+                    "number": e["number"],
+                    "direction": e["direction"],
+                    "accuracy": 22,
+                    "freshness": 20,
+                    "craft": 20,
+                    "fairness": 5 if low else 20,
+                    "feedback": "Collocation give-away" if low else "Good",
+                }
+            )
+        eval_json = json.dumps(items)
+        repair_json = json.dumps(
+            [{"number": 1, "direction": "across", "clue": "Plain definition"}]
+        )
+        re_eval_json = _build_eval_json(
+            accuracy=22, freshness=20, craft=20, fairness=20
+        )
+        llm = SequentialMockLLM([clue_json, eval_json, repair_json, re_eval_json])
+        grader = ClueGrader(llm, min_passing_score=70)
+        step = ClueWithGradingStep(
+            llm, grader, max_retries=1, fairness_repair_threshold=15
+        )
+        result = step.run(_make_envelope())
+
+        clue_1a = next(
+            c for c in result.clues if c.number == 1 and c.direction == "across"
+        )
+        assert clue_1a.clue == "Plain definition"
+
+
+class TestVerifyAfterRepair:
+    def test_repairs_again_when_still_flagged(self) -> None:
+        """A clue still flagged after one repair is repaired a second time."""
+        clue_json = _build_clue_json()
+        eval_json = _build_eval_json_mixed(
+            low_accuracy_entries={(1, "across")}, low_accuracy=5.0
+        )
+        # First repair returns a clue that the re-grade still flags as low;
+        # second repair returns one the re-grade accepts.
+        repair_1 = json.dumps(
+            [{"number": 1, "direction": "across", "clue": "Still bad"}]
+        )
+        re_eval_still_bad = _build_eval_json_mixed(
+            low_accuracy_entries={(1, "across")}, low_accuracy=5.0
+        )
+        repair_2 = json.dumps(
+            [{"number": 1, "direction": "across", "clue": "Now good"}]
+        )
+        re_eval_good = _build_eval_json(
+            accuracy=22, freshness=21, craft=22, fairness=20
+        )
+        llm = SequentialMockLLM(
+            [
+                clue_json,
+                eval_json,
+                repair_1,
+                re_eval_still_bad,
+                repair_2,
+                re_eval_good,
+            ]
+        )
+        grader = ClueGrader(llm, min_passing_score=70)
+        step = ClueWithGradingStep(
+            llm,
+            grader,
+            max_retries=1,
+            repair_verify_attempts=2,
+            surgical_repair_pass_ratio=None,
+        )
+        result = step.run(_make_envelope())
+
+        clue_1a = next(
+            c for c in result.clues if c.number == 1 and c.direction == "across"
+        )
+        assert clue_1a.clue == "Now good"
 
 
 class TestAllRetriesExhausted:
@@ -256,10 +400,14 @@ class TestAllRetriesExhausted:
             accuracy=14, freshness=14, craft=14, fairness=13
         )  # 55
 
-        llm = SequentialMockLLM([
-            clue_json, eval_low,
-            clue_json, eval_medium,
-        ])
+        llm = SequentialMockLLM(
+            [
+                clue_json,
+                eval_low,
+                clue_json,
+                eval_medium,
+            ]
+        )
         grader = ClueGrader(llm, min_passing_score=70)
         step = ClueWithGradingStep(llm, grader, max_retries=2)
         result = step.run(_make_envelope())
@@ -280,8 +428,14 @@ class TestRegenerationDisabled:
 
         grader = ClueGrader(llm, min_passing_score=70)
         step = ClueWithGradingStep(
-            llm, grader, max_retries=3, regenerate_on_fail=False,
-            accuracy_repair_threshold=0, individual_repair_score_threshold=0,
+            llm,
+            grader,
+            max_retries=3,
+            regenerate_on_fail=False,
+            accuracy_repair_threshold=0,
+            fairness_repair_threshold=0,
+            craft_repair_threshold=0,
+            individual_repair_score_threshold=0,
         )
         result = step.run(_make_envelope())
 
@@ -325,30 +479,36 @@ class TestAccuracyRepair:
             low_accuracy=5.0,
         )
         # Repair response: replacement clue for 1-across
-        repair_json = json.dumps([
-            {"number": 1, "direction": "across", "clue": "Repaired feline clue"},
-        ])
+        repair_json = json.dumps(
+            [
+                {"number": 1, "direction": "across", "clue": "Repaired feline clue"},
+            ]
+        )
         # Re-grade after repair: all good now
         re_eval_json = _build_eval_json(
             accuracy=22, freshness=20, craft=20, fairness=20
         )
 
-        llm = SequentialMockLLM([
-            clue_json,    # clue generation
-            eval_json,    # first grade (1A has low accuracy)
-            repair_json,  # repair LLM call
-            re_eval_json, # re-grade after repair
-        ])
+        llm = SequentialMockLLM(
+            [
+                clue_json,  # clue generation
+                eval_json,  # first grade (1A has low accuracy)
+                repair_json,  # repair LLM call
+                re_eval_json,  # re-grade after repair
+            ]
+        )
         grader = ClueGrader(llm, min_passing_score=70)
         step = ClueWithGradingStep(
-            llm, grader, max_retries=1, accuracy_repair_threshold=12,
+            llm,
+            grader,
+            max_retries=1,
+            accuracy_repair_threshold=12,
         )
         result = step.run(_make_envelope())
 
         # The repaired clue should be in the result
         clue_1a = next(
-            c for c in result.clues
-            if c.number == 1 and c.direction == "across"
+            c for c in result.clues if c.number == 1 and c.direction == "across"
         )
         assert clue_1a.clue == "Repaired feline clue"
         # 4 LLM calls: generate + grade + repair + re-grade
@@ -384,25 +544,34 @@ class TestAccuracyRepair:
                     }
                 )
         eval_json = json.dumps(items)
-        repair_json = json.dumps([
-            {"number": 1, "direction": "across", "clue": "Small house pet"},
-        ])
+        repair_json = json.dumps(
+            [
+                {"number": 1, "direction": "across", "clue": "Small house pet"},
+            ]
+        )
         re_eval_json = _build_eval_json(
             accuracy=22, freshness=20, craft=20, fairness=20
         )
 
-        llm = SequentialMockLLM([
-            clue_json, eval_json, repair_json, re_eval_json,
-        ])
+        llm = SequentialMockLLM(
+            [
+                clue_json,
+                eval_json,
+                repair_json,
+                re_eval_json,
+            ]
+        )
         grader = ClueGrader(llm, min_passing_score=70)
         step = ClueWithGradingStep(
-            llm, grader, max_retries=1, accuracy_repair_threshold=12,
+            llm,
+            grader,
+            max_retries=1,
+            accuracy_repair_threshold=12,
         )
         result = step.run(_make_envelope())
 
         clue_1a = next(
-            c for c in result.clues
-            if c.number == 1 and c.direction == "across"
+            c for c in result.clues if c.number == 1 and c.direction == "across"
         )
         assert clue_1a.clue == "Small house pet"
         assert llm.call_count == 4
@@ -410,9 +579,7 @@ class TestAccuracyRepair:
     def test_no_repair_when_all_accuracy_ok(self) -> None:
         """No repair pass if all accuracy scores are above threshold."""
         clue_json = _build_clue_json()
-        eval_json = _build_eval_json(
-            accuracy=22, freshness=20, craft=20, fairness=20
-        )
+        eval_json = _build_eval_json(accuracy=22, freshness=20, craft=20, fairness=20)
 
         llm = SequentialMockLLM([clue_json, eval_json])
         grader = ClueGrader(llm, min_passing_score=70)
@@ -434,21 +601,25 @@ class TestAccuracyRepair:
             low_accuracy=5.0,
         )
 
-        llm = SequentialMockLLM([
-            clue_json,            # clue generation
-            eval_json,            # grade (1A has low accuracy)
-            "not valid json!!!",  # repair fails to parse
-        ])
+        llm = SequentialMockLLM(
+            [
+                clue_json,  # clue generation
+                eval_json,  # grade (1A has low accuracy)
+                "not valid json!!!",  # repair fails to parse
+            ]
+        )
         grader = ClueGrader(llm, min_passing_score=70)
         step = ClueWithGradingStep(
-            llm, grader, max_retries=1, accuracy_repair_threshold=12,
+            llm,
+            grader,
+            max_retries=1,
+            accuracy_repair_threshold=12,
         )
         result = step.run(_make_envelope())
 
         # Original clue preserved (repair failed gracefully)
         clue_1a = next(
-            c for c in result.clues
-            if c.number == 1 and c.direction == "across"
+            c for c in result.clues if c.number == 1 and c.direction == "across"
         )
         assert clue_1a.clue == "Generated clue 1 across"
         # 3 LLM calls: generate + grade + failed repair
@@ -461,33 +632,42 @@ class TestAccuracyRepair:
             low_accuracy_entries={(1, "across"), (3, "down")},
             low_accuracy=5.0,
         )
-        repair_json = json.dumps([
-            {"number": 1, "direction": "across", "clue": "Fixed feline clue"},
-            {"number": 3, "direction": "down", "clue": "Fixed name clue"},
-        ])
+        repair_json = json.dumps(
+            [
+                {"number": 1, "direction": "across", "clue": "Fixed feline clue"},
+                {"number": 3, "direction": "down", "clue": "Fixed name clue"},
+            ]
+        )
         re_eval_json = _build_eval_json(
             accuracy=22, freshness=20, craft=20, fairness=20
         )
 
-        llm = SequentialMockLLM([
-            clue_json, eval_json, repair_json, re_eval_json,
-        ])
+        llm = SequentialMockLLM(
+            [
+                clue_json,
+                eval_json,
+                repair_json,
+                re_eval_json,
+            ]
+        )
         grader = ClueGrader(llm, min_passing_score=70)
         step = ClueWithGradingStep(
-            llm, grader, max_retries=1, accuracy_repair_threshold=12,
+            llm,
+            grader,
+            max_retries=1,
+            accuracy_repair_threshold=12,
         )
         result = step.run(_make_envelope())
 
         clue_1a = next(
-            c for c in result.clues
-            if c.number == 1 and c.direction == "across"
+            c for c in result.clues if c.number == 1 and c.direction == "across"
         )
         clue_3d = next(
-            c for c in result.clues
-            if c.number == 3 and c.direction == "down"
+            c for c in result.clues if c.number == 3 and c.direction == "down"
         )
         assert clue_1a.clue == "Fixed feline clue"
         assert clue_3d.clue == "Fixed name clue"
+
 
 class TestFactCheckRepair:
     """Tests for the fact-check repair pass."""
@@ -507,9 +687,7 @@ class TestFactCheckRepair:
                 }
             )
         clue_json = json.dumps(clue_items)
-        eval_json = _build_eval_json(
-            accuracy=23, freshness=22, craft=22, fairness=22
-        )
+        eval_json = _build_eval_json(accuracy=23, freshness=22, craft=22, fairness=22)
         fact_json = json.dumps(
             [
                 {
@@ -545,12 +723,10 @@ class TestFactCheckRepair:
             fact_checker=fact_checker,
         )
 
-
         result = step.run(_make_envelope())
 
         clue_1a = next(
-            c for c in result.clues
-            if c.number == 1 and c.direction == "across"
+            c for c in result.clues if c.number == 1 and c.direction == "across"
         )
         assert clue_1a.clue == "Common feline pet"
         assert result.metadata["clue_fact_check"][0]["status"] == "uncertain"
@@ -565,24 +741,26 @@ class TestDuplicateHistoryRepair:
     def test_duplicate_history_hit_triggers_repair(self) -> None:
         """Exact clue reuse gets repaired even when regular grading passes."""
         clue_json = _build_clue_json()
-        eval_json = _build_eval_json(
-            accuracy=22, freshness=20, craft=20, fairness=20
+        eval_json = _build_eval_json(accuracy=22, freshness=20, craft=20, fairness=20)
+        repair_json = json.dumps(
+            [
+                {"number": 1, "direction": "across", "clue": "Small house pet"},
+            ]
         )
-        repair_json = json.dumps([
-            {"number": 1, "direction": "across", "clue": "Small house pet"},
-        ])
         re_eval_json = _build_eval_json(
             accuracy=22, freshness=20, craft=20, fairness=20
         )
         history = ClueHistoryIndex()
         history.add("CAT", "Generated clue 1 across")
 
-        llm = SequentialMockLLM([
-            clue_json,
-            eval_json,
-            repair_json,
-            re_eval_json,
-        ])
+        llm = SequentialMockLLM(
+            [
+                clue_json,
+                eval_json,
+                repair_json,
+                re_eval_json,
+            ]
+        )
         grader = ClueGrader(llm, min_passing_score=70)
         step = ClueWithGradingStep(
             llm,
@@ -593,8 +771,80 @@ class TestDuplicateHistoryRepair:
         result = step.run(_make_envelope())
 
         clue_1a = next(
-            c for c in result.clues
-            if c.number == 1 and c.direction == "across"
+            c for c in result.clues if c.number == 1 and c.direction == "across"
         )
         assert clue_1a.clue == "Small house pet"
         assert llm.call_count == 4
+
+
+def _build_clue_json_with(overrides: dict[tuple[int, str], str]) -> str:
+    """Clue-gen JSON, overriding specific entries' clue text."""
+    items = []
+    for e in EXPECTED_ENTRIES:
+        key = (e["number"], e["direction"])
+        items.append(
+            {
+                "number": e["number"],
+                "direction": e["direction"],
+                "clue": overrides.get(
+                    key, f"Generated clue {e['number']} {e['direction']}"
+                ),
+            }
+        )
+    return json.dumps(items)
+
+
+def _build_repair_json(repairs: dict[tuple[int, str], str]) -> str:
+    items = [
+        {"number": n, "direction": d, "clue": clue} for (n, d), clue in repairs.items()
+    ]
+    return json.dumps(items)
+
+
+class TestLeakRepair:
+    def test_leaked_clue_is_repaired_away(self) -> None:
+        """A clue echoing its answer is caught and repaired; no soft error."""
+        # 1A=CAT clued with the answer word -> exact leak.
+        clue_json = _build_clue_json_with({(1, "across"): "A pet cat"})
+        eval_json = _build_eval_json(accuracy=22, freshness=21, craft=22, fairness=20)
+        # Leak repair returns a clean clue, then the grader re-grades.
+        repair_json = _build_repair_json({(1, "across"): "Common pet"})
+        llm = SequentialMockLLM([clue_json, eval_json, repair_json, eval_json])
+        grader = ClueGrader(llm, min_passing_score=70)
+        step = ClueWithGradingStep(llm, grader, max_retries=1)
+
+        result = step.run(_make_envelope())
+
+        clue_1a = next(
+            c for c in result.clues if c.number == 1 and c.direction == "across"
+        )
+        assert clue_1a.clue == "Common pet"
+        assert not any(e.startswith("LEAK:") for e in result.errors)
+
+    def test_surviving_leak_becomes_soft_error(self) -> None:
+        """A leak that repair fails to fix is surfaced as a LEAK: soft error."""
+        clue_json = _build_clue_json_with({(1, "across"): "A pet cat"})
+        eval_json = _build_eval_json(accuracy=22, freshness=21, craft=22, fairness=20)
+        # Every repair attempt still leaks "cat"; after leak_repair_attempts
+        # the leak survives and must be reported.
+        still_leaking = _build_repair_json({(1, "across"): "A wild cat"})
+        llm = SequentialMockLLM(
+            [
+                clue_json,
+                eval_json,
+                still_leaking,
+                eval_json,
+                still_leaking,
+                eval_json,
+                still_leaking,
+                eval_json,
+            ]
+        )
+        grader = ClueGrader(llm, min_passing_score=70)
+        step = ClueWithGradingStep(llm, grader, max_retries=1, leak_repair_attempts=3)
+
+        result = step.run(_make_envelope())
+
+        leak_errors = [e for e in result.errors if e.startswith("LEAK:")]
+        assert len(leak_errors) == 1
+        assert "CAT" in leak_errors[0]

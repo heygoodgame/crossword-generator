@@ -162,6 +162,38 @@ class TestClueGenerationStep:
         with pytest.raises(ValueError, match="no fill result"):
             step.run(envelope)
 
+    def test_chunked_generation_splits_into_multiple_calls(self) -> None:
+        """chunk_size splits entries across calls; all clues are merged."""
+        from crossword_generator.exporters.numbering import compute_numbering
+
+        entries = compute_numbering(MOCK_GRID)
+        chunk_size = 2
+        # One response per chunk, each covering only that chunk's entries.
+        chunks = [
+            entries[i : i + chunk_size]
+            for i in range(0, len(entries), chunk_size)
+        ]
+        responses = [_build_mock_clue_json(c) for c in chunks]
+
+        llm = MockLLM(responses=responses)
+        step = ClueGenerationStep(llm, chunk_size=chunk_size)
+        result = step.run(_make_envelope(grid=MOCK_GRID))
+
+        # Every entry got a clue, and the LLM was called once per chunk.
+        assert len(result.clues) == len(entries)
+        assert llm._call_count == len(chunks)
+
+    def test_chunk_size_zero_is_single_call(self) -> None:
+        from crossword_generator.exporters.numbering import compute_numbering
+
+        entries = compute_numbering(MOCK_GRID)
+        llm = MockLLM(response=_build_mock_clue_json(entries))
+        step = ClueGenerationStep(llm, chunk_size=0)
+        result = step.run(_make_envelope(grid=MOCK_GRID))
+
+        assert len(result.clues) == len(entries)
+        assert llm._call_count == 1
+
     def test_validation_rejects_existing_clues(self) -> None:
         step = ClueGenerationStep(MockLLM())
         envelope = _make_envelope(

@@ -84,6 +84,22 @@ def browse_llm_logs(
     )
 
 
+@llm_logs.command(name="report")
+@click.argument("target", required=False, type=click.Path())
+def report_llm_logs(target: str | None) -> None:
+    """Print a per-step cost and cache-effectiveness report for a batch.
+
+    TARGET is a JSONL log file or a directory of them (e.g. a batch's logs/).
+    """
+    from crossword_generator.llm.log_report import format_report, report_for_path
+
+    report = report_for_path(Path(target) if target else None)
+    if not report.steps:
+        click.echo("No LLM log records found.", err=True)
+        sys.exit(1)
+    click.echo(format_report(report))
+
+
 def _launch_llm_log_browser(
     records: list[object],
     problems: list[object],
@@ -627,6 +643,15 @@ def _parse_bucket_count_size_key(raw_key: str) -> int | None:
     default=False,
     help="Build and validate records without calling the HeyGG API.",
 )
+@click.option(
+    "--allow-leaks",
+    is_flag=True,
+    default=False,
+    help=(
+        "Upload puzzles even if a clue leak survived repair (LEAK: error). "
+        "Off by default — leaked puzzles are refused."
+    ),
+)
 def save_generated_puzzles(
     manifest_path: str,
     batch_id: str | None,
@@ -638,6 +663,7 @@ def save_generated_puzzles(
     replace_existing: bool,
     delete_existing_sizes: tuple[int, ...],
     dry_run: bool,
+    allow_leaks: bool,
 ) -> None:
     """Save generated puzzle candidates to the HeyGG admin data store."""
     from crossword_generator.data_store import (
@@ -658,6 +684,7 @@ def save_generated_puzzles(
         generator_commit=resolved_commit,
         mini_game_key=mini_game_key,
         midi_game_key=midi_game_key,
+        allow_leaks=allow_leaks,
     )
 
     click.echo(f"Prepared {len(records)} generated puzzle record(s).")

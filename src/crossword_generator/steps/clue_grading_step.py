@@ -12,11 +12,17 @@ from crossword_generator.exporters.numbering import (
 )
 from crossword_generator.graders.clue_fact_checker import ClueFactChecker
 from crossword_generator.graders.clue_grader import ClueGrader
+from crossword_generator.graders.leak_detector import LeakFinding, detect_leaks
 from crossword_generator.llm.base import LLMProvider
 from crossword_generator.llm.prompts.clue_generation import (
     build_clue_repair_messages,
 )
-from crossword_generator.models import ClueEntry, ClueGrade, PuzzleEnvelope
+from crossword_generator.models import (
+    ClueEntry,
+    ClueGrade,
+    ClueGradeReport,
+    PuzzleEnvelope,
+)
 from crossword_generator.steps.base import PipelineStep
 from crossword_generator.steps.clue_step import ClueGenerationStep
 
@@ -41,21 +47,34 @@ class ClueWithGradingStep(PipelineStep):
         max_retries: int = 3,
         regenerate_on_fail: bool = True,
         accuracy_repair_threshold: float = 12,
+        fairness_repair_threshold: float = 15,
+        craft_repair_threshold: float = 8,
         individual_repair_score_threshold: float = 65,
+        surgical_repair_pass_ratio: float | None = 0.8,
         fact_checker: ClueFactChecker | None = None,
         clue_history: ClueHistoryIndex | None = None,
         duplicate_repair_attempts: int = 2,
+        leak_repair_attempts: int = 3,
+        repair_verify_attempts: int = 2,
+        generation_chunk_size: int = 0,
     ) -> None:
         self._llm = llm
         self._grader = grader
         self._max_retries = max_retries
         self._regenerate_on_fail = regenerate_on_fail
         self._accuracy_repair_threshold = accuracy_repair_threshold
+        self._fairness_repair_threshold = fairness_repair_threshold
+        self._craft_repair_threshold = craft_repair_threshold
         self._individual_repair_score_threshold = individual_repair_score_threshold
+        self._surgical_repair_pass_ratio = surgical_repair_pass_ratio
         self._fact_checker = fact_checker
         self._clue_history = clue_history
         self._duplicate_repair_attempts = duplicate_repair_attempts
-        self._clue_step = ClueGenerationStep(llm, clue_history=clue_history)
+        self._leak_repair_attempts = leak_repair_attempts
+        self._repair_verify_attempts = repair_verify_attempts
+        self._clue_step = ClueGenerationStep(
+            llm, clue_history=clue_history, chunk_size=generation_chunk_size
+        )
 
     @property
     def name(self) -> str:
@@ -84,9 +103,7 @@ class ClueWithGradingStep(PipelineStep):
             try:
                 clued = self._clue_step.run(envelope)
             except ValueError:
-                logger.warning(
-                    "Attempt %d: clue generation failed", attempt
-                )
+                logger.warning("Attempt %d: clue generation failed", attempt)
                 continue
 
             # Grade the clues
@@ -102,8 +119,7 @@ class ClueWithGradingStep(PipelineStep):
             # Populate per-clue quality scores from the grade report
             scored_clues = list(clued.clues)
             grade_lookup = {
-                (g.number, g.direction): g.score
-                for g in report.clue_grades
+                (g.number, g.direction): g.score for g in report.clue_grades
             }
             for i, clue in enumerate(scored_clues):
                 key = (clue.number, clue.direction)
@@ -126,21 +142,31 @@ class ClueWithGradingStep(PipelineStep):
             if report.passing:
                 break
 
+            # Mostly-good shortcut: if nearly all clues already pass, stop
+            # regenerating the whole puzzle (which risks introducing new defects)
+            # and let the surgical repair pass fix the few bad clues.
+            if self._is_mostly_good(report):
+                logger.info(
+                    "Attempt %d mostly good (%d/%d clues clean); "
+                    "skipping further regeneration in favor of surgical repair",
+                    attempt,
+                    self._clean_clue_count(report),
+                    len(report.clue_grades),
+                )
+                break
+
         if best_envelope is None:
-            raise ValueError(
-                f"Clue generation failed on all {max_attempts} attempt(s)"
-            )
+            raise ValueError(f"Clue generation failed on all {max_attempts} attempt(s)")
 
         # --- Surgical repair pass ---
         best_envelope = self._run_clue_repair(best_envelope)
         best_envelope = self._run_fact_check_repair(best_envelope)
+        best_envelope = self._run_leak_repair(best_envelope)
         best_envelope = self._run_duplicate_clue_repairs(best_envelope)
 
         # Fix step_history: clue_step already added "clue-generation",
         # replace with our composite name
-        step_history = [
-            s for s in best_envelope.step_history if s != "clue-generation"
-        ]
+        step_history = [s for s in best_envelope.step_history if s != "clue-generation"]
         step_history.append(self.name)
 
         new_errors = list(best_envelope.errors)
@@ -150,6 +176,11 @@ class ClueWithGradingStep(PipelineStep):
                 f"Clue quality below threshold after {max_attempts} attempt(s): "
                 f"best score {best_score:.1f}"
             )
+
+        # Soft-error surface for any leak that survived repair. The puzzle still
+        # saves as a draft; the upload guard must refuse any "LEAK:" error.
+        for finding in detect_leaks(best_envelope.clues):
+            new_errors.append(_leak_error_message(finding))
 
         return best_envelope.model_copy(
             update={
@@ -163,6 +194,31 @@ class ClueWithGradingStep(PipelineStep):
         envelope: PuzzleEnvelope,
         forced_entries: list[tuple[ClueEntry, ClueGrade]] | None = None,
     ) -> PuzzleEnvelope:
+        """Repair low-scoring or explicitly flawed clues, then verify.
+
+        Runs an initial repair (including any ``forced_entries``), then re-checks
+        the freshly re-graded clues and repairs any that are still flagged, up to
+        ``repair_verify_attempts`` extra rounds. This catches clues a single
+        repair pass fails to fix without re-running the whole pipeline.
+        """
+        current = self._run_clue_repair_once(envelope, forced_entries)
+        # Only verify further if the first pass actually changed something —
+        # a no-op (nothing flagged, or repair parse failure) returns the same
+        # envelope object, and re-running would just repeat a failing call.
+        if current is envelope:
+            return current
+        for _ in range(self._repair_verify_attempts):
+            repaired = self._run_clue_repair_once(current)
+            if repaired is current:
+                break
+            current = repaired
+        return current
+
+    def _run_clue_repair_once(
+        self,
+        envelope: PuzzleEnvelope,
+        forced_entries: list[tuple[ClueEntry, ClueGrade]] | None = None,
+    ) -> PuzzleEnvelope:
         """Single repair pass for low-scoring or explicitly flawed clues."""
         report = envelope.clue_grade_report
         forced_entries = forced_entries or []
@@ -172,9 +228,7 @@ class ClueWithGradingStep(PipelineStep):
         # Find clues with accuracy below threshold
         grade_lookup: dict[tuple[int, str], ClueGrade] = {}
         if report:
-            grade_lookup = {
-                (g.number, g.direction): g for g in report.clue_grades
-            }
+            grade_lookup = {(g.number, g.direction): g for g in report.clue_grades}
         entries_to_repair: list[tuple[ClueEntry, ClueGrade]] = []
         repair_keys: set[tuple[int, str]] = set()
         for clue in envelope.clues:
@@ -194,9 +248,7 @@ class ClueWithGradingStep(PipelineStep):
 
         return self._repair_entries(envelope, entries_to_repair)
 
-    def _run_fact_check_repair(
-        self, envelope: PuzzleEnvelope
-    ) -> PuzzleEnvelope:
+    def _run_fact_check_repair(self, envelope: PuzzleEnvelope) -> PuzzleEnvelope:
         """Run a second-pass fact-risk audit and repair uncertain clues."""
         if self._fact_checker is None:
             return envelope
@@ -220,9 +272,7 @@ class ClueWithGradingStep(PipelineStep):
         ]
         envelope = envelope.model_copy(update={"metadata": metadata})
 
-        clue_lookup = {
-            (clue.number, clue.direction): clue for clue in envelope.clues
-        }
+        clue_lookup = {(clue.number, clue.direction): clue for clue in envelope.clues}
         entries_to_repair: list[tuple[ClueEntry, ClueGrade]] = []
         for result in fact_results:
             if not result.needs_repair:
@@ -263,6 +313,48 @@ class ClueWithGradingStep(PipelineStep):
         )
         return self._repair_entries(envelope, entries_to_repair)
 
+    def _run_leak_repair(self, envelope: PuzzleEnvelope) -> PuzzleEnvelope:
+        """Repair clues that mechanically leak their own answer.
+
+        Uses the deterministic leak detector (no LLM) to find leaks, repairs
+        them via the existing per-clue repair path, and re-checks up to
+        ``leak_repair_attempts`` times. Leaks surviving all attempts are left
+        in place and surfaced as soft errors by the caller.
+        """
+        current = envelope
+        clue_lookup = {(c.number, c.direction): c for c in current.clues}
+        for attempt in range(1, self._leak_repair_attempts + 1):
+            findings = detect_leaks(current.clues)
+            if not findings:
+                return current
+
+            logger.info(
+                "Leak repair attempt %d/%d: %d leak(s): %s",
+                attempt,
+                self._leak_repair_attempts,
+                len(findings),
+                ", ".join(f.answer for f in findings),
+            )
+
+            clue_lookup = {(c.number, c.direction): c for c in current.clues}
+            entries_to_repair: list[tuple[ClueEntry, ClueGrade]] = []
+            for finding in findings:
+                clue = clue_lookup.get((finding.number, finding.direction))
+                if clue is None:
+                    continue
+                entries_to_repair.append((clue, _leak_clue_grade(finding)))
+
+            if not entries_to_repair:
+                return current
+
+            repaired = self._repair_entries(current, entries_to_repair)
+            if repaired is current:
+                # Repair parse failed; stop trying.
+                break
+            current = repaired
+
+        return current
+
     def _repair_entries(
         self,
         envelope: PuzzleEnvelope,
@@ -293,9 +385,7 @@ class ClueWithGradingStep(PipelineStep):
         # Call LLM for repair
         try:
             raw_response = self._llm.generate(user_text, system=system_text)
-            repaired_clues = _parse_repair_response(
-                raw_response, entries_to_repair
-            )
+            repaired_clues = _parse_repair_response(raw_response, entries_to_repair)
         except (json.JSONDecodeError, ValueError, KeyError) as exc:
             logger.warning(
                 "Clue repair parse failed, keeping original clues: %s",
@@ -304,9 +394,7 @@ class ClueWithGradingStep(PipelineStep):
             return envelope
 
         # Swap repaired clues into the clue list
-        repair_lookup = {
-            (c.number, c.direction): c for c in repaired_clues
-        }
+        repair_lookup = {(c.number, c.direction): c for c in repaired_clues}
         updated_clues = []
         for clue in envelope.clues:
             key = (clue.number, clue.direction)
@@ -315,9 +403,7 @@ class ClueWithGradingStep(PipelineStep):
             else:
                 updated_clues.append(clue)
 
-        repaired_envelope = envelope.model_copy(
-            update={"clues": updated_clues}
-        )
+        repaired_envelope = envelope.model_copy(update={"clues": updated_clues})
 
         # Re-grade to get updated scores
         previous_score = (
@@ -336,8 +422,7 @@ class ClueWithGradingStep(PipelineStep):
         # Update quality scores on clues
         scored_clues = list(repaired_envelope.clues)
         new_grade_lookup = {
-            (g.number, g.direction): g.score
-            for g in new_report.clue_grades
+            (g.number, g.direction): g.score for g in new_report.clue_grades
         }
         for i, clue in enumerate(scored_clues):
             key = (clue.number, clue.direction)
@@ -353,9 +438,7 @@ class ClueWithGradingStep(PipelineStep):
             }
         )
 
-    def _run_duplicate_clue_repairs(
-        self, envelope: PuzzleEnvelope
-    ) -> PuzzleEnvelope:
+    def _run_duplicate_clue_repairs(self, envelope: PuzzleEnvelope) -> PuzzleEnvelope:
         if self._clue_history is None:
             return envelope
 
@@ -373,7 +456,9 @@ class ClueWithGradingStep(PipelineStep):
             forced_entries = [
                 (hit.clue, _duplicate_clue_grade(hit)) for hit in duplicate_hits
             ]
-            repaired = self._run_clue_repair(
+            # This method has its own attempt loop + duplicate re-check, so use
+            # the single-pass repair to avoid a nested verify loop.
+            repaired = self._run_clue_repair_once(
                 current,
                 forced_entries=forced_entries,
             )
@@ -384,24 +469,48 @@ class ClueWithGradingStep(PipelineStep):
 
         if duplicate_hits:
             details = "; ".join(
-                f"{hit.clue.answer} = \"{hit.clue.clue}\""
-                for hit in duplicate_hits
+                f'{hit.clue.answer} = "{hit.clue.clue}"' for hit in duplicate_hits
             )
             raise ValueError(
-                "Exact duplicate clue(s) remain after repair attempts: "
-                f"{details}"
+                f"Exact duplicate clue(s) remain after repair attempts: {details}"
             )
         return current
 
+    def _clean_clue_count(self, report: ClueGradeReport) -> int:
+        """Number of graded clues that would not be sent to surgical repair."""
+        return sum(1 for g in report.clue_grades if not self._should_repair_grade(g))
+
+    def _is_mostly_good(self, report: ClueGradeReport) -> bool:
+        """True when enough clues already pass that surgical repair of the rest
+        is preferable to another whole-puzzle regeneration."""
+        if self._surgical_repair_pass_ratio is None:
+            return False
+        total = len(report.clue_grades)
+        if total == 0:
+            return False
+        return self._clean_clue_count(report) / total >= (
+            self._surgical_repair_pass_ratio
+        )
+
     def _should_repair_grade(self, grade: ClueGrade) -> bool:
+        # Structured per-dimension signals take precedence over keyword matching.
         if (
             grade.accuracy is not None
             and grade.accuracy < self._accuracy_repair_threshold
         ):
             return True
+        if (
+            grade.fairness is not None
+            and grade.fairness < self._fairness_repair_threshold
+        ):
+            return True
+        if grade.craft is not None and grade.craft < self._craft_repair_threshold:
+            return True
         if grade.score < self._individual_repair_score_threshold:
             return True
 
+        # Backstop: free-text feedback markers for issues not captured by the
+        # numeric sub-scores.
         feedback = grade.feedback.lower()
         issue_markers = (
             "major issue",
@@ -457,9 +566,7 @@ def _parse_repair_response(
     start = text.find("[")
     end = text.rfind("]")
     if start == -1 or end == -1 or end <= start:
-        raise json.JSONDecodeError(
-            "No JSON array found in repair response", text, 0
-        )
+        raise json.JSONDecodeError("No JSON array found in repair response", text, 0)
     text = text[start : end + 1]
     parsed = json.loads(text)
 
@@ -467,9 +574,7 @@ def _parse_repair_response(
         raise ValueError(f"Expected JSON array, got {type(parsed).__name__}")
 
     # Build lookup of expected entries
-    expected = {
-        (c.number, c.direction): c for c, _ in entries_to_repair
-    }
+    expected = {(c.number, c.direction): c for c, _ in entries_to_repair}
 
     repaired: list[ClueEntry] = []
     for item in parsed:
@@ -492,11 +597,59 @@ def _parse_repair_response(
 
     if len(repaired) != len(entries_to_repair):
         raise ValueError(
-            f"Expected {len(entries_to_repair)} repaired clues, "
-            f"got {len(repaired)}"
+            f"Expected {len(entries_to_repair)} repaired clues, got {len(repaired)}"
         )
 
     return repaired
+
+
+def _leak_feedback(finding: LeakFinding) -> str:
+    """Human-readable repair instruction for a leaked clue."""
+    if finding.kind == "exact":
+        why = f'the clue contains the answer word "{finding.detail}" verbatim'
+    elif finding.kind == "abbrev_expansion":
+        why = f'the clue spells out the abbreviation as "{finding.detail}"'
+    elif finding.kind == "abbrev_expansion_word":
+        why = (
+            f'the clue word "{finding.detail}" is one of the words the '
+            f"abbreviation {finding.answer} stands for"
+        )
+    elif finding.kind == "irregular":
+        why = f'the clue word "{finding.detail}" is a form of the answer'
+    elif finding.kind == "shared_prefix":
+        why = (
+            f'the clue word "{finding.detail}" shares a root, etymology, or '
+            f"spelling with the answer"
+        )
+    else:  # shared_root
+        why = f'the clue word "{finding.detail}" shares a root with the answer'
+    return (
+        f"FAIRNESS LEAK: {why}. Rewrite the clue so it does not use the answer "
+        f"word, any of its word-parts, roots, morphological variants, or "
+        f"abbreviation expansions. Use a plain definition if needed."
+    )
+
+
+def _leak_clue_grade(finding: LeakFinding) -> ClueGrade:
+    return ClueGrade(
+        number=finding.number,
+        direction=finding.direction,
+        answer=finding.answer,
+        score=0,
+        accuracy=25,
+        freshness=10,
+        craft=10,
+        fairness=0,
+        feedback=_leak_feedback(finding),
+    )
+
+
+def _leak_error_message(finding: LeakFinding) -> str:
+    return (
+        f"LEAK: {finding.answer} ({finding.number}-{finding.direction}) "
+        f'[{finding.kind}] in clue "{finding.clue}" (offending: '
+        f'"{finding.detail}")'
+    )
 
 
 def _duplicate_clue_grade(hit: DuplicateClueHit) -> ClueGrade:
@@ -511,6 +664,6 @@ def _duplicate_clue_grade(hit: DuplicateClueHit) -> ClueGrade:
         fairness=20,
         feedback=(
             "Exact duplicate clue already used for this answer in another "
-            f"puzzle: \"{hit.existing_clue}\". Write a different clue."
+            f'puzzle: "{hit.existing_clue}". Write a different clue.'
         ),
     )
