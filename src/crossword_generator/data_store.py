@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
 import re
 import time
@@ -12,6 +13,8 @@ from typing import Any
 from urllib.error import HTTPError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
+
+logger = logging.getLogger(__name__)
 
 API_BASE = os.environ.get(
     "HEYGG_API_BASE_URL", "https://play.hey.gg/api"
@@ -103,10 +106,26 @@ def make_record(
     return record
 
 
-def _leak_errors(puzzle: dict[str, Any]) -> list[str]:
-    """Return any ``LEAK:`` soft errors recorded on a puzzle envelope."""
-    errors = puzzle.get("errors") or []
-    return [str(e) for e in errors if str(e).startswith("LEAK:")]
+def _leak_errors(result: dict[str, Any], puzzle: dict[str, Any]) -> list[str]:
+    """Return any ``LEAK:`` soft errors for a generated puzzle.
+
+    The exported ``.ipuz`` file does not carry the envelope's ``errors`` field,
+    so the authoritative source is the manifest result's ``error_message``
+    (a "; "-joined string of the envelope errors). We also check the puzzle
+    payload's ``errors`` list in case a caller passes a full envelope.
+    """
+    leaks: list[str] = []
+    message = result.get("error_message")
+    if message:
+        leaks.extend(
+            part.strip()
+            for part in str(message).split("; ")
+            if part.strip().startswith("LEAK:")
+        )
+    for e in puzzle.get("errors") or []:
+        if str(e).startswith("LEAK:"):
+            leaks.append(str(e))
+    return leaks
 
 
 def records_from_manifest(
@@ -121,9 +140,10 @@ def records_from_manifest(
 ) -> list[dict[str, Any]]:
     """Build data-store records from a generated batch manifest.
 
-    Refuses any puzzle whose envelope carries a ``LEAK:`` soft error (a clue
-    that mechanically echoes its answer survived repair) unless ``allow_leaks``
-    is set. This is the upload guard for the deterministic leak filter.
+    Skips any puzzle whose ``LEAK:`` soft error survived repair (a clue that
+    echoes its answer) unless ``allow_leaks`` is set — the leaked puzzle is
+    left out of the upload and logged, while the rest of the batch proceeds.
+    This is the upload guard for the deterministic leak filter.
     """
     manifest = json.loads(manifest_path.read_text())
     resolved_batch_id = batch_id or str(
@@ -143,13 +163,15 @@ def records_from_manifest(
 
         puzzle = json.loads(output_path.read_text())
         if not allow_leaks:
-            leaks = _leak_errors(puzzle)
+            leaks = _leak_errors(result, puzzle)
             if leaks:
-                raise DataStoreError(
-                    f"Refusing to upload {output_path.name}: clue leak(s) "
-                    f"survived repair — {'; '.join(leaks)}. Fix the clue(s) or "
-                    f"pass allow_leaks=True / --allow-leaks to override."
+                logger.warning(
+                    "Skipping %s: clue leak(s) survived repair — %s "
+                    "(pass allow_leaks=True / --allow-leaks to include).",
+                    output_path.name,
+                    "; ".join(leaks),
                 )
+                continue
         size = int(result["size"])
         puzzle_type = "mini" if size in (5, 7) else "midi"
         game_key = mini_game_key if puzzle_type == "mini" else midi_game_key

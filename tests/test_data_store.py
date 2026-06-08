@@ -128,6 +128,46 @@ def test_records_from_manifest_reads_successful_ipuz_files(tmp_path: Path) -> No
 
 
 def _leaky_manifest(tmp_path: Path) -> Path:
+    # Real-world shape: the .ipuz has NO errors field (it's a pure puzzle
+    # format); the LEAK: soft error lives in the manifest result's
+    # error_message (a "; "-joined string of the envelope's errors).
+    puzzle_path = tmp_path / "seed-001.ipuz"
+    puzzle_path.write_text(json.dumps({"version": "http://ipuz.org/v2"}))
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "batch": "leak-batch",
+                "results": [
+                    {
+                        "success": True,
+                        "output_path": str(puzzle_path),
+                        "difficulty": "easy",
+                        "size": 5,
+                        "seed": 1,
+                        "error_message": (
+                            'LEAK: CAT (1-across) [exact] in clue "A pet cat" '
+                            '(offending: "cat")'
+                        ),
+                    }
+                ],
+            }
+        )
+    )
+    return manifest_path
+
+
+def test_records_from_manifest_skips_leaked_puzzle(tmp_path: Path) -> None:
+    """Leak in the manifest error_message (real-world location) is skipped."""
+    manifest_path = _leaky_manifest(tmp_path)
+    records = records_from_manifest(manifest_path)
+    assert records == []
+
+
+def test_records_from_manifest_skips_leak_in_envelope_errors(
+    tmp_path: Path,
+) -> None:
+    """Fallback: a LEAK in the puzzle payload's errors list is also skipped."""
     puzzle_path = tmp_path / "seed-001.ipuz"
     puzzle_path.write_text(
         json.dumps(
@@ -157,13 +197,78 @@ def _leaky_manifest(tmp_path: Path) -> Path:
             }
         )
     )
-    return manifest_path
+    records = records_from_manifest(manifest_path)
+    assert records == []
 
 
-def test_records_from_manifest_refuses_leaked_puzzle(tmp_path: Path) -> None:
-    manifest_path = _leaky_manifest(tmp_path)
-    with pytest.raises(DataStoreError, match="clue leak"):
-        records_from_manifest(manifest_path)
+def test_records_from_manifest_uploads_only_clean_puzzles(tmp_path: Path) -> None:
+    """A mixed batch uploads clean puzzles and skips only the leaked one."""
+    clean = tmp_path / "seed-001.ipuz"
+    clean.write_text(json.dumps({"version": "http://ipuz.org/v2"}))
+    leaked = tmp_path / "seed-002.ipuz"
+    leaked.write_text(json.dumps({"version": "http://ipuz.org/v2"}))
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "batch": "mixed-batch",
+                "results": [
+                    {
+                        "success": True,
+                        "output_path": str(clean),
+                        "difficulty": "easy",
+                        "size": 5,
+                        "seed": 1,
+                    },
+                    {
+                        "success": True,
+                        "output_path": str(leaked),
+                        "difficulty": "easy",
+                        "size": 5,
+                        "seed": 2,
+                        "error_message": (
+                            'LEAK: TRIAD (5-across) [shared_prefix] in clue '
+                            '"Trio" (offending: "trio")'
+                        ),
+                    },
+                ],
+            }
+        )
+    )
+    records = records_from_manifest(manifest_path)
+    assert len(records) == 1
+    assert "seed-1" in records[0]["key"]
+
+
+def test_records_from_manifest_ignores_non_leak_error_message(
+    tmp_path: Path,
+) -> None:
+    """A non-LEAK error_message (e.g. quality threshold) must NOT block upload."""
+    puzzle_path = tmp_path / "seed-001.ipuz"
+    puzzle_path.write_text(json.dumps({"version": "http://ipuz.org/v2"}))
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "batch": "ok-batch",
+                "results": [
+                    {
+                        "success": True,
+                        "output_path": str(puzzle_path),
+                        "difficulty": "easy",
+                        "size": 5,
+                        "seed": 1,
+                        "error_message": (
+                            "Clue quality below threshold after 3 attempt(s): "
+                            "best score 68.0"
+                        ),
+                    }
+                ],
+            }
+        )
+    )
+    records = records_from_manifest(manifest_path)
+    assert len(records) == 1
 
 
 def test_records_from_manifest_allow_leaks_override(tmp_path: Path) -> None:
