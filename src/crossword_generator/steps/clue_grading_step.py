@@ -606,6 +606,11 @@ def _leak_feedback(finding: LeakFinding) -> str:
         why = f'the clue contains the answer word "{finding.detail}" verbatim'
     elif finding.kind == "abbrev_expansion":
         why = f'the clue spells out the abbreviation as "{finding.detail}"'
+    elif finding.kind == "abbrev_expansion_word":
+        why = (
+            f'the clue word "{finding.detail}" is one of the words the '
+            f"abbreviation {finding.answer} stands for"
+        )
     elif finding.kind == "irregular":
         why = f'the clue word "{finding.detail}" is a form of the answer'
     else:  # shared_root

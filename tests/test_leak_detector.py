@@ -34,6 +34,16 @@ LEAKS = [
     ("OPS", "Military operations, briefly", "abbrev_expansion"),
     ("POL", "A political figure, informally", "abbrev_expansion"),
     ("NASA", "National Aeronautics and Space Administration", "abbrev_expansion"),
+    # Abbreviation expansion-WORD leaks (full strictness — any expansion word,
+    # even a generic one, is banned). These shipped in the first batch.
+    ("ETA", "Arrival time abbreviation", "abbrev_expansion_word"),
+    ("ETA", "Arrival time, for short", "abbrev_expansion_word"),
+    ("ETA", "Departure time, roughly", "abbrev_expansion_word"),  # 'time' alone
+    ("MCL", "Knee ligament, briefly", "abbrev_expansion_word"),
+    ("CPR", "Resuscitation technique, for short", "abbrev_expansion_word"),
+    ("GPA", "Student's average, for short", "abbrev_expansion_word"),
+    ("ATM", "Cash machine, in brief", "abbrev_expansion_word"),
+    ("DOB", "Birth date, on a form", "abbrev_expansion_word"),
 ]
 
 
@@ -65,6 +75,13 @@ CLEAN = [
     # Stopword-length answers must never crash or false-flag.
     ("AN", "Indefinite article"),
     ("IT", "Pronoun for an object"),
+    # Fair abbreviation clues — no expansion word present, must NOT flag.
+    ("ETA", "Flight-board figure, for short"),
+    ("MCL", "Knee injury site, in brief"),
+    ("CPR", "Lifesaving technique, briefly"),
+    ("GPA", "Report-card stat, for short"),
+    ("ATM", "Convenience-store cash dispenser, briefly"),
+    ("DOB", "Form datum, for short"),
 ]
 
 

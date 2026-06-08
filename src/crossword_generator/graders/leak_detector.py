@@ -12,6 +12,11 @@ defect — without an LLM call. Rules, in order of precedence:
    map (wife/wives, child/children).
 4. ``abbrev_expansion`` — for abbreviation answers, the clue contains the
    spelled-out expansion, or the clue's leading letters spell the answer.
+5. ``abbrev_expansion_word`` — for abbreviation answers, the clue contains ANY
+   individual word the letters stand for, even a generic one (full strictness):
+   ETA / "Arrival time" leaks both "arrival" (A) and "time" (T); MCL clued with
+   "ligament" leaks the L. Curated ``ABBREV_EXPANSION_WORDS`` map, grows over
+   time.
 
 Scope note: morphological rules require answers of length >= 4. Three-letter
 answers get only exact-match and abbreviation checking — for short strings,
@@ -108,6 +113,54 @@ ABBREV_EXPANSIONS: dict[str, tuple[str, ...]] = {
     "epa": ("environmental protection agency",),
     "fbi": ("federal bureau of investigation",),
     "cia": ("central intelligence agency",),
+}
+
+# Abbreviation answers and the INDIVIDUAL words their letters stand for. Full
+# strictness: a clue must not contain ANY expansion word (or its stem), even a
+# generic one like "time" — the letter literally is that word. This catches
+# partial give-aways the full-phrase ABBREV_EXPANSIONS misses, e.g. ETA clued
+# "Arrival time abbreviation" (arrival = A, time = T) or MCL clued with
+# "ligament" (L). Seeded from real editor finds; grows over time. Lowercase.
+ABBREV_EXPANSION_WORDS: dict[str, frozenset[str]] = {
+    # Time / scheduling
+    "eta": frozenset({"estimated", "time", "arrival"}),
+    "etd": frozenset({"estimated", "time", "departure"}),
+    # Medical
+    "mcl": frozenset({"medial", "collateral", "ligament"}),
+    "acl": frozenset({"anterior", "cruciate", "ligament"}),
+    "cpr": frozenset({"cardio", "pulmonary", "resuscitation"}),
+    "icu": frozenset({"intensive", "care", "unit"}),
+    "mri": frozenset({"magnetic", "resonance", "imaging"}),
+    "dna": frozenset({"deoxyribonucleic", "acid"}),
+    "rna": frozenset({"ribonucleic", "acid"}),
+    "er": frozenset({"emergency", "room"}),
+    # Common everyday initialisms
+    "asap": frozenset({"soon", "possible"}),
+    "fyi": frozenset({"information"}),
+    "diy": frozenset({"yourself"}),
+    "aka": frozenset({"known"}),
+    "rsvp": frozenset({"respond", "please"}),
+    "tba": frozenset({"announced"}),
+    "tbd": frozenset({"determined", "decided"}),
+    "faq": frozenset({"frequently", "asked", "questions", "question"}),
+    "atm": frozenset({"automated", "automatic", "teller", "machine"}),
+    "gps": frozenset({"global", "positioning", "system"}),
+    "url": frozenset({"uniform", "resource", "locator"}),
+    "pdf": frozenset({"portable", "document", "format"}),
+    "ram": frozenset({"random", "access", "memory"}),
+    # Finance / org
+    "apr": frozenset({"annual", "percentage", "rate"}),
+    "gpa": frozenset({"grade", "point", "average"}),
+    "ira": frozenset({"individual", "retirement", "account"}),
+    "ceo": frozenset({"chief", "executive", "officer"}),
+    "cfo": frozenset({"chief", "financial", "officer"}),
+    "coo": frozenset({"chief", "operating", "officer"}),
+    # Personal data
+    "dob": frozenset({"date", "birth"}),
+    "ssn": frozenset({"social", "security", "number"}),
+    # Units
+    "mph": frozenset({"miles", "hour"}),
+    "rpm": frozenset({"revolutions", "minute"}),
 }
 
 
@@ -258,6 +311,17 @@ def _detect_abbrev_leak(
         for phrase in expansions:
             if re.search(rf"\b{re.escape(phrase)}\b", clue_l):
                 return _finding(answer, answer, "abbrev_expansion", phrase)
+
+    # Expansion-word leak: for an abbreviation answer, the clue must not contain
+    # ANY individual word its letters stand for, even a generic one (full
+    # strictness). E.g. ETA clued "Arrival time abbreviation" leaks both
+    # "arrival" (A) and "time" (T); MCL clued with "ligament" leaks the L.
+    expansion_words = ABBREV_EXPANSION_WORDS.get(answer_l)
+    if expansion_words:
+        expansion_stems = {_stem(w) for w in expansion_words}
+        for w in words:
+            if w in expansion_words or _stem(w) in expansion_stems:
+                return _finding(answer, answer, "abbrev_expansion_word", w)
 
     # Initialism: consecutive clue words whose leading letters spell the
     # answer (e.g. answer "UCLA" clued with "University of California, L.A.").

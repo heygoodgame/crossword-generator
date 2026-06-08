@@ -48,6 +48,12 @@ _RUBRIC = (
     'abbreviation-expansion leaks such as CEO clued with "executive," plus '
     'OPS clued with "operations" and EST clued with "Eastern Standard '
     'Time," '
+    "CRITICAL — abbreviation expansion-word leaks: if the answer is an "
+    "abbreviation, acronym, or initialism, heavily penalize (fairness 0-8) a "
+    "clue that contains ANY word its letters stand for, even a generic one. "
+    'Examples to fail: ETA clued "Arrival time, for short" (arrival = A, time '
+    '= T); MCL clued with "ligament" (L); CPR clued with "resuscitation"; GPA '
+    'clued with "grade" or "average"; ATM clued with "machine." '
     "famous-title fill-in-the-blanks that point at a different form of the "
     'answer, e.g. HOUSEWIFE clued via "Desperate ___wives." Does it avoid '
     "using any crossing words in the clue text? Penalize short answer roots "

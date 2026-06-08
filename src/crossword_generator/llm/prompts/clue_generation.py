@@ -14,8 +14,7 @@ from crossword_generator.models import (
 )
 
 _ROLE = (
-    "You are an expert crossword puzzle constructor "
-    "writing clues for a completed grid."
+    "You are an expert crossword puzzle constructor writing clues for a completed grid."
 )
 
 _GUIDELINES = (
@@ -26,12 +25,22 @@ _GUIDELINES = (
     "morphological variant/root in the clue. This includes singular/plural "
     "forms, verb forms, compounds, abbreviation expansions, and famous-title "
     "fill-in-the-blanks that would point at a different form of the answer. "
-    "For example, do not clue HOUSEWIFE with \"Desperate ___wives\"; do not "
-    "clue WIFE with \"wives\" or \"wifely\"; do not clue TEACHER with "
-    "\"teaches\" or \"teaching\"; do not clue POL with \"politician\" or "
-    "\"political\"; do not clue OPS with \"operations\"; do not clue CEO "
-    "with \"executive\"; do not clue EST with \"Eastern Standard Time\" "
+    'For example, do not clue HOUSEWIFE with "Desperate ___wives"; do not '
+    'clue WIFE with "wives" or "wifely"; do not clue TEACHER with '
+    '"teaches" or "teaching"; do not clue POL with "politician" or '
+    '"political"; do not clue OPS with "operations"; do not clue CEO '
+    'with "executive"; do not clue EST with "Eastern Standard Time" '
     "or any words its initials stand for.\n"
+    "- ABBREVIATION RULE (strict): if the answer is an abbreviation, acronym, "
+    "or initialism, the clue must NOT contain ANY word that its letters stand "
+    "for — not even a generic one. Each letter literally IS that word, so "
+    "using it gives the answer away. For example: do not clue ETA with "
+    '"arrival" OR "time" (ETA = Estimated Time of Arrival); do not clue MCL '
+    'with "ligament" (Medial Collateral Ligament); do not clue CPR with '
+    '"resuscitation"; do not clue GPA with "grade" or "average"; do not '
+    'clue ATM with "machine". Clue the thing itself instead (e.g. ETA: '
+    '"Flight-board figure, for short"; MCL: "Knee part that can tear, '
+    'briefly").\n'
     "- DO NOT use any of an entry's crossing words "
     "in that entry's clue.\n"
     "- Accuracy is more important than cleverness, freshness, or difficulty. "
@@ -41,8 +50,8 @@ _GUIDELINES = (
     "use a plain dictionary-style clue instead.\n"
     "- Fill-in-the-blank clues must fit the answer exactly, including "
     "singular/plural, tense, spacing, and contractions. Do not clue SAINT "
-    "with the plural Saints, BATTING with \"At ___\", or GOT A SAY with "
-    "\"gotta say\" / \"my two cents\" phrasing.\n"
+    'with the plural Saints, BATTING with "At ___", or GOT A SAY with '
+    '"gotta say" / "my two cents" phrasing.\n'
     "- Vary clue styles within the target difficulty: definitional, "
     "fill-in-the-blank, wordplay, trivia, and lateral thinking are all "
     "available, but Easy clues should stay direct and obvious.\n"
@@ -51,7 +60,7 @@ _GUIDELINES = (
     "clue that does not exactly duplicate any of them.\n"
     "- Use misdirection and cleverness only when they fit the target "
     "difficulty. For Easy clues, clarity beats cleverness.\n"
-    '- Use question marks for witty/punny clues only when the target '
+    "- Use question marks for witty/punny clues only when the target "
     'difficulty allows it (e.g., "Plant manager?" for GARDENER).\n'
     "- Keep clues concise — say exactly what's needed, "
     "no filler words.\n"
@@ -63,19 +72,19 @@ _GUIDELINES = (
     "Avoid dated references that mostly reward one generation, fandom, or "
     "era. If an answer can be clued through an everyday meaning instead, use "
     "that angle over a stale proper-noun reference.\n"
-    "- Avoid unpleasant clue wording. Do not use terms like \"death\" or "
-    "\"undocumented immigrant\" in clues. If a clue must refer to dying, use "
-    "a gentle euphemism like \"passed on\" rather than blunt wording.\n"
+    '- Avoid unpleasant clue wording. Do not use terms like "death" or '
+    '"undocumented immigrant" in clues. If a clue must refer to dying, use '
+    'a gentle euphemism like "passed on" rather than blunt wording.\n'
     "- Make clues culturally accessible and "
     "contemporary where possible.\n"
-    "- Do not add word-count tags like \"(two words)\" or \"(three words)\". "
+    '- Do not add word-count tags like "(two words)" or "(three words)". '
     "Use no word-count enumeration unless the pipeline provides explicit "
     "word-boundary metadata.\n"
     "- Put explanatory tags in parentheses, not after a comma or colon. "
-    "Use \"To the ___ (in the extreme)\" rather than "
-    "\"To the ___: in the extreme\"; use "
-    "\"Dennis ___ (pop art icon of soup cans)\" rather than "
-    "\"Dennis ___, pop art icon of soup cans\".\n"
+    'Use "To the ___ (in the extreme)" rather than '
+    '"To the ___: in the extreme"; use '
+    '"Dennis ___ (pop art icon of soup cans)" rather than '
+    '"Dennis ___, pop art icon of soup cans".\n'
     "- Avoid body-part, underwear, anatomy, sexuality, appearance, "
     "identity, or demographic-based jokes. If an answer is sensitive "
     "but acceptable, clue it neutrally rather than with a wink, "
@@ -83,9 +92,9 @@ _GUIDELINES = (
     "- Always write clues with a non-offensive mindset. When an answer "
     "has a violent, weapon-, drug-, or otherwise negative literal "
     "meaning, prefer a clue built on a benign alternate sense, idiom, "
-    "or pop-culture usage. For example, clue BOMB as \"Flop at the box "
-    "office\" rather than referencing an explosive device, and clue "
-    "SHOOT as \"Rats!\" rather than referencing gunfire."
+    'or pop-culture usage. For example, clue BOMB as "Flop at the box '
+    'office" rather than referencing an explosive device, and clue '
+    'SHOOT as "Rats!" rather than referencing gunfire.'
 )
 
 _THEME_INSTRUCTIONS = (
@@ -95,26 +104,26 @@ _THEME_INSTRUCTIONS = (
     "\n"
     "1. STANDALONE: A clean clue with no reference to the theme.\n"
     "   Example (theme: CAESAR reveals Roman words): "
-    "TOGA → \"Garment at a frat party\"\n"
+    'TOGA → "Garment at a frat party"\n'
     "\n"
     "2. INDIRECT ALLUSION: A standalone clue that subtly nods to\n"
     "   the theme concept without being heavy-handed.\n"
-    "   Example: TOGA → \"What a senator might have worn "
-    "to the forum\"\n"
+    '   Example: TOGA → "What a senator might have worn '
+    'to the forum"\n'
     "\n"
     "3. POSITIONAL CROSS-REFERENCE: Reference the revealer by\n"
     "   number. Use sparingly — at most ONE theme entry should\n"
     "   use this style. The cross-reference must read naturally\n"
     "   as a standalone, solvable clue — never a bare\n"
-    "   \"See X-Across\" with no solving context.\n"
-    "   Example: TOGA → \"Garb of the revealer's era\"\n"
+    '   "See X-Across" with no solving context.\n'
+    '   Example: TOGA → "Garb of the revealer\'s era"\n'
     "\n"
     "IMPORTANT:\n"
     "- Vary the style across theme entries. Do NOT use the same "
     "approach for all of them.\n"
-    "- Do NOT write \"one of [REVEALER ANSWER]\" — this is "
+    '- Do NOT write "one of [REVEALER ANSWER]" — this is '
     "grammatically unnatural for most theme types.\n"
-    "- NEVER write a bare \"See X-Across\" or \"See X-Down\" "
+    '- NEVER write a bare "See X-Across" or "See X-Down" '
     "with no standalone definition. Every clue must give the "
     "solver something to work with on its own.\n"
     "\n"
@@ -130,7 +139,7 @@ _THEME_INSTRUCTIONS = (
     "describes the connection. Make sure your hint is factually "
     "accurate about which word or word-part connects to the "
     "theme entries.\n"
-    "4. Never use the phrase \"theme entries.\"\n"
+    '4. Never use the phrase "theme entries."\n'
 )
 
 _EXAMPLE_OUTPUT = json.dumps(
@@ -151,9 +160,7 @@ _OUTPUT_SECTION = (
 )
 
 
-def _difficulty_guidance(
-    puzzle_type: PuzzleType, difficulty: PuzzleDifficulty
-) -> str:
+def _difficulty_guidance(puzzle_type: PuzzleType, difficulty: PuzzleDifficulty) -> str:
     if difficulty == PuzzleDifficulty.EASY:
         base = (
             "This is an HGG Easy crossword for a very broad casual audience. "
@@ -181,8 +188,7 @@ def _difficulty_guidance(
         )
     if puzzle_type == PuzzleType.MINI:
         return (
-            f"{base} Because this is a MINI crossword, keep clues especially "
-            "concise."
+            f"{base} Because this is a MINI crossword, keep clues especially concise."
         )
     return (
         f"{base} Because this is a MIDI crossword, allow a little more surface "
@@ -274,7 +280,7 @@ def build_clue_generation_messages(
         revealer_clue_draft = ""
         if theme.revealer_clue:
             revealer_clue_draft = (
-                f"- Revealer clue draft: \"{theme.revealer_clue}\" "
+                f'- Revealer clue draft: "{theme.revealer_clue}" '
                 f"(use as inspiration — rewrite to fit the grid context)\n"
             )
         theme_context_block = (
@@ -364,9 +370,13 @@ _REPAIR_GUIDELINES = (
     "morphological variant/root in the clue. This includes singular/plural "
     "forms, verb forms, compounds, abbreviation expansions, and famous-title "
     "fill-in-the-blanks that would point at a different form of the answer. "
-    "For example, do not clue HOUSEWIFE with \"Desperate ___wives\"; do not "
-    "clue POL with \"politician\" or \"political\"; do not clue CEO with "
-    "\"executive\".\n"
+    'For example, do not clue HOUSEWIFE with "Desperate ___wives"; do not '
+    'clue POL with "politician" or "political"; do not clue CEO with '
+    '"executive".\n'
+    "- ABBREVIATION RULE (strict): if the answer is an abbreviation or "
+    "initialism, the clue must NOT contain ANY word its letters stand for, even "
+    'a generic one (e.g. do not clue ETA with "arrival" or "time"; do not '
+    'clue MCL with "ligament"). Clue the thing itself instead.\n'
     "- Accuracy is more important than cleverness. Verify facts, grammar, "
     "number, tense, part of speech, and exact phrase match. If the old clue "
     "used a questionable proper noun, song, quote, sports team name, idiom, "
@@ -377,10 +387,10 @@ _REPAIR_GUIDELINES = (
     "singular/plural, tense, spacing, and contractions.\n"
     "- DO NOT use any crossing words in the clue.\n"
     "- DO NOT duplicate phrasing from the existing clues listed below.\n"
-    "- Do not add word-count tags like \"(two words)\" or \"(three words)\".\n"
+    '- Do not add word-count tags like "(two words)" or "(three words)".\n'
     "- Put explanatory tags in parentheses, not after a comma or colon.\n"
-    "- Avoid unpleasant clue wording such as \"death\" or "
-    "\"undocumented immigrant\"; use gentle wording like \"passed on\" only "
+    '- Avoid unpleasant clue wording such as "death" or '
+    '"undocumented immigrant"; use gentle wording like "passed on" only '
     "if dying is unavoidable.\n"
     "- Keep clues concise and culturally accessible."
 )
@@ -430,9 +440,7 @@ def build_clue_repair_messages(
         seed_answers = {s.upper() for s in theme.seed_entries}
         for clue in all_clues:
             if clue.answer.upper() == revealer_answer:
-                revealer_label = (
-                    f"{clue.number}-{clue.direction.capitalize()}"
-                )
+                revealer_label = f"{clue.number}-{clue.direction.capitalize()}"
                 break
         if not revealer_label:
             revealer_label = theme.revealer
@@ -451,7 +459,7 @@ def build_clue_repair_messages(
         repair_lines.append(
             f"- {clue.number}-{clue.direction.upper()}: "
             f"Answer={clue.answer}{tag}\n"
-            f"  Old clue: \"{clue.clue}\"\n"
+            f'  Old clue: "{clue.clue}"\n'
             f"  Problem: {grade.feedback}\n"
             f"  (crossing words: {crossing_str})"
         )
@@ -464,7 +472,7 @@ def build_clue_repair_messages(
         if (clue.number, clue.direction) not in repair_keys:
             context_lines.append(
                 f"- {clue.number}-{clue.direction.upper()}: "
-                f"{clue.answer} = \"{clue.clue}\""
+                f'{clue.answer} = "{clue.clue}"'
             )
     context_block = "\n".join(context_lines) if context_lines else "(none)"
 
@@ -498,11 +506,11 @@ _THEME_REPAIR_INSTRUCTIONS = (
     "2. Indirect allusion to the theme concept\n"
     "3. Cross-reference to the revealer (use sparingly — must read "
     "naturally as a standalone, solvable clue, never a bare "
-    "\"See X-Across\" with no solving context)\n"
+    '"See X-Across" with no solving context)\n'
     "\n"
-    "Do NOT write \"one of [REVEALER ANSWER]\" — this is grammatically "
+    'Do NOT write "one of [REVEALER ANSWER]" — this is grammatically '
     "unnatural. Vary the style if multiple theme entries need repair.\n"
-    "NEVER write a bare \"See X-Across\" or \"See X-Down\" with no "
+    'NEVER write a bare "See X-Across" or "See X-Down" with no '
     "standalone definition.\n"
     "\n"
     "If the [REVEALER] entry needs repair:\n"
@@ -511,5 +519,5 @@ _THEME_REPAIR_INSTRUCTIONS = (
     "GOLDMINES). Make sure your hint is factually accurate about which "
     "word or word-part connects to the theme entries.\n"
     "2. Write a standalone definition first, then optionally add a theme "
-    "hint using natural phrasing. Never use \"theme entries.\""
+    'hint using natural phrasing. Never use "theme entries."'
 )

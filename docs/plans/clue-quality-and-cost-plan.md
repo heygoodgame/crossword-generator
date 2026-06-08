@@ -503,6 +503,41 @@ it into the repo).
 
 ---
 
+## Phase 6 — Abbreviation expansion-word leaks ✅ DONE
+
+**Trigger:** Editor (Jeff) feedback on the first live Opus batch. Clues like
+ETA → "Arrival time abbreviation" and MCL → "...ligament" use a word the
+abbreviation's letters literally stand for (T = Time, L = Ligament), handing the
+solver letters. A scan of the uploaded batch found **3 live instances**: two ETA
+("Arrival time...") and one GPA ("Student's average...").
+
+**Decision:** full strictness — for an abbreviation answer, the clue must not
+contain ANY expansion word, including generic ones like "time". Enforced in
+**both layers** (per the collocation-FITB precedent):
+
+- **Deterministic layer** — new `abbrev_expansion_word` rule + curated
+  `ABBREV_EXPANSION_WORDS` map (ETA, MCL, ACL, CPR, GPA, DOB, ATM, …), stem-aware
+  matching. Routes into the existing per-clue repair + `LEAK:` upload block.
+  0 false positives across the 516 clues of the uploaded batch; catches all 3
+  live cases.
+- **Prompt layer** — explicit "ABBREVIATION RULE (strict)" added to the clue
+  generation, repair, and grading (FAIRNESS) prompts, so the model avoids/flags
+  it for *any* abbreviation, including ones not in the curated map.
+
+**Why both:** the map can't be exhaustive (no expansion data exists in the
+`WORD;score` dictionaries, and there are ~2,400 short entries), so the LLM —
+which already knows every abbreviation's expansion — is the generalizing layer;
+the map is the guaranteed backstop for known cases and grows from Editor finds.
+
+**Follow-up:** the 3 live leaks are in the already-uploaded batch (draft/
+unreviewed). They'll be fixed on the next batch; if desired, regenerate those
+3 puzzles' seeds and re-upload with `--replace-existing`.
+
+New tests: 8 positive `abbrev_expansion_word` cases (incl. the live ones) + 6
+fair-abbreviation negatives.
+
+---
+
 ## Sequencing & rationale
 
 | Phase | What | Why this order |
