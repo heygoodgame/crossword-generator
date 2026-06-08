@@ -44,6 +44,17 @@ LEAKS = [
     ("GPA", "Student's average, for short", "abbrev_expansion_word"),
     ("ATM", "Cash machine, in brief", "abbrev_expansion_word"),
     ("DOB", "Birth date, on a form", "abbrev_expansion_word"),
+    # Shared-prefix / etymology / spelling-fragment leaks (aggressive rule).
+    # Jeff's reported cases:
+    ("NAVAL", "Of the navy", "shared_prefix"),
+    ("TRI", 'Start of "triangle"', "shared_prefix"),
+    # Same class:
+    ("KNEE", "Joint that bends when you kneel", "shared_prefix"),
+    ("PRE", "Prefix meaning before", "shared_prefix"),
+    ("ART", "Painting at an artist's studio", "shared_prefix"),
+    ("SUN", "Sunday, informally", "shared_prefix"),
+    # Accepted false positive (max-recall policy): read/ready dominate.
+    ("READ", "A ready response", "shared_prefix"),
 ]
 
 
@@ -63,9 +74,9 @@ CLEAN = [
     ("EDGE", "Border or margin"),
     ("BEAR", "Grin and ___ it"),
     ("ART", "Painting or sculpture"),
-    # Coincidental substrings that must NOT flag.
+    # Coincidental substrings that must NOT flag (prefix is a small part of the
+    # longer clue word, so the shared-prefix rule correctly leaves them alone).
     ("CARD", "Cardiac ward, informally"),
-    ("READ", "A ready response"),
     ("PART", "Departure lounge"),
     ("RATE", "Berate harshly"),
     ("STAR", "Started the engine"),

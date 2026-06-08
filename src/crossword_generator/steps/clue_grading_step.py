@@ -613,6 +613,11 @@ def _leak_feedback(finding: LeakFinding) -> str:
         )
     elif finding.kind == "irregular":
         why = f'the clue word "{finding.detail}" is a form of the answer'
+    elif finding.kind == "shared_prefix":
+        why = (
+            f'the clue word "{finding.detail}" shares a root, etymology, or '
+            f"spelling with the answer"
+        )
     else:  # shared_root
         why = f'the clue word "{finding.detail}" shares a root with the answer'
     return (

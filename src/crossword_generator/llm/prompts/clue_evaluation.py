@@ -54,6 +54,12 @@ _RUBRIC = (
     'Examples to fail: ETA clued "Arrival time, for short" (arrival = A, time '
     '= T); MCL clued with "ligament" (L); CPR clued with "resuscitation"; GPA '
     'clued with "grade" or "average"; ATM clued with "machine." '
+    "CRITICAL — etymology / spelling leaks: heavily penalize (fairness 0-8) a "
+    "clue that uses a word sharing an obvious root, etymology, or spelling with "
+    'the answer, even a different word: NAVAL clued "Of the navy"; KNEE clued '
+    'with "kneel"; LUNAR with moon-root Latin; SOLAR with sun-root words. Also '
+    "fail clues that spell out a fragment of the answer: TRI clued "
+    '"Start of triangle"; PRE clued "Prefix meaning before." '
     "famous-title fill-in-the-blanks that point at a different form of the "
     'answer, e.g. HOUSEWIFE clued via "Desperate ___wives." Does it avoid '
     "using any crossing words in the clue text? Penalize short answer roots "

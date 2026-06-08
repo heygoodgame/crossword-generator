@@ -573,3 +573,43 @@ All four pre-build questions are resolved — see **Locked decisions** at the to
   5), `SHAW` proper-noun FITB (14), `LIST` → `"Shopping ___"` (14).
 - The audit aggregation script (models/cost/cache per step) should be promoted
   into `scripts/` as a reusable batch-quality report.
+
+---
+
+## Phase 7 — Shared-prefix / etymology / spelling-fragment leaks ✅ DONE
+
+**Trigger:** Editor (Jeff) feedback — NAVAL clued "Of the navy" (etymological
+cousins, different words sharing a root) and TRI clued 'Start of "triangle"'
+(the answer is a literal spelling fragment of a clue word). Neither was a
+regression: both fall outside what the earlier mechanical rules covered
+(stemmer keeps naval/navy separate; 3-letter answers skip morphological rules).
+
+**Decision (per editor):** bias for HIGH RECALL — accept some false positives
+(rejecting otherwise-valid clues) to eliminate the vast majority of these
+leaks. A wrongly rejected fair clue is just regenerated; that's cheaper than
+shipping the leak.
+
+**Deterministic rule (`shared_prefix`):**
+- Short answers (len 3): flag if the answer is the literal start of a longer
+  clue word (TRI/triangle, ART/artist, PRE/prefix) — flag-all for max recall.
+- Any answer + clue word sharing a >=3-char prefix that covers >=60% of BOTH
+  words (NAVAL/navy, KNEE/kneel, READ/ready). Coverage requirement rejects
+  coincidences where the prefix is a small part of the clue word (CARD/cardiac,
+  STAR/started stay clean).
+- Routes into the existing per-clue repair + `LEAK:` upload block.
+
+**Prompt layer:** "ETYMOLOGY / SPELLING RULE (strict)" added to generation,
+repair, and grading prompts (for the semantic cousins a stemmer can't reach,
+e.g. LUNAR/moon, SOLAR/sun).
+
+**Real-world precision (uploaded batch, 516 clues):** 6 `shared_prefix` flags —
+5 genuine leaks (NAVAL, TRI, KNEE, PRE, TENS) and 1 accepted false positive
+(IRAN/iraq). 89% precision across all leak kinds; catches every Jeff case.
+
+**Known limit:** the rule cannot distinguish etymological relatives (NAVAL/navy)
+from coincidental geography (IRAN/iraq) by string shape — they are structurally
+identical. Per the recall-first decision, both are flagged; IRAN-type clues are
+regenerated.
+
+New tests: NAVAL, TRI, KNEE, PRE, ART, SUN positives + READ (accepted FP);
+CARD/STAR/PART/RATE/MAIN/OVER confirmed still clean.

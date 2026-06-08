@@ -17,6 +17,12 @@ defect — without an LLM call. Rules, in order of precedence:
    ETA / "Arrival time" leaks both "arrival" (A) and "time" (T); MCL clued with
    "ligament" leaks the L. Curated ``ABBREV_EXPANSION_WORDS`` map, grows over
    time.
+6. ``shared_prefix`` — AGGRESSIVE (high recall, accepts false positives): the
+   answer and a clue word share a dominant leading prefix — etymological cousins
+   (NAVAL/navy), spelling fragments (TRI/triangle, PRE/prefix), short-answer
+   prefixes (ART/artist). Deliberately also flags coincidences (IRAN/iraq); a
+   wrongly rejected fair clue is regenerated, which beats shipping the leak.
+   Per editor (Jeff) feedback. See the plan, Phase 7.
 
 Scope note: morphological rules require answers of length >= 4. Three-letter
 answers get only exact-match and abbreviation checking — for short strings,
@@ -300,6 +306,55 @@ def detect_leak(answer: str, clue: str) -> LeakFinding | None:
     if finding is not None:
         return finding
 
+    # 6. Shared-prefix / etymology / spelling-fragment leak (aggressive, high
+    #    recall). Catches etymological cousins (NAVAL/navy), spelling fragments
+    #    (TRI/triangle, PRE/prefix), and short-answer prefixes (ART/artist).
+    #    Deliberately accepts some false positives (IRAN/iraq, CARD/cardiac-type
+    #    coincidences) — a wrongly rejected fair clue is just regenerated, which
+    #    is preferable to shipping these leaks. See the plan, Phase 7.
+    leak_word = _shared_prefix_leak(answer_l, words)
+    if leak_word is not None:
+        return _finding(answer, clue, "shared_prefix", leak_word)
+
+    return None
+
+
+# Minimum shared leading-prefix length for the shared-prefix rule, and the
+# fraction of EACH word that prefix must cover to count as the "same family".
+_SHARED_PREFIX_MIN = 3
+_SHARED_PREFIX_COVERAGE = 0.6
+
+
+def _shared_prefix_leak(answer_l: str, words: list[str]) -> str | None:
+    """Return a clue word that shares a dominant leading prefix with the answer.
+
+    Two cases count:
+    - A 3-letter answer that is the literal start of a longer clue word
+      (TRI/triangle, ART/artist) — flag-all for max recall on short answers.
+    - Any answer and clue word sharing a prefix of >= 3 chars that covers
+      >= 60% of BOTH words (NAVAL/navy, KNEE/kneel, READ/ready). The coverage
+      requirement rejects coincidences where the prefix is a small part of the
+      clue word (CARD/cardiac, STAR/started).
+    """
+    if len(answer_l) < 3:
+        return None
+    for w in words:
+        if w == answer_l or len(w) < 3:
+            continue
+        common = 0
+        for x, y in zip(answer_l, w):
+            if x == y:
+                common += 1
+            else:
+                break
+        if len(answer_l) == 3 and len(w) > 3 and w.startswith(answer_l):
+            return w
+        if (
+            common >= _SHARED_PREFIX_MIN
+            and common >= len(answer_l) * _SHARED_PREFIX_COVERAGE
+            and common >= len(w) * _SHARED_PREFIX_COVERAGE
+        ):
+            return w
     return None
 
 

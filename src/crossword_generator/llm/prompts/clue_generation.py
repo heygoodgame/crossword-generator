@@ -41,6 +41,14 @@ _GUIDELINES = (
     'clue ATM with "machine". Clue the thing itself instead (e.g. ETA: '
     '"Flight-board figure, for short"; MCL: "Knee part that can tear, '
     'briefly").\n'
+    "- ETYMOLOGY / SPELLING RULE (strict): do not use a clue word that shares "
+    "an obvious root, etymology, or spelling with the answer, even if it is a "
+    'different word. Do not clue NAVAL with "navy" (same root); do not clue '
+    'LUNAR via "moon"-Latin, SOLAR via "sun"-root words, or DENTAL via '
+    '"teeth/dental"; do not clue KNEE with "kneel". Also never spell out a '
+    'fragment of the answer: do not clue TRI with "Start of triangle", PRE '
+    'with "Prefix...", or any answer with a clue word it literally begins, '
+    "ends, or spells.\n"
     "- DO NOT use any of an entry's crossing words "
     "in that entry's clue.\n"
     "- Accuracy is more important than cleverness, freshness, or difficulty. "
@@ -377,6 +385,10 @@ _REPAIR_GUIDELINES = (
     "initialism, the clue must NOT contain ANY word its letters stand for, even "
     'a generic one (e.g. do not clue ETA with "arrival" or "time"; do not '
     'clue MCL with "ligament"). Clue the thing itself instead.\n'
+    "- ETYMOLOGY / SPELLING RULE (strict): do not use a clue word that shares "
+    "an obvious root, etymology, or spelling with the answer (NAVAL/navy, "
+    "KNEE/kneel), and never spell out a fragment of the answer (TRI/triangle, "
+    "PRE/prefix).\n"
     "- Accuracy is more important than cleverness. Verify facts, grammar, "
     "number, tense, part of speech, and exact phrase match. If the old clue "
     "used a questionable proper noun, song, quote, sports team name, idiom, "
