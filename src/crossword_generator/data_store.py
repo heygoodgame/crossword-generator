@@ -106,26 +106,35 @@ def make_record(
     return record
 
 
-def _leak_errors(result: dict[str, Any], puzzle: dict[str, Any]) -> list[str]:
-    """Return any ``LEAK:`` soft errors for a generated puzzle.
+# Soft-error prefixes that block a puzzle from uploading: an answer-leaking
+# clue or a clue that exactly duplicates an existing one, where repair could
+# not fix it. Both leave the puzzle saved but held back from upload.
+_BLOCKING_ERROR_PREFIXES = ("LEAK:", "DUPLICATE:")
+
+
+def _blocking_errors(result: dict[str, Any], puzzle: dict[str, Any]) -> list[str]:
+    """Return any blocking soft errors (LEAK:/DUPLICATE:) for a generated puzzle.
 
     The exported ``.ipuz`` file does not carry the envelope's ``errors`` field,
     so the authoritative source is the manifest result's ``error_message``
     (a "; "-joined string of the envelope errors). We also check the puzzle
     payload's ``errors`` list in case a caller passes a full envelope.
     """
-    leaks: list[str] = []
+    def _is_blocking(text: str) -> bool:
+        return text.startswith(_BLOCKING_ERROR_PREFIXES)
+
+    found: list[str] = []
     message = result.get("error_message")
     if message:
-        leaks.extend(
+        found.extend(
             part.strip()
             for part in str(message).split("; ")
-            if part.strip().startswith("LEAK:")
+            if _is_blocking(part.strip())
         )
     for e in puzzle.get("errors") or []:
-        if str(e).startswith("LEAK:"):
-            leaks.append(str(e))
-    return leaks
+        if _is_blocking(str(e)):
+            found.append(str(e))
+    return found
 
 
 def records_from_manifest(
@@ -140,10 +149,11 @@ def records_from_manifest(
 ) -> list[dict[str, Any]]:
     """Build data-store records from a generated batch manifest.
 
-    Skips any puzzle whose ``LEAK:`` soft error survived repair (a clue that
-    echoes its answer) unless ``allow_leaks`` is set — the leaked puzzle is
-    left out of the upload and logged, while the rest of the batch proceeds.
-    This is the upload guard for the deterministic leak filter.
+    Skips any puzzle that carries a blocking soft error which survived repair —
+    a ``LEAK:`` (a clue echoing its answer) or a ``DUPLICATE:`` (a clue exactly
+    matching one already in use) — unless ``allow_leaks`` is set. The affected
+    puzzle is left out of the upload and logged, while the rest of the batch
+    proceeds. This is the upload guard for the clue-quality soft errors.
     """
     manifest = json.loads(manifest_path.read_text())
     resolved_batch_id = batch_id or str(
@@ -163,13 +173,13 @@ def records_from_manifest(
 
         puzzle = json.loads(output_path.read_text())
         if not allow_leaks:
-            leaks = _leak_errors(result, puzzle)
-            if leaks:
+            blocking = _blocking_errors(result, puzzle)
+            if blocking:
                 logger.warning(
-                    "Skipping %s: clue leak(s) survived repair — %s "
+                    "Skipping %s: clue issue(s) survived repair — %s "
                     "(pass allow_leaks=True / --allow-leaks to include).",
                     output_path.name,
-                    "; ".join(leaks),
+                    "; ".join(blocking),
                 )
                 continue
         size = int(result["size"])
