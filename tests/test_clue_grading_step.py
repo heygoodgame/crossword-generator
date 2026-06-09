@@ -113,6 +113,7 @@ class SequentialMockLLM(LLMProvider):
     def __init__(self, responses: list[str]) -> None:
         self._responses = list(responses)
         self._call_count = 0
+        self.prompts: list[str] = []
 
     @property
     def name(self) -> str:
@@ -120,6 +121,7 @@ class SequentialMockLLM(LLMProvider):
 
     def generate(self, prompt: str, **kwargs: object) -> str:
         self._call_count += 1
+        self.prompts.append(prompt)
         if self._responses:
             return self._responses.pop(0)
         return ""
@@ -775,6 +777,65 @@ class TestDuplicateHistoryRepair:
         )
         assert clue_1a.clue == "Small house pet"
         assert llm.call_count == 4
+
+    def test_stuck_duplicate_becomes_soft_error_not_raise(self) -> None:
+        """A duplicate that survives all repair attempts is a DUPLICATE: soft
+        error — the puzzle still completes, no exception."""
+        clue_json = _build_clue_json()
+        eval_json = _build_eval_json(accuracy=22, freshness=20, craft=20, fairness=20)
+        # Repair keeps returning the SAME already-used clue, so it never clears.
+        stuck_repair = json.dumps(
+            [{"number": 1, "direction": "across", "clue": "Generated clue 1 across"}]
+        )
+        history = ClueHistoryIndex()
+        history.add("CAT", "Generated clue 1 across")
+
+        # gen, grade, then (repair, re-grade) per duplicate attempt.
+        responses = [clue_json, eval_json]
+        for _ in range(4):
+            responses += [stuck_repair, eval_json]
+        llm = SequentialMockLLM(responses)
+        grader = ClueGrader(llm, min_passing_score=70)
+        step = ClueWithGradingStep(
+            llm,
+            grader,
+            max_retries=1,
+            clue_history=history,
+            duplicate_repair_attempts=4,
+        )
+
+        # Must NOT raise.
+        result = step.run(_make_envelope())
+        dup_errors = [e for e in result.errors if e.startswith("DUPLICATE:")]
+        assert len(dup_errors) == 1
+        assert "CAT" in dup_errors[0]
+
+    def test_repair_feedback_lists_all_used_clues(self) -> None:
+        """The duplicate-repair prompt names every clue already used for the
+        answer, not just the one collided with."""
+        clue_json = _build_clue_json()
+        eval_json = _build_eval_json(accuracy=22, freshness=20, craft=20, fairness=20)
+        fixed = json.dumps(
+            [{"number": 1, "direction": "across", "clue": "A fresh feline clue"}]
+        )
+        history = ClueHistoryIndex()
+        # The generated clue duplicates one of several known CAT clues.
+        history.add("CAT", "Generated clue 1 across")
+        history.add("CAT", "Purring pet")
+        history.add("CAT", "Whiskered animal")
+
+        llm = SequentialMockLLM([clue_json, eval_json, fixed, eval_json])
+        grader = ClueGrader(llm, min_passing_score=70)
+        step = ClueWithGradingStep(
+            llm, grader, max_retries=1, clue_history=history
+        )
+        step.run(_make_envelope())
+
+        # The repair prompt (3rd call) should mention all three used clues.
+        repair_prompt = llm.prompts[2]
+        assert "Generated clue 1 across" in repair_prompt
+        assert "Purring pet" in repair_prompt
+        assert "Whiskered animal" in repair_prompt
 
 
 def _build_clue_json_with(overrides: dict[tuple[int, str], str]) -> str:

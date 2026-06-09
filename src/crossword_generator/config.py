@@ -107,6 +107,10 @@ class ClueGradingConfig(BaseModel):
     # Extra repair rounds after the first surgical repair, for clues that a
     # single repair pass fails to fix.
     repair_verify_attempts: int = 2
+    # Rounds of repair for clues that exactly duplicate an existing clue (with
+    # --avoid-existing-clues). A stuck duplicate becomes a DUPLICATE: soft error
+    # and is skipped at upload, never crashing the puzzle.
+    duplicate_repair_attempts: int = 4
     # Split clue generation into chunks of at most this many entries per LLM
     # call (0 = one call for the whole puzzle). Smaller chunks improve rule
     # adherence on long puzzles; the cacheable system prompt is shared.

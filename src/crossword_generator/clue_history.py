@@ -71,6 +71,13 @@ class ClueHistoryIndex:
             return 0
         return self.add_ipuz(data)
 
+    def clues_for_answer(self, answer: str) -> list[str]:
+        """Return every clue already used for one answer (sorted, deduped)."""
+        answer_key = _normalize_answer(answer)
+        with self._lock:
+            clue_map = self._clues_by_answer.get(answer_key, {})
+            return sorted({c for values in clue_map.values() for c in values})
+
     def avoid_clues_for_answers(
         self, answers: Iterable[str], *, limit_per_answer: int = 5
     ) -> dict[str, list[str]]:

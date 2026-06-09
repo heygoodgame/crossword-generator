@@ -327,6 +327,7 @@ def create_pipeline(
         ),
         surgical_repair_pass_ratio=config.grading.clue.surgical_repair_pass_ratio,
         repair_verify_attempts=config.grading.clue.repair_verify_attempts,
+        duplicate_repair_attempts=config.grading.clue.duplicate_repair_attempts,
         generation_chunk_size=config.grading.clue.generation_chunk_size,
         fact_checker=clue_fact_checker,
         clue_history=clue_history,

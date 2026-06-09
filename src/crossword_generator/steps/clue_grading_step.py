@@ -53,7 +53,7 @@ class ClueWithGradingStep(PipelineStep):
         surgical_repair_pass_ratio: float | None = 0.8,
         fact_checker: ClueFactChecker | None = None,
         clue_history: ClueHistoryIndex | None = None,
-        duplicate_repair_attempts: int = 2,
+        duplicate_repair_attempts: int = 4,
         leak_repair_attempts: int = 3,
         repair_verify_attempts: int = 2,
         generation_chunk_size: int = 0,
@@ -453,8 +453,18 @@ class ClueWithGradingStep(PipelineStep):
                 self._duplicate_repair_attempts,
                 len(duplicate_hits),
             )
+            # Feed the FULL set of clues already used for each answer into the
+            # repair prompt, not just the one we collided with — otherwise the
+            # model can blindly land on another already-used clue.
             forced_entries = [
-                (hit.clue, _duplicate_clue_grade(hit)) for hit in duplicate_hits
+                (
+                    hit.clue,
+                    _duplicate_clue_grade(
+                        hit,
+                        self._clue_history.clues_for_answer(hit.clue.answer),
+                    ),
+                )
+                for hit in duplicate_hits
             ]
             # This method has its own attempt loop + duplicate re-check, so use
             # the single-pass repair to avoid a nested verify loop.
@@ -467,13 +477,21 @@ class ClueWithGradingStep(PipelineStep):
             current = repaired
             duplicate_hits = self._clue_history.find_duplicates(current.clues)
 
+        # A duplicate that survives all repair attempts becomes a soft error —
+        # the puzzle still completes and saves; the upload guard skips it. This
+        # mirrors leak handling and avoids losing a whole puzzle over one
+        # repeated clue.
         if duplicate_hits:
-            details = "; ".join(
-                f'{hit.clue.answer} = "{hit.clue.clue}"' for hit in duplicate_hits
-            )
-            raise ValueError(
-                f"Exact duplicate clue(s) remain after repair attempts: {details}"
-            )
+            new_errors = list(current.errors)
+            for hit in duplicate_hits:
+                new_errors.append(_duplicate_error_message(hit))
+                logger.warning(
+                    'Duplicate clue survived repair: %s = "%s" (already: "%s")',
+                    hit.clue.answer,
+                    hit.clue.clue,
+                    hit.existing_clue,
+                )
+            current = current.model_copy(update={"errors": new_errors})
         return current
 
     def _clean_clue_count(self, report: ClueGradeReport) -> int:
@@ -652,7 +670,13 @@ def _leak_error_message(finding: LeakFinding) -> str:
     )
 
 
-def _duplicate_clue_grade(hit: DuplicateClueHit) -> ClueGrade:
+def _duplicate_clue_grade(
+    hit: DuplicateClueHit, used_clues: list[str] | None = None
+) -> ClueGrade:
+    # List every clue already used for this answer so the model knows the full
+    # set to avoid, not just the one it collided with.
+    used = used_clues or [hit.existing_clue]
+    used_list = "; ".join(f'"{c}"' for c in used)
     return ClueGrade(
         number=hit.clue.number,
         direction=hit.clue.direction,
@@ -663,7 +687,17 @@ def _duplicate_clue_grade(hit: DuplicateClueHit) -> ClueGrade:
         craft=0,
         fairness=20,
         feedback=(
-            "Exact duplicate clue already used for this answer in another "
-            f'puzzle: "{hit.existing_clue}". Write a different clue.'
+            f"This answer ({hit.clue.answer}) has already been clued as: "
+            f"{used_list}. Write a NEW clue that is different from ALL of "
+            "these. Use a fresh angle — a different definition, wordplay, or "
+            "fill-in-the-blank."
         ),
+    )
+
+
+def _duplicate_error_message(hit: DuplicateClueHit) -> str:
+    return (
+        f"DUPLICATE: {hit.clue.answer} "
+        f"({hit.clue.number}-{hit.clue.direction}) clue "
+        f'"{hit.clue.clue}" already used (existing: "{hit.existing_clue}")'
     )

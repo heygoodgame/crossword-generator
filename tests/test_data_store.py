@@ -429,3 +429,33 @@ def test_delete_generated_puzzle_records_deletes_by_id(
     assert results[0].action == "deleted"
     assert results[0].key == "old"
     assert calls == [("DELETE", "/admin/data-store/records/123")]
+
+
+def test_records_from_manifest_skips_duplicate_puzzle(tmp_path: Path) -> None:
+    """A DUPLICATE: soft error in the manifest also skips the puzzle."""
+    puzzle_path = tmp_path / "seed-001.ipuz"
+    puzzle_path.write_text(json.dumps({"version": "http://ipuz.org/v2"}))
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "batch": "dup-batch",
+                "results": [
+                    {
+                        "success": True,
+                        "output_path": str(puzzle_path),
+                        "difficulty": "easy",
+                        "size": 5,
+                        "seed": 1,
+                        "error_message": (
+                            'DUPLICATE: EYE (3-down) clue "Storm center" '
+                            'already used (existing: "Storm center")'
+                        ),
+                    }
+                ],
+            }
+        )
+    )
+    assert records_from_manifest(manifest_path) == []
+    # Override includes it.
+    assert len(records_from_manifest(manifest_path, allow_leaks=True)) == 1

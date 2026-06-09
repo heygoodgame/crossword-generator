@@ -651,3 +651,35 @@ cold-cache runs) and adds latency.
 available as a config knob for harder/larger puzzle types if a future batch
 shows a higher raw leak rate, but it is not on by default. The durable win is
 the richer cacheable prompt: **better results at ~the same price.**
+
+---
+
+## Phase 9 — Duplicate-clue handling: informed retry + soft error ✅ DONE
+
+**Trigger:** With `--avoid-existing-clues`, puzzles were being **destroyed** when
+one short answer's clue duplicated an existing one and repair couldn't find a
+fresh alternative — `_run_duplicate_clue_repairs` hard-`raise`d, losing the whole
+puzzle (29 good clues) over one repeated clue. The weekly batch lost 2 puzzles
+this way (ERR, EYE).
+
+**Root cause:** the duplicate-repair phase *did* ask for new clues, but (a) only
+2 attempts, and (b) it told the model to avoid only the ONE clue it collided
+with — so for a short answer with several known clues, it could blindly land on
+another already-used one.
+
+**Fix (make the retry actually succeed, then fail soft):**
+1. **Full avoid-list** — `ClueHistoryIndex.clues_for_answer` exposes every clue
+   used for an answer; the duplicate-repair feedback now lists ALL of them
+   ("already clued as: A; B; C — write something different from all of these").
+2. **More attempts** — `duplicate_repair_attempts` default 2 → 4, now config-
+   wired (`grading.clue.duplicate_repair_attempts`).
+3. **Soft error, not raise** — a duplicate surviving all attempts becomes a
+   `DUPLICATE:` soft error on the envelope (mirroring `LEAK:`); the puzzle
+   completes and saves. The upload guard (`_blocking_errors`) skips both
+   `LEAK:` and `DUPLICATE:` puzzles, so a stuck duplicate is held back from
+   upload instead of crashing the puzzle.
+
+**Result:** a single repeated clue can no longer destroy a puzzle. The informed
+retry should resolve nearly all duplicates; the rare stuck one is skipped at
+upload like a leak. Tests cover avoid-list content, stuck→soft-error (no raise),
+and the upload-guard DUPLICATE skip.
