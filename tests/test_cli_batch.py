@@ -2,15 +2,19 @@
 
 import logging
 import threading
+from pathlib import Path
 
 from crossword_generator.cli import (
+    _apply_sixty_dictionary_override,
     _batch_bucket_configs,
     _extract_grid_variant,
     _failure_category,
     _parse_batch_count_overrides,
     _summarize_batch_results,
     _ThreadFilter,
+    _write_filtered_sixty_dictionary,
 )
+from crossword_generator.config import find_project_root, load_config
 
 
 def _make_record(thread_id: int) -> logging.LogRecord:
@@ -134,3 +138,45 @@ def test_parse_batch_count_overrides_allows_exact_bucket_override(tmp_path) -> N
 
     assert counts["easy/9"] == 7
     assert counts["hard/9"] == 8
+
+
+def test_write_filtered_sixty_dictionary_removes_scheduled_words(
+    tmp_path,
+) -> None:
+    dictionaries = tmp_path / "dictionaries"
+    dictionaries.mkdir()
+    (dictionaries / "hgg-60.txt").write_text(
+        "moonwalk;60\njackpots;60\nzucchini;60\n"
+    )
+    output_root = tmp_path / "batch"
+    output_root.mkdir()
+
+    path, removed = _write_filtered_sixty_dictionary(
+        tmp_path,
+        output_root,
+        ["MOONWALK", " jackpots ", "NOTINLIST"],
+    )
+
+    assert removed == 2
+    assert path == str(output_root / "hgg-60-scheduled-filtered.txt")
+    assert (output_root / "hgg-60-scheduled-filtered.txt").read_text() == (
+        "zucchini;60\n"
+    )
+
+
+def test_apply_sixty_dictionary_override_swaps_all_references() -> None:
+    project_root = find_project_root()
+    config = load_config(project_root / "config.hard7.yaml")
+    override = "/tmp/some-batch/hgg-60-scheduled-filtered.txt"
+
+    _apply_sixty_dictionary_override(config, override)
+
+    assert override in config.dictionary.additional_paths
+    assert override in config.dictionary.themed_additional_paths
+    assert override in config.fill.csp.additional_dictionary_paths
+    for paths in (
+        config.dictionary.additional_paths,
+        config.dictionary.themed_additional_paths,
+        config.fill.csp.additional_dictionary_paths,
+    ):
+        assert all("hgg-60.txt" != Path(p).name for p in paths)

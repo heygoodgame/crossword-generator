@@ -399,6 +399,36 @@ def list_generated_puzzle_records(
     return records
 
 
+def fetch_recent_sixty_answers(
+    *,
+    window_days: int = 180,
+    api_base: str | None = None,
+    token: str | None = None,
+    timeout: int = 60,
+) -> list[str]:
+    """Fetch HGG 60 answers used in scheduled dailies from the admin API.
+
+    Returns normalized (uppercase) answers scheduled from ``window_days`` ago
+    through all scheduled future days. Hard batches exclude these from the
+    hgg-60 fill pool so candidates stay schedulable under the 180-day
+    no-repeat window for 60-point entries.
+    """
+    query = urlencode({"window_days": window_days})
+    response = _request_json(
+        "GET",
+        f"/admin/crossword-puzzles/daily-answers/recent-sixty?{query}",
+        api_base=api_base,
+        token=token,
+        timeout=timeout,
+    )
+    answers = response.get("answers", [])
+    if not isinstance(answers, list):
+        raise DataStoreError(
+            f"Unexpected recent-sixty response shape: {response}"
+        )
+    return [str(answer).strip().upper() for answer in answers]
+
+
 def delete_generated_puzzle_records(
     records: list[dict[str, Any]],
     *,
