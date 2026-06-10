@@ -49,6 +49,10 @@ class Pipeline:
         self._output_dir = output_dir
         self._output_file = output_file
 
+    @property
+    def steps(self) -> list[PipelineStep]:
+        return list(self._steps)
+
     def run(self, envelope: PuzzleEnvelope) -> PuzzleEnvelope:
         """Execute all steps sequentially, saving intermediates and exporting."""
         self._output_dir.mkdir(parents=True, exist_ok=True)

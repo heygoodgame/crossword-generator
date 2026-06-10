@@ -10,11 +10,17 @@ from crossword_generator.cli import (
     _extract_grid_variant,
     _failure_category,
     _parse_batch_count_overrides,
+    _run_duplicate_sweep,
     _summarize_batch_results,
     _ThreadFilter,
     _write_filtered_sixty_dictionary,
 )
+from crossword_generator.clue_history import (
+    ClueHistoryIndex,
+    duplicate_error_message,
+)
 from crossword_generator.config import find_project_root, load_config
+from crossword_generator.models import ClueEntry, PuzzleEnvelope, PuzzleType
 
 
 def _make_record(thread_id: int) -> logging.LogRecord:
@@ -180,3 +186,153 @@ def test_apply_sixty_dictionary_override_swaps_all_references() -> None:
         config.fill.csp.additional_dictionary_paths,
     ):
         assert all("hgg-60.txt" != Path(p).name for p in paths)
+
+
+class _StubExporter:
+    """Records export calls without writing real .ipuz files."""
+
+    file_extension = ".ipuz"
+
+    def __init__(self) -> None:
+        self.exports: list[tuple[object, Path]] = []
+
+    def export(self, envelope: object, output_dir: Path) -> Path:
+        raise NotImplementedError
+
+    def export_to_file(self, envelope: object, path: Path) -> Path:
+        self.exports.append((envelope, path))
+        return path
+
+
+class _StubClueStep:
+    """Stands in for ClueWithGradingStep.repair_external_duplicates."""
+
+    def __init__(self, replacement: str | None) -> None:
+        self._replacement = replacement
+        self.calls = 0
+
+    def repair_external_duplicates(self, envelope, hits):  # noqa: ANN001
+        self.calls += 1
+        if self._replacement is None:
+            # Stuck: soft-error every hit, like the real step.
+            return envelope.model_copy(
+                update={
+                    "errors": [
+                        *envelope.errors,
+                        *(duplicate_error_message(h) for h in hits),
+                    ]
+                }
+            )
+        new_clues = []
+        hit_keys = {(h.clue.number, h.clue.direction) for h in hits}
+        for clue in envelope.clues:
+            if (clue.number, clue.direction) in hit_keys:
+                new_clues.append(clue.model_copy(update={"clue": self._replacement}))
+            else:
+                new_clues.append(clue)
+        return envelope.model_copy(update={"clues": new_clues})
+
+
+def _sweep_envelope(clue_text: str) -> PuzzleEnvelope:
+    return PuzzleEnvelope(
+        puzzle_type=PuzzleType.MINI,
+        grid_size=3,
+        clues=[
+            ClueEntry(number=1, direction="across", answer="CAT", clue=clue_text)
+        ],
+    )
+
+
+def _sweep_result(
+    seed: int,
+    envelope: PuzzleEnvelope,
+    clue_step: object,
+    output_path: Path,
+) -> dict[str, object]:
+    return {
+        "difficulty": "easy",
+        "size": 5,
+        "seed": seed,
+        "success": True,
+        "error_message": None,
+        "failure_category": None,
+        "_sweep": {
+            "envelope": envelope,
+            "clue_step": clue_step,
+            "output_path": output_path,
+        },
+    }
+
+
+def test_duplicate_sweep_repairs_cross_puzzle_collision(tmp_path: Path) -> None:
+    """Second puzzle with the same clue gets repaired and re-exported; the
+    first keeps its clue untouched."""
+    env_a = _sweep_envelope("Feline pet")
+    env_b = _sweep_envelope("Feline pet")
+    history = ClueHistoryIndex()
+    history.add_clues(env_a.clues)
+    history.add_clues(env_b.clues)
+
+    step = _StubClueStep("Fresh feline clue")
+    exporter = _StubExporter()
+    results = [
+        _sweep_result(1, env_a, step, tmp_path / "a.ipuz"),
+        _sweep_result(2, env_b, step, tmp_path / "b.ipuz"),
+    ]
+
+    stats = _run_duplicate_sweep(results, history, exporter=exporter)
+
+    assert stats == {"checked": 2, "repaired": 1, "unresolved": 0}
+    assert step.calls == 1
+    assert [path for _, path in exporter.exports] == [tmp_path / "b.ipuz"]
+    repaired_env = exporter.exports[0][0]
+    assert repaired_env.clues[0].clue == "Fresh feline clue"
+    # Sweep context is stripped so the manifest stays JSON-serializable.
+    assert all("_sweep" not in r for r in results)
+    assert results[1]["error_message"] is None
+    # The replacement is registered in the shared history.
+    assert "Fresh feline clue" in history.clues_for_answer("CAT")
+
+
+def test_duplicate_sweep_unresolved_blocks_upload(tmp_path: Path) -> None:
+    """A collision that repair can't clear becomes a DUPLICATE: soft error in
+    the manifest result, which the upload guard reads."""
+    env_a = _sweep_envelope("Feline pet")
+    env_b = _sweep_envelope("Feline pet")
+    history = ClueHistoryIndex()
+    history.add_clues(env_a.clues)
+    history.add_clues(env_b.clues)
+
+    step = _StubClueStep(None)  # stuck
+    exporter = _StubExporter()
+    results = [
+        _sweep_result(1, env_a, step, tmp_path / "a.ipuz"),
+        _sweep_result(2, env_b, step, tmp_path / "b.ipuz"),
+    ]
+
+    stats = _run_duplicate_sweep(results, history, exporter=exporter)
+
+    assert stats == {"checked": 2, "repaired": 0, "unresolved": 1}
+    assert results[0]["error_message"] is None
+    assert "DUPLICATE:" in str(results[1]["error_message"])
+
+
+def test_duplicate_sweep_distinct_clues_untouched(tmp_path: Path) -> None:
+    env_a = _sweep_envelope("Feline pet")
+    env_b = _sweep_envelope("Whiskers wearer")
+    history = ClueHistoryIndex()
+    history.add_clues(env_a.clues)
+    history.add_clues(env_b.clues)
+
+    step = _StubClueStep("unused")
+    exporter = _StubExporter()
+    results = [
+        _sweep_result(1, env_a, step, tmp_path / "a.ipuz"),
+        _sweep_result(2, env_b, step, tmp_path / "b.ipuz"),
+    ]
+
+    stats = _run_duplicate_sweep(results, history, exporter=exporter)
+
+    assert stats == {"checked": 2, "repaired": 0, "unresolved": 0}
+    assert step.calls == 0
+    assert exporter.exports == []

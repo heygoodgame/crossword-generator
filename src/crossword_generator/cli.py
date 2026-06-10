@@ -15,9 +15,15 @@ from pathlib import Path
 
 import click
 
-from crossword_generator.clue_history import ClueHistoryIndex
+from crossword_generator.clue_history import (
+    ClueHistoryIndex,
+    duplicate_error_message,
+)
 from crossword_generator.config import Config, find_project_root, load_config
+from crossword_generator.exporters.base import Exporter
+from crossword_generator.models import PuzzleEnvelope
 from crossword_generator.pipeline import create_pipeline
+from crossword_generator.steps.clue_grading_step import ClueWithGradingStep
 
 
 @click.group()
@@ -564,6 +570,7 @@ def generate_pilot_batch(
             clue_history=clue_history,
             llm_logging_enabled=not no_llm_log,
             sixty_dictionary_override=sixty_dictionary_override,
+            keep_sweep_context=max_workers > 1,
         )
 
     def _report(result: dict[str, object]) -> None:
@@ -597,6 +604,17 @@ def generate_pilot_batch(
         key=lambda r: (str(r["difficulty"]), int(r["size"]), int(r["seed"]))
     )
 
+    # Parallel workers can't see each other's in-flight clues, so two
+    # concurrent puzzles can produce the same clue for a shared answer
+    # without either noticing. Sweep completed puzzles against each other
+    # and repair collisions; sequential runs have no such race.
+    if max_workers > 1:
+        sweep_stats = _run_duplicate_sweep(results, clue_history)
+    else:
+        sweep_stats = {"checked": 0, "repaired": 0, "unresolved": 0}
+        for r in results:
+            r.pop("_sweep", None)
+
     manifest = {
         "batch": batch_id,
         "started_at": started_at,
@@ -616,6 +634,10 @@ def generate_pilot_batch(
         },
         "llm_logging_enabled": not no_llm_log,
         "max_workers": max_workers,
+        "duplicate_sweep": {
+            "enabled": max_workers > 1,
+            **sweep_stats,
+        },
         "batch_fill": {
             "per_pattern_attempts": per_pattern_attempts,
             "max_grid_variants": max_grid_variants,
@@ -1922,6 +1944,7 @@ def _run_batch_item(
     clue_history: ClueHistoryIndex | None = None,
     llm_logging_enabled: bool = True,
     sixty_dictionary_override: str | None = None,
+    keep_sweep_context: bool = False,
 ) -> dict[str, object]:
     bucket_dir = output_root / difficulty / f"{size}x{size}"
     bucket_dir.mkdir(parents=True, exist_ok=True)
@@ -2002,6 +2025,25 @@ def _run_batch_item(
         completed = pipeline.run(envelope)
         if output_path.exists() and clue_history is not None:
             clue_history.add_clues(completed.clues)
+            if keep_sweep_context:
+                # Context for the post-batch duplicate sweep (parallel runs
+                # only). Holds the completed envelope and the clue step so
+                # cross-puzzle duplicates can be repaired after all workers
+                # finish; popped from the result before the manifest is
+                # written.
+                clue_step = next(
+                    (
+                        s
+                        for s in pipeline.steps
+                        if isinstance(s, ClueWithGradingStep)
+                    ),
+                    None,
+                )
+                result["_sweep"] = {
+                    "envelope": completed,
+                    "clue_step": clue_step,
+                    "output_path": output_path,
+                }
         result.update(
             {
                 "success": output_path.exists(),
@@ -2077,6 +2119,88 @@ def _load_existing_clue_history(
 
 def _game_key_for_size(size: int) -> str:
     return "minicrossword" if size in (5, 7) else "midicrossword"
+
+
+def _run_duplicate_sweep(
+    results: list[dict[str, object]],
+    clue_history: ClueHistoryIndex,
+    *,
+    exporter: Exporter | None = None,
+) -> dict[str, int]:
+    """Repair cross-puzzle duplicate clues that parallel workers missed.
+
+    A puzzle's clues only enter the shared history once it completes, so two
+    puzzles generating concurrently can write the same clue for a shared
+    answer without either's in-run duplicate check noticing. This replays
+    completed puzzles in manifest order: the first occurrence keeps its clue,
+    later ones go through the informed duplicate repair and are re-exported
+    in place. Duplicates that survive repair become DUPLICATE: soft errors so
+    the upload guard holds those puzzles back.
+    """
+    if exporter is None:
+        from crossword_generator.exporters.ipuz_exporter import IpuzExporter
+
+        exporter = IpuzExporter()
+
+    def _duplicate_error_count(envelope: PuzzleEnvelope) -> int:
+        return sum(1 for e in envelope.errors if e.startswith("DUPLICATE:"))
+
+    sweep_index = ClueHistoryIndex()
+    checked = 0
+    repaired_total = 0
+    unresolved_total = 0
+    for result in results:
+        ctx = result.pop("_sweep", None)
+        if not isinstance(ctx, dict):
+            continue
+        envelope = ctx["envelope"]
+        checked += 1
+        hits = sweep_index.find_duplicates(envelope.clues)
+        if hits:
+            label = (
+                f"{result['difficulty']} {result['size']}x{result['size']} "
+                f"seed {result['seed']}"
+            )
+            click.echo(
+                f"Duplicate sweep: {label} shares {len(hits)} clue(s) with "
+                "another puzzle in this batch; regenerating..."
+            )
+            clue_step = ctx.get("clue_step")
+            if clue_step is None:
+                # No repair machinery available — record soft errors so the
+                # upload guard holds the puzzle back instead of shipping dupes.
+                envelope = envelope.model_copy(
+                    update={
+                        "errors": [
+                            *envelope.errors,
+                            *(duplicate_error_message(h) for h in hits),
+                        ]
+                    }
+                )
+                unresolved_total += len(hits)
+            else:
+                before = _duplicate_error_count(envelope)
+                envelope = clue_step.repair_external_duplicates(envelope, hits)
+                unresolved = _duplicate_error_count(envelope) - before
+                unresolved_total += unresolved
+                repaired_total += len(hits) - unresolved
+                # Register replacements in the shared history so later
+                # puzzles' repair re-checks can't land on them.
+                clue_history.add_clues(envelope.clues)
+                exporter.export_to_file(envelope, Path(str(ctx["output_path"])))
+            result["error_message"] = "; ".join(envelope.errors) or None
+            result["failure_category"] = _failure_category(result)
+        sweep_index.add_clues(envelope.clues)
+    if repaired_total or unresolved_total:
+        click.echo(
+            f"Duplicate sweep: repaired {repaired_total} clue(s), "
+            f"{unresolved_total} unresolved."
+        )
+    return {
+        "checked": checked,
+        "repaired": repaired_total,
+        "unresolved": unresolved_total,
+    }
 
 
 def _summarize_batch_results(

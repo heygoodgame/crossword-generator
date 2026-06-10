@@ -6,7 +6,7 @@ import json
 
 import pytest
 
-from crossword_generator.clue_history import ClueHistoryIndex
+from crossword_generator.clue_history import ClueHistoryIndex, DuplicateClueHit
 from crossword_generator.graders.clue_fact_checker import ClueFactChecker
 from crossword_generator.graders.clue_grader import ClueGrader
 from crossword_generator.llm.base import LLMProvider
@@ -933,6 +933,91 @@ class TestDuplicateHistoryRepair:
         assert "Generated clue 1 across" in repair_prompt
         assert "Purring pet" in repair_prompt
         assert "Whiskered animal" in repair_prompt
+
+
+class TestExternalDuplicateRepair:
+    """Tests for repair_external_duplicates (the post-batch sweep path)."""
+
+    def _completed_envelope(self) -> PuzzleEnvelope:
+        clues = [
+            ClueEntry(
+                number=e["number"],
+                direction=e["direction"],
+                answer=e["answer"],
+                clue=f"Generated clue {e['number']} {e['direction']}",
+            )
+            for e in EXPECTED_ENTRIES
+        ]
+        return _make_envelope(clues=clues)
+
+    def test_external_hits_repaired_without_self_matches(self) -> None:
+        """Sweep-supplied hits get repaired, and the puzzle's own clues —
+        which already live in the shared history after batch completion —
+        are not re-flagged as self-matches."""
+        envelope = self._completed_envelope()
+        history = ClueHistoryIndex()
+        # Shared history after a parallel batch contains this puzzle's own
+        # clues; the other puzzle's colliding clue is the identical entry.
+        history.add_clues(envelope.clues)
+
+        cat_clue = next(c for c in envelope.clues if c.answer == "CAT")
+        hits = [DuplicateClueHit(clue=cat_clue, existing_clue=cat_clue.clue)]
+
+        repair_json = json.dumps(
+            [{"number": 1, "direction": "across", "clue": "Fresh feline clue"}]
+        )
+        # One repair pass = repair call + post-repair re-grade.
+        llm = SequentialMockLLM([repair_json, _build_eval_json()])
+        grader = ClueGrader(llm, min_passing_score=70)
+        step = ClueWithGradingStep(llm, grader, clue_history=history)
+
+        result = step.repair_external_duplicates(envelope, hits)
+
+        clue_1a = next(c for c in result.clues if c.answer == "CAT")
+        assert clue_1a.clue == "Fresh feline clue"
+        assert not [e for e in result.errors if e.startswith("DUPLICATE:")]
+        # Exactly one repair pass (repair + re-grade): the untouched clues
+        # all exist in the shared history, so a full re-scan would have
+        # flagged them as self-matches and run pointless extra rounds.
+        assert llm.call_count == 2
+
+    def test_stuck_external_duplicate_becomes_soft_error(self) -> None:
+        """A sweep duplicate that survives all repair attempts becomes a
+        DUPLICATE: soft error, same as the in-run path."""
+        envelope = self._completed_envelope()
+        history = ClueHistoryIndex()
+        history.add_clues(envelope.clues)
+
+        cat_clue = next(c for c in envelope.clues if c.answer == "CAT")
+        hits = [DuplicateClueHit(clue=cat_clue, existing_clue=cat_clue.clue)]
+
+        # Repair keeps landing back on the same already-used clue.
+        stuck = json.dumps(
+            [{"number": 1, "direction": "across", "clue": cat_clue.clue}]
+        )
+        responses = [stuck, _build_eval_json()] * 4
+        llm = SequentialMockLLM(responses)
+        grader = ClueGrader(llm, min_passing_score=70)
+        step = ClueWithGradingStep(
+            llm, grader, clue_history=history, duplicate_repair_attempts=4
+        )
+
+        result = step.repair_external_duplicates(envelope, hits)
+
+        dup_errors = [e for e in result.errors if e.startswith("DUPLICATE:")]
+        assert len(dup_errors) == 1
+        assert "CAT" in dup_errors[0]
+        assert llm.call_count == 8
+
+    def test_no_hits_returns_envelope_unchanged(self) -> None:
+        envelope = self._completed_envelope()
+        history = ClueHistoryIndex()
+        llm = SequentialMockLLM([])
+        grader = ClueGrader(llm, min_passing_score=70)
+        step = ClueWithGradingStep(llm, grader, clue_history=history)
+
+        assert step.repair_external_duplicates(envelope, []) is envelope
+        assert llm.call_count == 0
 
 
 def _build_clue_json_with(overrides: dict[tuple[int, str], str]) -> str:

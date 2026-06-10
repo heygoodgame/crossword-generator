@@ -123,6 +123,15 @@ class ClueHistoryIndex:
             )
 
 
+def duplicate_error_message(hit: DuplicateClueHit) -> str:
+    """Soft-error text for a duplicate clue; the DUPLICATE: prefix blocks upload."""
+    return (
+        f"DUPLICATE: {hit.clue.answer} "
+        f"({hit.clue.number}-{hit.clue.direction}) clue "
+        f'"{hit.clue.clue}" already used (existing: "{hit.existing_clue}")'
+    )
+
+
 def normalize_clue(clue: str) -> str:
     text = clue.translate(_QUOTE_TRANS).strip().casefold()
     text = _WHITESPACE_RE.sub(" ", text)

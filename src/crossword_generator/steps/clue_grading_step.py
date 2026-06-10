@@ -5,7 +5,11 @@ from __future__ import annotations
 import json
 import logging
 
-from crossword_generator.clue_history import ClueHistoryIndex, DuplicateClueHit
+from crossword_generator.clue_history import (
+    ClueHistoryIndex,
+    DuplicateClueHit,
+    duplicate_error_message,
+)
 from crossword_generator.exporters.numbering import (
     compute_crossing_words,
     compute_numbering,
@@ -443,9 +447,44 @@ class ClueWithGradingStep(PipelineStep):
     def _run_duplicate_clue_repairs(self, envelope: PuzzleEnvelope) -> PuzzleEnvelope:
         if self._clue_history is None:
             return envelope
+        duplicate_hits = self._clue_history.find_duplicates(envelope.clues)
+        return self._repair_duplicates(
+            envelope, duplicate_hits, recheck_all_clues=True
+        )
 
+    def repair_external_duplicates(
+        self, envelope: PuzzleEnvelope, duplicate_hits: list[DuplicateClueHit]
+    ) -> PuzzleEnvelope:
+        """Repair duplicate clues detected outside this step's own check.
+
+        Used by the post-batch duplicate sweep: parallel workers can't see
+        each other's in-flight clues, so cross-puzzle collisions are only
+        detectable after every puzzle completes. The caller supplies the
+        hits; replacement clues are still re-checked against the shared
+        history before being accepted.
+        """
+        if self._clue_history is None or not duplicate_hits:
+            return envelope
+        return self._repair_duplicates(
+            envelope, duplicate_hits, recheck_all_clues=False
+        )
+
+    def _repair_duplicates(
+        self,
+        envelope: PuzzleEnvelope,
+        duplicate_hits: list[DuplicateClueHit],
+        *,
+        recheck_all_clues: bool,
+    ) -> PuzzleEnvelope:
+        """Informed-retry loop for duplicate clues, then soft-error fallback.
+
+        With ``recheck_all_clues`` every clue is re-checked against the
+        history after each repair pass (the in-run path). Without it, only
+        the entries just repaired are re-checked — the external-sweep path,
+        where the puzzle's own clues already live in the shared history and
+        a full scan would flag every one of them as a self-match.
+        """
         current = envelope
-        duplicate_hits = self._clue_history.find_duplicates(current.clues)
         for attempt in range(1, self._duplicate_repair_attempts + 1):
             if not duplicate_hits:
                 return current
@@ -463,7 +502,8 @@ class ClueWithGradingStep(PipelineStep):
                     hit.clue,
                     _duplicate_clue_grade(
                         hit,
-                        self._clue_history.clues_for_answer(hit.clue.answer),
+                        self._clue_history.clues_for_answer(hit.clue.answer)
+                        or [hit.existing_clue],
                     ),
                 )
                 for hit in duplicate_hits
@@ -477,7 +517,19 @@ class ClueWithGradingStep(PipelineStep):
             if repaired is current:
                 break
             current = repaired
-            duplicate_hits = self._clue_history.find_duplicates(current.clues)
+            if recheck_all_clues:
+                recheck_clues = current.clues
+            else:
+                repaired_keys = {
+                    (hit.clue.number, hit.clue.direction)
+                    for hit in duplicate_hits
+                }
+                recheck_clues = [
+                    c
+                    for c in current.clues
+                    if (c.number, c.direction) in repaired_keys
+                ]
+            duplicate_hits = self._clue_history.find_duplicates(recheck_clues)
 
         # A duplicate that survives all repair attempts becomes a soft error —
         # the puzzle still completes and saves; the upload guard skips it. This
@@ -486,7 +538,7 @@ class ClueWithGradingStep(PipelineStep):
         if duplicate_hits:
             new_errors = list(current.errors)
             for hit in duplicate_hits:
-                new_errors.append(_duplicate_error_message(hit))
+                new_errors.append(duplicate_error_message(hit))
                 logger.warning(
                     'Duplicate clue survived repair: %s = "%s" (already: "%s")',
                     hit.clue.answer,
@@ -705,9 +757,3 @@ def _duplicate_clue_grade(
     )
 
 
-def _duplicate_error_message(hit: DuplicateClueHit) -> str:
-    return (
-        f"DUPLICATE: {hit.clue.answer} "
-        f"({hit.clue.number}-{hit.clue.direction}) clue "
-        f'"{hit.clue.clue}" already used (existing: "{hit.existing_clue}")'
-    )
