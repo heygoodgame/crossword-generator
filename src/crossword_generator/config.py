@@ -100,6 +100,9 @@ class ClueGradingConfig(BaseModel):
     accuracy_repair_threshold: int = 12  # repair clues below this accuracy sub-score
     fairness_repair_threshold: int = 15  # repair clues below this fairness sub-score
     craft_repair_threshold: int = 8  # repair clues below this craft sub-score
+    # Repair clues below this freshness sub-score. 0 disables; Hard configs
+    # raise it so evaluator-flagged too-easy clues (freshness 0-9) get repaired.
+    freshness_repair_threshold: int = 0
     individual_repair_score_threshold: int = 65
     # Skip whole-puzzle regeneration and go straight to surgical repair when at
     # least this fraction of clues already pass. None disables (always regen).

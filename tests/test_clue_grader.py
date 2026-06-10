@@ -151,6 +151,9 @@ class TestHappyPath:
         assert "Saturday-level obscurity" in prompt
         assert "cross-generationally iconic" in prompt
         assert "Accuracy and exact answer fit are more important" in prompt
+        # Too-easy clues on Hard puzzles must be flagged via freshness.
+        assert "too easy" in prompt
+        assert "FRESHNESS 0-9" in prompt
 
     def test_evaluation_penalizes_dated_niche_references(self) -> None:
         prompt = build_clue_evaluation_prompt(

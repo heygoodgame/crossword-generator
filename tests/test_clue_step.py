@@ -641,7 +641,10 @@ class TestThemeAnnotationsInPrompt:
         assert "Saturday-level obscurity" in prompt
         assert "strained pop-culture references" in prompt
         assert "cross-generationally iconic" in prompt
-        assert "use a cleaner direct clue" in prompt
+        # Too-easy clues are an explicit defect on Hard puzzles.
+        assert "TOO EASY" in prompt
+        assert 'One more than two" for THREE' in prompt
+        assert "DEFAULT to a harder fair angle" in prompt
 
     def test_prompt_applies_sliding_familiarity_to_references(self) -> None:
         """Older/nicher references must be especially well known."""
@@ -706,8 +709,9 @@ class TestThemeAnnotationsInPrompt:
             prior_clues_by_answer={"ABCDE": ["First five letters"]},
         )
 
-        assert "PRIOR CLUES FOR THESE ANSWERS:" in prompt
-        assert "Do not repeat any clue exactly" in prompt
+        assert "PRIOR CLUES FOR THESE ANSWERS" in prompt
+        assert "Do not repeat any of these exactly" in prompt
+        assert "prefer a fresh" in prompt
         assert '- ABCDE: "First five letters"' in prompt
 
     def test_repair_prompt_applies_sliding_familiarity_to_references(self) -> None:

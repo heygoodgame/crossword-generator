@@ -55,7 +55,9 @@ _GUIDELINES = (
     "For every clue, verify the fact, grammar, number, tense, part of speech, "
     "and exact phrase match. If you are not certain a proper noun, song, "
     "quote, sports team name, idiom, or pop-culture reference is correct, "
-    "use a plain dictionary-style clue instead.\n"
+    "drop that angle. On Easy puzzles fall back to a plain dictionary-style "
+    "clue; on Hard puzzles fall back to a different angle that is both solid "
+    "and appropriately difficult, not to an instantly-solvable clue.\n"
     "- Fill-in-the-blank clues must fit the answer exactly, including "
     "singular/plural, tense, spacing, and contractions. Do not clue SAINT "
     'with the plural Saints, BATTING with "At ___", or GOT A SAY with '
@@ -65,7 +67,9 @@ _GUIDELINES = (
     "available, but Easy clues should stay direct and obvious.\n"
     "- Do not repeat the exact same clue wording for the same answer across "
     "different puzzles. If prior clues are listed for an answer, write a new "
-    "clue that does not exactly duplicate any of them.\n"
+    "clue that does not exactly duplicate any of them — and when those prior "
+    "clues all lean on one reference or meaning, choose a different fair "
+    "angle this time rather than rewording the same one.\n"
     "- Use misdirection and cleverness only when they fit the target "
     "difficulty. For Easy clues, clarity beats cleverness.\n"
     "- Use question marks for witty/punny clues only when the target "
@@ -80,6 +84,19 @@ _GUIDELINES = (
     "Avoid dated references that mostly reward one generation, fandom, or "
     "era. If an answer can be clued through an everyday meaning instead, use "
     "that angle over a stale proper-noun reference.\n"
+    "- REFERENCE VARIETY: when an answer has several well-known angles, do "
+    "not default to the single most famous reference every time. If prior "
+    "clues are listed for an answer, pick an angle or reference those clues "
+    "have NOT already leaned on — e.g. if ALI has already been clued via "
+    "Muhammad Ali, reach for Mahershala Ali, Ali Wong, or Ali Baba instead "
+    "of rewording the boxing angle.\n"
+    "- ROMAN NUMERAL RULE: if the answer reads as a Roman numeral (III, LIV, "
+    'MMX), do not write a bare conversion clue like "54 in Roman numerals" '
+    'or a random-context one like "Year in Claudius\'s reign". Prefer a '
+    "real-world angle: a person or name (LIV → actress Liv Tyler), a famous "
+    'title or event that uses the numeral (Super Bowl LIV, "Rocky III"), or '
+    "a broadly known year (MMX → the Vancouver Olympics year). Use a plain "
+    "numeral-conversion clue only when no familiar angle exists.\n"
     '- Avoid unpleasant clue wording. Do not use terms like "death" or '
     '"undocumented immigrant" in clues. If a clue must refer to dying, use '
     'a gentle euphemism like "passed on" rather than blunt wording.\n'
@@ -225,9 +242,12 @@ _LEAK_EXAMPLES = (
     'Hard: "Level in a ranking"\n'
     '   ANSWER: ARC     Easy: "Curved path"           '
     'Hard: "Rainbow\'s shape"\n'
-    "   For Easy, prefer the instantly-solvable angle; for Hard, a fair but "
-    "less direct angle is welcome — but accuracy and the leak rules above "
-    "ALWAYS take priority over difficulty.\n"
+    '   ANSWER: THREE   Easy: "One more than two"     '
+    'Hard: "A crowd, proverbially"\n'
+    "   For Easy, prefer the instantly-solvable angle. For Hard, the Easy "
+    "column above is NOT acceptable — an instantly-solvable clue on a Hard "
+    "puzzle is a defect. Use the fair-but-less-direct angle, while accuracy "
+    "and the leak rules above ALWAYS take priority over difficulty.\n"
     "\n"
     "11. Compound / hidden-word leaks (a clue word that CONTAINS the answer):\n"
     '   ANSWER: WIFE  BAD: "Word in \\"Desperate Housewives\\"" — housewives '
@@ -247,6 +267,20 @@ _LEAK_EXAMPLES = (
     "13. Question-mark / pun clues (Hard only, and only when airtight):\n"
     '   ANSWER: GARDENER  Hard: "Plant manager?"  (the ? signals wordplay)\n'
     "   Never use a ? clue on Easy, and never when the pun is a stretch.\n"
+    "\n"
+    "14. Roman-numeral answers (clue the real-world thing, not the "
+    "conversion):\n"
+    '   ANSWER: LIV  BAD: "54, in old Rome" — bare numeral conversion with '
+    "no real-world anchor.\n"
+    '   GOOD: "Actress Tyler of \\"Armageddon\\"" or "Super Bowl the Chiefs '
+    'won in 2020"\n'
+    '   ANSWER: III  GOOD: "\\"Rocky ___\\" (1982 sequel)"\n'
+    "\n"
+    "15. Reference variety across puzzles (when prior clues are listed):\n"
+    '   ANSWER: ALI  Prior clues: "Boxing legend Muhammad"; "The Greatest '
+    'of the ring"\n'
+    '   BAD: "Heavyweight champ Muhammad" — same angle reworded.\n'
+    '   GOOD: "Mahershala of \\"Green Book\\"" or "Comedian Wong"\n'
     "\n"
     "SELF-CHECK before finalizing EACH clue: (a) does the clue contain the "
     "answer, any part of it, a shared root, an etymological cousin, or a "
@@ -287,18 +321,31 @@ def _difficulty_guidance(puzzle_type: PuzzleType, difficulty: PuzzleDifficulty) 
     else:
         base = (
             "This is an HGG Hard crossword. Aim for NYT Tuesday/Wednesday "
-            "difficulty: still fair and broadly accessible, but a notch more "
-            "challenging. Prefer clean, accurate clues with modest difficulty "
-            "over showy wordplay. You may use less direct definitions, common "
-            "secondary meanings, mild misdirection, and occasional question-mark "
-            "clues, but only when the clue remains factually airtight and "
-            "reasonably inferable. Avoid Saturday-level obscurity and trivia "
-            "that solvers cannot reason toward. Do not force difficulty with "
-            "strained pop-culture references, ultra-current slang, or clues "
-            "that only work after a long explanation. Older pop-culture "
-            "references are appropriate only when they are cross-generationally "
-            "iconic; otherwise choose a cleaner direct clue. If the clever "
-            "angle feels debatable, use a cleaner direct clue."
+            "difficulty: still fair and broadly accessible, but every clue "
+            "should make the solver pause and think for a beat. A clue the "
+            "average solver answers instantly with no crossing letters is TOO "
+            "EASY for this puzzle and is a defect, the same way an inaccurate "
+            "clue is. Never write Easy-style giveaways like a plain primary "
+            'definition, an obvious fill-in-the-blank, or arithmetic ("One '
+            'more than two" for THREE is exactly what NOT to write here — use '
+            'an angle like "A crowd, proverbially" instead). For each entry, '
+            "DEFAULT to a harder fair angle: a common secondary meaning, a "
+            "less-expected but accurate definition, a specific example instead "
+            "of the category, fair trivia solvers can reason toward, mild "
+            "misdirection, or an occasional question-mark clue. Reserve plain "
+            "direct definitions for entries that genuinely cannot support a "
+            "harder fair angle (some abbreviations, partials, and awkward "
+            "glue) — they should be the exception, roughly a quarter of the "
+            "clues at most, not the default. Accuracy still constrains WHICH "
+            "hard angle you pick: every clue must remain factually airtight "
+            "and reasonably inferable, and if a specific clever angle is "
+            "factually shaky, pick a different harder angle that is solid — "
+            "do not fall back to an instantly-solvable Easy clue. Avoid "
+            "Saturday-level obscurity and trivia that solvers cannot reason "
+            "toward. Do not force difficulty with strained pop-culture "
+            "references, ultra-current slang, or clues that only work after a "
+            "long explanation. Older pop-culture references are appropriate "
+            "only when they are cross-generationally iconic."
         )
     if puzzle_type == PuzzleType.MINI:
         return (
@@ -380,8 +427,12 @@ def build_clue_generation_messages(
             prior_lines.append(f"- {answer}: {quoted}")
         if prior_lines:
             prior_clues_block = (
-                "\nPRIOR CLUES FOR THESE ANSWERS:\n"
-                "Do not repeat any clue exactly for the same answer.\n"
+                "\nPRIOR CLUES FOR THESE ANSWERS (already used in other "
+                "puzzles):\n"
+                "Do not repeat any of these exactly. Also prefer a fresh "
+                "angle: when the prior clues for an answer lean on one "
+                "reference or meaning, clue it through a different fair "
+                "angle this time.\n"
                 + "\n".join(prior_lines)
                 + "\n"
             )
@@ -499,9 +550,23 @@ _REPAIR_GUIDELINES = (
     "- Accuracy is more important than cleverness. Verify facts, grammar, "
     "number, tense, part of speech, and exact phrase match. If the old clue "
     "used a questionable proper noun, song, quote, sports team name, idiom, "
-    "or pop-culture reference, replace it with a plain accurate clue. Apply "
+    "or pop-culture reference, drop that angle: on Easy, replace it with a "
+    "plain accurate clue; on Hard, replace it with a different solid angle "
+    "that still matches the target difficulty. Apply "
     "the same sliding familiarity standard: the older or more niche the "
     "reference is, the more broadly iconic it must be.\n"
+    "- If a clue was flagged as TOO EASY for a Hard puzzle, the replacement "
+    "must use a harder fair angle (secondary meaning, less-expected accurate "
+    "definition, fair trivia, or mild misdirection) — do not return another "
+    "instantly-solvable definition.\n"
+    "- If a clue was flagged as a duplicate of prior clues, do not just "
+    "reword the same reference — switch to a different fair angle (a "
+    "different person, meaning, or style) than the prior clues used.\n"
+    "- ROMAN NUMERAL RULE: for answers that read as Roman numerals (III, "
+    'LIV, MMX), avoid bare conversion clues ("54 in Roman numerals") and '
+    "random filler contexts; prefer a real-world angle such as a person "
+    "(LIV → Liv Tyler), a famous title or event (Super Bowl LIV, "
+    '"Rocky III"), or a broadly known year.\n'
     "- Fill-in-the-blank clues must fit the answer exactly, including "
     "singular/plural, tense, spacing, and contractions.\n"
     "- DO NOT use any crossing words in the clue.\n"

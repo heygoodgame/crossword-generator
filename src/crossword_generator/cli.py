@@ -333,12 +333,13 @@ def generate(
     help="LLM provider to use.",
 )
 @click.option(
-    "--avoid-existing-clues",
-    is_flag=True,
-    default=False,
+    "--avoid-existing-clues/--no-avoid-existing-clues",
+    default=True,
     help=(
-        "Load existing generated puzzles from the HeyGG admin API and avoid "
-        "reusing exact clue wording for the same answer."
+        "Load existing generated puzzles from the HeyGG admin API and feed "
+        "prior clues into generation, so the model avoids exact repeats and "
+        "varies its clue angles per answer (default: on). Requires admin API "
+        "credentials; pass --no-avoid-existing-clues to skip."
     ),
 )
 @click.option(
@@ -473,12 +474,18 @@ def generate_pilot_batch(
         except KeyError as exc:
             missing = exc.args[0]
             click.echo(
-                f"Missing required environment variable: {missing}",
+                f"Missing required environment variable: {missing}. "
+                "Prior-clue history is loaded by default so generation can "
+                "avoid repeats; pass --no-avoid-existing-clues to skip.",
                 err=True,
             )
             sys.exit(1)
         except Exception as exc:
-            click.echo(f"Failed to load existing clue history: {exc}", err=True)
+            click.echo(
+                f"Failed to load existing clue history: {exc}. "
+                "Pass --no-avoid-existing-clues to skip.",
+                err=True,
+            )
             sys.exit(1)
         click.echo(
             "Loaded existing clue history: "
