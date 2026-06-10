@@ -140,6 +140,10 @@ class TestLoadConfig:
             assert cfg.dictionary.additional_max_length is None
             assert cfg.fill.csp.additional_dictionary_min_length is None
             assert cfg.fill.csp.additional_dictionary_max_length is None
+        if filename.startswith("config.hard"):
+            assert cfg.grading.clue.freshness_repair_threshold == 10
+        else:
+            assert cfg.grading.clue.freshness_repair_threshold == 0
         assert cfg.theme.enabled is False
         assert cfg.llm.claude.theme_model == "claude-sonnet-4-6"
         assert cfg.llm.claude.clue_generation_model == "claude-opus-4-8"

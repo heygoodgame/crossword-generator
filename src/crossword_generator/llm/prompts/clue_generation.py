@@ -55,7 +55,9 @@ _GUIDELINES = (
     "For every clue, verify the fact, grammar, number, tense, part of speech, "
     "and exact phrase match. If you are not certain a proper noun, song, "
     "quote, sports team name, idiom, or pop-culture reference is correct, "
-    "use a plain dictionary-style clue instead.\n"
+    "drop that angle. On Easy puzzles fall back to a plain dictionary-style "
+    "clue; on Hard puzzles fall back to a different angle that is both solid "
+    "and appropriately difficult, not to an instantly-solvable clue.\n"
     "- Fill-in-the-blank clues must fit the answer exactly, including "
     "singular/plural, tense, spacing, and contractions. Do not clue SAINT "
     'with the plural Saints, BATTING with "At ___", or GOT A SAY with '
@@ -225,9 +227,12 @@ _LEAK_EXAMPLES = (
     'Hard: "Level in a ranking"\n'
     '   ANSWER: ARC     Easy: "Curved path"           '
     'Hard: "Rainbow\'s shape"\n'
-    "   For Easy, prefer the instantly-solvable angle; for Hard, a fair but "
-    "less direct angle is welcome — but accuracy and the leak rules above "
-    "ALWAYS take priority over difficulty.\n"
+    '   ANSWER: THREE   Easy: "One more than two"     '
+    'Hard: "A crowd, proverbially"\n'
+    "   For Easy, prefer the instantly-solvable angle. For Hard, the Easy "
+    "column above is NOT acceptable — an instantly-solvable clue on a Hard "
+    "puzzle is a defect. Use the fair-but-less-direct angle, while accuracy "
+    "and the leak rules above ALWAYS take priority over difficulty.\n"
     "\n"
     "11. Compound / hidden-word leaks (a clue word that CONTAINS the answer):\n"
     '   ANSWER: WIFE  BAD: "Word in \\"Desperate Housewives\\"" — housewives '
@@ -287,18 +292,31 @@ def _difficulty_guidance(puzzle_type: PuzzleType, difficulty: PuzzleDifficulty) 
     else:
         base = (
             "This is an HGG Hard crossword. Aim for NYT Tuesday/Wednesday "
-            "difficulty: still fair and broadly accessible, but a notch more "
-            "challenging. Prefer clean, accurate clues with modest difficulty "
-            "over showy wordplay. You may use less direct definitions, common "
-            "secondary meanings, mild misdirection, and occasional question-mark "
-            "clues, but only when the clue remains factually airtight and "
-            "reasonably inferable. Avoid Saturday-level obscurity and trivia "
-            "that solvers cannot reason toward. Do not force difficulty with "
-            "strained pop-culture references, ultra-current slang, or clues "
-            "that only work after a long explanation. Older pop-culture "
-            "references are appropriate only when they are cross-generationally "
-            "iconic; otherwise choose a cleaner direct clue. If the clever "
-            "angle feels debatable, use a cleaner direct clue."
+            "difficulty: still fair and broadly accessible, but every clue "
+            "should make the solver pause and think for a beat. A clue the "
+            "average solver answers instantly with no crossing letters is TOO "
+            "EASY for this puzzle and is a defect, the same way an inaccurate "
+            "clue is. Never write Easy-style giveaways like a plain primary "
+            'definition, an obvious fill-in-the-blank, or arithmetic ("One '
+            'more than two" for THREE is exactly what NOT to write here — use '
+            'an angle like "A crowd, proverbially" instead). For each entry, '
+            "DEFAULT to a harder fair angle: a common secondary meaning, a "
+            "less-expected but accurate definition, a specific example instead "
+            "of the category, fair trivia solvers can reason toward, mild "
+            "misdirection, or an occasional question-mark clue. Reserve plain "
+            "direct definitions for entries that genuinely cannot support a "
+            "harder fair angle (some abbreviations, partials, and awkward "
+            "glue) — they should be the exception, roughly a quarter of the "
+            "clues at most, not the default. Accuracy still constrains WHICH "
+            "hard angle you pick: every clue must remain factually airtight "
+            "and reasonably inferable, and if a specific clever angle is "
+            "factually shaky, pick a different harder angle that is solid — "
+            "do not fall back to an instantly-solvable Easy clue. Avoid "
+            "Saturday-level obscurity and trivia that solvers cannot reason "
+            "toward. Do not force difficulty with strained pop-culture "
+            "references, ultra-current slang, or clues that only work after a "
+            "long explanation. Older pop-culture references are appropriate "
+            "only when they are cross-generationally iconic."
         )
     if puzzle_type == PuzzleType.MINI:
         return (
@@ -499,9 +517,15 @@ _REPAIR_GUIDELINES = (
     "- Accuracy is more important than cleverness. Verify facts, grammar, "
     "number, tense, part of speech, and exact phrase match. If the old clue "
     "used a questionable proper noun, song, quote, sports team name, idiom, "
-    "or pop-culture reference, replace it with a plain accurate clue. Apply "
+    "or pop-culture reference, drop that angle: on Easy, replace it with a "
+    "plain accurate clue; on Hard, replace it with a different solid angle "
+    "that still matches the target difficulty. Apply "
     "the same sliding familiarity standard: the older or more niche the "
     "reference is, the more broadly iconic it must be.\n"
+    "- If a clue was flagged as TOO EASY for a Hard puzzle, the replacement "
+    "must use a harder fair angle (secondary meaning, less-expected accurate "
+    "definition, fair trivia, or mild misdirection) — do not return another "
+    "instantly-solvable definition.\n"
     "- Fill-in-the-blank clues must fit the answer exactly, including "
     "singular/plural, tense, spacing, and contractions.\n"
     "- DO NOT use any crossing words in the clue.\n"

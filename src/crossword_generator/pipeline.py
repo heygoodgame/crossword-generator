@@ -322,6 +322,7 @@ def create_pipeline(
         accuracy_repair_threshold=config.grading.clue.accuracy_repair_threshold,
         fairness_repair_threshold=config.grading.clue.fairness_repair_threshold,
         craft_repair_threshold=config.grading.clue.craft_repair_threshold,
+        freshness_repair_threshold=config.grading.clue.freshness_repair_threshold,
         individual_repair_score_threshold=(
             config.grading.clue.individual_repair_score_threshold
         ),

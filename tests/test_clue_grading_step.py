@@ -344,6 +344,103 @@ class TestFairnessRepair:
         assert clue_1a.clue == "Plain definition"
 
 
+class TestFreshnessRepair:
+    """Hard configs route evaluator-flagged too-easy clues to repair."""
+
+    def _eval_json_low_freshness(self, feedback: str) -> str:
+        items = []
+        for e in EXPECTED_ENTRIES:
+            low = (e["number"], e["direction"]) == (1, "across")
+            items.append(
+                {
+                    "number": e["number"],
+                    "direction": e["direction"],
+                    "accuracy": 22,
+                    "freshness": 5 if low else 20,
+                    "craft": 20,
+                    "fairness": 20,
+                    "feedback": feedback if low else "Good",
+                }
+            )
+        return json.dumps(items)
+
+    def test_low_freshness_triggers_repair_when_threshold_set(self) -> None:
+        """With freshness_repair_threshold set (Hard configs), a too-easy
+        clue (freshness 0-9) is surgically repaired."""
+        clue_json = _build_clue_json()
+        eval_json = self._eval_json_low_freshness("Plain but fine")
+        repair_json = json.dumps(
+            [{"number": 1, "direction": "across", "clue": "Harder angle"}]
+        )
+        re_eval_json = _build_eval_json(
+            accuracy=22, freshness=20, craft=20, fairness=20
+        )
+        llm = SequentialMockLLM([clue_json, eval_json, repair_json, re_eval_json])
+        grader = ClueGrader(llm, min_passing_score=70)
+        step = ClueWithGradingStep(
+            llm, grader, max_retries=1, freshness_repair_threshold=10
+        )
+        result = step.run(_make_envelope())
+
+        clue_1a = next(
+            c for c in result.clues if c.number == 1 and c.direction == "across"
+        )
+        assert clue_1a.clue == "Harder angle"
+
+    def test_low_freshness_ignored_by_default(self) -> None:
+        """With the default threshold (0, Easy configs), low freshness alone
+        does not trigger repair."""
+        clue_json = _build_clue_json()
+        eval_json = self._eval_json_low_freshness("Plain but fine")
+        llm = SequentialMockLLM([clue_json, eval_json])
+        grader = ClueGrader(llm, min_passing_score=70)
+        step = ClueWithGradingStep(llm, grader, max_retries=1)
+        result = step.run(_make_envelope())
+
+        clue_1a = next(
+            c for c in result.clues if c.number == 1 and c.direction == "across"
+        )
+        assert clue_1a.clue == "Generated clue 1 across"
+        assert llm.call_count == 2
+
+    def test_too_easy_feedback_marker_triggers_repair(self) -> None:
+        """Evaluator feedback containing "too easy" triggers repair even when
+        the numeric sub-scores all pass their thresholds."""
+        clue_json = _build_clue_json()
+        items = []
+        for e in EXPECTED_ENTRIES:
+            low = (e["number"], e["direction"]) == (1, "across")
+            items.append(
+                {
+                    "number": e["number"],
+                    "direction": e["direction"],
+                    "accuracy": 22,
+                    "freshness": 12 if low else 20,
+                    "craft": 20,
+                    "fairness": 20,
+                    "feedback": (
+                        "Too easy for a Hard puzzle" if low else "Good"
+                    ),
+                }
+            )
+        eval_json = json.dumps(items)
+        repair_json = json.dumps(
+            [{"number": 1, "direction": "across", "clue": "Harder angle"}]
+        )
+        re_eval_json = _build_eval_json(
+            accuracy=22, freshness=20, craft=20, fairness=20
+        )
+        llm = SequentialMockLLM([clue_json, eval_json, repair_json, re_eval_json])
+        grader = ClueGrader(llm, min_passing_score=70)
+        step = ClueWithGradingStep(llm, grader, max_retries=1)
+        result = step.run(_make_envelope())
+
+        clue_1a = next(
+            c for c in result.clues if c.number == 1 and c.direction == "across"
+        )
+        assert clue_1a.clue == "Harder angle"
+
+
 class TestVerifyAfterRepair:
     def test_repairs_again_when_still_flagged(self) -> None:
         """A clue still flagged after one repair is repaired a second time."""

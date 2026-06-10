@@ -13,14 +13,20 @@ Current emphasis:
 - Easy clue generation should be easier than NYT Monday: direct definitions,
   obvious fill-in-the-blanks, and broad casual-audience accessibility.
 - Hard clue generation should target NYT Tuesday/Wednesday: fair but more
-  oblique definitions, mild wordplay, and occasional misdirection. Avoid
+  oblique definitions, mild wordplay, and occasional misdirection. Per Jeff's
+  June 2026 feedback, an instantly-solvable Easy-style clue (e.g. "One more
+  than two" for THREE) is a defect on a Hard puzzle: the generation prompt
+  defaults Hard clues to a harder fair angle (secondary meanings, specific
+  examples, fair trivia, mild misdirection) and reserves plain direct
+  definitions for glue entries (roughly a quarter of clues at most). Avoid
   forced difficulty, strained pop-culture references, ultra-current slang, and
   clues that need a long explanation to be fair. For pop-culture, celebrity,
   entertainment, sports, brand, and historical references, the older or more
   niche the reference is, the more broadly iconic it must be. Accuracy and
   exact answer fit beat cleverness: if a proper noun, song, quote, team name,
-  idiom, or fill-in-the-blank angle is not certain, use a clean direct clue
-  instead.
+  idiom, or fill-in-the-blank angle is not certain, drop that angle — on Hard,
+  switch to a different solid hard angle rather than an instantly-solvable
+  clue.
 - Clues should avoid unpleasant wording such as "death" and "undocumented
   immigrant"; if dying must be referenced, use gentle wording such as
   "passed on."
@@ -31,7 +37,11 @@ Current emphasis:
   repair pass also fixes low individual clue scores or explicit evaluator
   "major issue" / "factual error" feedback even when aggregate clue score
   passes. Hard configs use a higher individual clue repair threshold so
-  borderline Hard clues are more likely to be surgically regenerated.
+  borderline Hard clues are more likely to be surgically regenerated. On Hard
+  puzzles, the evaluator scores too-easy clues 0-9 on freshness with "too
+  easy" in the feedback; Hard configs set
+  `grading.clue.freshness_repair_threshold: 10` so those clues are surgically
+  repaired with a harder fair angle.
 - A second-pass fact-risk checker runs after normal clue grading/repair. It
   pre-screens risky clue forms such as proper-noun trivia, titles, quotes,
   dates, superlatives, and fill-in-the-blank phrases, then rewrites clues the

@@ -641,7 +641,10 @@ class TestThemeAnnotationsInPrompt:
         assert "Saturday-level obscurity" in prompt
         assert "strained pop-culture references" in prompt
         assert "cross-generationally iconic" in prompt
-        assert "use a cleaner direct clue" in prompt
+        # Too-easy clues are an explicit defect on Hard puzzles.
+        assert "TOO EASY" in prompt
+        assert 'One more than two" for THREE' in prompt
+        assert "DEFAULT to a harder fair angle" in prompt
 
     def test_prompt_applies_sliding_familiarity_to_references(self) -> None:
         """Older/nicher references must be especially well known."""

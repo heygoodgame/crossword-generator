@@ -49,6 +49,7 @@ class ClueWithGradingStep(PipelineStep):
         accuracy_repair_threshold: float = 12,
         fairness_repair_threshold: float = 15,
         craft_repair_threshold: float = 8,
+        freshness_repair_threshold: float = 0,
         individual_repair_score_threshold: float = 65,
         surgical_repair_pass_ratio: float | None = 0.8,
         fact_checker: ClueFactChecker | None = None,
@@ -65,6 +66,7 @@ class ClueWithGradingStep(PipelineStep):
         self._accuracy_repair_threshold = accuracy_repair_threshold
         self._fairness_repair_threshold = fairness_repair_threshold
         self._craft_repair_threshold = craft_repair_threshold
+        self._freshness_repair_threshold = freshness_repair_threshold
         self._individual_repair_score_threshold = individual_repair_score_threshold
         self._surgical_repair_pass_ratio = surgical_repair_pass_ratio
         self._fact_checker = fact_checker
@@ -524,6 +526,13 @@ class ClueWithGradingStep(PipelineStep):
             return True
         if grade.craft is not None and grade.craft < self._craft_repair_threshold:
             return True
+        # Freshness threshold is 0 (disabled) by default; Hard configs raise it
+        # so evaluator-flagged too-easy clues (freshness 0-9) get repaired.
+        if (
+            grade.freshness is not None
+            and grade.freshness < self._freshness_repair_threshold
+        ):
+            return True
         if grade.score < self._individual_repair_score_threshold:
             return True
 
@@ -555,6 +564,7 @@ class ClueWithGradingStep(PipelineStep):
             "leaks",
             "should not be",
             "too obscure",
+            "too easy",
             "ultra-current slang",
             "forced",
             "strained",

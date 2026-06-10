@@ -38,7 +38,14 @@ _RUBRIC = (
     "score highly when they are clean and welcoming. For Hard clues, reward "
     "fair misdirection, wordplay, or creative angles that make the clue "
     "interesting without becoming obscure. For Hard clues, do not reward "
-    "cleverness unless the clue is first clearly accurate and inferable.\n\n"
+    "cleverness unless the clue is first clearly accurate and inferable. "
+    "CRITICAL — too-easy clues on Hard puzzles: if this is a Hard puzzle and "
+    "the clue is an Easy-style giveaway the average solver answers instantly "
+    "(a plain primary definition, an obvious fill-in-the-blank, or arithmetic "
+    'like "One more than two" for THREE), score FRESHNESS 0-9 and include '
+    'the phrase "too easy" in the feedback. Plain direct clues are '
+    "acceptable on Hard only for entries that cannot support a harder fair "
+    "angle, such as abbreviations and partials.\n\n"
     "3. CRAFT (0-25): Is the language economical and the surface reading clean? "
     "Does the clue read naturally as English? Is the difficulty appropriate "
     "for the puzzle type?\n\n"
@@ -161,14 +168,21 @@ def _difficulty_note(puzzle_type: PuzzleType, difficulty: PuzzleDifficulty) -> s
     else:
         base = (
             "This is an HGG Hard crossword. Reward NYT Tuesday/Wednesday-level "
-            "clues: fair, broadly accessible, and a notch more challenging. "
+            "clues: fair, broadly accessible, and a notch more challenging — "
+            "every clue should make the solver pause and think for a beat. "
             "Accuracy and exact answer fit are more important than difficulty. "
             "Mild misdirection, common secondary meanings, wordplay, and "
             "occasional question-mark clues are appropriate only when they are "
             "factually airtight and reasonably inferable. Penalize "
             "Saturday-level obscurity, forced cleverness, ultra-current slang, "
             "older pop-culture references that are not cross-generationally "
-            "iconic, or trivia solvers cannot reason toward."
+            "iconic, or trivia solvers cannot reason toward. Equally, penalize "
+            "clues that are too easy for this difficulty: an instantly "
+            "solvable Easy-style clue (plain primary definition, obvious "
+            "fill-in-the-blank, or arithmetic giveaway) must score FRESHNESS "
+            '0-9, with "too easy" stated in the feedback, unless the entry is '
+            "an abbreviation, partial, or similar glue that cannot support a "
+            "harder fair angle."
         )
     if puzzle_type == PuzzleType.MINI:
         return f"{base} MINI clues should remain especially concise."

@@ -13,11 +13,20 @@ Current emphasis:
 - Easy clue generation should be easier than NYT Monday: direct definitions,
   obvious fill-in-the-blanks, and broad casual-audience accessibility.
 - Hard clue generation should target NYT Tuesday/Wednesday: fair but more
-  oblique definitions, mild wordplay, and occasional misdirection. Avoid
+  oblique definitions, mild wordplay, and occasional misdirection. Per Jeff's
+  June 2026 feedback, an instantly-solvable Easy-style clue (e.g. "One more
+  than two" for THREE) is a defect on a Hard puzzle: the generation prompt
+  defaults Hard clues to a harder fair angle (secondary meanings, specific
+  examples, fair trivia, mild misdirection) and reserves plain direct
+  definitions for glue entries (roughly a quarter of clues at most). Avoid
   forced difficulty, strained pop-culture references, ultra-current slang, and
-  clues that need a long explanation to be fair. Accuracy and exact answer fit
-  beat cleverness: if a proper noun, song, quote, team name, idiom, or
-  fill-in-the-blank angle is not certain, use a clean direct clue instead.
+  clues that need a long explanation to be fair. For pop-culture, celebrity,
+  entertainment, sports, brand, and historical references, the older or more
+  niche the reference is, the more broadly iconic it must be. Accuracy and
+  exact answer fit beat cleverness: if a proper noun, song, quote, team name,
+  idiom, or fill-in-the-blank angle is not certain, drop that angle — on Hard,
+  switch to a different solid hard angle rather than an instantly-solvable
+  clue.
 - Clues should avoid unpleasant wording such as "death" and "undocumented
   immigrant"; if dying must be referenced, use gentle wording such as
   "passed on."
@@ -28,7 +37,15 @@ Current emphasis:
   repair pass also fixes low individual clue scores or explicit evaluator
   "major issue" / "factual error" feedback even when aggregate clue score
   passes. Hard configs use a higher individual clue repair threshold so
-  borderline Hard clues are more likely to be surgically regenerated.
+  borderline Hard clues are more likely to be surgically regenerated. On Hard
+  puzzles, the evaluator scores too-easy clues 0-9 on freshness with "too
+  easy" in the feedback; Hard configs set
+  `grading.clue.freshness_repair_threshold: 10` so those clues are surgically
+  repaired with a harder fair angle.
+- A second-pass fact-risk checker runs after normal clue grading/repair. It
+  pre-screens risky clue forms such as proper-noun trivia, titles, quotes,
+  dates, superlatives, and fill-in-the-blank phrases, then rewrites clues the
+  checker marks `uncertain` or `incorrect`.
 - HGG Easy is a single 3-9 letter effective list, scored `;50`, with known
   source-score 60 entries removed.
 - HGG 60 is a single 7-9 letter effective list, scored `;60`.
@@ -55,6 +72,11 @@ Current emphasis:
   can read as swastika-like.
 - Easy 9x9 generation skips grids with more than three 8-/9-letter slots.
 - Avoid unsuitable or controversial fill before clue generation and upload.
+- For known dated or too-niche answer entries, add them to
+  `dictionaries/HggThumbsDownHard.txt` or `dictionaries/HggThumbsDownEasy.txt`
+  and rebuild effective dictionaries. Prompt guidance can handle subjective
+  clue angles, but the thumbs-down lists are the durable mechanism for answer
+  entries Jeff does not want selected at all.
 - Preserve reproducible batch manifests and deterministic data-store keys.
 - When asked for a generated batch across Mini Crossword and Midi Crossword
   without explicit size counts, default to a rough 5:2:7 ratio for 5x5, 7x7,
@@ -72,7 +94,7 @@ It passes a `PuzzleEnvelope` through these steps:
 2. Grid fill via `CSPFiller`.
 3. Fill grading via `FillGrader`.
 4. Clue generation via Ollama or Claude.
-5. Clue grading and repair via the configured LLM.
+5. Clue grading, repair, and fact-risk checking via the configured LLMs.
 6. Puzzle naming.
 7. IPUZ export.
 

@@ -58,6 +58,7 @@ grading:
     regenerate_on_fail: true
     accuracy_repair_threshold: 12
     individual_repair_score_threshold: 70
+    freshness_repair_threshold: 10
     fact_check_enabled: true
     fact_check_scope: risky
 
