@@ -87,7 +87,14 @@ _RUBRIC = (
     "brand, and historical references: the older or more niche the reference "
     "is, the more broadly iconic it must be. Penalize dated references that "
     "mostly reward one generation, fandom, or era, especially when a clean "
-    "everyday clue angle is available. Penalize "
+    "everyday clue angle is available. "
+    "Penalize FRESHNESS for bare Roman-numeral conversion clues: when an "
+    "answer reads as a Roman numeral (III, LIV, MMX), a clue like "
+    '"54 in Roman numerals" or a random context like "Year in Claudius\'s '
+    'reign" should score low on FRESHNESS when a real-world angle exists '
+    "(a person such as Liv Tyler, a famous title or event such as Super "
+    'Bowl LIV or "Rocky III", or a broadly known year). '
+    "Penalize "
     'word-count tags like "(two words)" unless explicit word-boundary '
     "metadata was provided, and reward explanatory tags only when they are "
     'formatted parenthetically, e.g. "To the ___ (in the extreme)." '

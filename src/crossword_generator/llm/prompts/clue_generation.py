@@ -67,7 +67,9 @@ _GUIDELINES = (
     "available, but Easy clues should stay direct and obvious.\n"
     "- Do not repeat the exact same clue wording for the same answer across "
     "different puzzles. If prior clues are listed for an answer, write a new "
-    "clue that does not exactly duplicate any of them.\n"
+    "clue that does not exactly duplicate any of them — and when those prior "
+    "clues all lean on one reference or meaning, choose a different fair "
+    "angle this time rather than rewording the same one.\n"
     "- Use misdirection and cleverness only when they fit the target "
     "difficulty. For Easy clues, clarity beats cleverness.\n"
     "- Use question marks for witty/punny clues only when the target "
@@ -82,6 +84,19 @@ _GUIDELINES = (
     "Avoid dated references that mostly reward one generation, fandom, or "
     "era. If an answer can be clued through an everyday meaning instead, use "
     "that angle over a stale proper-noun reference.\n"
+    "- REFERENCE VARIETY: when an answer has several well-known angles, do "
+    "not default to the single most famous reference every time. If prior "
+    "clues are listed for an answer, pick an angle or reference those clues "
+    "have NOT already leaned on — e.g. if ALI has already been clued via "
+    "Muhammad Ali, reach for Mahershala Ali, Ali Wong, or Ali Baba instead "
+    "of rewording the boxing angle.\n"
+    "- ROMAN NUMERAL RULE: if the answer reads as a Roman numeral (III, LIV, "
+    'MMX), do not write a bare conversion clue like "54 in Roman numerals" '
+    'or a random-context one like "Year in Claudius\'s reign". Prefer a '
+    "real-world angle: a person or name (LIV → actress Liv Tyler), a famous "
+    'title or event that uses the numeral (Super Bowl LIV, "Rocky III"), or '
+    "a broadly known year (MMX → the Vancouver Olympics year). Use a plain "
+    "numeral-conversion clue only when no familiar angle exists.\n"
     '- Avoid unpleasant clue wording. Do not use terms like "death" or '
     '"undocumented immigrant" in clues. If a clue must refer to dying, use '
     'a gentle euphemism like "passed on" rather than blunt wording.\n'
@@ -253,6 +268,20 @@ _LEAK_EXAMPLES = (
     '   ANSWER: GARDENER  Hard: "Plant manager?"  (the ? signals wordplay)\n'
     "   Never use a ? clue on Easy, and never when the pun is a stretch.\n"
     "\n"
+    "14. Roman-numeral answers (clue the real-world thing, not the "
+    "conversion):\n"
+    '   ANSWER: LIV  BAD: "54, in old Rome" — bare numeral conversion with '
+    "no real-world anchor.\n"
+    '   GOOD: "Actress Tyler of \\"Armageddon\\"" or "Super Bowl the Chiefs '
+    'won in 2020"\n'
+    '   ANSWER: III  GOOD: "\\"Rocky ___\\" (1982 sequel)"\n'
+    "\n"
+    "15. Reference variety across puzzles (when prior clues are listed):\n"
+    '   ANSWER: ALI  Prior clues: "Boxing legend Muhammad"; "The Greatest '
+    'of the ring"\n'
+    '   BAD: "Heavyweight champ Muhammad" — same angle reworded.\n'
+    '   GOOD: "Mahershala of \\"Green Book\\"" or "Comedian Wong"\n'
+    "\n"
     "SELF-CHECK before finalizing EACH clue: (a) does the clue contain the "
     "answer, any part of it, a shared root, an etymological cousin, or a "
     "spelling fragment? (b) if the answer is an abbreviation, does the clue "
@@ -398,8 +427,12 @@ def build_clue_generation_messages(
             prior_lines.append(f"- {answer}: {quoted}")
         if prior_lines:
             prior_clues_block = (
-                "\nPRIOR CLUES FOR THESE ANSWERS:\n"
-                "Do not repeat any clue exactly for the same answer.\n"
+                "\nPRIOR CLUES FOR THESE ANSWERS (already used in other "
+                "puzzles):\n"
+                "Do not repeat any of these exactly. Also prefer a fresh "
+                "angle: when the prior clues for an answer lean on one "
+                "reference or meaning, clue it through a different fair "
+                "angle this time.\n"
                 + "\n".join(prior_lines)
                 + "\n"
             )
@@ -526,6 +559,14 @@ _REPAIR_GUIDELINES = (
     "must use a harder fair angle (secondary meaning, less-expected accurate "
     "definition, fair trivia, or mild misdirection) — do not return another "
     "instantly-solvable definition.\n"
+    "- If a clue was flagged as a duplicate of prior clues, do not just "
+    "reword the same reference — switch to a different fair angle (a "
+    "different person, meaning, or style) than the prior clues used.\n"
+    "- ROMAN NUMERAL RULE: for answers that read as Roman numerals (III, "
+    'LIV, MMX), avoid bare conversion clues ("54 in Roman numerals") and '
+    "random filler contexts; prefer a real-world angle such as a person "
+    "(LIV → Liv Tyler), a famous title or event (Super Bowl LIV, "
+    '"Rocky III"), or a broadly known year.\n'
     "- Fill-in-the-blank clues must fit the answer exactly, including "
     "singular/plural, tense, spacing, and contractions.\n"
     "- DO NOT use any crossing words in the clue.\n"

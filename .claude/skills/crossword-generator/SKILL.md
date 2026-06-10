@@ -46,6 +46,14 @@ doing non-trivial work. It documents:
 
 ## Common Commands
 
+Batch generation loads prior-clue history from the admin API by default
+(`--avoid-existing-clues`), so `HEYGG_ADMIN_API_TOKEN` (or
+`HEYGG_ADMIN_TOKEN`) must be set in the environment before generating —
+not just before uploading. The history feeds already-used clues into the
+generation prompt so the model avoids exact repeats and varies its clue
+angles per answer. Only pass `--no-avoid-existing-clues` for throwaway
+local experiments.
+
 Generate a clean cross-site Easy batch using the default 5x5:7x7:9x9 ratio:
 
 ```bash
