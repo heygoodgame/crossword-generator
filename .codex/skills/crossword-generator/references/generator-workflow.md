@@ -384,10 +384,39 @@ When adding new fill-quality rules, prefer the fill grader if a board should
 be rejected before clue generation. Add focused tests in `tests/test_fill_grader.py`
 and, where relevant, `tests/test_fill_with_grading_step.py`.
 
+## Scheduling-Time Answer-Repeat Windows
+
+hey-you enforces rolling no-repeat windows when dailies are scheduled,
+reassigned, or edited (`CrosswordPuzzleController`), cross-game and
+cross-track:
+
+- Regular answers: ±6 days (the original rule).
+- HGG 60 answers: ±180 days (Jeff's "feature entries" rule, 2026-06-09).
+  Membership is checked against the active published `hgg-60` effective
+  dictionary snapshot, so rescoring a word in/out of the 60 list changes
+  future checks automatically.
+
+Because a 60-pt collision blocks a candidate for months (not days),
+`generate-pilot-batch` excludes already-scheduled 60s at fill time — see the
+`--exclude-scheduled-sixty` notes below. The scheduling check remains the
+source of truth; the generator exclusion just keeps candidates schedulable.
+
+`GET /api/admin/crossword-puzzles/daily-answers/recent-sixty` returns the
+distinct scheduled HGG 60 answers from `window_days` (default 180) ago through
+all scheduled future days.
+
 ## Batch Generation
 
 `generate-pilot-batch` creates manifest-driven batches. Despite the name, it is
 the current production batch runner.
+
+When the batch includes a `hard/7` or `hard/9` bucket, the runner fetches
+scheduled HGG 60 answers from the admin API (requires `HEYGG_ADMIN_TOKEN` or
+`HEYGG_ADMIN_API_TOKEN`) and writes `hgg-60-scheduled-filtered.txt` into the
+output root; every `hgg-60.txt` config reference is pointed at that filtered
+copy for the run. This is on by default; pass `--no-exclude-scheduled-sixty`
+for offline/experimental runs. The manifest records the exclusion under
+`exclude_scheduled_sixty`.
 
 Grid selection notes:
 

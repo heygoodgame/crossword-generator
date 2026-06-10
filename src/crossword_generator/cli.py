@@ -16,7 +16,7 @@ from pathlib import Path
 import click
 
 from crossword_generator.clue_history import ClueHistoryIndex
-from crossword_generator.config import find_project_root, load_config
+from crossword_generator.config import Config, find_project_root, load_config
 from crossword_generator.pipeline import create_pipeline
 
 
@@ -347,6 +347,16 @@ def generate(
     help="Override HEYGG_API_BASE_URL when loading existing clue history.",
 )
 @click.option(
+    "--exclude-scheduled-sixty/--no-exclude-scheduled-sixty",
+    default=True,
+    help=(
+        "For hard 7x7/9x9 buckets, fetch HGG 60 answers already used in "
+        "scheduled dailies (180-day rolling window) from the HeyGG admin "
+        "API and exclude them from the hgg-60 fill pool, so candidates "
+        "stay schedulable under the 60-point no-repeat rule."
+    ),
+)
+@click.option(
     "--per-pattern-attempts",
     type=int,
     default=1,
@@ -409,6 +419,7 @@ def generate_pilot_batch(
     llm_provider: str,
     avoid_existing_clues: bool,
     api_base: str | None,
+    exclude_scheduled_sixty: bool,
     per_pattern_attempts: int,
     max_grid_variants: int,
     timeout_5: int,
@@ -476,6 +487,48 @@ def generate_pilot_batch(
             f"clues={clue_history.clue_count}"
         )
 
+    sixty_dictionary_override: str | None = None
+    scheduled_sixty_count = 0
+    needs_sixty_exclusion = exclude_scheduled_sixty and any(
+        difficulty == "hard"
+        and size in (7, 9)
+        and count_by_bucket[f"{difficulty}/{size}"] > 0
+        for difficulty, size, _, _ in selected_buckets
+    )
+    if needs_sixty_exclusion:
+        from crossword_generator.data_store import fetch_recent_sixty_answers
+
+        try:
+            scheduled_sixty = fetch_recent_sixty_answers(api_base=api_base)
+        except KeyError as exc:
+            click.echo(
+                f"Missing required environment variable: {exc.args[0]}. "
+                "Hard 7x7/9x9 buckets exclude scheduled HGG 60 answers by "
+                "default; pass --no-exclude-scheduled-sixty to skip.",
+                err=True,
+            )
+            sys.exit(1)
+        except Exception as exc:
+            click.echo(
+                f"Failed to fetch scheduled HGG 60 answers: {exc}. "
+                "Pass --no-exclude-scheduled-sixty to skip.",
+                err=True,
+            )
+            sys.exit(1)
+        if scheduled_sixty:
+            sixty_dictionary_override, scheduled_sixty_count = (
+                _write_filtered_sixty_dictionary(
+                    project_root, root, scheduled_sixty
+                )
+            )
+            click.echo(
+                f"Excluding {scheduled_sixty_count} scheduled HGG 60 "
+                f"answer(s) from the hgg-60 fill pool "
+                f"({len(scheduled_sixty)} reported by the API)."
+            )
+        else:
+            click.echo("No scheduled HGG 60 answers to exclude.")
+
     started_at = _utc_timestamp()
 
     # Flatten all (bucket, seed) items into one work-list so they can run
@@ -503,6 +556,7 @@ def generate_pilot_batch(
             timeout_by_size={5: timeout_5, 7: timeout_7, 9: timeout_9},
             clue_history=clue_history,
             llm_logging_enabled=not no_llm_log,
+            sixty_dictionary_override=sixty_dictionary_override,
         )
 
     def _report(result: dict[str, object]) -> None:
@@ -547,6 +601,12 @@ def generate_pilot_batch(
         "seed_start": seed_start,
         "llm_provider": llm_provider,
         "avoid_existing_clues": avoid_existing_clues,
+        "exclude_scheduled_sixty": {
+            "enabled": exclude_scheduled_sixty,
+            "applied": sixty_dictionary_override is not None,
+            "excluded_count": scheduled_sixty_count,
+            "dictionary_path": sixty_dictionary_override,
+        },
         "llm_logging_enabled": not no_llm_log,
         "max_workers": max_workers,
         "batch_fill": {
@@ -625,6 +685,62 @@ def _parse_bucket_count_size_key(raw_key: str) -> int | None:
     if separator and left == right and left.isdigit():
         return int(left)
     return None
+
+
+SIXTY_DICTIONARY_FILENAME = "hgg-60.txt"
+SIXTY_FILTERED_FILENAME = "hgg-60-scheduled-filtered.txt"
+
+
+def _write_filtered_sixty_dictionary(
+    project_root: Path,
+    output_root: Path,
+    excluded_answers: list[str],
+) -> tuple[str, int]:
+    """Write a copy of hgg-60.txt without the scheduled answers.
+
+    Returns the absolute path of the filtered file and the number of
+    dictionary rows removed.
+    """
+    source = project_root / "dictionaries" / SIXTY_DICTIONARY_FILENAME
+    excluded = {answer.strip().upper() for answer in excluded_answers}
+    kept: list[str] = []
+    removed = 0
+    for line in source.read_text().splitlines():
+        word = line.split(";", 1)[0].strip().upper()
+        if word and word in excluded:
+            removed += 1
+            continue
+        kept.append(line)
+    target = output_root / SIXTY_FILTERED_FILENAME
+    target.write_text("\n".join(kept) + "\n")
+    return str(target), removed
+
+
+def _apply_sixty_dictionary_override(config: Config, override_path: str) -> None:
+    """Point every hgg-60 dictionary reference at the filtered copy.
+
+    Hard configs merge hgg-60.txt in three places (pipeline dictionary,
+    themed pipeline dictionary, CSP filler); all must agree or the filler
+    could pick a word the grader pool no longer contains.
+    """
+
+    def _swap(paths: list[str]) -> list[str]:
+        return [
+            override_path
+            if Path(path).name == SIXTY_DICTIONARY_FILENAME
+            else path
+            for path in paths
+        ]
+
+    config.dictionary.additional_paths = _swap(
+        config.dictionary.additional_paths
+    )
+    config.dictionary.themed_additional_paths = _swap(
+        config.dictionary.themed_additional_paths
+    )
+    config.fill.csp.additional_dictionary_paths = _swap(
+        config.fill.csp.additional_dictionary_paths
+    )
 
 
 @main.command(name="save-generated-puzzles")
@@ -1798,6 +1914,7 @@ def _run_batch_item(
     timeout_by_size: dict[int, int],
     clue_history: ClueHistoryIndex | None = None,
     llm_logging_enabled: bool = True,
+    sixty_dictionary_override: str | None = None,
 ) -> dict[str, object]:
     bucket_dir = output_root / difficulty / f"{size}x{size}"
     bucket_dir.mkdir(parents=True, exist_ok=True)
@@ -1825,6 +1942,8 @@ def _run_batch_item(
     config.llm.logging.path = str(llm_log_path)
     if puzzle_type == "midi" and size == 9:
         config.theme.enabled = False
+    if sixty_dictionary_override is not None:
+        _apply_sixty_dictionary_override(config, sixty_dictionary_override)
 
     logger = logging.getLogger()
     # When items run in parallel they share the root logger, so scope each

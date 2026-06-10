@@ -15,6 +15,7 @@ from crossword_generator.data_store import (
     DataStoreError,
     bulk_save_generated_puzzles,
     delete_generated_puzzle_records,
+    fetch_recent_sixty_answers,
     list_generated_puzzle_records,
     make_record,
     records_from_manifest,
@@ -459,3 +460,50 @@ def test_records_from_manifest_skips_duplicate_puzzle(tmp_path: Path) -> None:
     assert records_from_manifest(manifest_path) == []
     # Override includes it.
     assert len(records_from_manifest(manifest_path, allow_leaks=True)) == 1
+
+
+def test_fetch_recent_sixty_answers_normalizes_and_validates(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls: list[tuple[str, str]] = []
+
+    def fake_request(
+        method: str,
+        path: str,
+        body: dict[str, Any] | None = None,
+        *,
+        api_base: str | None = None,
+        token: str | None = None,
+        timeout: int = 60,
+    ) -> dict[str, Any]:
+        calls.append((method, path))
+        return {
+            "window_days": 180,
+            "answers": ["moonwalk ", "JACKPOTS"],
+        }
+
+    monkeypatch.setattr(data_store, "_request_json", fake_request)
+
+    answers = fetch_recent_sixty_answers(token="token")
+
+    assert answers == ["MOONWALK", "JACKPOTS"]
+    assert calls == [
+        (
+            "GET",
+            "/admin/crossword-puzzles/daily-answers/recent-sixty"
+            "?window_days=180",
+        )
+    ]
+
+
+def test_fetch_recent_sixty_answers_rejects_bad_shape(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        data_store,
+        "_request_json",
+        lambda *args, **kwargs: {"answers": "nope"},
+    )
+
+    with pytest.raises(DataStoreError):
+        fetch_recent_sixty_answers(token="token")
