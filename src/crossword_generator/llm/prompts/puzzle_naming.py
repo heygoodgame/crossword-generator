@@ -8,12 +8,21 @@ from crossword_generator.models import ClueEntry, PuzzleType, ThemeConcept
 
 _ROLE = (
     "You are a crossword puzzle editor choosing a title for a "
-    "published puzzle — like Will Shortz naming a New York Times puzzle."
+    "published puzzle — like Will Shortz naming a New York Times "
+    "puzzle, with a constructor's fondness for puns."
 )
 
 _GUIDELINES = (
     "GUIDELINES:\n"
     "- The title must be 1-5 words\n"
+    "- Make it punny: the best titles are puns, double meanings, or "
+    "playful twists on a familiar phrase. A title that earns a smile "
+    "or a knowing groan beats a safe, plain one\n"
+    "- Good pun mechanics: repurpose an idiom or set phrase so it "
+    "reads differently in light of the fill ('Rise and Dine' for a "
+    "breakfast theme), or pick a phrase with a second meaning the "
+    "puzzle activates\n"
+    "- The humor must come from wordplay, never at anyone's expense\n"
     "- Be evocative and indirect, not literal\n"
     "- The title must NOT contain any answer word from the grid\n"
     "- Weight 1-Across heavily as the marquee entry — the title "

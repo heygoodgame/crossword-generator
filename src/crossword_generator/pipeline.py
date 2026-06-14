@@ -153,6 +153,7 @@ def create_pipeline(
     theme_file: Path | None = None,
     output_file: Path | None = None,
     clue_history: ClueHistoryIndex | None = None,
+    excluded_fill_words: set[str] | None = None,
 ) -> tuple[Pipeline, PuzzleEnvelope]:
     """Wire up a Pipeline and initial PuzzleEnvelope from config.
 
@@ -162,6 +163,10 @@ def create_pipeline(
         theme_file: Optional path to a pre-generated theme file.
             When provided, the theme is loaded and injected into the
             envelope, and the ThemeGenerationStep is skipped.
+        excluded_fill_words: Words removed from the fill dictionary before
+            the filler sees it. Batch runs pass the answers already used by
+            completed batch-mates so puzzles scheduled in the same window
+            cannot repeat each other's answers.
 
     Returns:
         Tuple of (Pipeline, initial PuzzleEnvelope).
@@ -213,6 +218,14 @@ def create_pipeline(
         "themed" if is_themed else "non-themed",
         dict_min_score,
     )
+    if excluded_fill_words:
+        removed = dictionary.remove_words(excluded_fill_words)
+        if removed:
+            logger.info(
+                "Removed %d already-used batch answer(s) from the fill "
+                "dictionary",
+                removed,
+            )
 
     # Build LLM providers — one per pipeline step so each can use a
     # different model.  For Claude, per-step model overrides are read

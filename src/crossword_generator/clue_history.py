@@ -139,6 +139,17 @@ def normalize_clue(clue: str) -> str:
     return text.strip()
 
 
+def extract_ipuz_answers(puzzle: dict[str, Any]) -> list[str]:
+    """Return every entry answer from an IPUZ crossword payload."""
+    solution = puzzle.get("solution")
+    if not isinstance(solution, list):
+        return []
+    grid = _solution_to_grid(solution)
+    if not grid:
+        return []
+    return [entry.answer for entry in compute_numbering(grid)]
+
+
 def extract_ipuz_answer_clues(puzzle: dict[str, Any]) -> list[tuple[str, str]]:
     """Return ``(answer, clue)`` pairs from an IPUZ crossword payload."""
     solution = puzzle.get("solution")

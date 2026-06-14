@@ -429,6 +429,59 @@ def fetch_recent_sixty_answers(
     return [str(answer).strip().upper() for answer in answers]
 
 
+@dataclass(frozen=True)
+class RecentDailyAnswers:
+    """Recently scheduled daily answers for generation-time exclusion."""
+
+    answers: list[str]
+    window_days: int
+    first_unscheduled_date: str | None
+    since_date: str | None
+    forward_days: int | None = None
+    until_date: str | None = None
+
+
+def fetch_recent_daily_answers(
+    *,
+    window_days: int | None = None,
+    api_base: str | None = None,
+    token: str | None = None,
+    timeout: int = 60,
+) -> RecentDailyAnswers:
+    """Fetch answers used in recently scheduled dailies from the admin API.
+
+    The server returns distinct answers scheduled within a bounded window
+    around the first unscheduled daily slot: ``window_days`` (server default
+    7) back through ``forward_days`` (server default 13) ahead. Batches
+    exclude these from fill pools so new candidates don't collide with the
+    +/-6-day no-repeat rule when scheduled.
+    """
+    path = "/admin/crossword-puzzles/daily-answers/recent"
+    if window_days is not None:
+        path += f"?{urlencode({'window_days': window_days})}"
+    response = _request_json(
+        "GET",
+        path,
+        api_base=api_base,
+        token=token,
+        timeout=timeout,
+    )
+    answers = response.get("answers", [])
+    if not isinstance(answers, list):
+        raise DataStoreError(
+            f"Unexpected recent daily answers response shape: {response}"
+        )
+    forward_days = response.get("forward_days")
+    return RecentDailyAnswers(
+        answers=[str(answer).strip().upper() for answer in answers],
+        window_days=int(response.get("window_days", window_days or 0)),
+        first_unscheduled_date=response.get("first_unscheduled_date"),
+        since_date=response.get("since_date"),
+        forward_days=int(forward_days) if forward_days is not None else None,
+        until_date=response.get("until_date"),
+    )
+
+
 def delete_generated_puzzle_records(
     records: list[dict[str, Any]],
     *,

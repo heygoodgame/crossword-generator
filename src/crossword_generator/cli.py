@@ -9,6 +9,7 @@ import subprocess
 import sys
 import threading
 import time
+from collections.abc import Iterable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
@@ -364,6 +365,42 @@ def generate(
     ),
 )
 @click.option(
+    "--exclude-recent-answers/--no-exclude-recent-answers",
+    default=True,
+    help=(
+        "Fetch answers used in recently scheduled dailies (7 days before "
+        "the first unscheduled daily slot, plus all scheduled future days) "
+        "from the HeyGG admin API and exclude them from every fill pool, "
+        "so candidates stay schedulable under the +/-6-day answer "
+        "no-repeat rule."
+    ),
+)
+@click.option(
+    "--exclude-answers-file",
+    "exclude_answers_files",
+    multiple=True,
+    type=click.Path(exists=True),
+    help=(
+        "File of answer words (one per line) to exclude from every fill "
+        "pool, in addition to the API-driven exclusions. Repeatable. Used "
+        "for targeted replacement runs that must avoid every answer "
+        "already in a batch (see check-batch-answers --write-answers-file)."
+    ),
+)
+@click.option(
+    "--exclude-answers-min-length",
+    type=int,
+    default=4,
+    help=(
+        "Minimum answer length for the intra-batch exclusions "
+        "(--exclude-answers-file words and answers used by completed "
+        "batch-mates in this run). Short glue (<= 3 letters) saturates "
+        "9x9 fills — excluding it makes grids unfillable — and the "
+        "scheduler tolerates 3-letter repeats between 9x9s placed 3+ days "
+        "apart. API-driven exclusions are unaffected."
+    ),
+)
+@click.option(
     "--per-pattern-attempts",
     type=int,
     default=1,
@@ -427,6 +464,9 @@ def generate_pilot_batch(
     avoid_existing_clues: bool,
     api_base: str | None,
     exclude_scheduled_sixty: bool,
+    exclude_recent_answers: bool,
+    exclude_answers_files: tuple[str, ...],
+    exclude_answers_min_length: int,
     per_pattern_attempts: int,
     max_grid_variants: int,
     timeout_5: int,
@@ -500,8 +540,7 @@ def generate_pilot_batch(
             f"clues={clue_history.clue_count}"
         )
 
-    sixty_dictionary_override: str | None = None
-    scheduled_sixty_count = 0
+    scheduled_sixty: list[str] = []
     needs_sixty_exclusion = exclude_scheduled_sixty and any(
         difficulty == "hard"
         and size in (7, 9)
@@ -528,34 +567,112 @@ def generate_pilot_batch(
                 err=True,
             )
             sys.exit(1)
-        if scheduled_sixty:
-            sixty_dictionary_override, scheduled_sixty_count = (
-                _write_filtered_sixty_dictionary(
-                    project_root, root, scheduled_sixty
-                )
-            )
-            click.echo(
-                f"Excluding {scheduled_sixty_count} scheduled HGG 60 "
-                f"answer(s) from the hgg-60 fill pool "
-                f"({len(scheduled_sixty)} reported by the API)."
-            )
-        else:
+        if not scheduled_sixty:
             click.echo("No scheduled HGG 60 answers to exclude.")
+
+    recent_answers: list[str] = []
+    recent_meta = None
+    needs_recent_exclusion = exclude_recent_answers and any(
+        count > 0 for count in count_by_bucket.values()
+    )
+    if needs_recent_exclusion:
+        from crossword_generator.data_store import fetch_recent_daily_answers
+
+        try:
+            recent_meta = fetch_recent_daily_answers(api_base=api_base)
+        except KeyError as exc:
+            click.echo(
+                f"Missing required environment variable: {exc.args[0]}. "
+                "Recently scheduled answers are excluded from fill pools by "
+                "default so candidates stay schedulable; pass "
+                "--no-exclude-recent-answers to skip.",
+                err=True,
+            )
+            sys.exit(1)
+        except Exception as exc:
+            click.echo(
+                f"Failed to fetch recently scheduled answers: {exc}. "
+                "Pass --no-exclude-recent-answers to skip.",
+                err=True,
+            )
+            sys.exit(1)
+        recent_answers = recent_meta.answers
+        click.echo(
+            f"Excluding {len(recent_answers)} recently scheduled answer(s) "
+            f"from fill pools ({recent_meta.window_days}-day window before "
+            f"first unscheduled slot {recent_meta.first_unscheduled_date})."
+        )
+
+    extra_excluded_answers: set[str] = set()
+    for answers_file in exclude_answers_files:
+        extra_excluded_answers.update(
+            word.strip().upper()
+            for word in Path(answers_file).read_text().splitlines()
+            if len(word.strip()) >= exclude_answers_min_length
+        )
+    if extra_excluded_answers:
+        click.echo(
+            f"Excluding {len(extra_excluded_answers)} answer(s) of length "
+            f">={exclude_answers_min_length} from "
+            f"{len(exclude_answers_files)} --exclude-answers-file file(s)."
+        )
+
+    # Write filtered copies of every fill dictionary the active buckets
+    # reference. The hgg-60 pool excludes the 180-day sixty list plus the
+    # recent answers; base pools exclude only the recent answers. Both also
+    # exclude any --exclude-answers-file words.
+    dictionary_overrides: dict[str, str] = {}
+    removed_by_dictionary: dict[str, int] = {}
+    for filename in sorted(
+        _referenced_dictionary_filenames(selected_buckets, count_by_bucket)
+    ):
+        excluded = set(recent_answers) | extra_excluded_answers
+        if filename == SIXTY_DICTIONARY_FILENAME:
+            excluded.update(scheduled_sixty)
+        source = project_root / "dictionaries" / filename
+        if not excluded or not source.exists():
+            continue
+        target_filename = (
+            SIXTY_FILTERED_FILENAME
+            if filename == SIXTY_DICTIONARY_FILENAME
+            else f"{Path(filename).stem}-recent-filtered.txt"
+        )
+        override_path, removed = _write_filtered_dictionary(
+            project_root, root, filename, sorted(excluded), target_filename
+        )
+        dictionary_overrides[filename] = override_path
+        removed_by_dictionary[filename] = removed
+    if removed_by_dictionary:
+        details = ", ".join(
+            f"{name}: {removed}"
+            for name, removed in sorted(removed_by_dictionary.items())
+        )
+        click.echo(f"Filtered dictionary rows removed ({details}).")
 
     started_at = _utc_timestamp()
 
     # Flatten all (bucket, seed) items into one work-list so they can run
     # concurrently. Puzzles are independent; the only shared state is the
-    # thread-safe clue_history.
+    # thread-safe clue_history and used_answers.
     work_items: list[tuple[str, int, str, Path, int]] = []
     for difficulty, size, puzzle_type, config_path in selected_buckets:
         bucket_count = count_by_bucket[f"{difficulty}/{size}"]
         for seed in range(seed_start, seed_start + bucket_count):
             work_items.append((difficulty, size, puzzle_type, config_path, seed))
 
+    # Answers used by completed batch items. Each new item starts with a
+    # snapshot removed from its fill dictionary, so a batch scheduled across
+    # one week cannot repeat answers between its own puzzles. The CSP fill
+    # is heavily biased toward the same words on the same grid (different
+    # seeds converge on near-identical fills), so this exclusion is what
+    # actually guarantees intra-batch answer uniqueness. Parallel workers
+    # can't see in-flight batch-mates; check-batch-answers catches the
+    # residue after the run.
+    used_answers = _UsedAnswerSet(min_length=exclude_answers_min_length)
+
     def _run_item(item: tuple[str, int, str, Path, int]) -> dict[str, object]:
         difficulty, size, puzzle_type, config_path, seed = item
-        return _run_batch_item(
+        result = _run_batch_item(
             difficulty=difficulty,
             size=size,
             puzzle_type=puzzle_type,
@@ -569,9 +686,25 @@ def generate_pilot_batch(
             timeout_by_size={5: timeout_5, 7: timeout_7, 9: timeout_9},
             clue_history=clue_history,
             llm_logging_enabled=not no_llm_log,
-            sixty_dictionary_override=sixty_dictionary_override,
+            dictionary_overrides=dictionary_overrides,
             keep_sweep_context=max_workers > 1,
+            excluded_fill_words=used_answers.snapshot(),
         )
+        if result["success"]:
+            from crossword_generator.clue_history import extract_ipuz_answers
+
+            try:
+                puzzle = json.loads(
+                    Path(str(result["output_path"])).read_text()
+                )
+                used_answers.add(extract_ipuz_answers(puzzle))
+            except (OSError, json.JSONDecodeError):
+                logging.getLogger(__name__).warning(
+                    "Could not index answers from %s for in-batch "
+                    "exclusion",
+                    result["output_path"],
+                )
+        return result
 
     def _report(result: dict[str, object]) -> None:
         status = "ok" if result["success"] else "failed"
@@ -628,9 +761,31 @@ def generate_pilot_batch(
         "avoid_existing_clues": avoid_existing_clues,
         "exclude_scheduled_sixty": {
             "enabled": exclude_scheduled_sixty,
-            "applied": sixty_dictionary_override is not None,
-            "excluded_count": scheduled_sixty_count,
-            "dictionary_path": sixty_dictionary_override,
+            "applied": SIXTY_DICTIONARY_FILENAME in dictionary_overrides,
+            "excluded_count": removed_by_dictionary.get(
+                SIXTY_DICTIONARY_FILENAME, 0
+            ),
+            "dictionary_path": dictionary_overrides.get(
+                SIXTY_DICTIONARY_FILENAME
+            ),
+        },
+        "exclude_recent_answers": {
+            "enabled": exclude_recent_answers,
+            "applied": bool(recent_answers),
+            "answer_count": len(recent_answers),
+            "window_days": recent_meta.window_days if recent_meta else None,
+            "forward_days": recent_meta.forward_days if recent_meta else None,
+            "until_date": recent_meta.until_date if recent_meta else None,
+            "first_unscheduled_date": (
+                recent_meta.first_unscheduled_date if recent_meta else None
+            ),
+            "removed_by_dictionary": removed_by_dictionary,
+            "dictionary_paths": dictionary_overrides,
+        },
+        "exclude_answers_files": {
+            "paths": list(exclude_answers_files),
+            "answer_count": len(extra_excluded_answers),
+            "min_length": exclude_answers_min_length,
         },
         "llm_logging_enabled": not no_llm_log,
         "max_workers": max_workers,
@@ -720,17 +875,69 @@ SIXTY_DICTIONARY_FILENAME = "hgg-60.txt"
 SIXTY_FILTERED_FILENAME = "hgg-60-scheduled-filtered.txt"
 
 
-def _write_filtered_sixty_dictionary(
+class _UsedAnswerSet:
+    """Thread-safe set of answers used by completed batch items.
+
+    Answers shorter than ``min_length`` are not tracked: short glue
+    saturates 9x9 fills, and the scheduling-time short-answer window
+    tolerates 3-letter repeats between 9x9s placed 3+ days apart.
+    """
+
+    def __init__(self, min_length: int = 4) -> None:
+        self._answers: set[str] = set()
+        self._min_length = min_length
+        self._lock = threading.Lock()
+
+    def snapshot(self) -> set[str]:
+        with self._lock:
+            return set(self._answers)
+
+    def add(self, answers: Iterable[str]) -> None:
+        with self._lock:
+            self._answers.update(
+                answer.strip().upper()
+                for answer in answers
+                if len(answer.strip()) >= self._min_length
+            )
+
+
+def _referenced_dictionary_filenames(
+    selected_buckets: list[tuple[str, int, str, Path]],
+    count_by_bucket: dict[str, int],
+) -> set[str]:
+    """Fill-dictionary filenames referenced by the active buckets' configs."""
+    filenames: set[str] = set()
+    for difficulty, size, _, config_path in selected_buckets:
+        if count_by_bucket[f"{difficulty}/{size}"] <= 0:
+            continue
+        config = load_config(config_path)
+        filenames.update(
+            Path(path).name
+            for path in (
+                config.dictionary.path,
+                config.dictionary.themed_path,
+                config.fill.csp.dictionary_path,
+                *config.dictionary.additional_paths,
+                *config.dictionary.themed_additional_paths,
+                *config.fill.csp.additional_dictionary_paths,
+            )
+        )
+    return filenames
+
+
+def _write_filtered_dictionary(
     project_root: Path,
     output_root: Path,
+    source_filename: str,
     excluded_answers: list[str],
+    target_filename: str,
 ) -> tuple[str, int]:
-    """Write a copy of hgg-60.txt without the scheduled answers.
+    """Write a copy of a dictionary without the excluded answers.
 
     Returns the absolute path of the filtered file and the number of
     dictionary rows removed.
     """
-    source = project_root / "dictionaries" / SIXTY_DICTIONARY_FILENAME
+    source = project_root / "dictionaries" / source_filename
     excluded = {answer.strip().upper() for answer in excluded_answers}
     kept: list[str] = []
     removed = 0
@@ -740,35 +947,165 @@ def _write_filtered_sixty_dictionary(
             removed += 1
             continue
         kept.append(line)
-    target = output_root / SIXTY_FILTERED_FILENAME
+    target = output_root / target_filename
     target.write_text("\n".join(kept) + "\n")
     return str(target), removed
 
 
-def _apply_sixty_dictionary_override(config: Config, override_path: str) -> None:
-    """Point every hgg-60 dictionary reference at the filtered copy.
+def _apply_dictionary_overrides(
+    config: Config, overrides: dict[str, str]
+) -> None:
+    """Point dictionary references at filtered copies, matched by filename.
 
-    Hard configs merge hgg-60.txt in three places (pipeline dictionary,
-    themed pipeline dictionary, CSP filler); all must agree or the filler
-    could pick a word the grader pool no longer contains.
+    Configs reference each dictionary in several places (pipeline
+    dictionary, themed pipeline dictionary, CSP filler); all must agree or
+    the filler could pick a word the grader pool no longer contains.
     """
 
-    def _swap(paths: list[str]) -> list[str]:
-        return [
-            override_path
-            if Path(path).name == SIXTY_DICTIONARY_FILENAME
-            else path
-            for path in paths
-        ]
+    def _swap_one(path: str) -> str:
+        return overrides.get(Path(path).name, path)
 
+    def _swap(paths: list[str]) -> list[str]:
+        return [_swap_one(path) for path in paths]
+
+    config.dictionary.path = _swap_one(config.dictionary.path)
+    config.dictionary.themed_path = _swap_one(config.dictionary.themed_path)
     config.dictionary.additional_paths = _swap(
         config.dictionary.additional_paths
     )
     config.dictionary.themed_additional_paths = _swap(
         config.dictionary.themed_additional_paths
     )
+    config.fill.csp.dictionary_path = _swap_one(
+        config.fill.csp.dictionary_path
+    )
     config.fill.csp.additional_dictionary_paths = _swap(
         config.fill.csp.additional_dictionary_paths
+    )
+
+
+@main.command(name="check-batch-answers")
+@click.option(
+    "--manifest",
+    "manifest_path",
+    type=click.Path(exists=True),
+    required=True,
+    help="Batch manifest produced by generate-pilot-batch.",
+)
+@click.option(
+    "--write-answers-file",
+    type=click.Path(),
+    default=None,
+    help=(
+        "Also write every answer found in the batch (one per line, "
+        "deduplicated) for use with generate-pilot-batch "
+        "--exclude-answers-file in replacement runs."
+    ),
+)
+@click.option(
+    "--allow-short-window",
+    is_flag=True,
+    default=False,
+    help=(
+        "Treat short-window duplicates (3-letter answers shared only "
+        "between 9x9 puzzles) as warnings rather than failures. The "
+        "scheduler allows those repeats when the puzzles are placed 3+ "
+        "days apart."
+    ),
+)
+def check_batch_answers(
+    manifest_path: str,
+    write_answers_file: str | None,
+    allow_short_window: bool,
+) -> None:
+    """Report duplicate answers shared across puzzles in a generated batch.
+
+    A weekly batch is scheduled across consecutive days, so any answer
+    appearing in two puzzles would trip the scheduling-time no-repeat
+    windows. Exits non-zero when any cross-puzzle duplicate exists.
+    Duplicates of 3-letter answers confined to 9x9 puzzles are labelled
+    short-window (the scheduler allows those 3+ days apart), but still
+    count as failures: an all-unique batch schedules without manual care.
+    """
+    from crossword_generator.clue_history import extract_ipuz_answers
+
+    manifest = json.loads(Path(manifest_path).read_text())
+    puzzles: list[tuple[str, int, list[str]]] = []
+    for result in manifest.get("results", []):
+        if not result.get("success"):
+            continue
+        output_path = Path(str(result.get("output_path", "")))
+        if not output_path.exists():
+            click.echo(f"Missing output file: {output_path}", err=True)
+            sys.exit(2)
+        label = (
+            f"{result['difficulty']}/{result['size']}x{result['size']}"
+            f"/seed-{result['seed']}"
+        )
+        answers = [
+            answer.strip().upper()
+            for answer in extract_ipuz_answers(
+                json.loads(output_path.read_text())
+            )
+        ]
+        puzzles.append((label, int(result["size"]), answers))
+
+    # Dedupe within each puzzle: the fill grader already guards intra-puzzle
+    # repeats; this check targets answers shared across puzzles.
+    by_answer: dict[str, list[tuple[str, int]]] = {}
+    for label, size, answers in puzzles:
+        for answer in sorted(set(answers)):
+            by_answer.setdefault(answer, []).append((label, size))
+
+    if write_answers_file:
+        Path(write_answers_file).write_text(
+            "\n".join(sorted(by_answer)) + "\n"
+        )
+        click.echo(
+            f"Wrote {len(by_answer)} unique answer(s) to {write_answers_file}"
+        )
+
+    total_answers = sum(len(answers) for _, _, answers in puzzles)
+    duplicates = {
+        answer: hits
+        for answer, hits in by_answer.items()
+        if len(hits) > 1
+    }
+    click.echo(
+        f"{manifest.get('batch', '<batch>')}: {len(puzzles)} puzzle(s), "
+        f"{total_answers} answer(s), {len(by_answer)} unique."
+    )
+    if not duplicates:
+        click.echo("No duplicate answers across puzzles.")
+        return
+
+    blocking_count = 0
+    short_window_count = 0
+    for answer in sorted(duplicates):
+        hits = duplicates[answer]
+        short_window = len(answer) <= 3 and all(
+            size == 9 for _, size in hits
+        )
+        if short_window:
+            short_window_count += 1
+        else:
+            blocking_count += 1
+        kind = "short-window (9x9-only, +/-2 days)" if short_window else "blocking"
+        labels = ", ".join(label for label, _ in hits)
+        click.echo(f"DUPLICATE [{kind}]: {answer} — {labels}")
+    click.echo(
+        f"{len(duplicates)} duplicate answer(s) across puzzles "
+        f"({blocking_count} blocking, {short_window_count} short-window)."
+    )
+    if blocking_count or not allow_short_window:
+        click.echo(
+            "Regenerate the affected puzzles with --exclude-answers-file "
+            "before uploading."
+        )
+        sys.exit(1)
+    click.echo(
+        "Short-window duplicates allowed (--allow-short-window): schedule "
+        "the affected 9x9s 3+ days apart."
     )
 
 
@@ -1943,8 +2280,9 @@ def _run_batch_item(
     timeout_by_size: dict[int, int],
     clue_history: ClueHistoryIndex | None = None,
     llm_logging_enabled: bool = True,
-    sixty_dictionary_override: str | None = None,
+    dictionary_overrides: dict[str, str] | None = None,
     keep_sweep_context: bool = False,
+    excluded_fill_words: set[str] | None = None,
 ) -> dict[str, object]:
     bucket_dir = output_root / difficulty / f"{size}x{size}"
     bucket_dir.mkdir(parents=True, exist_ok=True)
@@ -1972,8 +2310,8 @@ def _run_batch_item(
     config.llm.logging.path = str(llm_log_path)
     if puzzle_type == "midi" and size == 9:
         config.theme.enabled = False
-    if sixty_dictionary_override is not None:
-        _apply_sixty_dictionary_override(config, sixty_dictionary_override)
+    if dictionary_overrides:
+        _apply_dictionary_overrides(config, dictionary_overrides)
 
     logger = logging.getLogger()
     # When items run in parallel they share the root logger, so scope each
@@ -2021,6 +2359,7 @@ def _run_batch_item(
             seed=seed,
             output_file=output_path,
             clue_history=clue_history,
+            excluded_fill_words=excluded_fill_words,
         )
         completed = pipeline.run(envelope)
         if output_path.exists() and clue_history is not None:

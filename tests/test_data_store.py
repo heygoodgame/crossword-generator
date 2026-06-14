@@ -15,6 +15,7 @@ from crossword_generator.data_store import (
     DataStoreError,
     bulk_save_generated_puzzles,
     delete_generated_puzzle_records,
+    fetch_recent_daily_answers,
     fetch_recent_sixty_answers,
     list_generated_puzzle_records,
     make_record,
@@ -507,3 +508,72 @@ def test_fetch_recent_sixty_answers_rejects_bad_shape(
 
     with pytest.raises(DataStoreError):
         fetch_recent_sixty_answers(token="token")
+
+
+def test_fetch_recent_daily_answers_normalizes_and_validates(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls: list[tuple[str, str]] = []
+
+    def fake_request(
+        method: str,
+        path: str,
+        body: dict[str, Any] | None = None,
+        *,
+        api_base: str | None = None,
+        token: str | None = None,
+        timeout: int = 60,
+    ) -> dict[str, Any]:
+        calls.append((method, path))
+        return {
+            "window_days": 7,
+            "first_unscheduled_date": "2026-06-20",
+            "since_date": "2026-06-13",
+            "answers": ["alpha ", "BRAVO"],
+        }
+
+    monkeypatch.setattr(data_store, "_request_json", fake_request)
+
+    recent = fetch_recent_daily_answers(token="token")
+
+    assert recent.answers == ["ALPHA", "BRAVO"]
+    assert recent.window_days == 7
+    assert recent.first_unscheduled_date == "2026-06-20"
+    assert recent.since_date == "2026-06-13"
+    assert calls == [
+        ("GET", "/admin/crossword-puzzles/daily-answers/recent")
+    ]
+
+
+def test_fetch_recent_daily_answers_passes_window_override(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls: list[str] = []
+
+    def fake_request(
+        method: str, path: str, *args: Any, **kwargs: Any
+    ) -> dict[str, Any]:
+        calls.append(path)
+        return {"window_days": 3, "answers": []}
+
+    monkeypatch.setattr(data_store, "_request_json", fake_request)
+
+    recent = fetch_recent_daily_answers(window_days=3, token="token")
+
+    assert recent.answers == []
+    assert calls == [
+        "/admin/crossword-puzzles/daily-answers/recent?window_days=3"
+    ]
+
+
+def test_fetch_recent_daily_answers_rejects_bad_shape(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        data_store,
+        "_request_json",
+        lambda *args, **kwargs: {"answers": "nope"},
+    )
+
+    with pytest.raises(DataStoreError):
+        fetch_recent_daily_answers(token="token")

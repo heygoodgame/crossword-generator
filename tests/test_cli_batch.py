@@ -5,15 +5,16 @@ import threading
 from pathlib import Path
 
 from crossword_generator.cli import (
-    _apply_sixty_dictionary_override,
+    _apply_dictionary_overrides,
     _batch_bucket_configs,
     _extract_grid_variant,
     _failure_category,
     _parse_batch_count_overrides,
+    _referenced_dictionary_filenames,
     _run_duplicate_sweep,
     _summarize_batch_results,
     _ThreadFilter,
-    _write_filtered_sixty_dictionary,
+    _write_filtered_dictionary,
 )
 from crossword_generator.clue_history import (
     ClueHistoryIndex,
@@ -146,7 +147,7 @@ def test_parse_batch_count_overrides_allows_exact_bucket_override(tmp_path) -> N
     assert counts["hard/9"] == 8
 
 
-def test_write_filtered_sixty_dictionary_removes_scheduled_words(
+def test_write_filtered_dictionary_removes_scheduled_words(
     tmp_path,
 ) -> None:
     dictionaries = tmp_path / "dictionaries"
@@ -157,10 +158,12 @@ def test_write_filtered_sixty_dictionary_removes_scheduled_words(
     output_root = tmp_path / "batch"
     output_root.mkdir()
 
-    path, removed = _write_filtered_sixty_dictionary(
+    path, removed = _write_filtered_dictionary(
         tmp_path,
         output_root,
+        "hgg-60.txt",
         ["MOONWALK", " jackpots ", "NOTINLIST"],
+        "hgg-60-scheduled-filtered.txt",
     )
 
     assert removed == 2
@@ -170,12 +173,12 @@ def test_write_filtered_sixty_dictionary_removes_scheduled_words(
     )
 
 
-def test_apply_sixty_dictionary_override_swaps_all_references() -> None:
+def test_apply_dictionary_overrides_swaps_sixty_references() -> None:
     project_root = find_project_root()
     config = load_config(project_root / "config.hard7.yaml")
     override = "/tmp/some-batch/hgg-60-scheduled-filtered.txt"
 
-    _apply_sixty_dictionary_override(config, override)
+    _apply_dictionary_overrides(config, {"hgg-60.txt": override})
 
     assert override in config.dictionary.additional_paths
     assert override in config.dictionary.themed_additional_paths
@@ -186,6 +189,34 @@ def test_apply_sixty_dictionary_override_swaps_all_references() -> None:
         config.fill.csp.additional_dictionary_paths,
     ):
         assert all("hgg-60.txt" != Path(p).name for p in paths)
+
+
+def test_apply_dictionary_overrides_swaps_primary_paths() -> None:
+    project_root = find_project_root()
+    config = load_config(project_root / "config.easy.yaml")
+    base_name = Path(config.dictionary.path).name
+    override = f"/tmp/some-batch/{Path(base_name).stem}-recent-filtered.txt"
+
+    _apply_dictionary_overrides(config, {base_name: override})
+
+    assert config.dictionary.path == override
+    assert config.fill.csp.dictionary_path == override
+
+
+def test_referenced_dictionary_filenames_skips_zero_count_buckets() -> None:
+    project_root = find_project_root()
+    buckets = [
+        b for b in _batch_bucket_configs(project_root)
+        if f"{b[0]}/{b[1]}" in ("easy/5", "hard/7")
+    ]
+    counts = {"easy/5": 1, "hard/7": 0}
+
+    filenames = _referenced_dictionary_filenames(buckets, counts)
+
+    easy_config = load_config(project_root / "config.easy.yaml")
+    assert Path(easy_config.dictionary.path).name in filenames
+    # hard/7 has count 0, so its hgg-60 merge is not referenced.
+    assert "hgg-60.txt" not in filenames
 
 
 class _StubExporter:

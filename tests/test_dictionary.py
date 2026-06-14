@@ -63,6 +63,16 @@ class TestDictionaryLoad:
         assert "ocean" in d
         assert "dog" not in d
 
+    def test_remove_words(self, small_dict_file: Path) -> None:
+        d = Dictionary.load(small_dict_file, min_word_score=50, min_2letter_score=30)
+        assert d.contains("ocean")
+        removed = d.remove_words(["ocean", " cat ", "NOTINDICT"])
+        assert removed == 2
+        assert not d.contains("ocean")
+        assert not d.contains("cat")
+        assert "OCEAN" not in d.words_by_length(5)
+        assert "CAT" not in d.words_by_length(3)
+
     def test_dunder_len(self, small_dict_file: Path) -> None:
         d = Dictionary.load(small_dict_file, min_word_score=50, min_2letter_score=30)
         # ocean, cat, ab, hi pass filters (dog and cd excluded)

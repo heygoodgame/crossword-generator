@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 from collections import defaultdict
+from collections.abc import Iterable
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
@@ -216,6 +217,17 @@ class Dictionary:
             if upper not in self._words:
                 self._words[upper] = score
                 self._by_length[len(upper)].append(upper)
+
+    def remove_words(self, words: Iterable[str]) -> int:
+        """Remove words from the dictionary. Returns the count removed."""
+        removed = 0
+        for word in words:
+            upper = word.strip().upper()
+            if upper in self._words:
+                del self._words[upper]
+                self._by_length[len(upper)].remove(upper)
+                removed += 1
+        return removed
 
     def __contains__(self, word: str) -> bool:
         return self.contains(word)

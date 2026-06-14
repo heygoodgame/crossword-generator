@@ -969,7 +969,7 @@ class FillWithGradingStep(PipelineStep):
 
                 try:
                     filled = self._filler.fill(spec)
-                except FillError:
+                except FillError as exc:
                     filler_failures += 1
                     if has_theme:
                         logger.warning(
@@ -979,8 +979,10 @@ class FillWithGradingStep(PipelineStep):
                         )
                         break  # try next grid pattern
                     logger.warning(
-                        "Fill attempt %d failed with FillError, retrying",
+                        "Fill attempt %d failed with FillError (%s), "
+                        "retrying",
                         attempt,
+                        exc,
                     )
                     continue  # no theme -> just bad luck, retry
 

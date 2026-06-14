@@ -12,13 +12,18 @@ Current emphasis:
 - Easy puzzles should favor accessible, one-word fill.
 - Easy clue generation should be easier than NYT Monday: direct definitions,
   obvious fill-in-the-blanks, and broad casual-audience accessibility.
-- Hard clue generation should target NYT Tuesday/Wednesday: fair but more
-  oblique definitions, mild wordplay, and occasional misdirection. Per Jeff's
-  June 2026 feedback, an instantly-solvable Easy-style clue (e.g. "One more
-  than two" for THREE) is a defect on a Hard puzzle: the generation prompt
-  defaults Hard clues to a harder fair angle (secondary meanings, specific
-  examples, fair trivia, mild misdirection) and reserves plain direct
-  definitions for glue entries (roughly a quarter of clues at most). Avoid
+- Hard clue generation should target solid NYT Tuesday, with Wednesday as the
+  ceiling rather than the target: fair but more oblique definitions, mild
+  wordplay, and occasional misdirection. Per Jeff's June 2026 feedback, an
+  instantly-solvable Easy-style clue (e.g. "One more than two" for THREE) is a
+  defect on a Hard puzzle: the generation prompt defaults Hard clues to a
+  harder fair angle (secondary meanings, specific examples, fair trivia, mild
+  misdirection) and reserves plain direct definitions for glue entries
+  (roughly a quarter of clues at most). Equally (per Jeff's follow-up after
+  the first harder-Hard batch overshot), do not strain for difficulty:
+  one fair twist per clue, never obscurity, convoluted phrasing, or stacked
+  tricks — when in doubt between two fair angles, pick the easier one. The
+  evaluator flags both "too easy" and "too hard" clues for repair. Avoid
   forced difficulty, strained pop-culture references, ultra-current slang, and
   clues that need a long explanation to be fair. For pop-culture, celebrity,
   entertainment, sports, brand, and historical references, the older or more
@@ -27,9 +32,19 @@ Current emphasis:
   idiom, or fill-in-the-blank angle is not certain, drop that angle — on Hard,
   switch to a different solid hard angle rather than an instantly-solvable
   clue.
+- Clues must be timeless: no dependence on current employers, broadcast
+  rights, rosters, reigning champions, or current hosts (per Jeff's June 2026
+  feedback on stale TNT/NBA and Ari Shapiro/NPR clues). Titles of movies, TV
+  shows, songs, albums, books, and plays take quotation marks, including in
+  fill-in-the-blanks ("Better Call ___", quoted).
 - Clues should avoid unpleasant wording such as "death" and "undocumented
   immigrant"; if dying must be referenced, use gentle wording such as
   "passed on."
+- Puzzle titles should lean punny (Jeff, June 2026): prefer puns, double
+  meanings, and playful twists on familiar phrases over plain evocative
+  titles. The naming prompt (`llm/prompts/puzzle_naming.py`) encodes this;
+  the existing sensitivity guardrails (no identity-based, suggestive, or
+  at-someone's-expense wordplay) still win over cleverness.
 - Clue prompts omit word-count tags such as `(two words)` until the pipeline has
   explicit word-boundary metadata. Explanatory clue tags should be
   parenthetical, not comma/colon appendages.
@@ -415,6 +430,23 @@ source of truth; the generator exclusion just keeps candidates schedulable.
 distinct scheduled HGG 60 answers from `window_days` (default 180) ago through
 all scheduled future days.
 
+Regular answers get the same treatment (Jeff, June 2026): because batch
+candidates are scheduled at the first unscheduled daily slot or later,
+`GET /api/admin/crossword-puzzles/daily-answers/recent` returns the distinct
+scheduled answers within a bounded window around the first unscheduled slot —
+`window_days` (default 7) back through `forward_days` (default 13) ahead,
+cross-game and cross-track. A 7-day lookback fully covers the ±6-day regular
+window for every placement at or after the slot; the forward bound covers a
+weekly batch scheduled within ~7 days of the slot plus the ±6 margin. The
+server computes the first unscheduled slot as the earliest day from today
+where any game/track combination has no scheduled slot.
+
+The forward bound is load-bearing (June 2026 incident): an unbounded future
+sweep returned 2,564 answers off a ~6-week schedule and gutted the short-word
+fill pools (3-letter: 604 → 127), which collapsed 9x9 fill diversity so badly
+that 28 puzzles produced 125 cross-puzzle duplicate answers. Never widen
+`forward_days` past what the batch being generated actually needs.
+
 ## Batch Generation
 
 `generate-pilot-batch` creates manifest-driven batches. Despite the name, it is
@@ -427,6 +459,18 @@ output root; every `hgg-60.txt` config reference is pointed at that filtered
 copy for the run. This is on by default; pass `--no-exclude-scheduled-sixty`
 for offline/experimental runs. The manifest records the exclusion under
 `exclude_scheduled_sixty`.
+
+Every batch also fetches the recent daily answers list (7 days before the
+first unscheduled daily slot plus all scheduled future days) and writes a
+`<dictionary>-recent-filtered.txt` copy of each fill dictionary the active
+buckets reference (`hgg-easy.txt`, `hgg-hard.txt`; recent answers are also
+unioned into the hgg-60 filter). All dictionary references in the loaded
+configs are pointed at the filtered copies — primary, themed, and CSP slots
+alike; `grading.fill.hard_cross_words_path` is a grading membership set, not
+a fill pool, and is left untouched. This is on by default; pass
+`--no-exclude-recent-answers` for offline/experimental runs. The manifest
+records the exclusion under `exclude_recent_answers`, including the window,
+the first unscheduled date, and per-dictionary removed-row counts.
 
 Grid selection notes:
 
@@ -598,6 +642,66 @@ re-run with the matching profile — do not retry blindly with the same token.
 If `uv` hits a sandbox cache permission error under `/Users/neil/.cache/uv`,
 rerun the same `uv run ...` command with elevated permissions rather than
 changing the command.
+
+## Intra-Batch Duplicate-Answer Gate (before upload)
+
+A weekly batch is scheduled across consecutive days, so any answer shared by
+two puzzles in the same batch trips the scheduling-time no-repeat windows.
+
+Two structural facts make intra-batch duplicates likely rather than rare
+(diagnosed June 2026 on the first recent-answer-exclusion batch, which came
+out with 125 cross-puzzle duplicate answers in 28 puzzles):
+
+- The weighted 9x9 grid catalog funnels many seeds onto the same popular
+  patterns (six of seven easy 9x9s drew one pattern).
+- The CSP fill is heavily biased on a given grid: two different fill seeds
+  on the same grid shared 19/30 answers in a controlled test, and flexible
+  glue like AMEN/GEN/SAFE/USER appears in nearly every fill. Random value
+  ordering does not overcome the constraint structure's preferred solutions.
+
+The batch runner therefore threads a shared used-answer set through the run
+(`_UsedAnswerSet` in `cli.py` → `create_pipeline(excluded_fill_words=...)` →
+`Dictionary.remove_words`): each batch item's fill dictionary drops every
+answer used by already-completed batch-mates. With `--max-workers 1` this
+guarantees intra-batch uniqueness by construction; with parallel workers,
+concurrent items can't see each other, so a residue of duplicates remains
+possible and the post-batch gate below catches it.
+
+After every batch — and before uploading — run:
+
+```bash
+uv run crossword-generator check-batch-answers \
+  --manifest output/batches/<batch-id>/manifest.json \
+  --write-answers-file output/batches/<batch-id>/batch-answers.txt
+```
+
+It exits non-zero when any cross-puzzle duplicate exists. Duplicates of
+3-letter answers confined to 9x9 puzzles are labelled `short-window` (the
+scheduler allows those 3+ days apart) but still count as failures — an
+all-unique batch schedules without manual care.
+
+On duplicates: regenerate the affected puzzles (same batch id, same seeds,
+separate `-replace-*` output root, the affected `--buckets`), passing the
+batch answers file so the refill cannot reuse any answer already in the
+batch:
+
+```bash
+uv run crossword-generator generate-pilot-batch \
+  --output-root output/batches/<batch-id>-replace-<bucket> \
+  --batch-id <batch-id> \
+  --buckets <difficulty>/<size> \
+  --count 1 \
+  --seed-start <original-seed> \
+  --exclude-answers-file output/batches/<batch-id>/batch-answers.txt \
+  --llm claude
+```
+
+The same seed refills differently because the pool changed. Re-run
+`check-batch-answers` across the combined set (kept + replacements) until
+clean, then upload the main manifest and the replacement manifests (the
+replacement upload overwrites the deterministic keys when the originals were
+already uploaded; for a fresh batch, upload main first, then replacements
+with `--replace-existing`).
 
 ## Answer Scans Before Upload
 

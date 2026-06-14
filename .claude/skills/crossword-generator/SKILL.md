@@ -25,6 +25,11 @@ uploads.
   with the same deterministic batch/difficulty/size/seed key.
 - Before uploading, run a dry run and scan answers for known disallowed
   patterns.
+- Before uploading a batch, run `check-batch-answers --manifest ...` and
+  regenerate any puzzles sharing an answer with another puzzle in the batch
+  (same seed, `--exclude-answers-file` with the batch answer list) until the
+  batch is all-unique. See the duplicate-answer gate section in
+  references/generator-workflow.md.
 - When asked for a generated batch across Mini Crossword and Midi Crossword
   without explicit size counts, default to a rough 5:2:7 ratio for 5x5, 7x7,
   and 9x9 puzzles. Midi Crossword always uses 9x9; Mini Crossword dailies are
