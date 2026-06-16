@@ -36,6 +36,22 @@ def test_fact_risk_reason_flags_risky_trivia() -> None:
     assert _fact_risk_reason("Feline pet") is None
 
 
+def test_fact_risk_reason_flags_current_state_claims() -> None:
+    stale = "current-state claim that may be stale"
+    assert _fact_risk_reason("Channel currently airing playoff games") == stale
+    assert _fact_risk_reason("Network that airs NBA games") == stale
+    assert _fact_risk_reason("Shapiro who hosts a radio show") == stale
+    assert _fact_risk_reason("Reigning MVP of the league") == stale
+    assert _fact_risk_reason("Newest iPhone maker") == stale
+    assert _fact_risk_reason("Quarterback who plays for Kansas City") == stale
+    # Current-state takes precedence over other risk categories so the
+    # fact-check prompt sees the staleness reason.
+    assert _fact_risk_reason("Actor who currently stars on Broadway") == stale
+    # Past-tense / timeless phrasings are not current-state claims.
+    assert _fact_risk_reason("Feline pet") is None
+    assert _fact_risk_reason("Joint above the shin") is None
+
+
 def test_fact_checker_checks_only_risky_clues() -> None:
     response = json.dumps(
         [

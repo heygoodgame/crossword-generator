@@ -138,7 +138,7 @@ class TestHappyPath:
         assert "Do not penalize plain definitions" in prompt
         assert "too hard for this audience" in prompt
 
-    def test_hard_evaluation_rewards_tuesday_wednesday_clues(self) -> None:
+    def test_hard_evaluation_rewards_tuesday_level_clues(self) -> None:
         prompt = build_clue_evaluation_prompt(
             MOCK_CLUES,
             {},
@@ -146,7 +146,8 @@ class TestHappyPath:
             difficulty=PuzzleDifficulty.HARD,
         )
 
-        assert "NYT Tuesday/Wednesday-level" in prompt
+        assert "solid NYT Tuesday-level" in prompt
+        assert "Wednesday is the ceiling" in prompt
         assert "Mild misdirection" in prompt
         assert "Saturday-level obscurity" in prompt
         assert "cross-generationally iconic" in prompt
@@ -154,6 +155,8 @@ class TestHappyPath:
         # Too-easy clues on Hard puzzles must be flagged via freshness.
         assert "too easy" in prompt
         assert "FRESHNESS 0-9" in prompt
+        # Strained / over-hard clues must be flagged via freshness too.
+        assert "too hard" in prompt
 
     def test_evaluation_penalizes_dated_niche_references(self) -> None:
         prompt = build_clue_evaluation_prompt(

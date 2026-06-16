@@ -55,6 +55,14 @@ LEAKS = [
     ("SUN", "Sunday, informally", "shared_prefix"),
     # Accepted false positive (max-recall policy): read/ready dominate.
     ("READ", "A ready response", "shared_prefix"),
+    # Compound-containment leaks: a clue word is the leading or trailing
+    # component of the answer. Jeff's reported case from the 2026-06 batch:
+    ("SCOFFLAW", "One who flouts laws", "compound_containment"),
+    # Same class:
+    ("SCOFFLAW", "Habitual breaker of the law", "compound_containment"),
+    ("LAWSUIT", "Court filing over a broken law", "compound_containment"),
+    ("OUTLAWS", "Bandits outside the law", "compound_containment"),
+    ("CARPET", "Floor covering a pet might nap on", "compound_containment"),
 ]
 
 
@@ -83,6 +91,12 @@ CLEAN = [
     ("MAIN", "Remaining tasks"),
     ("OVER", "Discover the truth"),
     ("PAIN", "A painter at work"),
+    # Compound containment must not fire on short non-content words that
+    # embed coincidentally, nor when the leftover fragment is tiny.
+    ("THRONE", "One seat fit for royalty"),
+    ("TEACHER", "She guides her students"),
+    ("PHONE", "One way to reach someone"),
+    ("SCOFFLAW", "Habitual rule-breaker"),
     # Stopword-length answers must never crash or false-flag.
     ("AN", "Indefinite article"),
     ("IT", "Pronoun for an object"),

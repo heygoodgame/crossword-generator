@@ -170,8 +170,7 @@ class TestClueGenerationStep:
         chunk_size = 2
         # One response per chunk, each covering only that chunk's entries.
         chunks = [
-            entries[i : i + chunk_size]
-            for i in range(0, len(entries), chunk_size)
+            entries[i : i + chunk_size] for i in range(0, len(entries), chunk_size)
         ]
         responses = [_build_mock_clue_json(c) for c in chunks]
 
@@ -275,13 +274,10 @@ class TestClueGenerationStep:
 
         assert len(result.clues) == len(entries)
         # Verify the corrected entries have the right direction
-        clue_map = {
-            (c.number, c.direction): c for c in result.clues
-        }
+        clue_map = {(c.number, c.direction): c for c in result.clues}
         assert (6, "across") in clue_map
         assert (7, "across") in clue_map
         assert (8, "across") in clue_map
-
 
         """LLM adds preamble text before the JSON array."""
         from crossword_generator.exporters.numbering import compute_numbering
@@ -425,9 +421,7 @@ class TestThemeAnnotationsInPrompt:
         entries = compute_numbering(MOCK_GRID)
         crossing_words = compute_crossing_words(entries, MOCK_GRID)
 
-        prompt = build_clue_generation_prompt(
-            entries, crossing_words, PuzzleType.MINI
-        )
+        prompt = build_clue_generation_prompt(entries, crossing_words, PuzzleType.MINI)
 
         assert "[THEME ENTRY]" not in prompt
         assert "[REVEALER]" not in prompt
@@ -543,9 +537,7 @@ class TestThemeAnnotationsInPrompt:
         entries = compute_numbering(MOCK_GRID)
         crossing_words = compute_crossing_words(entries, MOCK_GRID)
 
-        prompt = build_clue_generation_prompt(
-            entries, crossing_words, PuzzleType.MINI
-        )
+        prompt = build_clue_generation_prompt(entries, crossing_words, PuzzleType.MINI)
 
         assert "underwear" in prompt
         assert "innuendo" in prompt
@@ -622,7 +614,7 @@ class TestThemeAnnotationsInPrompt:
         assert "totally obvious fill-in-the-blank" in prompt
         assert "choose instantly solvable" in prompt
 
-    def test_hard_prompt_allows_tuesday_wednesday_wordplay(self) -> None:
+    def test_hard_prompt_targets_tuesday_wordplay(self) -> None:
         """Hard guidance is tied to difficulty, even for mini puzzles."""
         from crossword_generator.exporters.numbering import compute_numbering
 
@@ -636,7 +628,9 @@ class TestThemeAnnotationsInPrompt:
             difficulty=PuzzleDifficulty.HARD,
         )
 
-        assert "NYT Tuesday/Wednesday" in prompt
+        assert "solid NYT Tuesday" in prompt
+        assert "Wednesday is the CEILING" in prompt
+        assert "DO NOT STRAIN" in prompt
         assert "mild misdirection" in prompt
         assert "Saturday-level obscurity" in prompt
         assert "strained pop-culture references" in prompt
@@ -771,8 +765,6 @@ class TestRevealerClueNotSubstituted:
         result = step.run(envelope)
 
         # Find the revealer's clue — should be the LLM-generated one
-        revealer_clue = next(
-            c for c in result.clues if c.answer == "KLMNO"
-        )
+        revealer_clue = next(c for c in result.clues if c.answer == "KLMNO")
         assert revealer_clue.clue == "Clue for KLMNO"
         assert revealer_clue.clue != theme.revealer_clue

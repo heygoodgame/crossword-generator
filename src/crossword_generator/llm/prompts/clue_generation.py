@@ -58,6 +58,16 @@ _GUIDELINES = (
     "drop that angle. On Easy puzzles fall back to a plain dictionary-style "
     "clue; on Hard puzzles fall back to a different angle that is both solid "
     "and appropriately difficult, not to an instantly-solvable clue.\n"
+    "- MULTI-REFERENCE RULE (strict): if a clue cues the answer through more "
+    "than one reference joined by \"or\"/\"and\" (e.g. two name blanks like "
+    '"X ___ or actor ___ Wilson"), EVERY reference must independently and '
+    "exactly produce the answer. Verify each blank separately. A clue is wrong "
+    "if even ONE reference is false, even when the other is correct — for "
+    'OWEN, "Actor ___ Wilson" is right but "Architect Frank Lloyd ___" is '
+    "WRONG (it is Frank Lloyd Wright, not Owen), so the whole clue is a "
+    "defect. Do not pair a correct reference with a half-remembered one to "
+    "look clever; if you cannot verify every component, use a single "
+    "reference you are sure of, or a plain definition.\n"
     "- Fill-in-the-blank clues must fit the answer exactly, including "
     "singular/plural, tense, spacing, and contractions. Do not clue SAINT "
     'with the plural Saints, BATTING with "At ___", or GOT A SAY with '
@@ -74,6 +84,13 @@ _GUIDELINES = (
     "difficulty. For Easy clues, clarity beats cleverness.\n"
     "- Use question marks for witty/punny clues only when the target "
     'difficulty allows it (e.g., "Plant manager?" for GARDENER).\n'
+    "- HYPHENATION RULE: do not hyphenate open compounds. Noun phrases like "
+    '"snooze button", "lobster feast", "ice cream", "high school", and "real '
+    'estate" are two separate words — never "snooze-button" or "lobster-feast". '
+    "Only hyphenate where standard dictionary (Merriam-Webster) style requires "
+    'it: compound modifiers before a noun ("well-known author", "two-time '
+    'champ") and genuinely hyphenated words ("self-esteem", "X-ray"). When '
+    "unsure, leave the words open.\n"
     "- Keep clues concise — say exactly what's needed, "
     "no filler words.\n"
     "- Avoid obscure trivia that solvers can't "
@@ -84,6 +101,20 @@ _GUIDELINES = (
     "Avoid dated references that mostly reward one generation, fandom, or "
     "era. If an answer can be clued through an everyday meaning instead, use "
     "that angle over a stale proper-noun reference.\n"
+    "- TIMELESS CLUE RULE (strict): a clue's truth must not depend on the "
+    "CURRENT state of the world. Affiliations change, and puzzles are solved "
+    "long after they are written — and your own knowledge of current jobs, "
+    "broadcast rights, and rosters may already be out of date. Do not clue "
+    "via someone's current employer, show, or role; a network's current "
+    "broadcast rights; a team's current roster, coach, or city; a reigning "
+    "champion or record holder; a current CEO, host, or anchor; or wording "
+    'like "currently", "newest", or "latest". For example, do not clue TNT '
+    'as "Channel airing NBA games" or ARI as "NPR\'s Shapiro". Prefer angles '
+    "anchored in completed, permanent facts (awards won, famous works, fixed "
+    "historical events) or non-temporal meanings. If a person/brand "
+    "association is genuinely the best angle, phrase it so it stays true "
+    'forever: "longtime", "Emmy-winning", or past tense ("Longtime \'All '
+    "Things Considered' host Shapiro\").\n"
     "- REFERENCE VARIETY: when an answer has several well-known angles, do "
     "not default to the single most famous reference every time. If prior "
     "clues are listed for an answer, pick an angle or reference those clues "
@@ -105,6 +136,11 @@ _GUIDELINES = (
     '- Do not add word-count tags like "(two words)" or "(three words)". '
     "Use no word-count enumeration unless the pipeline provides explicit "
     "word-boundary metadata.\n"
+    "- TITLE QUOTING RULE: put quotation marks around titles of movies, TV "
+    "shows, songs, albums, books, plays, and video games — including in "
+    'fill-in-the-blank clues. Write "\\"Better Call ___\\"" for SAUL, not '
+    '"Better Call ___"; write "\\"Hey Jude\\" band" not "Hey Jude band". Do '
+    "not quote band names, brand names, character names, or network names.\n"
     "- Put explanatory tags in parentheses, not after a comma or colon. "
     'Use "To the ___ (in the extreme)" rather than '
     '"To the ___: in the extreme"; use '
@@ -282,11 +318,23 @@ _LEAK_EXAMPLES = (
     '   BAD: "Heavyweight champ Muhammad" — same angle reworded.\n'
     '   GOOD: "Mahershala of \\"Green Book\\"" or "Comedian Wong"\n'
     "\n"
+    "16. Current-state / stale-fact clues (clue truth must not depend on the "
+    "present moment):\n"
+    '   ANSWER: TNT  BAD: "Channel airing NBA playoff games" — broadcast '
+    "rights change, so this clue goes stale on the shelf.\n"
+    '   GOOD: "Explosive letters" or "Classic AC/DC hit"\n'
+    "   ANSWER: ARI  BAD: \"NPR's Shapiro\" — current-employer claims expire "
+    "when people change jobs.\n"
+    '   GOOD: "Director Aster of \\"Hereditary\\"" or "Gold of '
+    '\\"Entourage\\""\n'
+    "\n"
     "SELF-CHECK before finalizing EACH clue: (a) does the clue contain the "
     "answer, any part of it, a shared root, an etymological cousin, or a "
     "spelling fragment? (b) if the answer is an abbreviation, does the clue "
     "contain ANY word its letters stand for? (c) does the clue use a crossing "
     "word? (d) is it a fill-in-the-blank whose phrase gives the answer away? "
+    "(e) does the clue's truth depend on a current-state fact that could "
+    "change — a current role, broadcast deal, roster, or title holder? "
     "If yes to any, rewrite the clue before returning it.\n"
 )
 
@@ -320,8 +368,9 @@ def _difficulty_guidance(puzzle_type: PuzzleType, difficulty: PuzzleDifficulty) 
         )
     else:
         base = (
-            "This is an HGG Hard crossword. Aim for NYT Tuesday/Wednesday "
-            "difficulty: still fair and broadly accessible, but every clue "
+            "This is an HGG Hard crossword. Aim for solid NYT Tuesday "
+            "difficulty — Wednesday is the CEILING, not the target: still "
+            "fair and broadly accessible, but every clue "
             "should make the solver pause and think for a beat. A clue the "
             "average solver answers instantly with no crossing letters is TOO "
             "EASY for this puzzle and is a defect, the same way an inaccurate "
@@ -336,7 +385,17 @@ def _difficulty_guidance(puzzle_type: PuzzleType, difficulty: PuzzleDifficulty) 
             "direct definitions for entries that genuinely cannot support a "
             "harder fair angle (some abbreviations, partials, and awkward "
             "glue) — they should be the exception, roughly a quarter of the "
-            "clues at most, not the default. Accuracy still constrains WHICH "
+            "clues at most, not the default. DO NOT STRAIN for difficulty: "
+            "pick the most natural fair angle that is not a giveaway, not "
+            "the hardest angle you can construct. If an entry's natural "
+            "fair angles are only moderately tricky, use the best of those "
+            "— a clean, modestly challenging clue is better than a "
+            "contrived or ridiculously hard one. Difficulty should come "
+            "from ONE fair twist (a secondary meaning, a specific example, "
+            "or mild misdirection), never from obscurity, convoluted "
+            "phrasing, or stacking multiple tricks in one clue. When in "
+            "doubt between two fair angles, choose the easier one. "
+            "Accuracy still constrains WHICH "
             "hard angle you pick: every clue must remain factually airtight "
             "and reasonably inferable, and if a specific clever angle is "
             "factually shaky, pick a different harder angle that is solid — "
@@ -555,10 +614,33 @@ _REPAIR_GUIDELINES = (
     "that still matches the target difficulty. Apply "
     "the same sliding familiarity standard: the older or more niche the "
     "reference is, the more broadly iconic it must be.\n"
+    "- MULTI-REFERENCE RULE (strict): if a replacement cues the answer through "
+    "more than one reference joined by \"or\"/\"and\" (e.g. two name blanks), "
+    "EVERY reference must independently and exactly produce the answer. A clue "
+    "is wrong if even one reference is false, even when another is correct "
+    "(e.g. for OWEN, \"Architect Frank Lloyd ___\" is wrong — it is Wright). "
+    "If you cannot verify every component, use a single sure reference or a "
+    "plain definition.\n"
+    "- TIMELESS CLUE RULE (strict): do not write a replacement whose truth "
+    "depends on the CURRENT state of the world — a current employer, show, "
+    "or role; current broadcast rights; a current roster, coach, host, "
+    "anchor, or CEO; or a reigning champion or record holder. Your knowledge "
+    "of such facts may be out of date. Prefer completed, permanent facts "
+    "(awards won, famous works, fixed historical events) or non-temporal "
+    "meanings; if a current association is the only fair angle, phrase it so "
+    'it stays true forever ("longtime", "Emmy-winning", or past tense).\n'
     "- If a clue was flagged as TOO EASY for a Hard puzzle, the replacement "
     "must use a harder fair angle (secondary meaning, less-expected accurate "
     "definition, fair trivia, or mild misdirection) — do not return another "
     "instantly-solvable definition.\n"
+    "- If a clue was flagged as TOO HARD, strained, or contrived, the "
+    "replacement should be a clean NYT Tuesday-level clue: one fair twist "
+    "(a secondary meaning or mild misdirection), not obscurity, convoluted "
+    "phrasing, or stacked tricks.\n"
+    "- TITLE QUOTING RULE: put quotation marks around titles of movies, TV "
+    "shows, songs, albums, books, plays, and video games — including in "
+    'fill-in-the-blank clues ("\\"Better Call ___\\"", not '
+    '"Better Call ___").\n'
     "- If a clue was flagged as a duplicate of prior clues, do not just "
     "reword the same reference — switch to a different fair angle (a "
     "different person, meaning, or style) than the prior clues used.\n"
@@ -572,6 +654,12 @@ _REPAIR_GUIDELINES = (
     "- DO NOT use any crossing words in the clue.\n"
     "- DO NOT duplicate phrasing from the existing clues listed below.\n"
     '- Do not add word-count tags like "(two words)" or "(three words)".\n'
+    "- HYPHENATION RULE: do not hyphenate open compounds. Noun phrases like "
+    '"snooze button" or "lobster feast" are two separate words — never '
+    '"snooze-button" or "lobster-feast". Only hyphenate where standard '
+    "dictionary (Merriam-Webster) style requires it: compound modifiers before "
+    'a noun ("well-known author") and genuinely hyphenated words '
+    '("self-esteem", "X-ray"). When unsure, leave the words open.\n'
     "- Put explanatory tags in parentheses, not after a comma or colon.\n"
     '- Avoid unpleasant clue wording such as "death" or '
     '"undocumented immigrant"; use gentle wording like "passed on" only '

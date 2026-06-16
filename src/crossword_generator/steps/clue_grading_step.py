@@ -617,6 +617,7 @@ class ClueWithGradingStep(PipelineStep):
             "should not be",
             "too obscure",
             "too easy",
+            "too hard",
             "ultra-current slang",
             "forced",
             "strained",
@@ -700,6 +701,11 @@ def _leak_feedback(finding: LeakFinding) -> str:
         why = (
             f'the clue word "{finding.detail}" shares a root, etymology, or '
             f"spelling with the answer"
+        )
+    elif finding.kind == "compound_containment":
+        why = (
+            f'the clue word "{finding.detail}" is literally the start or end '
+            f"of the answer {finding.answer}"
         )
     else:  # shared_root
         why = f'the clue word "{finding.detail}" shares a root with the answer'

@@ -119,6 +119,13 @@ class ClueFactChecker:
         return selected
 
 
+_CURRENT_STATE_RE = re.compile(
+    r"\b(?:currently|current|today|nowadays|reigning|defending|incumbent|"
+    r"sitting|newest|latest|airs|airing|broadcasts?|broadcasting|"
+    r"plays for|hosts|host of|anchors|anchor of|stars on|"
+    r"ceo of|coach of|owner of|network of|home network|streaming home)\b",
+    re.IGNORECASE,
+)
 _FILL_IN_BLANK_RE = re.compile(r"(?:_{2,}|\bblank\b)", re.IGNORECASE)
 _YEAR_RE = re.compile(r"\b(?:1[5-9]\d{2}|20\d{2}|21\d{2})\b")
 _QUOTED_TEXT_RE = re.compile(r"[\"'“”‘’].{2,}[\"'“”‘’]")
@@ -150,6 +157,8 @@ _EXACT_CLAIM_RE = re.compile(
 
 
 def _fact_risk_reason(clue: str) -> str | None:
+    if _CURRENT_STATE_RE.search(clue):
+        return "current-state claim that may be stale"
     if _FILL_IN_BLANK_RE.search(clue):
         return "fill-in-the-blank exact phrase"
     if _YEAR_RE.search(clue):

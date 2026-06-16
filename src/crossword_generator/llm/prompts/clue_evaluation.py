@@ -32,7 +32,16 @@ _RUBRIC = (
     "mismatches, tense mismatches, part-of-speech mismatches, and "
     "fill-in-the-blank clues where the exact answer does not fit. Examples: "
     'SAINT clued as the plural Saints, BATTING clued by "At ___", or '
-    "GOT A SAY clued as if it were GOTTA SAY.\n\n"
+    "GOT A SAY clued as if it were GOTTA SAY.\n"
+    "   CURRENCY RISK: also score ACCURACY 0-9 when the clue's truth depends "
+    "on the CURRENT state of the world — a current employer, show, or role; "
+    "current broadcast rights; a current roster, host, anchor, or CEO; a "
+    'reigning champion or record holder; or wording like "currently", '
+    '"newest", or "latest". Such clues go stale (or already are stale '
+    "without your knowledge), e.g. TNT clued as an NBA broadcaster or ARI "
+    'clued as "NPR\'s Shapiro". Apply this even if you believe the fact is '
+    "currently true, and say in the feedback that the clue needs a timeless "
+    "angle (a completed fact, famous work, or non-temporal meaning).\n\n"
     "2. FRESHNESS (0-25): Does the clue style fit the target difficulty? "
     "For Easy clues, obvious definitions and fill-in-the-blank clues can "
     "score highly when they are clean and welcoming. For Hard clues, reward "
@@ -48,7 +57,10 @@ _RUBRIC = (
     "angle, such as abbreviations and partials.\n\n"
     "3. CRAFT (0-25): Is the language economical and the surface reading clean? "
     "Does the clue read naturally as English? Is the difficulty appropriate "
-    "for the puzzle type?\n\n"
+    "for the puzzle type? Penalize missing quotation marks around titles of "
+    "movies, TV shows, songs, albums, books, and plays — a fill-in-the-blank "
+    'like Better Call ___ must be written "Better Call ___" (quoted), and a '
+    "title used in any clue must be quoted.\n\n"
     "4. FAIRNESS (0-25): Does the clue avoid echoing the answer word, answer "
     "word-parts, roots, or related morphological variants? Penalize "
     "singular/plural leaks, verb-form leaks, compound-part leaks, and "
@@ -174,14 +186,23 @@ def _difficulty_note(puzzle_type: PuzzleType, difficulty: PuzzleDifficulty) -> s
         )
     else:
         base = (
-            "This is an HGG Hard crossword. Reward NYT Tuesday/Wednesday-level "
-            "clues: fair, broadly accessible, and a notch more challenging — "
+            "This is an HGG Hard crossword. Reward solid NYT Tuesday-level "
+            "clues — Wednesday is the ceiling, not the target: fair, broadly "
+            "accessible, and a notch more challenging — "
             "every clue should make the solver pause and think for a beat. "
             "Accuracy and exact answer fit are more important than difficulty. "
             "Mild misdirection, common secondary meanings, wordplay, and "
             "occasional question-mark clues are appropriate only when they are "
-            "factually airtight and reasonably inferable. Penalize "
-            "Saturday-level obscurity, forced cleverness, ultra-current slang, "
+            "factually airtight and reasonably inferable. "
+            "CRITICAL — too-hard clues: if a clue is strained, contrived, "
+            "stacks multiple tricks, or is unfairly hard for a Tuesday "
+            "(Saturday-level obscurity, a leap solvers cannot reason toward, "
+            "or wordplay that only works after a long explanation), score "
+            'FRESHNESS 0-9 and include the phrase "too hard" in the '
+            "feedback. Difficulty should come from ONE fair twist; reward "
+            "clean, modestly challenging clues over maximal difficulty. "
+            "Also penalize "
+            "forced cleverness, ultra-current slang, "
             "older pop-culture references that are not cross-generationally "
             "iconic, or trivia solvers cannot reason toward. Equally, penalize "
             "clues that are too easy for this difficulty: an instantly "

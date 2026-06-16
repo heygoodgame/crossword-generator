@@ -23,6 +23,13 @@ defect — without an LLM call. Rules, in order of precedence:
    prefixes (ART/artist). Deliberately also flags coincidences (IRAN/iraq); a
    wrongly rejected fair clue is regenerated, which beats shipping the leak.
    Per editor (Jeff) feedback. See the plan, Phase 7.
+7. ``compound_containment`` — a clue word (or its stem) is the leading or
+   trailing component of the answer: SCOFFLAW clued with "laws", LAWSUIT clued
+   with "law". Direction matters: only clue-word-inside-answer is checked here.
+   The reverse (answer inside a longer clue word, e.g. OVER/discover,
+   CARD/cardiac) stays governed by the shared-prefix coverage test, which
+   correctly leaves those coincidences alone. Per editor (Jeff) feedback on the
+   2026-06 Hard batch.
 
 Scope note: morphological rules require answers of length >= 4. Three-letter
 answers get only exact-match and abbreviation checking — for short strings,
@@ -316,6 +323,46 @@ def detect_leak(answer: str, clue: str) -> LeakFinding | None:
     if leak_word is not None:
         return _finding(answer, clue, "shared_prefix", leak_word)
 
+    # 7. Compound containment: a clue word is the leading or trailing
+    #    component of the answer (SCOFFLAW / "laws", LAWSUIT / "law").
+    leak_word = _compound_containment_leak(answer_l, words)
+    if leak_word is not None:
+        return _finding(answer, clue, "compound_containment", leak_word)
+
+    return None
+
+
+# Short non-content words that embed coincidentally in many answers
+# (THRONE/"one", TEACHER/"her") and must not count as compound parts.
+_CONTAINMENT_SKIP = frozenset(
+    "one ones her hers his him she our ours your yours".split()
+)
+
+# Minimum length for the contained clue word and for what remains of the
+# answer around it. Both floors keep noise down (PHONE/"one" survives via
+# the 2-char remainder even before the skip list applies).
+_CONTAINMENT_MIN_PART = 3
+
+
+def _compound_containment_leak(answer_l: str, words: list[str]) -> str | None:
+    """Return a clue word that forms the start or end of the answer.
+
+    Checks the raw clue word and its stem (so "laws" catches SCOFFLAW), and
+    the raw answer and its stem (so "law" catches OUTLAWS). Only this
+    direction is checked — see rule 7 in the module docstring.
+    """
+    answer_forms = {answer_l, _stem(answer_l)}
+    for w in words:
+        if w in _CONTAINMENT_SKIP:
+            continue
+        for cand in {w, _stem(w)}:
+            if len(cand) < _CONTAINMENT_MIN_PART:
+                continue
+            for ans in answer_forms:
+                if len(ans) - len(cand) < _CONTAINMENT_MIN_PART:
+                    continue
+                if ans.startswith(cand) or ans.endswith(cand):
+                    return w
     return None
 
 
