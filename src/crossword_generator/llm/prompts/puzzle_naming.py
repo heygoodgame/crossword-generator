@@ -35,6 +35,13 @@ _GUIDELINES = (
     "- Avoid titles that make body-part, underwear, anatomy, "
     "sexuality, appearance, weight, age, race, gender, disability, "
     "religion, or identity-based jokes or puns\n"
+    "- NO GUNS, ALCOHOL, OR DRUGS: never use a title that references "
+    "firearms, ammunition, shooting, or gun culture, or that references "
+    "drunkenness, drinking, hangovers, or drug use — even as wordplay. "
+    'For example, "Locked and Loaded" (a gun phrase, e.g. hinting at PIN) '
+    'and "Off the Bottle" (a drinking reference) are NOT acceptable, even '
+    "when the underlying answer is fine fill. Pick a title built on a "
+    "benign, everyday angle instead\n"
     "- Do not use a title to make a cheeky, suggestive, or edgy "
     "joke about an answer, even if the answer itself is acceptable "
     "fill\n"

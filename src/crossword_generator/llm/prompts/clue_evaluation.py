@@ -84,6 +84,13 @@ _RUBRIC = (
     "using any crossing words in the clue text? Penalize short answer roots "
     'inside longer clue words too, e.g. POL clued with "politician" or '
     '"political." '
+    "CRITICAL — missing abbreviation indicator: if the answer is an "
+    "abbreviation, acronym, or initialism (DNA, CIA, USA, ETA, EST, etc.) "
+    "and the clue gives NO signal that the answer is shortened — no "
+    '", for short", ", briefly", "(abbr.)", or "org."-style abbreviated '
+    "cue — penalize CRAFT (0-12) and note the clue needs an abbreviation "
+    'indicator. Example to flag: DNA clued plainly as "Genetic material" '
+    '(should be "Genetic material, for short" or similar). '
     "CRITICAL — collocation give-aways: heavily penalize (fairness 0-8) any "
     "fill-in-the-blank clue whose blank plus a partner word forms a common "
     "fixed phrase or compound that uniquely gives away the answer, even when "
@@ -115,7 +122,15 @@ _RUBRIC = (
     "or demographic-based jokes, especially when a neutral clue would "
     'be more welcoming. Penalize unpleasant wording such as "death" or '
     '"undocumented immigrant"; if dying must be referenced, gentle '
-    'euphemisms like "passed on" are preferred.'
+    'euphemisms like "passed on" are preferred. '
+    "CRITICAL — guns, alcohol, and drugs: heavily penalize (fairness 0-8) "
+    "any clue that references firearms, ammunition, shooting, or gun "
+    "culture, or that references drunkenness, drinking, hangovers, or drug "
+    'use — even playfully. Examples to fail: PIN clued "Locked and loaded" '
+    '(gun wordplay); SOBER clued "Newly off the bottle" (drinking/recovery '
+    "angle). These answers should be clued through a benign everyday sense "
+    "instead. Note in the feedback that the clue needs a neutral, "
+    "family-friendly angle."
 )
 
 _THEME_EVAL_RULES = (

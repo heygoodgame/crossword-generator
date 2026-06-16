@@ -41,6 +41,18 @@ _GUIDELINES = (
     'clue ATM with "machine". Clue the thing itself instead (e.g. ETA: '
     '"Flight-board figure, for short"; MCL: "Knee part that can tear, '
     'briefly").\n'
+    "- ABBREVIATION INDICATOR RULE (strict): if the answer is an "
+    "abbreviation, acronym, or initialism (DNA, CIA, USA, ETA, EST, ATM, "
+    "etc.), the clue MUST signal that the answer is shortened. Add an "
+    'indicator such as ", for short", ", briefly", ", in brief", or a '
+    'parenthetical "(abbr.)" — or use an abbreviated cue word that makes '
+    'the short form obviously expected (e.g. "org.", "agcy.", "assn."). '
+    'For example, clue DNA as "Genetic blueprint material, for short" not '
+    '"Genetic material"; clue CIA as "Cloak-and-dagger org." not '
+    '"Spy agency"; clue USA as "Letters on some Olympic uniforms". An '
+    "initialism or abbreviation answer with NO such indicator is a defect "
+    "— a solver should be able to tell from the clue that the answer is a "
+    "short form. This applies even when the rest of the clue is clean.\n"
     "- ETYMOLOGY / SPELLING RULE (strict): do not use a clue word that shares "
     "an obvious root, etymology, or spelling with the answer, even if it is a "
     'different word. Do not clue NAVAL with "navy" (same root); do not clue '
@@ -155,7 +167,24 @@ _GUIDELINES = (
     "meaning, prefer a clue built on a benign alternate sense, idiom, "
     'or pop-culture usage. For example, clue BOMB as "Flop at the box '
     'office" rather than referencing an explosive device, and clue '
-    'SHOOT as "Rats!" rather than referencing gunfire.'
+    'SHOOT as "Rats!" rather than referencing gunfire.\n'
+    "- NO GUNS OR FIREARMS: do not reference guns, firearms, ammunition, "
+    "shooting, or gun culture, even playfully. Avoid gun idioms and "
+    'phrases entirely. For example, do not clue PIN as "Locked and '
+    'loaded"-style wordplay or via any firearm angle; clue it with a '
+    'benign sense like "Bowling-alley target" or "Sewing-kit item". '
+    "Steer clear of any clue that evokes weapons or violence.\n"
+    "- NO ALCOHOL, DRUNKENNESS, OR DRUGS: do not reference being drunk, "
+    "drinking, hangovers, sobriety as recovery, or drug use. Clue such "
+    "answers through neutral, everyday senses instead. For example, do "
+    'not clue SOBER as "Newly off the bottle" or via any '
+    'drinking/recovery angle; clue it as "Serious and solemn" or '
+    '"Clear-headed". When an answer can read as alcohol- or '
+    "drug-related, pick a different, wholesome meaning.\n"
+    "- Keep the overall tone family-friendly and broadly welcoming. When "
+    "in doubt about whether a clue's subject matter (weapons, alcohol, "
+    "drugs, violence, or any edgy theme) could draw a complaint, choose "
+    "a plainer, more neutral angle."
 )
 
 _THEME_INSTRUCTIONS = (
@@ -267,7 +296,12 @@ _LEAK_EXAMPLES = (
     '   ANSWER: VERMONT  GOOD: "New England state known for maple syrup"\n'
     '   ANSWER: EGO  GOOD: "One\'s sense of self-importance"\n'
     '   ANSWER: NASA  GOOD: "Moon-landing org."  (acronym clued by what it '
-    "did, not by its expansion words)\n"
+    "did, not by its expansion words, and the \"org.\" cue signals a short "
+    "form)\n"
+    '   ANSWER: DNA  BAD: "Genetic material" — no indicator that the answer '
+    'is an initialism.  GOOD: "Genetic blueprint stuff, for short"\n'
+    '   ANSWER: CIA  GOOD: "Cloak-and-dagger org."  (the "org." cue marks '
+    "it as an abbreviation)\n"
     "\n"
     "10. Difficulty calibration — same answer, Easy vs Hard:\n"
     '   ANSWER: OCEAN   Easy: "Atlantic or Pacific"   '
@@ -335,7 +369,13 @@ _LEAK_EXAMPLES = (
     "word? (d) is it a fill-in-the-blank whose phrase gives the answer away? "
     "(e) does the clue's truth depend on a current-state fact that could "
     "change — a current role, broadcast deal, roster, or title holder? "
-    "If yes to any, rewrite the clue before returning it.\n"
+    "(f) if the answer is an abbreviation, acronym, or initialism, does the "
+    'clue include an indicator that it is shortened (", for short", '
+    '", briefly", "(abbr.)", or an "org."-style abbreviated cue)? '
+    "(g) does the clue reference guns/firearms/shooting or "
+    "alcohol/drunkenness/drugs, even playfully? "
+    "If yes to (a)-(e) or (g), or NO to (f), rewrite the clue before "
+    "returning it.\n"
 )
 
 _EXAMPLE_OUTPUT = json.dumps(
@@ -602,6 +642,13 @@ _REPAIR_GUIDELINES = (
     "initialism, the clue must NOT contain ANY word its letters stand for, even "
     'a generic one (e.g. do not clue ETA with "arrival" or "time"; do not '
     'clue MCL with "ligament"). Clue the thing itself instead.\n'
+    "- ABBREVIATION INDICATOR RULE (strict): if the answer is an "
+    "abbreviation, acronym, or initialism (DNA, CIA, USA, EST, etc.), the "
+    "replacement clue MUST signal that the answer is shortened — via an "
+    'indicator like ", for short", ", briefly", "(abbr.)", or an '
+    'abbreviated cue word ("org.", "agcy."). A clue with no such '
+    'indicator (e.g. DNA clued plainly as "Genetic material") is a '
+    "defect even when otherwise clean.\n"
     "- ETYMOLOGY / SPELLING RULE (strict): do not use a clue word that shares "
     "an obvious root, etymology, or spelling with the answer (NAVAL/navy, "
     "KNEE/kneel), and never spell out a fragment of the answer (TRI/triangle, "
@@ -664,6 +711,12 @@ _REPAIR_GUIDELINES = (
     '- Avoid unpleasant clue wording such as "death" or '
     '"undocumented immigrant"; use gentle wording like "passed on" only '
     "if dying is unavoidable.\n"
+    "- NO GUNS, ALCOHOL, OR DRUGS: the replacement must not reference "
+    "firearms, ammunition, shooting, or gun culture, nor drunkenness, "
+    "drinking, hangovers, or drug use — even playfully. Clue such answers "
+    'through a benign everyday sense instead (e.g. PIN as "Bowling-alley '
+    'target", SOBER as "Serious and solemn"). Keep the tone '
+    "family-friendly; when in doubt, choose a plainer neutral angle.\n"
     "- Keep clues concise and culturally accessible."
 )
 
