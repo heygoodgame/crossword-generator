@@ -347,6 +347,8 @@ def create_pipeline(
         repair_verify_attempts=config.grading.clue.repair_verify_attempts,
         duplicate_repair_attempts=config.grading.clue.duplicate_repair_attempts,
         generation_chunk_size=config.grading.clue.generation_chunk_size,
+        parallel_chunks=config.grading.clue.parallel_chunks,
+        parallel_chunk_workers=config.grading.clue.parallel_chunk_max_workers,
         fact_checker=clue_fact_checker,
         clue_history=clue_history,
         dictionary=dictionary,

@@ -60,6 +60,10 @@ grading:
     # batches keep the model focused on the rule rubric (the cacheable system
     # prompt is shared across chunks, so the extra calls are cheap).
     generation_chunk_size: 6
+    # Generate the chunks concurrently. The first chunk runs alone to populate
+    # the ephemeral system-prompt cache; the rest fan out and read that warm
+    # cache instead of each recreating it (verified: 1 create + N reads).
+    parallel_chunks: true
     accuracy_repair_threshold: 12
     individual_repair_score_threshold: 70
     freshness_repair_threshold: 10

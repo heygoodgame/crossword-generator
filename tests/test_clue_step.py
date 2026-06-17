@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import json
+import re
+import threading
 
 import pytest
 
@@ -98,6 +100,112 @@ def _make_envelope(
         fill=fill,
         clues=clues or [],
     )
+
+
+class _PromptAwareLLM(LLMProvider):
+    """Mock LLM that answers exactly the entries named in each prompt.
+
+    Parallel chunk generation can't use a fixed response queue (chunks finish
+    in nondeterministic order), so this mock parses the ``N-DIRECTION: ANSWER``
+    lines out of the user prompt and returns matching clue JSON. It records the
+    order calls START in (under a lock) so a test can assert the first chunk
+    ran before the fan-out, and can be told to raise on a specific answer to
+    exercise failure propagation.
+    """
+
+    _LINE = re.compile(r"-\s*(\d+)-(ACROSS|DOWN):", re.IGNORECASE)
+
+    def __init__(self, *, fail_on_answer: str | None = None) -> None:
+        self.start_order: list[tuple[int, str]] = []
+        self._fail_on_answer = fail_on_answer
+        self._lock = threading.Lock()
+
+    @property
+    def name(self) -> str:
+        return "prompt-aware-mock"
+
+    def generate(self, prompt: str, **kwargs: object) -> str:
+        pairs = [
+            (int(n), d.lower()) for n, d in self._LINE.findall(prompt)
+        ]
+        with self._lock:
+            self.start_order.append(pairs[0] if pairs else (-1, ""))
+        if self._fail_on_answer and self._fail_on_answer in prompt:
+            # Unparseable response => the chunk exhausts its retries and the
+            # step raises, exercising failure propagation out of the fan-out.
+            return "not valid json"
+        clues = [
+            {"number": n, "direction": d, "clue": f"Clue {n}{d}"}
+            for n, d in pairs
+        ]
+        return json.dumps(clues)
+
+    def is_available(self) -> bool:
+        return True
+
+
+class TestParallelChunkGeneration:
+    """Warm-then-fan-out parallel chunk generation."""
+
+    def _entries(self) -> list[NumberedEntry]:
+        from crossword_generator.exporters.numbering import compute_numbering
+
+        return compute_numbering(MOCK_GRID)
+
+    def test_parallel_matches_serial_output(self) -> None:
+        # Same chunking, same mock — parallel must produce identical clues in
+        # identical order to serial, so manifests stay reproducible.
+        serial = ClueGenerationStep(
+            _PromptAwareLLM(), chunk_size=2, parallel_chunks=False
+        ).run(_make_envelope(grid=MOCK_GRID))
+        parallel = ClueGenerationStep(
+            _PromptAwareLLM(),
+            chunk_size=2,
+            parallel_chunks=True,
+            parallel_chunk_workers=4,
+        ).run(_make_envelope(grid=MOCK_GRID))
+
+        ser = [(c.number, c.direction, c.clue) for c in serial.clues]
+        par = [(c.number, c.direction, c.clue) for c in parallel.clues]
+        assert par == ser
+        assert len(par) == len(self._entries())
+
+    def test_first_chunk_warms_before_fanout(self) -> None:
+        # The first chunk must START (and finish) before any other chunk
+        # starts, so the rest read the warm cache instead of racing to create
+        # it. With chunk_size=2 the first chunk's lead entry is (1, "across").
+        llm = _PromptAwareLLM()
+        ClueGenerationStep(
+            llm,
+            chunk_size=2,
+            parallel_chunks=True,
+            parallel_chunk_workers=4,
+        ).run(_make_envelope(grid=MOCK_GRID))
+
+        assert len(llm.start_order) > 1
+        assert llm.start_order[0] == (1, "across")
+
+    def test_parallel_falls_back_to_serial_for_single_chunk(self) -> None:
+        # chunk_size >= entry count => one chunk => no fan-out, plain call.
+        llm = _PromptAwareLLM()
+        result = ClueGenerationStep(
+            llm, chunk_size=999, parallel_chunks=True
+        ).run(_make_envelope(grid=MOCK_GRID))
+        assert len(result.clues) == len(self._entries())
+        assert len(llm.start_order) == 1
+
+    def test_failing_chunk_propagates(self) -> None:
+        # A chunk that fails all retries must fail the whole puzzle, exactly as
+        # in the serial path — the fan-out must not swallow it.
+        llm = _PromptAwareLLM(fail_on_answer="UVWXY")
+        step = ClueGenerationStep(
+            llm,
+            chunk_size=2,
+            parallel_chunks=True,
+            max_retries=1,
+        )
+        with pytest.raises(ValueError, match="Failed to parse clue response"):
+            step.run(_make_envelope(grid=MOCK_GRID))
 
 
 class TestClueGenerationStep:

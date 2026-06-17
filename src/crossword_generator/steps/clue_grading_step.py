@@ -63,6 +63,8 @@ class ClueWithGradingStep(PipelineStep):
         leak_repair_attempts: int = 3,
         repair_verify_attempts: int = 2,
         generation_chunk_size: int = 0,
+        parallel_chunks: bool = False,
+        parallel_chunk_workers: int = 4,
         dictionary: Dictionary | None = None,
     ) -> None:
         self._llm = llm
@@ -82,7 +84,11 @@ class ClueWithGradingStep(PipelineStep):
         self._leak_repair_attempts = leak_repair_attempts
         self._repair_verify_attempts = repair_verify_attempts
         self._clue_step = ClueGenerationStep(
-            llm, clue_history=clue_history, chunk_size=generation_chunk_size
+            llm,
+            clue_history=clue_history,
+            chunk_size=generation_chunk_size,
+            parallel_chunks=parallel_chunks,
+            parallel_chunk_workers=parallel_chunk_workers,
         )
 
     @property
