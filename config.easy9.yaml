@@ -39,6 +39,10 @@ grading:
   clue:
     min_score: 70
     regenerate_on_fail: true
+    # Generate clues in batches of this many entries per LLM call. Smaller
+    # batches keep the model focused on the rule rubric (the cacheable system
+    # prompt is shared across chunks, so the extra calls are cheap).
+    generation_chunk_size: 6
     accuracy_repair_threshold: 12
     fact_check_enabled: true
     fact_check_scope: risky
