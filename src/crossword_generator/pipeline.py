@@ -349,6 +349,7 @@ def create_pipeline(
         generation_chunk_size=config.grading.clue.generation_chunk_size,
         fact_checker=clue_fact_checker,
         clue_history=clue_history,
+        dictionary=dictionary,
     )
 
     # Build steps

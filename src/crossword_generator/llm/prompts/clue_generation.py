@@ -61,6 +61,11 @@ _GUIDELINES = (
     'fragment of the answer: do not clue TRI with "Start of triangle", PRE '
     'with "Prefix...", or any answer with a clue word it literally begins, '
     "ends, or spells.\n"
+    "- COMPOUND-WORD RULE: never define an answer with a compound word that "
+    "contains it spelled out — a more specific type of the answer. Do not clue "
+    'ROBE with "Bathrobe, for example", BERRY with "Strawberry, e.g.", or CAKE '
+    'with "Cheesecake type". The compound hands the answer to the solver; use a '
+    "plain definition instead.\n"
     "- DO NOT use any of an entry's crossing words "
     "in that entry's clue.\n"
     "- Accuracy is more important than cleverness, freshness, or difficulty. "
