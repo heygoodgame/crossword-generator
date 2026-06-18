@@ -249,6 +249,61 @@ class TestGridLevelPenalties:
         assert "shared_etymology" not in report.penalties_applied
         assert report.passing is True
 
+    def test_shared_root_suffix_variants_fail_fill(self) -> None:
+        # STINKY and STINKS share the dictionary stem STINK but neither is a
+        # compound of the other, so only the shared-root rule catches them.
+        # This is the exact pair Jeff rejected.
+        grader = FillGrader(
+            _make_dict({"STINK": 80, "STINKY": 80, "STINKS": 80}),
+            min_passing_score=0,
+        )
+        grid = [
+            ["S", "T", "I", "N", "K", "Y"],
+            [".", ".", ".", ".", ".", "."],
+            ["S", "T", "I", "N", "K", "S"],
+        ]
+
+        report = grader.grade(grid)
+
+        assert report.penalties_applied["shared_root"] == 100.0
+        assert report.passing is False
+
+    def test_shared_root_unrelated_prefix_passes(self) -> None:
+        # START is not STAR + a known suffix, so START/STAR is not a same-root
+        # pair even though STAR is a leading prefix of START.
+        grader = FillGrader(
+            _make_dict({"START": 80, "STAR": 80}),
+            min_passing_score=0,
+        )
+        grid = [
+            ["S", "T", "A", "R", "T"],
+            [".", ".", ".", ".", "."],
+            ["S", "T", "A", "R", "."],
+        ]
+
+        report = grader.grade(grid)
+
+        assert "shared_root" not in report.penalties_applied
+        assert report.passing is True
+
+    def test_shared_root_requires_dictionary_stem(self) -> None:
+        # CANDY ends in -y but CAND is not a dictionary word, so CANDY does not
+        # derive a CAND stem and cannot collide with another CAND* entry.
+        grader = FillGrader(
+            _make_dict({"CANDY": 80, "CANDS": 80}),
+            min_passing_score=0,
+        )
+        grid = [
+            ["C", "A", "N", "D", "Y"],
+            [".", ".", ".", ".", "."],
+            ["C", "A", "N", "D", "S"],
+        ]
+
+        report = grader.grade(grid)
+
+        assert "shared_root" not in report.penalties_applied
+        assert report.passing is True
+
     def test_high_unknown_ratio_penalty(self) -> None:
         # All words unknown → high_unknown_ratio
         grader = FillGrader(_make_dict({}))

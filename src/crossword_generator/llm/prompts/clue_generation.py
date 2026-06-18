@@ -61,6 +61,11 @@ _GUIDELINES = (
     'fragment of the answer: do not clue TRI with "Start of triangle", PRE '
     'with "Prefix...", or any answer with a clue word it literally begins, '
     "ends, or spells.\n"
+    "- COMPOUND-WORD RULE: never define an answer with a compound word that "
+    "contains it spelled out — a more specific type of the answer. Do not clue "
+    'ROBE with "Bathrobe, for example", BERRY with "Strawberry, e.g.", or CAKE '
+    'with "Cheesecake type". The compound hands the answer to the solver; use a '
+    "plain definition instead.\n"
     "- DO NOT use any of an entry's crossing words "
     "in that entry's clue.\n"
     "- Accuracy is more important than cleverness, freshness, or difficulty. "
@@ -95,7 +100,11 @@ _GUIDELINES = (
     "- Use misdirection and cleverness only when they fit the target "
     "difficulty. For Easy clues, clarity beats cleverness.\n"
     "- Use question marks for witty/punny clues only when the target "
-    'difficulty allows it (e.g., "Plant manager?" for GARDENER).\n'
+    'difficulty allows it (e.g., "Plant manager?" for GARDENER). For Easy '
+    "clues this is FORBIDDEN: never end an Easy clue with a wordplay/tricky "
+    "question mark. A literal question mark INSIDE quoted material is fine "
+    '(e.g., "___ you okay?" for ARE, or a quoted question) — the ban is only '
+    "on the trick-signalling ? that marks a clue as punny.\n"
     "- HYPHENATION RULE: do not hyphenate open compounds. Noun phrases like "
     '"snooze button", "lobster feast", "ice cream", "high school", and "real '
     'estate" are two separate words — never "snooze-button" or "lobster-feast". '
@@ -404,7 +413,11 @@ def _difficulty_guidance(puzzle_type: PuzzleType, difficulty: PuzzleDifficulty) 
             "definitions, familiar everyday meanings, and totally obvious "
             "fill-in-the-blank clues. Avoid oblique definitions, tricky "
             "wordplay, niche trivia, and lateral-thinking clues. If choosing "
-            "between clever and instantly solvable, choose instantly solvable."
+            "between clever and instantly solvable, choose instantly solvable. "
+            "NEVER use a wordplay/tricky question-mark clue (the punny "
+            '"?"-tagged kind) in an Easy puzzle. A literal "?" inside quoted '
+            'text is fine (e.g., "___ you okay?" for ARE); only the trick-'
+            "signalling question mark is banned."
         )
     else:
         base = (
