@@ -10,6 +10,7 @@ from crossword_generator.clue_history import (
     DuplicateClueHit,
     duplicate_error_message,
 )
+from crossword_generator.dictionary import Dictionary
 from crossword_generator.exporters.numbering import (
     compute_crossing_words,
     compute_numbering,
@@ -62,8 +63,12 @@ class ClueWithGradingStep(PipelineStep):
         leak_repair_attempts: int = 3,
         repair_verify_attempts: int = 2,
         generation_chunk_size: int = 0,
+        parallel_chunks: bool = False,
+        parallel_chunk_workers: int = 4,
+        dictionary: Dictionary | None = None,
     ) -> None:
         self._llm = llm
+        self._dictionary = dictionary
         self._grader = grader
         self._max_retries = max_retries
         self._regenerate_on_fail = regenerate_on_fail
@@ -79,7 +84,11 @@ class ClueWithGradingStep(PipelineStep):
         self._leak_repair_attempts = leak_repair_attempts
         self._repair_verify_attempts = repair_verify_attempts
         self._clue_step = ClueGenerationStep(
-            llm, clue_history=clue_history, chunk_size=generation_chunk_size
+            llm,
+            clue_history=clue_history,
+            chunk_size=generation_chunk_size,
+            parallel_chunks=parallel_chunks,
+            parallel_chunk_workers=parallel_chunk_workers,
         )
 
     @property
@@ -185,7 +194,7 @@ class ClueWithGradingStep(PipelineStep):
 
         # Soft-error surface for any leak that survived repair. The puzzle still
         # saves as a draft; the upload guard must refuse any "LEAK:" error.
-        for finding in detect_leaks(best_envelope.clues):
+        for finding in detect_leaks(best_envelope.clues, self._dictionary):
             new_errors.append(_leak_error_message(finding))
 
         return best_envelope.model_copy(
@@ -330,7 +339,7 @@ class ClueWithGradingStep(PipelineStep):
         current = envelope
         clue_lookup = {(c.number, c.direction): c for c in current.clues}
         for attempt in range(1, self._leak_repair_attempts + 1):
-            findings = detect_leaks(current.clues)
+            findings = detect_leaks(current.clues, self._dictionary)
             if not findings:
                 return current
 
@@ -706,6 +715,11 @@ def _leak_feedback(finding: LeakFinding) -> str:
         why = (
             f'the clue word "{finding.detail}" is literally the start or end '
             f"of the answer {finding.answer}"
+        )
+    elif finding.kind == "reverse_compound":
+        why = (
+            f'the clue word "{finding.detail}" is a compound that contains the '
+            f"answer {finding.answer} spelled out (a more specific type of it)"
         )
     else:  # shared_root
         why = f'the clue word "{finding.detail}" shares a root with the answer'

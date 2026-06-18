@@ -197,7 +197,12 @@ def _difficulty_note(puzzle_type: PuzzleType, difficulty: PuzzleDifficulty) -> s
             "Do not penalize plain definitions or obvious fill-in-the-blank "
             "clues for lack of cleverness. Penalize oblique definitions, "
             "tricky wordplay, niche trivia, or lateral-thinking clues as too "
-            "hard for this audience."
+            "hard for this audience. A wordplay/tricky question-mark clue (a "
+            'clue ending in a "?" that signals a pun or trick) is NOT allowed '
+            "in an Easy puzzle: flag it and score freshness low so it is "
+            'regenerated. A literal "?" inside quoted material (e.g., '
+            '"___ you okay?" for ARE, or any quoted question) is fine — only '
+            "the trick-signalling question mark is disallowed."
         )
     else:
         base = (

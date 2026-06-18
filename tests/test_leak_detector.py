@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import pytest
 
+from crossword_generator.dictionary import Dictionary
 from crossword_generator.graders.leak_detector import (
     LeakFinding,
     detect_leak,
@@ -156,3 +157,62 @@ def test_initialism_leak() -> None:
     finding = detect_leak("UCLA", "University of California Los Angeles, informally")
     assert finding is not None
     assert finding.kind == "abbrev_expansion"
+
+
+# --- Reverse-compound rule (needs a dictionary) -----------------------------
+
+# A tiny dictionary holding only the answers, the offending compounds, and the
+# real-word remainders that justify a compound split.
+_REVERSE_COMPOUND_DICT = Dictionary(
+    {
+        w: 60
+        for w in [
+            "ROBE", "BATHROBE", "BATH",
+            "BERRY", "STRAWBERRY", "STRAW",
+            "CAKE", "CHEESECAKE", "CHEESE",
+            "FISH", "SWORDFISH", "SWORD",
+            "PORT", "AIRPORT", "AIR",
+            # Coincidence-control entries: the remainder is NOT a word.
+            "CARD", "CARDIAC",
+        ]
+    },
+    min_word_score=0,
+    min_2letter_score=0,
+)
+
+REVERSE_COMPOUND_LEAKS = [
+    ("ROBE", "Bathrobe, for example"),
+    ("BERRY", "Strawberry, e.g."),
+    ("CAKE", "Cheesecake type"),
+    ("FISH", "Swordfish, for one"),
+    ("PORT", "Airport posting"),
+]
+
+
+@pytest.mark.parametrize("answer,clue", REVERSE_COMPOUND_LEAKS)
+def test_reverse_compound_leak_detected(answer: str, clue: str) -> None:
+    finding = detect_leak(answer, clue, _REVERSE_COMPOUND_DICT)
+    assert finding is not None, f"expected leak for {answer} :: {clue}"
+    assert finding.kind == "reverse_compound"
+
+
+def test_reverse_compound_skipped_without_dictionary() -> None:
+    # The rule only runs when a dictionary is supplied; otherwise the clue is
+    # clean as far as the other rules are concerned.
+    assert detect_leak("ROBE", "Bathrobe, for example") is None
+
+
+def test_reverse_compound_ignores_non_word_remainder() -> None:
+    # CARDIAC is not CARD + a dictionary word, so it must not flag.
+    assert detect_leak("CARD", "Cardiac muscle, e.g.", _REVERSE_COMPOUND_DICT) is None
+
+
+def test_reverse_compound_ignores_short_answers() -> None:
+    # 3-letter answers are below the floor — CAT in HOUSECAT must not flag even
+    # though HOUSE is a word, to avoid CAT/category-style noise.
+    d = Dictionary(
+        {"CAT": 60, "HOUSECAT": 60, "HOUSE": 60},
+        min_word_score=0,
+        min_2letter_score=0,
+    )
+    assert detect_leak("CAT", "Housecat, for one", d) is None

@@ -26,10 +26,13 @@ defect — without an LLM call. Rules, in order of precedence:
 7. ``compound_containment`` — a clue word (or its stem) is the leading or
    trailing component of the answer: SCOFFLAW clued with "laws", LAWSUIT clued
    with "law". Direction matters: only clue-word-inside-answer is checked here.
-   The reverse (answer inside a longer clue word, e.g. OVER/discover,
-   CARD/cardiac) stays governed by the shared-prefix coverage test, which
-   correctly leaves those coincidences alone. Per editor (Jeff) feedback on the
-   2026-06 Hard batch.
+8. ``reverse_compound`` — the OTHER direction: a clue word is a closed compound
+   that contains the answer as its leading or trailing part, with the remainder
+   a real dictionary word (ROBE clued with "bathrobe", BERRY with "strawberry").
+   Needs a dictionary, so it only runs when one is passed to ``detect_leak`` /
+   ``detect_leaks``; otherwise skipped. Requiring the remainder to be a real
+   word leaves coincidences (CARDIAC, ELEPHANT) alone. Per editor (Jeff)
+   feedback on the 2026-06 batches.
 
 Scope note: morphological rules require answers of length >= 4. Three-letter
 answers get only exact-match and abbreviation checking — for short strings,
@@ -51,6 +54,7 @@ from dataclasses import dataclass
 
 import snowballstemmer
 
+from crossword_generator.dictionary import Dictionary
 from crossword_generator.models import ClueEntry
 
 logger = logging.getLogger(__name__)
@@ -273,11 +277,16 @@ def _is_morphological_pair(answer: str, word: str) -> bool:
     return any(len(r) >= _MIN_STEM_LEN for r in common)
 
 
-def detect_leak(answer: str, clue: str) -> LeakFinding | None:
+def detect_leak(
+    answer: str, clue: str, dictionary: Dictionary | None = None
+) -> LeakFinding | None:
     """Return the first leak found for one answer/clue pair, or None.
 
     The (number, direction) are filled in by ``detect_leaks``; here we only
-    need answer + clue, which makes this directly unit-testable.
+    need answer + clue, which makes this directly unit-testable. ``dictionary``
+    is optional: when supplied it enables the reverse-compound rule (rule 8),
+    which needs a wordlist to confirm a compound split; without it that one
+    rule is skipped and every other rule behaves identically.
     """
     answer_l = answer.lower().strip()
     clue_l = clue.lower()
@@ -329,6 +338,16 @@ def detect_leak(answer: str, clue: str) -> LeakFinding | None:
     if leak_word is not None:
         return _finding(answer, clue, "compound_containment", leak_word)
 
+    # 8. Reverse compound containment: a clue word is a closed compound that
+    #    CONTAINS the answer as its leading or trailing component (ROBE clued
+    #    with "bathrobe", BERRY with "strawberry"). Needs a dictionary to
+    #    confirm the remainder is a real word, so it only runs when one is
+    #    supplied. See rule 8 in the module docstring.
+    if dictionary is not None:
+        leak_word = _reverse_compound_leak(answer_l, words, dictionary)
+        if leak_word is not None:
+            return _finding(answer, clue, "reverse_compound", leak_word)
+
     return None
 
 
@@ -363,6 +382,51 @@ def _compound_containment_leak(answer_l: str, words: list[str]) -> str | None:
                     continue
                 if ans.startswith(cand) or ans.endswith(cand):
                     return w
+    return None
+
+
+# Floors for the reverse-compound rule. The answer must be >= 4 chars (shorter
+# answers embed coincidentally in too many words — CAT/category, EAR/early),
+# and the OTHER half of the compound must be >= 3 chars so we are splitting a
+# real two-part compound, not shaving a one- or two-letter fragment.
+_REVERSE_COMPOUND_MIN_ANSWER = 4
+_REVERSE_COMPOUND_MIN_REMAINDER = 3
+
+
+def _reverse_compound_leak(
+    answer_l: str, words: list[str], dictionary: Dictionary
+) -> str | None:
+    """Return a clue word that is a closed compound containing the answer.
+
+    Fires when a clue word splits into ``answer + dictionary_word`` or
+    ``dictionary_word + answer`` — i.e. the clue uses a more specific compound
+    of the answer to define it (ROBE / "bathrobe", BERRY / "strawberry", CAKE /
+    "cheesecake"). Such clues hand the answer to the solver spelled out inside
+    a single clue word, which Jeff flagged as off-putting even though it is not
+    an outright echo.
+
+    Requiring the remainder to be a real dictionary word keeps coincidental
+    substrings out (CARDIAC is not CARD + a word; ELEPHANT is not ANT + a word).
+    A few true compounds that are not semantic compounds still slip through
+    (DISCOVER = DISC + OVER); per the detector's standing policy a wrongly
+    rejected fair clue is just regenerated, which beats shipping the leak.
+    """
+    if len(answer_l) < _REVERSE_COMPOUND_MIN_ANSWER:
+        return None
+    answer_u = answer_l.upper()
+    for w in words:
+        cand = w.upper()
+        if cand == answer_u or len(cand) <= len(answer_u):
+            continue
+        remainder: str | None = None
+        if cand.startswith(answer_u):
+            remainder = cand[len(answer_u):]
+        elif cand.endswith(answer_u):
+            remainder = cand[: -len(answer_u)]
+        if remainder is None or len(remainder) < _REVERSE_COMPOUND_MIN_REMAINDER:
+            continue
+        if dictionary.contains(remainder):
+            return w
     return None
 
 
@@ -452,13 +516,19 @@ def _finding(answer: str, clue: str, kind: str, detail: str) -> LeakFinding:
     )
 
 
-def detect_leaks(clues: Iterable[ClueEntry]) -> list[LeakFinding]:
-    """Scan a set of clues and return every leak found."""
+def detect_leaks(
+    clues: Iterable[ClueEntry], dictionary: Dictionary | None = None
+) -> list[LeakFinding]:
+    """Scan a set of clues and return every leak found.
+
+    ``dictionary`` is forwarded to ``detect_leak`` to enable the
+    reverse-compound rule; without it that rule is skipped (see ``detect_leak``).
+    """
     findings: list[LeakFinding] = []
     for entry in clues:
         if not entry.clue:
             continue
-        hit = detect_leak(entry.answer, entry.clue)
+        hit = detect_leak(entry.answer, entry.clue, dictionary)
         if hit is None:
             continue
         findings.append(
