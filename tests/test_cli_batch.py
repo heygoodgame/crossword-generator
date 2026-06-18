@@ -14,6 +14,7 @@ from crossword_generator.cli import (
     _run_duplicate_sweep,
     _summarize_batch_results,
     _ThreadFilter,
+    _UsedAnswerSet,
     _write_filtered_dictionary,
 )
 from crossword_generator.clue_history import (
@@ -367,3 +368,42 @@ def test_duplicate_sweep_distinct_clues_untouched(tmp_path: Path) -> None:
     assert stats == {"checked": 2, "repaired": 0, "unresolved": 0}
     assert step.calls == 0
     assert exporter.exports == []
+
+
+def test_batch_bucket_order_is_most_constrained_first() -> None:
+    """9x9 midis generate before 7x7 then 5x5 minis so minis defer to midis."""
+    order = [(d, s) for d, s, _, _ in _batch_bucket_configs(Path("."))]
+
+    sizes_in_order = [s for _, s in order]
+    # Every 9 must precede every 7, and every 7 must precede every 5.
+    assert sizes_in_order == sorted(sizes_in_order, reverse=True)
+    assert order[0][1] == 9 and order[-1][1] == 5
+
+
+def test_used_answer_set_mini_excludes_three_letter_midi_keeps() -> None:
+    """A 3-letter answer a midi used is excluded for minis, kept for midis."""
+    used = _UsedAnswerSet()
+    used.add(["ICE", "OCEAN", " ", "AT"])  # AT (<3) dropped; ICE/OCEAN kept
+
+    # Mini floor (3): excludes the 3-letter glue too.
+    assert used.snapshot(min_length=3) == {"ICE", "OCEAN"}
+    # Midi floor (4): keeps its 3-letter glue fillable.
+    assert used.snapshot(min_length=4) == {"OCEAN"}
+    # Sub-3 answers are never tracked.
+    assert "AT" not in used.snapshot(min_length=3)
+
+
+def test_used_answer_set_is_thread_safe() -> None:
+    used = _UsedAnswerSet()
+
+    def worker(tid: int) -> None:
+        for i in range(100):
+            used.add([f"WORD{tid}X{i}"])
+
+    threads = [threading.Thread(target=worker, args=(t,)) for t in range(8)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+
+    assert len(used.snapshot(min_length=4)) == 8 * 100
