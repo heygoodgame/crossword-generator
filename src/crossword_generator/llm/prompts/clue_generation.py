@@ -61,6 +61,11 @@ _GUIDELINES = (
     'fragment of the answer: do not clue TRI with "Start of triangle", PRE '
     'with "Prefix...", or any answer with a clue word it literally begins, '
     "ends, or spells.\n"
+    "- COMPOUND-WORD RULE: never define an answer with a compound word that "
+    "contains it spelled out — a more specific type of the answer. Do not clue "
+    'ROBE with "Bathrobe, for example", BERRY with "Strawberry, e.g.", or CAKE '
+    'with "Cheesecake type". The compound hands the answer to the solver; use a '
+    "plain definition instead.\n"
     "- DO NOT use any of an entry's crossing words "
     "in that entry's clue.\n"
     "- Accuracy is more important than cleverness, freshness, or difficulty. "
@@ -87,15 +92,23 @@ _GUIDELINES = (
     "- Vary clue styles within the target difficulty: definitional, "
     "fill-in-the-blank, wordplay, trivia, and lateral thinking are all "
     "available, but Easy clues should stay direct and obvious.\n"
-    "- Do not repeat the exact same clue wording for the same answer across "
-    "different puzzles. If prior clues are listed for an answer, write a new "
-    "clue that does not exactly duplicate any of them — and when those prior "
-    "clues all lean on one reference or meaning, choose a different fair "
-    "angle this time rather than rewording the same one.\n"
+    "- Do not repeat the same clue for the same answer across different "
+    "puzzles. This means more than avoiding the exact words: a reworded "
+    "clue that tests the SAME definition, fact, or angle still counts as a "
+    "repeat and is not allowed. If prior clues are listed for an answer, "
+    'treat "Large body of water" and "Vast body of water" for OCEAN as the '
+    "same clue — both lean on the size-of-water definition. Write a clue "
+    "that comes at the answer from a genuinely different direction (a "
+    "different meaning, sense, reference, wordplay, or fill-in-the-blank) "
+    "than every prior clue, not a paraphrase of one of them.\n"
     "- Use misdirection and cleverness only when they fit the target "
     "difficulty. For Easy clues, clarity beats cleverness.\n"
     "- Use question marks for witty/punny clues only when the target "
-    'difficulty allows it (e.g., "Plant manager?" for GARDENER).\n'
+    'difficulty allows it (e.g., "Plant manager?" for GARDENER). For Easy '
+    "clues this is FORBIDDEN: never end an Easy clue with a wordplay/tricky "
+    "question mark. A literal question mark INSIDE quoted material is fine "
+    '(e.g., "___ you okay?" for ARE, or a quoted question) — the ban is only '
+    "on the trick-signalling ? that marks a clue as punny.\n"
     "- HYPHENATION RULE: do not hyphenate open compounds. Noun phrases like "
     '"snooze button", "lobster feast", "ice cream", "high school", and "real '
     'estate" are two separate words — never "snooze-button" or "lobster-feast". '
@@ -132,7 +145,9 @@ _GUIDELINES = (
     "clues are listed for an answer, pick an angle or reference those clues "
     "have NOT already leaned on — e.g. if ALI has already been clued via "
     "Muhammad Ali, reach for Mahershala Ali, Ali Wong, or Ali Baba instead "
-    "of rewording the boxing angle.\n"
+    "of rewording the boxing angle. Rewording the same reference (e.g. "
+    '"Boxing legend Muhammad" → "Heavyweight champ Muhammad") does NOT '
+    "count as variety; the underlying reference or meaning must change.\n"
     "- ROMAN NUMERAL RULE: if the answer reads as a Roman numeral (III, LIV, "
     'MMX), do not write a bare conversion clue like "54 in Roman numerals" '
     'or a random-context one like "Year in Claudius\'s reign". Prefer a '
@@ -404,7 +419,11 @@ def _difficulty_guidance(puzzle_type: PuzzleType, difficulty: PuzzleDifficulty) 
             "definitions, familiar everyday meanings, and totally obvious "
             "fill-in-the-blank clues. Avoid oblique definitions, tricky "
             "wordplay, niche trivia, and lateral-thinking clues. If choosing "
-            "between clever and instantly solvable, choose instantly solvable."
+            "between clever and instantly solvable, choose instantly solvable. "
+            "NEVER use a wordplay/tricky question-mark clue (the punny "
+            '"?"-tagged kind) in an Easy puzzle. A literal "?" inside quoted '
+            'text is fine (e.g., "___ you okay?" for ARE); only the trick-'
+            "signalling question mark is banned."
         )
     else:
         base = (
@@ -528,10 +547,12 @@ def build_clue_generation_messages(
             prior_clues_block = (
                 "\nPRIOR CLUES FOR THESE ANSWERS (already used in other "
                 "puzzles):\n"
-                "Do not repeat any of these exactly. Also prefer a fresh "
-                "angle: when the prior clues for an answer lean on one "
-                "reference or meaning, clue it through a different fair "
-                "angle this time.\n"
+                "Do not reuse the meaning or angle of any clue below — not "
+                "just the exact words. A reworded clue that tests the same "
+                "definition, fact, or reference still counts as a repeat. "
+                "For each answer, come at it from a different direction than "
+                "every clue listed (a different sense, reference, wordplay, "
+                "or fill-in-the-blank).\n"
                 + "\n".join(prior_lines)
                 + "\n"
             )
@@ -595,6 +616,7 @@ def build_clue_repair_prompt(
     puzzle_type: PuzzleType,
     theme: ThemeConcept | None = None,
     difficulty: PuzzleDifficulty = PuzzleDifficulty.EASY,
+    prior_clues_by_answer: dict[str, list[str]] | None = None,
 ) -> str:
     """Build a prompt to regenerate only clues with accuracy problems.
 
@@ -604,6 +626,8 @@ def build_clue_repair_prompt(
         crossing_words: Maps (number, direction) to crossing answer words.
         puzzle_type: Mini or midi — affects difficulty guidance.
         theme: Optional theme concept for midi puzzles.
+        prior_clues_by_answer: Cross-puzzle clue history for the repaired
+            answers, so repairs avoid reintroducing already-used clues.
 
     Returns:
         A prompt string ready to send to the LLM.
@@ -615,6 +639,7 @@ def build_clue_repair_prompt(
         puzzle_type,
         theme,
         difficulty,
+        prior_clues_by_answer,
     )
     return f"{system_text}\n\n{user_text}"
 
@@ -742,8 +767,15 @@ def build_clue_repair_messages(
     puzzle_type: PuzzleType,
     theme: ThemeConcept | None = None,
     difficulty: PuzzleDifficulty = PuzzleDifficulty.EASY,
+    prior_clues_by_answer: dict[str, list[str]] | None = None,
 ) -> tuple[str, str]:
-    """Build (system, user) messages for clue repair."""
+    """Build (system, user) messages for clue repair.
+
+    ``prior_clues_by_answer`` is the live cross-puzzle clue history for the
+    answers being repaired. Without it, a clue repaired for a quality problem
+    (e.g. "too easy") can freely reintroduce a clue already used in another
+    puzzle — generation avoids that history, so repair must too.
+    """
     themed = bool(theme and theme.topic)
 
     system_parts = [
@@ -801,6 +833,34 @@ def build_clue_repair_messages(
             )
     context_block = "\n".join(context_lines) if context_lines else "(none)"
 
+    # Prior clues used for the answers being repaired, in OTHER puzzles. Scope
+    # to the repair targets so the model is not handed the whole history.
+    prior_clues_block = ""
+    if prior_clues_by_answer:
+        repair_answers = {c.answer.upper() for c, _ in entries_to_repair}
+        prior_lines: list[str] = []
+        for answer in sorted(prior_clues_by_answer):
+            if answer.upper() not in repair_answers:
+                continue
+            clues = prior_clues_by_answer[answer]
+            if not clues:
+                continue
+            quoted = "; ".join(f'"{clue}"' for clue in clues)
+            prior_lines.append(f"- {answer}: {quoted}")
+        if prior_lines:
+            prior_clues_block = (
+                "\nPRIOR CLUES FOR THESE ANSWERS (already used in other "
+                "puzzles):\n"
+                "Do not reuse the meaning or angle of any clue below — not "
+                "just the exact words. A reworded clue that tests the same "
+                "definition, fact, or reference still counts as a repeat. For "
+                "each answer, come at it from a different direction than every "
+                "clue listed (a different sense, reference, wordplay, or "
+                "fill-in-the-blank).\n"
+                + "\n".join(prior_lines)
+                + "\n"
+            )
+
     theme_context_block = ""
     if themed:
         theme_context_block = (
@@ -815,7 +875,8 @@ def build_clue_repair_messages(
     user_text = (
         f"{theme_context_block}"
         f"CLUES TO REPAIR:\n{repair_block}\n\n"
-        f"EXISTING CLUES (for context — do not duplicate):\n{context_block}\n\n"
+        f"EXISTING CLUES (for context — do not duplicate):\n{context_block}\n"
+        f"{prior_clues_block}\n"
         f"Write replacement clues for the "
         f"{len(entries_to_repair)} entries above."
     )

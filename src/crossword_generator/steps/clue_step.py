@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+from concurrent.futures import ThreadPoolExecutor
 
 from crossword_generator.clue_history import ClueHistoryIndex
 from crossword_generator.exporters.numbering import (
@@ -31,6 +32,8 @@ class ClueGenerationStep(PipelineStep):
         max_retries: int = 3,
         clue_history: ClueHistoryIndex | None = None,
         chunk_size: int = 0,
+        parallel_chunks: bool = False,
+        parallel_chunk_workers: int = 4,
     ) -> None:
         self._llm = llm
         self._max_retries = max_retries
@@ -40,6 +43,10 @@ class ClueGenerationStep(PipelineStep):
         # let the model follow the rules more reliably across a long puzzle;
         # the (cacheable) system prompt is shared across all chunks.
         self._chunk_size = chunk_size or 0
+        # When chunking, generate chunks concurrently after warming the cache
+        # with the first chunk (see _generate_chunks). Off => serial.
+        self._parallel_chunks = parallel_chunks
+        self._parallel_chunk_workers = max(1, parallel_chunk_workers)
 
     @property
     def name(self) -> str:
@@ -77,23 +84,9 @@ class ClueGenerationStep(PipelineStep):
         else:
             chunks = [entries]
 
-        clue_entries: list[ClueEntry] = []
-        for idx, chunk in enumerate(chunks, start=1):
-            if len(chunks) > 1:
-                logger.info(
-                    "Clue generation chunk %d/%d (%d entries)",
-                    idx,
-                    len(chunks),
-                    len(chunk),
-                )
-            clue_entries.extend(
-                self._generate_for_entries(
-                    chunk,
-                    crossing_words,
-                    envelope,
-                    prior_clues_by_answer,
-                )
-            )
+        clue_entries = self._generate_chunks(
+            chunks, crossing_words, envelope, prior_clues_by_answer
+        )
 
         return envelope.model_copy(
             update={
@@ -101,6 +94,69 @@ class ClueGenerationStep(PipelineStep):
                 "step_history": [*envelope.step_history, self.name],
             }
         )
+
+    def _generate_chunks(
+        self,
+        chunks: list[list[NumberedEntry]],
+        crossing_words: dict[tuple[int, str], list[str]],
+        envelope: PuzzleEnvelope,
+        prior_clues_by_answer: dict[str, list[str]] | None,
+    ) -> list[ClueEntry]:
+        """Generate clues for every chunk and concatenate them in order.
+
+        Serial unless ``parallel_chunks`` is on and there is more than one
+        chunk. In the parallel case we deliberately run the FIRST chunk alone
+        before fanning out the rest: every chunk of a puzzle sends the same
+        cache-eligible system prompt, but an Anthropic cache block is only
+        readable once the request that created it returns. Firing all chunks at
+        once from a cold cache makes each one pay full price to (re)create the
+        same block. Warming with chunk 0 first lets chunks 1..N read the hot
+        cache instead. Output order always follows chunk (entry) order so the
+        result is identical to the serial path and manifests stay reproducible.
+        """
+        n = len(chunks)
+
+        def gen(chunk: list[NumberedEntry]) -> list[ClueEntry]:
+            return self._generate_for_entries(
+                chunk, crossing_words, envelope, prior_clues_by_answer
+            )
+
+        if n <= 1 or not self._parallel_chunks:
+            clue_entries: list[ClueEntry] = []
+            for idx, chunk in enumerate(chunks, start=1):
+                if n > 1:
+                    logger.info(
+                        "Clue generation chunk %d/%d (%d entries)",
+                        idx,
+                        n,
+                        len(chunk),
+                    )
+                clue_entries.extend(gen(chunk))
+            return clue_entries
+
+        # Warm the cache with chunk 0, then fan the rest out concurrently.
+        logger.info(
+            "Clue generation: warming cache with chunk 1/%d, then %d in "
+            "parallel (max %d workers)",
+            n,
+            n - 1,
+            self._parallel_chunk_workers,
+        )
+        results: list[list[ClueEntry]] = [[] for _ in range(n)]
+        results[0] = gen(chunks[0])
+
+        workers = min(self._parallel_chunk_workers, n - 1)
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            futures = {
+                pool.submit(gen, chunks[i]): i for i in range(1, n)
+            }
+            for future, i in futures.items():
+                # .result() re-raises any exception from the worker, so a chunk
+                # that fails all its retries fails the whole puzzle, exactly as
+                # in the serial path.
+                results[i] = future.result()
+
+        return [clue for chunk_result in results for clue in chunk_result]
 
     def _generate_for_entries(
         self,

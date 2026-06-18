@@ -2,7 +2,7 @@
 
 **HGG difficulty calibration:**
 
--   Easy clues should be easier than an NYT Monday. Favor direct definitions, obvious fill-in-the-blank clues, familiar meanings, and fast recognition for a broad casual audience. For Easy, plain and instantly solvable is a feature, not a flaw.
+-   Easy clues should be easier than an NYT Monday. Favor direct definitions, obvious fill-in-the-blank clues, familiar meanings, and fast recognition for a broad casual audience. For Easy, plain and instantly solvable is a feature, not a flaw. Never use a wordplay/tricky question-mark clue (the punny `?`-tagged kind) in an Easy puzzle — a literal `?` inside quoted text, like `"___ you okay?"` for ARE, is fine; only the trick-signalling question mark is banned.
 -   Hard clues should land around NYT Tuesday/Wednesday. They may use oblique-but-fair definitions, common secondary meanings, mild misdirection, wordplay, and occasional question-mark clues, but should avoid Saturday-level obscurity, forced cleverness, and ultra-current slang that needs a long explanation.
 
 **Positive indicators (high clue quality):**

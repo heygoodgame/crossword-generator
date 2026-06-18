@@ -17,6 +17,36 @@ logger = logging.getLogger(__name__)
 
 _MIN_SHARED_ETYMOLOGY_PART_LENGTH = 4
 
+# Minimum length of a shared dictionary stem for the shared-root rule below.
+_MIN_SHARED_ROOT_LENGTH = 4
+
+# Inflectional/derivational suffixes that may attach to a stem at a morpheme
+# boundary. The short, ambiguous endings ("s", "y", "ed") are INCLUDED here on
+# purpose — the shared-root rule additionally requires the stem itself to be a
+# dictionary word AND both answers to be stem+suffix, and that anchoring keeps
+# coincidences (START/STAR) out while still catching STINKY/STINKS. The price is
+# a rare false positive such as READS/READY; a wrongly rejected fill is simply
+# regenerated, which is preferable to shipping the same root twice.
+_SHARED_ROOT_SUFFIXES = (
+    "iest",
+    "ier",
+    "ies",
+    "ness",
+    "less",
+    "able",
+    "ers",
+    "est",
+    "ful",
+    "ing",
+    "es",
+    "ed",
+    "er",
+    "ly",
+    "s",
+    "d",
+    "y",
+)
+
 
 class FillGrader:
     """Scores a filled crossword grid against a scored dictionary.
@@ -83,6 +113,8 @@ class FillGrader:
         if "terminal_s_variants" in grid_penalties:
             passing = False
         if "shared_etymology" in grid_penalties:
+            passing = False
+        if "shared_root" in grid_penalties:
             passing = False
         if "exact_score_count" in grid_penalties:
             passing = False
@@ -208,6 +240,10 @@ class FillGrader:
         if shared_etymology_pairs > 0:
             grid_penalties["shared_etymology"] = 100.0 * shared_etymology_pairs
 
+        shared_root_pairs = _shared_root_pair_count(seen, self._dictionary)
+        if shared_root_pairs > 0:
+            grid_penalties["shared_root"] = 100.0 * shared_root_pairs
+
         # High unknown ratio
         unknown_count = sum(1 for wg in word_grades if wg.dictionary_score is None)
         if len(word_grades) > 0 and unknown_count / len(word_grades) > 0.2:
@@ -318,3 +354,58 @@ def _dictionary_part(word: str, dictionary: Dictionary) -> str | None:
         if dictionary.contains(singular):
             return singular
     return None
+
+
+def _shared_root_pair_count(
+    word_counts: dict[str, int], dictionary: Dictionary
+) -> int:
+    """Count answer pairs that are both derivatives of one dictionary stem.
+
+    Jeff rejects grids that pair two words from the same family even when
+    neither is a compound of the other (STINKY/STINKS, PLAYER/PLAYS,
+    RAINS/RAINY). The compound-based ``_shared_etymology_pair_count`` misses
+    these because the shared stem (STINK) is not a compound *piece* of either
+    answer, and the Snowball stemmer splits STINKY/STINKS to different stems.
+
+    This rule keys each answer by every dictionary stem it derives from — a
+    stem >= 4 chars that is itself a dictionary entry and to which the answer
+    adds exactly one known suffix (see ``_SHARED_ROOT_SUFFIXES``). Two answers
+    sharing such a stem are a same-family pair. Requiring BOTH to be a real
+    derivative of a real word keeps coincidental shared prefixes out: START is
+    not STAR + a suffix, so START/STAR does not collide on STAR.
+    """
+    words_by_stem: dict[str, set[str]] = defaultdict(set)
+    for word in word_counts:
+        for stem in _shared_root_stems(word, dictionary):
+            words_by_stem[stem].add(word)
+
+    pairs: set[tuple[str, str]] = set()
+    for words in words_by_stem.values():
+        if len(words) < 2:
+            continue
+        sorted_words = sorted(words)
+        for index, left in enumerate(sorted_words):
+            for right in sorted_words[index + 1:]:
+                pairs.add((left, right))
+    return len(pairs)
+
+
+def _shared_root_stems(word: str, dictionary: Dictionary) -> set[str]:
+    """Return dictionary stems this answer derives from via one known suffix.
+
+    A stem qualifies when it is >= 4 chars, is a dictionary entry, is shorter
+    than the answer, and the answer equals the stem plus one suffix from
+    ``_SHARED_ROOT_SUFFIXES``. The answer itself is excluded so an exact stem
+    entry (handled by the duplicate rule) is not double-counted here.
+    """
+    normalized = word.upper()
+    stems: set[str] = set()
+    for suffix in _SHARED_ROOT_SUFFIXES:
+        if not normalized.endswith(suffix.upper()):
+            continue
+        stem = normalized[: -len(suffix)]
+        if len(stem) < _MIN_SHARED_ROOT_LENGTH:
+            continue
+        if dictionary.contains(stem):
+            stems.add(stem)
+    return stems

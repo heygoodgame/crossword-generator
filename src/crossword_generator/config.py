@@ -118,6 +118,14 @@ class ClueGradingConfig(BaseModel):
     # call (0 = one call for the whole puzzle). Smaller chunks improve rule
     # adherence on long puzzles; the cacheable system prompt is shared.
     generation_chunk_size: int = 0
+    # When chunking is on, generate the chunks concurrently instead of serially.
+    # The first chunk runs alone to populate the ephemeral system-prompt cache;
+    # the remaining chunks then fan out and read that warm cache rather than
+    # each racing to recreate it. Off by default — opt in per config.
+    parallel_chunks: bool = False
+    # Max chunks generated concurrently during the fan-out stage (after the
+    # first warm-up chunk). Only used when parallel_chunks is true.
+    parallel_chunk_max_workers: int = 4
     fact_check_enabled: bool = True
     fact_check_scope: str = "risky"  # "risky" or "all"
 

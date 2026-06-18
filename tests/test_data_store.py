@@ -279,6 +279,49 @@ def test_records_from_manifest_allow_leaks_override(tmp_path: Path) -> None:
     assert len(records) == 1
 
 
+def test_records_from_manifest_flag_issues_uploads_with_metadata(
+    tmp_path: Path,
+) -> None:
+    """flag_issues uploads the puzzle and attaches structured clue issues."""
+    manifest_path = _leaky_manifest(tmp_path)
+    records = records_from_manifest(manifest_path, flag_issues=True)
+
+    assert len(records) == 1
+    meta = records[0]["metadata"]
+    assert meta["review_status"] == "needs_attention"
+    issues = meta["clue_issues"]
+    assert len(issues) == 1
+    assert issues[0]["kind"] == "LEAK"
+    assert issues[0]["answer"] == "CAT"
+    assert issues[0]["number"] == 1
+    assert issues[0]["direction"] == "across"
+    assert "A pet cat" in issues[0]["detail"]
+
+
+def test_flag_issues_parses_duplicate_form() -> None:
+    from crossword_generator.data_store import _parse_clue_issue
+
+    issue = _parse_clue_issue(
+        'DUPLICATE: EQUAL (6-down) clue "Sweetener brand in blue packets" '
+        'already used (existing: "Sweetener brand in blue packets")'
+    )
+    assert issue["kind"] == "DUPLICATE"
+    assert issue["answer"] == "EQUAL"
+    assert issue["number"] == 6
+    assert issue["direction"] == "down"
+
+
+def test_allow_leaks_takes_precedence_over_flag_issues(tmp_path: Path) -> None:
+    manifest_path = _leaky_manifest(tmp_path)
+    records = records_from_manifest(
+        manifest_path, allow_leaks=True, flag_issues=True
+    )
+    assert len(records) == 1
+    # allow_leaks short-circuits before flagging, so no issues are attached.
+    assert "clue_issues" not in records[0]["metadata"]
+    assert records[0]["metadata"]["review_status"] == "unreviewed"
+
+
 def test_bulk_save_skips_duplicate_records(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

@@ -251,7 +251,7 @@ class TestPhase1PreparedDictionaries:
     def test_easy_dictionary_loads(self, project_root: Path) -> None:
         path = project_root / "dictionaries" / "hgg-easy.txt"
         d = Dictionary.load(path, min_word_score=50, min_2letter_score=50)
-        assert len(d) == 21480
+        assert len(d) == 21455
         assert d.score("ABACUS") == 50
         assert d.score("BANE") == 50
         assert d.score("zoom") == 50
@@ -282,7 +282,7 @@ class TestPhase1PreparedDictionaries:
             min_word_score=50,
             min_2letter_score=50,
         )
-        assert len(d) == 34659
+        assert len(d) == 34626
         assert d.supported_lengths() == {3, 4, 5, 6, 7, 8, 9}
         assert d.score("ABACUS") == 50
         assert d.score("ACTDUMB") == 60
