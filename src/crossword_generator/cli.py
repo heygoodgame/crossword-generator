@@ -1193,6 +1193,17 @@ def check_batch_answers(
         "Off by default — leaked puzzles are refused."
     ),
 )
+@click.option(
+    "--flag-issues",
+    is_flag=True,
+    default=False,
+    help=(
+        "Upload puzzles with surviving LEAK/DUPLICATE clue issues instead of "
+        "holding them back, attaching the issues to metadata.clue_issues and "
+        "setting review_status=needs_attention so the admin UI flags the "
+        "specific clues for the editor. Ignored if --allow-leaks is set."
+    ),
+)
 def save_generated_puzzles(
     manifest_path: str,
     batch_id: str | None,
@@ -1205,6 +1216,7 @@ def save_generated_puzzles(
     delete_existing_sizes: tuple[int, ...],
     dry_run: bool,
     allow_leaks: bool,
+    flag_issues: bool,
 ) -> None:
     """Save generated puzzle candidates to the HeyGG admin data store."""
     from crossword_generator.data_store import (
@@ -1226,9 +1238,17 @@ def save_generated_puzzles(
         mini_game_key=mini_game_key,
         midi_game_key=midi_game_key,
         allow_leaks=allow_leaks,
+        flag_issues=flag_issues,
     )
 
+    flagged = sum(
+        1 for r in records if r["metadata"].get("clue_issues")
+    )
     click.echo(f"Prepared {len(records)} generated puzzle record(s).")
+    if flagged:
+        click.echo(
+            f"  {flagged} flagged for review (review_status=needs_attention)."
+        )
     if not records:
         return
 
