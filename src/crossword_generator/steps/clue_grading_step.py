@@ -388,6 +388,16 @@ class ClueWithGradingStep(PipelineStep):
         entries = compute_numbering(grid)
         crossing_words = compute_crossing_words(entries, grid)
 
+        # Cross-puzzle clue history for the answers being repaired, so a repair
+        # for a quality problem cannot reintroduce a clue already used live.
+        prior_clues_by_answer = (
+            self._clue_history.avoid_clues_for_answers(
+                clue.answer for clue, _ in entries_to_repair
+            )
+            if self._clue_history is not None
+            else None
+        )
+
         system_text, user_text = build_clue_repair_messages(
             entries_to_repair=entries_to_repair,
             all_clues=envelope.clues,
@@ -395,6 +405,7 @@ class ClueWithGradingStep(PipelineStep):
             puzzle_type=envelope.puzzle_type,
             theme=envelope.theme,
             difficulty=envelope.difficulty,
+            prior_clues_by_answer=prior_clues_by_answer,
         )
 
         # Call LLM for repair

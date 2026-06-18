@@ -844,6 +844,59 @@ class TestThemeAnnotationsInPrompt:
         assert "the older or more niche the reference is" in prompt
         assert "plain accurate clue" in prompt
 
+    def test_repair_prompt_includes_prior_clues_for_repaired_answers(
+        self,
+    ) -> None:
+        """A quality repair must see the live clue history so it can't reuse it."""
+        bad_clue = ClueEntry(
+            number=6,
+            direction="down",
+            answer="EQUAL",
+            clue="On the same footing",
+        )
+        grade = ClueGrade(
+            number=6,
+            direction="down",
+            answer="EQUAL",
+            score=55,
+            feedback="Too easy — a plain idiomatic definition with no twist.",
+        )
+
+        prompt = build_clue_repair_prompt(
+            [(bad_clue, grade)],
+            [bad_clue],
+            {},
+            PuzzleType.MIDI,
+            difficulty=PuzzleDifficulty.HARD,
+            prior_clues_by_answer={
+                "EQUAL": ["Sweetener brand in blue packets"],
+                # An answer not being repaired must NOT leak into the prompt.
+                "OREO": ["Sandwich cookie"],
+            },
+        )
+
+        assert "PRIOR CLUES FOR THESE ANSWERS" in prompt
+        assert "Sweetener brand in blue packets" in prompt
+        assert "still counts as a repeat" in prompt
+        # Only repaired answers' history is included.
+        assert "Sandwich cookie" not in prompt
+
+    def test_repair_prompt_omits_prior_clues_block_when_none(self) -> None:
+        bad_clue = ClueEntry(
+            number=1, direction="across", answer="APPLE", clue="Singer Fiona"
+        )
+        grade = ClueGrade(
+            number=1,
+            direction="across",
+            answer="APPLE",
+            score=55,
+            feedback="Too obscure.",
+        )
+        prompt = build_clue_repair_prompt(
+            [(bad_clue, grade)], [bad_clue], {}, PuzzleType.MINI
+        )
+        assert "PRIOR CLUES FOR THESE ANSWERS" not in prompt
+
 
 class TestRevealerClueNotSubstituted:
     """Verify the revealer clue from theme is NOT hard-substituted over LLM output."""
