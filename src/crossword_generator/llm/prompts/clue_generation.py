@@ -92,11 +92,15 @@ _GUIDELINES = (
     "- Vary clue styles within the target difficulty: definitional, "
     "fill-in-the-blank, wordplay, trivia, and lateral thinking are all "
     "available, but Easy clues should stay direct and obvious.\n"
-    "- Do not repeat the exact same clue wording for the same answer across "
-    "different puzzles. If prior clues are listed for an answer, write a new "
-    "clue that does not exactly duplicate any of them — and when those prior "
-    "clues all lean on one reference or meaning, choose a different fair "
-    "angle this time rather than rewording the same one.\n"
+    "- Do not repeat the same clue for the same answer across different "
+    "puzzles. This means more than avoiding the exact words: a reworded "
+    "clue that tests the SAME definition, fact, or angle still counts as a "
+    "repeat and is not allowed. If prior clues are listed for an answer, "
+    'treat "Large body of water" and "Vast body of water" for OCEAN as the '
+    "same clue — both lean on the size-of-water definition. Write a clue "
+    "that comes at the answer from a genuinely different direction (a "
+    "different meaning, sense, reference, wordplay, or fill-in-the-blank) "
+    "than every prior clue, not a paraphrase of one of them.\n"
     "- Use misdirection and cleverness only when they fit the target "
     "difficulty. For Easy clues, clarity beats cleverness.\n"
     "- Use question marks for witty/punny clues only when the target "
@@ -141,7 +145,9 @@ _GUIDELINES = (
     "clues are listed for an answer, pick an angle or reference those clues "
     "have NOT already leaned on — e.g. if ALI has already been clued via "
     "Muhammad Ali, reach for Mahershala Ali, Ali Wong, or Ali Baba instead "
-    "of rewording the boxing angle.\n"
+    "of rewording the boxing angle. Rewording the same reference (e.g. "
+    '"Boxing legend Muhammad" → "Heavyweight champ Muhammad") does NOT '
+    "count as variety; the underlying reference or meaning must change.\n"
     "- ROMAN NUMERAL RULE: if the answer reads as a Roman numeral (III, LIV, "
     'MMX), do not write a bare conversion clue like "54 in Roman numerals" '
     'or a random-context one like "Year in Claudius\'s reign". Prefer a '
@@ -541,10 +547,12 @@ def build_clue_generation_messages(
             prior_clues_block = (
                 "\nPRIOR CLUES FOR THESE ANSWERS (already used in other "
                 "puzzles):\n"
-                "Do not repeat any of these exactly. Also prefer a fresh "
-                "angle: when the prior clues for an answer lean on one "
-                "reference or meaning, clue it through a different fair "
-                "angle this time.\n"
+                "Do not reuse the meaning or angle of any clue below — not "
+                "just the exact words. A reworded clue that tests the same "
+                "definition, fact, or reference still counts as a repeat. "
+                "For each answer, come at it from a different direction than "
+                "every clue listed (a different sense, reference, wordplay, "
+                "or fill-in-the-blank).\n"
                 + "\n".join(prior_lines)
                 + "\n"
             )

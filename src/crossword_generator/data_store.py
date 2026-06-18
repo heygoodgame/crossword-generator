@@ -399,6 +399,59 @@ def list_generated_puzzle_records(
     return records
 
 
+def list_official_puzzle_records(
+    *,
+    game_key: str,
+    status: str | None = None,
+    api_base: str | None = None,
+    token: str | None = None,
+    timeout: int = 60,
+    per_page: int = 100,
+) -> list[dict[str, Any]]:
+    """List official (published/scheduled daily) puzzle records.
+
+    These live in ``crosswords/daily-schedule`` and carry the full IPUZ under
+    ``data.puzzle``. This is the live clue corpus solvers actually see — the
+    source for cross-puzzle clue de-duplication. The draft
+    ``crosswords/generated-puzzles`` store is emptied as candidates are
+    promoted, so it is not a usable clue history on its own.
+    """
+    filters: dict[str, str | int] = {
+        "game_key": game_key,
+        "per_page": per_page,
+    }
+    if status is not None:
+        filters["status"] = status
+
+    records: list[dict[str, Any]] = []
+    page = 1
+    while True:
+        query = urlencode({**filters, "page": page})
+        response = _request_json(
+            "GET",
+            f"/admin/crossword-puzzles/official?{query}",
+            api_base=api_base,
+            token=token,
+            timeout=timeout,
+        )
+        data = response.get("data", [])
+        if not isinstance(data, list):
+            raise DataStoreError(f"Unexpected official list shape: {response}")
+        records.extend(_ensure_dict(record) for record in data)
+
+        meta = response.get("meta")
+        if not isinstance(meta, dict):
+            # No pagination metadata: a single full page was returned.
+            break
+        current_page = int(meta.get("current_page", page))
+        last_page = int(meta.get("last_page", current_page))
+        if current_page >= last_page:
+            break
+        page = current_page + 1
+
+    return records
+
+
 def fetch_recent_sixty_answers(
     *,
     window_days: int = 180,

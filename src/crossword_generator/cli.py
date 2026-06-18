@@ -2437,7 +2437,7 @@ def _load_existing_clue_history(
     *,
     api_base: str | None = None,
 ) -> int:
-    from crossword_generator.data_store import list_generated_puzzle_records
+    from crossword_generator.data_store import list_official_puzzle_records
 
     loaded_records = 0
     seen_game_keys: set[str] = set()
@@ -2446,7 +2446,10 @@ def _load_existing_clue_history(
         if game_key in seen_game_keys:
             continue
         seen_game_keys.add(game_key)
-        records = list_generated_puzzle_records(
+        # The live/official daily-schedule store is the clue corpus solvers
+        # actually see; the draft generated-puzzles store is emptied as
+        # candidates are promoted, so it cannot dedup against published clues.
+        records = list_official_puzzle_records(
             game_key=game_key,
             api_base=api_base,
         )

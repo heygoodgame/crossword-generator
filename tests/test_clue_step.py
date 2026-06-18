@@ -812,8 +812,8 @@ class TestThemeAnnotationsInPrompt:
         )
 
         assert "PRIOR CLUES FOR THESE ANSWERS" in prompt
-        assert "Do not repeat any of these exactly" in prompt
-        assert "prefer a fresh" in prompt
+        assert "Do not reuse the meaning or angle" in prompt
+        assert "still counts as a repeat" in prompt
         assert '- ABCDE: "First five letters"' in prompt
 
     def test_repair_prompt_applies_sliding_familiarity_to_references(self) -> None:
