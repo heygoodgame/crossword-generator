@@ -616,6 +616,7 @@ def build_clue_repair_prompt(
     puzzle_type: PuzzleType,
     theme: ThemeConcept | None = None,
     difficulty: PuzzleDifficulty = PuzzleDifficulty.EASY,
+    prior_clues_by_answer: dict[str, list[str]] | None = None,
 ) -> str:
     """Build a prompt to regenerate only clues with accuracy problems.
 
@@ -625,6 +626,8 @@ def build_clue_repair_prompt(
         crossing_words: Maps (number, direction) to crossing answer words.
         puzzle_type: Mini or midi — affects difficulty guidance.
         theme: Optional theme concept for midi puzzles.
+        prior_clues_by_answer: Cross-puzzle clue history for the repaired
+            answers, so repairs avoid reintroducing already-used clues.
 
     Returns:
         A prompt string ready to send to the LLM.
@@ -636,6 +639,7 @@ def build_clue_repair_prompt(
         puzzle_type,
         theme,
         difficulty,
+        prior_clues_by_answer,
     )
     return f"{system_text}\n\n{user_text}"
 
@@ -763,8 +767,15 @@ def build_clue_repair_messages(
     puzzle_type: PuzzleType,
     theme: ThemeConcept | None = None,
     difficulty: PuzzleDifficulty = PuzzleDifficulty.EASY,
+    prior_clues_by_answer: dict[str, list[str]] | None = None,
 ) -> tuple[str, str]:
-    """Build (system, user) messages for clue repair."""
+    """Build (system, user) messages for clue repair.
+
+    ``prior_clues_by_answer`` is the live cross-puzzle clue history for the
+    answers being repaired. Without it, a clue repaired for a quality problem
+    (e.g. "too easy") can freely reintroduce a clue already used in another
+    puzzle — generation avoids that history, so repair must too.
+    """
     themed = bool(theme and theme.topic)
 
     system_parts = [
@@ -822,6 +833,34 @@ def build_clue_repair_messages(
             )
     context_block = "\n".join(context_lines) if context_lines else "(none)"
 
+    # Prior clues used for the answers being repaired, in OTHER puzzles. Scope
+    # to the repair targets so the model is not handed the whole history.
+    prior_clues_block = ""
+    if prior_clues_by_answer:
+        repair_answers = {c.answer.upper() for c, _ in entries_to_repair}
+        prior_lines: list[str] = []
+        for answer in sorted(prior_clues_by_answer):
+            if answer.upper() not in repair_answers:
+                continue
+            clues = prior_clues_by_answer[answer]
+            if not clues:
+                continue
+            quoted = "; ".join(f'"{clue}"' for clue in clues)
+            prior_lines.append(f"- {answer}: {quoted}")
+        if prior_lines:
+            prior_clues_block = (
+                "\nPRIOR CLUES FOR THESE ANSWERS (already used in other "
+                "puzzles):\n"
+                "Do not reuse the meaning or angle of any clue below — not "
+                "just the exact words. A reworded clue that tests the same "
+                "definition, fact, or reference still counts as a repeat. For "
+                "each answer, come at it from a different direction than every "
+                "clue listed (a different sense, reference, wordplay, or "
+                "fill-in-the-blank).\n"
+                + "\n".join(prior_lines)
+                + "\n"
+            )
+
     theme_context_block = ""
     if themed:
         theme_context_block = (
@@ -836,7 +875,8 @@ def build_clue_repair_messages(
     user_text = (
         f"{theme_context_block}"
         f"CLUES TO REPAIR:\n{repair_block}\n\n"
-        f"EXISTING CLUES (for context — do not duplicate):\n{context_block}\n\n"
+        f"EXISTING CLUES (for context — do not duplicate):\n{context_block}\n"
+        f"{prior_clues_block}\n"
         f"Write replacement clues for the "
         f"{len(entries_to_repair)} entries above."
     )
