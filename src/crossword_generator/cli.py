@@ -668,10 +668,19 @@ def generate_pilot_batch(
     # actually guarantees intra-batch answer uniqueness. Parallel workers
     # can't see in-flight batch-mates; check-batch-answers catches the
     # residue after the run.
-    used_answers = _UsedAnswerSet(min_length=exclude_answers_min_length)
+    used_answers = _UsedAnswerSet()
 
     def _run_item(item: tuple[str, int, str, Path, int]) -> dict[str, object]:
         difficulty, size, puzzle_type, config_path, seed = item
+        # Minis can safely drop 3-letter answers a midi already used (they
+        # carry little glue and refill fine); midis keep their 3-letter glue
+        # to stay fillable. Never exclude more aggressively than the operator's
+        # global floor.
+        item_min_length = (
+            min(exclude_answers_min_length, 3)
+            if size in (5, 7)
+            else exclude_answers_min_length
+        )
         result = _run_batch_item(
             difficulty=difficulty,
             size=size,
@@ -688,7 +697,7 @@ def generate_pilot_batch(
             llm_logging_enabled=not no_llm_log,
             dictionary_overrides=dictionary_overrides,
             keep_sweep_context=max_workers > 1,
-            excluded_fill_words=used_answers.snapshot(),
+            excluded_fill_words=used_answers.snapshot(min_length=item_min_length),
         )
         if result["success"]:
             from crossword_generator.clue_history import extract_ipuz_answers
@@ -878,26 +887,29 @@ SIXTY_FILTERED_FILENAME = "hgg-60-scheduled-filtered.txt"
 class _UsedAnswerSet:
     """Thread-safe set of answers used by completed batch items.
 
-    Answers shorter than ``min_length`` are not tracked: short glue
-    saturates 9x9 fills, and the scheduling-time short-answer window
-    tolerates 3-letter repeats between 9x9s placed 3+ days apart.
+    All answers (length >= 3) are tracked; the length floor is applied per
+    consumer at ``snapshot`` time, not at ``add`` time. This lets a mini
+    (5x5/7x7) exclude a 3-letter answer a midi already used while a midi keeps
+    its 3-letter glue (excluding it makes 9x9 grids unfillable). The
+    scheduler's +/-2 short-answer window only protects 9x9 placements, so a
+    3-letter answer shared between a mini and a midi within 6 days is a real
+    conflict — driven by the mini side — and the mini must avoid it.
     """
 
-    def __init__(self, min_length: int = 4) -> None:
+    def __init__(self) -> None:
         self._answers: set[str] = set()
-        self._min_length = min_length
         self._lock = threading.Lock()
 
-    def snapshot(self) -> set[str]:
+    def snapshot(self, *, min_length: int = 4) -> set[str]:
         with self._lock:
-            return set(self._answers)
+            return {a for a in self._answers if len(a) >= min_length}
 
     def add(self, answers: Iterable[str]) -> None:
         with self._lock:
             self._answers.update(
                 answer.strip().upper()
                 for answer in answers
-                if len(answer.strip()) >= self._min_length
+                if len(answer.strip()) >= 3
             )
 
 
@@ -1181,6 +1193,17 @@ def check_batch_answers(
         "Off by default — leaked puzzles are refused."
     ),
 )
+@click.option(
+    "--flag-issues",
+    is_flag=True,
+    default=False,
+    help=(
+        "Upload puzzles with surviving LEAK/DUPLICATE clue issues instead of "
+        "holding them back, attaching the issues to metadata.clue_issues and "
+        "setting review_status=needs_attention so the admin UI flags the "
+        "specific clues for the editor. Ignored if --allow-leaks is set."
+    ),
+)
 def save_generated_puzzles(
     manifest_path: str,
     batch_id: str | None,
@@ -1193,6 +1216,7 @@ def save_generated_puzzles(
     delete_existing_sizes: tuple[int, ...],
     dry_run: bool,
     allow_leaks: bool,
+    flag_issues: bool,
 ) -> None:
     """Save generated puzzle candidates to the HeyGG admin data store."""
     from crossword_generator.data_store import (
@@ -1214,9 +1238,17 @@ def save_generated_puzzles(
         mini_game_key=mini_game_key,
         midi_game_key=midi_game_key,
         allow_leaks=allow_leaks,
+        flag_issues=flag_issues,
     )
 
+    flagged = sum(
+        1 for r in records if r["metadata"].get("clue_issues")
+    )
     click.echo(f"Prepared {len(records)} generated puzzle record(s).")
+    if flagged:
+        click.echo(
+            f"  {flagged} flagged for review (review_status=needs_attention)."
+        )
     if not records:
         return
 
@@ -2437,7 +2469,7 @@ def _load_existing_clue_history(
     *,
     api_base: str | None = None,
 ) -> int:
-    from crossword_generator.data_store import list_generated_puzzle_records
+    from crossword_generator.data_store import list_official_puzzle_records
 
     loaded_records = 0
     seen_game_keys: set[str] = set()
@@ -2446,7 +2478,10 @@ def _load_existing_clue_history(
         if game_key in seen_game_keys:
             continue
         seen_game_keys.add(game_key)
-        records = list_generated_puzzle_records(
+        # The live/official daily-schedule store is the clue corpus solvers
+        # actually see; the draft generated-puzzles store is emptied as
+        # candidates are promoted, so it cannot dedup against published clues.
+        records = list_official_puzzle_records(
             game_key=game_key,
             api_base=api_base,
         )
@@ -2579,13 +2614,19 @@ def _summarize_batch_results(
 
 
 def _batch_bucket_configs(project_root: Path) -> list[tuple[str, int, str, Path]]:
+    # Most-constrained first: 9x9 midis carry the heaviest fill (~13 3-letter
+    # entries each) and the least slack, so they claim their answers before the
+    # less-constrained 7x7 and 5x5 minis, which then avoid them. Combined with
+    # the per-item exclusion floor (minis drop 3-letter answers a midi used;
+    # midis keep their glue), this prevents the mini<->midi 3-letter scheduling
+    # conflicts that the +/-2 short-answer window does not cover for minis.
     return [
-        ("easy", 5, "mini", project_root / "config.easy.yaml"),
-        ("easy", 7, "mini", project_root / "config.easy.yaml"),
         ("easy", 9, "midi", project_root / "config.easy9.yaml"),
-        ("hard", 5, "mini", project_root / "config.hard5.yaml"),
-        ("hard", 7, "mini", project_root / "config.hard7.yaml"),
         ("hard", 9, "midi", project_root / "config.hard9.yaml"),
+        ("easy", 7, "mini", project_root / "config.easy.yaml"),
+        ("hard", 7, "mini", project_root / "config.hard7.yaml"),
+        ("easy", 5, "mini", project_root / "config.easy.yaml"),
+        ("hard", 5, "mini", project_root / "config.hard5.yaml"),
     ]
 
 

@@ -72,34 +72,46 @@ def make_record(
     clue_score: float | None = None,
     title: str | None = None,
     title_reasoning: str | None = None,
+    clue_issues: list[dict[str, Any]] | None = None,
     key: str | None = None,
 ) -> dict[str, Any]:
-    """Build a generated-puzzle data-store record."""
+    """Build a generated-puzzle data-store record.
+
+    ``clue_issues`` carries any LEAK/DUPLICATE clue problems that survived
+    repair so the admin review UI can flag the specific clues for the editor
+    instead of the puzzle being silently held back from upload.
+    """
     record_key = key or (
         f"generated:{game_key}:{batch_id}:{difficulty}:{size}x{size}:seed-{seed}"
     )
+    issues = clue_issues or []
+    metadata: dict[str, Any] = {
+        # A flagged puzzle still needs review, but route it so the UI can
+        # surface it first: needs_attention is the editor's "look here" signal.
+        "review_status": "needs_attention" if issues else "unreviewed",
+        "puzzle_type": puzzle_type,
+        "size": size,
+        "difficulty": difficulty,
+        "batch_id": batch_id,
+        "seed": str(seed),
+        "generator_version": generator_version,
+        "generator_commit": generator_commit,
+        "fill_score": fill_score,
+        "clue_score": clue_score,
+        "title": title,
+        "title_reasoning": title_reasoning,
+        "author": AUTHOR,
+        "publication_status": "draft",
+    }
+    if issues:
+        metadata["clue_issues"] = issues
     record = {
         "namespace": NAMESPACE,
         "collection": COLLECTION,
         "game_key": game_key,
         "key": record_key,
         "data": puzzle,
-        "metadata": {
-            "review_status": "unreviewed",
-            "puzzle_type": puzzle_type,
-            "size": size,
-            "difficulty": difficulty,
-            "batch_id": batch_id,
-            "seed": str(seed),
-            "generator_version": generator_version,
-            "generator_commit": generator_commit,
-            "fill_score": fill_score,
-            "clue_score": clue_score,
-            "title": title,
-            "title_reasoning": title_reasoning,
-            "author": AUTHOR,
-            "publication_status": "draft",
-        },
+        "metadata": metadata,
         "status": "draft",
     }
     validate_record(record)
@@ -137,6 +149,35 @@ def _blocking_errors(result: dict[str, Any], puzzle: dict[str, Any]) -> list[str
     return found
 
 
+# Parse a soft-error string like:
+#   LEAK: ROB (17-down) [shared_prefix] in clue "Common nickname for Robert" ...
+#   DUPLICATE: EQUAL (6-down) clue "Sweetener brand..." already used (existing: ...)
+_CLUE_ISSUE_RE = re.compile(
+    r"^(?P<kind>LEAK|DUPLICATE):\s*(?P<answer>\S+)\s*"
+    r"\((?P<number>\d+)-(?P<direction>across|down)\)",
+    re.IGNORECASE,
+)
+
+
+def _parse_clue_issue(text: str) -> dict[str, Any]:
+    """Turn a LEAK/DUPLICATE soft-error string into a structured issue.
+
+    Always returns a dict; if the prefix can't be parsed past the kind, the
+    full message is preserved under ``detail`` so nothing is lost in the UI.
+    """
+    match = _CLUE_ISSUE_RE.match(text.strip())
+    if not match:
+        kind = text.split(":", 1)[0].strip().upper() if ":" in text else "ISSUE"
+        return {"kind": kind, "detail": text.strip()}
+    return {
+        "kind": match.group("kind").upper(),
+        "answer": match.group("answer").upper(),
+        "number": int(match.group("number")),
+        "direction": match.group("direction").lower(),
+        "detail": text.strip(),
+    }
+
+
 def records_from_manifest(
     manifest_path: Path,
     *,
@@ -146,14 +187,21 @@ def records_from_manifest(
     mini_game_key: str = "minicrossword",
     midi_game_key: str = "midicrossword",
     allow_leaks: bool = False,
+    flag_issues: bool = False,
 ) -> list[dict[str, Any]]:
     """Build data-store records from a generated batch manifest.
 
-    Skips any puzzle that carries a blocking soft error which survived repair —
-    a ``LEAK:`` (a clue echoing its answer) or a ``DUPLICATE:`` (a clue exactly
-    matching one already in use) — unless ``allow_leaks`` is set. The affected
-    puzzle is left out of the upload and logged, while the rest of the batch
-    proceeds. This is the upload guard for the clue-quality soft errors.
+    A puzzle carrying a blocking soft error that survived repair — a ``LEAK:``
+    (a clue echoing its answer) or a ``DUPLICATE:`` (a clue matching one already
+    in use) — is handled one of three ways:
+
+    - default: held back from upload and logged (the rest of the batch proceeds);
+    - ``flag_issues``: uploaded with the issues attached to
+      ``metadata.clue_issues`` and ``review_status=needs_attention`` so the admin
+      UI surfaces the specific clues for the editor to fix;
+    - ``allow_leaks``: uploaded with no flagging (legacy override).
+
+    ``allow_leaks`` takes precedence over ``flag_issues``.
     """
     manifest = json.loads(manifest_path.read_text())
     resolved_batch_id = batch_id or str(
@@ -172,16 +220,26 @@ def records_from_manifest(
             raise DataStoreError(f"Generated puzzle file not found: {output_path}")
 
         puzzle = json.loads(output_path.read_text())
+        clue_issues: list[dict[str, Any]] = []
         if not allow_leaks:
             blocking = _blocking_errors(result, puzzle)
             if blocking:
+                if not flag_issues:
+                    logger.warning(
+                        "Skipping %s: clue issue(s) survived repair — %s "
+                        "(pass --flag-issues to upload with the clues flagged "
+                        "for review, or --allow-leaks to include silently).",
+                        output_path.name,
+                        "; ".join(blocking),
+                    )
+                    continue
+                clue_issues = [_parse_clue_issue(b) for b in blocking]
                 logger.warning(
-                    "Skipping %s: clue issue(s) survived repair — %s "
-                    "(pass allow_leaks=True / --allow-leaks to include).",
+                    "Flagging %s for review: %d clue issue(s) — %s",
                     output_path.name,
+                    len(clue_issues),
                     "; ".join(blocking),
                 )
-                continue
         size = int(result["size"])
         puzzle_type = "mini" if size in (5, 7) else "midi"
         game_key = mini_game_key if puzzle_type == "mini" else midi_game_key
@@ -203,6 +261,7 @@ def records_from_manifest(
                 title_reasoning=_optional_str(
                     result.get("title_reasoning")
                 ),
+                clue_issues=clue_issues or None,
             )
         )
 
@@ -389,6 +448,59 @@ def list_generated_puzzle_records(
 
         meta = response.get("meta", {})
         if not isinstance(meta, dict):
+            break
+        current_page = int(meta.get("current_page", page))
+        last_page = int(meta.get("last_page", current_page))
+        if current_page >= last_page:
+            break
+        page = current_page + 1
+
+    return records
+
+
+def list_official_puzzle_records(
+    *,
+    game_key: str,
+    status: str | None = None,
+    api_base: str | None = None,
+    token: str | None = None,
+    timeout: int = 60,
+    per_page: int = 100,
+) -> list[dict[str, Any]]:
+    """List official (published/scheduled daily) puzzle records.
+
+    These live in ``crosswords/daily-schedule`` and carry the full IPUZ under
+    ``data.puzzle``. This is the live clue corpus solvers actually see — the
+    source for cross-puzzle clue de-duplication. The draft
+    ``crosswords/generated-puzzles`` store is emptied as candidates are
+    promoted, so it is not a usable clue history on its own.
+    """
+    filters: dict[str, str | int] = {
+        "game_key": game_key,
+        "per_page": per_page,
+    }
+    if status is not None:
+        filters["status"] = status
+
+    records: list[dict[str, Any]] = []
+    page = 1
+    while True:
+        query = urlencode({**filters, "page": page})
+        response = _request_json(
+            "GET",
+            f"/admin/crossword-puzzles/official?{query}",
+            api_base=api_base,
+            token=token,
+            timeout=timeout,
+        )
+        data = response.get("data", [])
+        if not isinstance(data, list):
+            raise DataStoreError(f"Unexpected official list shape: {response}")
+        records.extend(_ensure_dict(record) for record in data)
+
+        meta = response.get("meta")
+        if not isinstance(meta, dict):
+            # No pagination metadata: a single full page was returned.
             break
         current_page = int(meta.get("current_page", page))
         last_page = int(meta.get("last_page", current_page))

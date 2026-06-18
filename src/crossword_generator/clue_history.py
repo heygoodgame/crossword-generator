@@ -69,6 +69,11 @@ class ClueHistoryIndex:
         data = record.get("data")
         if not isinstance(data, dict):
             return 0
+        # generated-puzzles store the IPUZ directly under ``data``; the
+        # daily-schedule (live/official) store nests it under ``data.puzzle``.
+        puzzle = data.get("puzzle")
+        if isinstance(puzzle, dict):
+            return self.add_ipuz(puzzle)
         return self.add_ipuz(data)
 
     def clues_for_answer(self, answer: str) -> list[str]:
@@ -79,7 +84,7 @@ class ClueHistoryIndex:
             return sorted({c for values in clue_map.values() for c in values})
 
     def avoid_clues_for_answers(
-        self, answers: Iterable[str], *, limit_per_answer: int = 5
+        self, answers: Iterable[str], *, limit_per_answer: int = 8
     ) -> dict[str, list[str]]:
         avoid: dict[str, list[str]] = {}
         with self._lock:
@@ -187,10 +192,23 @@ def _solution_to_grid(solution: list[Any]) -> list[list[str]]:
             return []
         grid_row: list[str] = []
         for cell in row:
-            text = str(cell)
-            grid_row.append("." if text == "#" else text.upper())
+            grid_row.append("." if _is_block_cell(cell) else str(cell).upper())
         grid.append(grid_row)
     return grid
+
+
+def _is_block_cell(cell: Any) -> bool:
+    """A block (non-letter) cell.
+
+    IPUZ payloads represent blocks several ways across our stores: the spec
+    block char ``#``, a JSON ``null`` (``None``) in the daily-schedule store,
+    or an empty/whitespace string. Treating only ``#`` as a block ran entries
+    straight through ``null`` blocks (e.g. ``OPTS`` + ``LOFT`` -> ``OPTSNONELOFT``).
+    """
+    if cell is None:
+        return True
+    text = str(cell).strip()
+    return text in ("", "#")
 
 
 def _parse_ipuz_clue_item(item: object) -> tuple[int, str] | None:
