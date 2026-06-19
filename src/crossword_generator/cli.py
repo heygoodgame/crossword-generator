@@ -401,6 +401,20 @@ def generate(
     ),
 )
 @click.option(
+    "--intra-batch-dedup/--no-intra-batch-dedup",
+    default=True,
+    help=(
+        "Drop answers used by completed batch-mates from each subsequent "
+        "puzzle's fill pool, so no two puzzles in the batch share an answer. "
+        "On by default for dated dailies (a batch scheduled across consecutive "
+        "days would otherwise trip the no-repeat windows). Disable for "
+        "unlimited / non-scheduled pools, where puzzles are never "
+        "schedule-adjacent and forcing disjoint answer sets only hurts fill "
+        "quality. When disabled, the post-batch check-batch-answers gate is "
+        "not meaningful — intra-batch answer overlap is expected."
+    ),
+)
+@click.option(
     "--per-pattern-attempts",
     type=int,
     default=1,
@@ -467,6 +481,7 @@ def generate_pilot_batch(
     exclude_recent_answers: bool,
     exclude_answers_files: tuple[str, ...],
     exclude_answers_min_length: int,
+    intra_batch_dedup: bool,
     per_pattern_attempts: int,
     max_grid_variants: int,
     timeout_5: int,
@@ -699,7 +714,7 @@ def generate_pilot_batch(
             keep_sweep_context=max_workers > 1,
             excluded_fill_words=used_answers.snapshot(min_length=item_min_length),
         )
-        if result["success"]:
+        if result["success"] and intra_batch_dedup:
             from crossword_generator.clue_history import extract_ipuz_answers
 
             try:
@@ -796,6 +811,7 @@ def generate_pilot_batch(
             "answer_count": len(extra_excluded_answers),
             "min_length": exclude_answers_min_length,
         },
+        "intra_batch_dedup": intra_batch_dedup,
         "llm_logging_enabled": not no_llm_log,
         "max_workers": max_workers,
         "duplicate_sweep": {
