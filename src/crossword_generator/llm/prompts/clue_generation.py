@@ -61,6 +61,17 @@ _GUIDELINES = (
     'fragment of the answer: do not clue TRI with "Start of triangle", PRE '
     'with "Prefix...", or any answer with a clue word it literally begins, '
     "ends, or spells.\n"
+    "- HIDDEN-ANSWER RULE (strict): never use a clue word that CONTAINS the "
+    "answer's letters in sequence, whether the answer sits at the start, the "
+    "middle, or the END of the clue word — this is a leak even when the clue "
+    "word is a completely different meaning and even when the answer is short. "
+    'Do not clue BOT with "Robot, informally" (BOT is the end of roBOT); do '
+    'not clue TIL with "Until, briefly" (TIL is the end of unTIL); do not '
+    'clue MEN with "Gentlemen" (MEN is the end of gentleMEN); do not clue CAT '
+    'with "Catalog listing" (CAT begins CATalog). These read as lazy, '
+    "inferior clues to solvers. Clue the answer through its own meaning "
+    'instead (BOT: "Automated account on social media"; TIL: "Up to, in '
+    'texts"; MEN: "Adult guys").\n'
     "- COMPOUND-WORD RULE: never define an answer with a compound word that "
     "contains it spelled out — a more specific type of the answer. Do not clue "
     'ROBE with "Bathrobe, for example", BERRY with "Strawberry, e.g.", or CAKE '
@@ -92,15 +103,21 @@ _GUIDELINES = (
     "- Vary clue styles within the target difficulty: definitional, "
     "fill-in-the-blank, wordplay, trivia, and lateral thinking are all "
     "available, but Easy clues should stay direct and obvious.\n"
-    "- Do not repeat the same clue for the same answer across different "
-    "puzzles. This means more than avoiding the exact words: a reworded "
-    "clue that tests the SAME definition, fact, or angle still counts as a "
-    "repeat and is not allowed. If prior clues are listed for an answer, "
-    'treat "Large body of water" and "Vast body of water" for OCEAN as the '
-    "same clue — both lean on the size-of-water definition. Write a clue "
-    "that comes at the answer from a genuinely different direction (a "
-    "different meaning, sense, reference, wordplay, or fill-in-the-blank) "
-    "than every prior clue, not a paraphrase of one of them.\n"
+    "- Try not to repeat a prior clue for the same answer: if prior clues "
+    "are listed for an answer, prefer a clue that is not a near-identical "
+    "copy of one of them, and when an answer has several natural everyday "
+    "angles, reach for one the prior clues have not used. BUT this is a soft "
+    "preference, not a hard rule, and it is far less important than keeping "
+    "every clue accessible. Do NOT dig into obscure, deep-cut, or "
+    "barely-known senses just to avoid overlap — a clue almost no solver "
+    "knows is a worse outcome than an occasional repeat. Some short or "
+    "hard-to-clue answers only have one or two fair, well-known angles; for "
+    "those it is perfectly fine to reuse the meaning of a prior clue (and "
+    "even, occasionally, to repeat a prior clue almost verbatim) rather than "
+    "stretch for something nobody will recognize. For example, COS is "
+    "reasonably clued via companies/businesses (abbr.) or the trig cosine "
+    "function; do NOT reach for the obscure romaine-lettuce sense just "
+    "because those angles were used before.\n"
     "- Use misdirection and cleverness only when they fit the target "
     "difficulty. For Easy clues, clarity beats cleverness.\n"
     "- Use question marks for witty/punny clues only when the target "
@@ -120,6 +137,12 @@ _GUIDELINES = (
     "no filler words.\n"
     "- Avoid obscure trivia that solvers can't "
     "reason toward.\n"
+    "- BRITISH SLANG RULE: this is a primarily American-audience puzzle, so "
+    "use British (or other regional) slang sparingly. Common, widely-known "
+    'Briticisms are fine in moderation, but do not lean on them and never '
+    'reach for a deep-cut British sense most American solvers would not know '
+    '(e.g. SNIP clued as "A bargain"). When an answer has a plain American '
+    "everyday meaning, prefer that over a British-slang angle.\n"
     "- For pop-culture, celebrity, entertainment, sports, brand, and "
     "historical references, apply a sliding familiarity standard: the older "
     "or more niche the reference is, the more broadly iconic it must be. "
@@ -140,14 +163,15 @@ _GUIDELINES = (
     "association is genuinely the best angle, phrase it so it stays true "
     'forever: "longtime", "Emmy-winning", or past tense ("Longtime \'All '
     "Things Considered' host Shapiro\").\n"
-    "- REFERENCE VARIETY: when an answer has several well-known angles, do "
-    "not default to the single most famous reference every time. If prior "
-    "clues are listed for an answer, pick an angle or reference those clues "
-    "have NOT already leaned on — e.g. if ALI has already been clued via "
-    "Muhammad Ali, reach for Mahershala Ali, Ali Wong, or Ali Baba instead "
-    "of rewording the boxing angle. Rewording the same reference (e.g. "
-    '"Boxing legend Muhammad" → "Heavyweight champ Muhammad") does NOT '
-    "count as variety; the underlying reference or meaning must change.\n"
+    "- REFERENCE VARIETY: when an answer has several WELL-KNOWN angles, "
+    "prefer not to default to the single most famous reference every time. "
+    "If prior clues are listed for an answer, lean toward an angle or "
+    "reference those clues have not already used — e.g. if ALI has already "
+    "been clued via Muhammad Ali, a Mahershala Ali or Ali Baba angle adds "
+    "welcome variety. This applies only when the alternative angle is itself "
+    "broadly familiar; never trade a famous reference for an obscure one "
+    "just to be different. If every fresh angle for an answer would be a "
+    "deep cut, stay with a well-known angle even if a prior clue used it.\n"
     "- ROMAN NUMERAL RULE: if the answer reads as a Roman numeral (III, LIV, "
     'MMX), do not write a bare conversion clue like "54 in Roman numerals" '
     'or a random-context one like "Year in Claudius\'s reign". Prefer a '
@@ -334,13 +358,21 @@ _LEAK_EXAMPLES = (
     "puzzle is a defect. Use the fair-but-less-direct angle, while accuracy "
     "and the leak rules above ALWAYS take priority over difficulty.\n"
     "\n"
-    "11. Compound / hidden-word leaks (a clue word that CONTAINS the answer):\n"
+    "11. Compound / hidden-word leaks (a clue word that CONTAINS the answer "
+    "anywhere — start, middle, or END, even for short answers and even when "
+    "the clue word means something unrelated):\n"
     '   ANSWER: WIFE  BAD: "Word in \\"Desperate Housewives\\"" — housewives '
     "contains the answer's form.\n"
     '   GOOD: "Spouse, traditionally"\n'
     '   ANSWER: ART  BAD: "Studio output of an artist" — artist starts with '
     "ART.\n"
     '   GOOD: "Museum display"\n'
+    '   ANSWER: BOT  BAD: "Robot, informally" — roBOT ends with the answer.\n'
+    '   GOOD: "Automated social-media account"\n'
+    '   ANSWER: TIL  BAD: "Until, briefly" — unTIL ends with the answer.\n'
+    '   GOOD: "Up to, in texts"\n'
+    '   ANSWER: MEN  BAD: "Gentlemen" — gentleMEN ends with the answer.\n'
+    '   GOOD: "Adult guys"\n'
     "\n"
     "12. Proper-noun accuracy (only use a name/title/fact if you are certain "
     "it is exactly right):\n"
@@ -361,11 +393,19 @@ _LEAK_EXAMPLES = (
     'won in 2020"\n'
     '   ANSWER: III  GOOD: "\\"Rocky ___\\" (1982 sequel)"\n'
     "\n"
-    "15. Reference variety across puzzles (when prior clues are listed):\n"
+    "15. Reference variety across puzzles (a soft preference, never worth an "
+    "obscure clue):\n"
     '   ANSWER: ALI  Prior clues: "Boxing legend Muhammad"; "The Greatest '
     'of the ring"\n'
-    '   BAD: "Heavyweight champ Muhammad" — same angle reworded.\n'
-    '   GOOD: "Mahershala of \\"Green Book\\"" or "Comedian Wong"\n'
+    '   GOOD (fresh AND familiar): "Mahershala of \\"Green Book\\"" or '
+    '"Comedian Wong" — both broadly known, so prefer them for variety.\n'
+    '   OK (familiar repeat beats a deep cut): "Heavyweight champ Muhammad" '
+    "— reuses the boxing angle, but that is fine when the only fresher "
+    "angles would be obscure.\n"
+    "   ANSWER: COS  Prior clues cover companies/businesses and cosine.\n"
+    '   OK: "Trig ratio, for short" or "Businesses (abbr.)" — reuse a known '
+    'sense.  BAD: "Romaine lettuce variety" — chasing freshness into a '
+    "deep-cut sense most solvers do not know.\n"
     "\n"
     "16. Current-state / stale-fact clues (clue truth must not depend on the "
     "present moment):\n"
@@ -379,7 +419,9 @@ _LEAK_EXAMPLES = (
     "\n"
     "SELF-CHECK before finalizing EACH clue: (a) does the clue contain the "
     "answer, any part of it, a shared root, an etymological cousin, or a "
-    "spelling fragment? (b) if the answer is an abbreviation, does the clue "
+    "spelling fragment — INCLUDING the answer's letters hidden inside a longer "
+    "clue word at its start, middle, or end (roBOT, unTIL, gentleMEN)? "
+    "(b) if the answer is an abbreviation, does the clue "
     "contain ANY word its letters stand for? (c) does the clue use a crossing "
     "word? (d) is it a fill-in-the-blank whose phrase gives the answer away? "
     "(e) does the clue's truth depend on a current-state fact that could "
@@ -415,11 +457,30 @@ def _difficulty_guidance(puzzle_type: PuzzleType, difficulty: PuzzleDifficulty) 
     if difficulty == PuzzleDifficulty.EASY:
         base = (
             "This is an HGG Easy crossword for a very broad casual audience. "
-            "Write clues easier than an NYT Monday. Default to direct "
-            "definitions, familiar everyday meanings, and totally obvious "
-            "fill-in-the-blank clues. Avoid oblique definitions, tricky "
-            "wordplay, niche trivia, and lateral-thinking clues. If choosing "
-            "between clever and instantly solvable, choose instantly solvable. "
+            "The goal is to be RIDICULOUSLY beginner-friendly — easier than "
+            "an NYT Monday, the kind of clue a brand-new solver gets "
+            "instantly. Default to the single most common, most obvious "
+            "meaning of the answer and write the plainest clue for it. "
+            "Beginner-friendly techniques to reach for: a direct dictionary "
+            'definition ("Frozen water" for ICE); a totally obvious '
+            'fill-in-the-blank on a familiar phrase ("Rock and ___" for '
+            'ROLL); a one-word synonym ("Joyful" for GLAD); a clear antonym '
+            '("Opposite of high" for LOW); a simple category/example '
+            '("Color of the sky" for BLUE); or a sound-alike when it helps '
+            '("Sounds like \\"two\\"" for TOO). Pick whichever is the most '
+            "immediately gettable for that answer, and vary the technique "
+            "across the puzzle so it does not feel formulaic. "
+            "CRITICAL — always clue the EASIEST common sense of the answer. "
+            "Do NOT use a secondary, technical, or less-common meaning when a "
+            'plain one exists: clue DAM as "River barrier," never "Foal\'s '
+            'mother"; clue COS via companies or cosine, never romaine '
+            "lettuce. Avoid oblique definitions, tricky wordplay, niche "
+            "trivia, and lateral-thinking clues entirely. If choosing between "
+            "clever and instantly solvable, always choose instantly solvable. "
+            "If prior clues are listed for an answer, staying easy WINS over "
+            "avoiding a repeat: it is much better to reuse an easy, familiar "
+            "clue (or one very close to it) than to switch to a harder or "
+            "more obscure sense for the sake of variety. "
             "NEVER use a wordplay/tricky question-mark clue (the punny "
             '"?"-tagged kind) in an Easy puzzle. A literal "?" inside quoted '
             'text is fine (e.g., "___ you okay?" for ARE); only the trick-'
@@ -547,12 +608,14 @@ def build_clue_generation_messages(
             prior_clues_block = (
                 "\nPRIOR CLUES FOR THESE ANSWERS (already used in other "
                 "puzzles):\n"
-                "Do not reuse the meaning or angle of any clue below — not "
-                "just the exact words. A reworded clue that tests the same "
-                "definition, fact, or reference still counts as a repeat. "
-                "For each answer, come at it from a different direction than "
-                "every clue listed (a different sense, reference, wordplay, "
-                "or fill-in-the-blank).\n"
+                "Try to avoid an exact or near-exact copy of the clues below, "
+                "and where an answer has another EVERYDAY, broadly-known angle "
+                "the prior clues did not use, prefer that for variety. This is "
+                "a soft preference: do NOT reach for an obscure or deep-cut "
+                "meaning just to differ from these. For an answer whose only "
+                "fair angles are already listed, reuse a known angle — an "
+                "occasional repeat is much better than a clue solvers will not "
+                "recognize.\n"
                 + "\n".join(prior_lines)
                 + "\n"
             )
@@ -678,6 +741,11 @@ _REPAIR_GUIDELINES = (
     "an obvious root, etymology, or spelling with the answer (NAVAL/navy, "
     "KNEE/kneel), and never spell out a fragment of the answer (TRI/triangle, "
     "PRE/prefix).\n"
+    "- HIDDEN-ANSWER RULE (strict): never use a clue word that contains the "
+    "answer's letters in sequence at its start, middle, or END, even when the "
+    "clue word is unrelated in meaning and even for short answers — do not "
+    'clue BOT via "Robot", TIL via "Until", or MEN via "Gentlemen". Clue the '
+    "answer through its own meaning instead.\n"
     "- Accuracy is more important than cleverness. Verify facts, grammar, "
     "number, tense, part of speech, and exact phrase match. If the old clue "
     "used a questionable proper noun, song, quote, sports team name, idiom, "
@@ -713,9 +781,15 @@ _REPAIR_GUIDELINES = (
     "shows, songs, albums, books, plays, and video games — including in "
     'fill-in-the-blank clues ("\\"Better Call ___\\"", not '
     '"Better Call ___").\n'
-    "- If a clue was flagged as a duplicate of prior clues, do not just "
-    "reword the same reference — switch to a different fair angle (a "
-    "different person, meaning, or style) than the prior clues used.\n"
+    "- If a clue was flagged as a duplicate of prior clues, prefer a "
+    "different fair, broadly-known angle than the prior clues used — but do "
+    "NOT reach for an obscure or deep-cut sense just to differ. If every "
+    "fresh angle would be obscure, reuse a familiar known angle: an "
+    "occasional repeat is far better than a clue solvers will not recognize.\n"
+    "- BRITISH SLANG RULE: use British (or other regional) slang sparingly "
+    "for this American-audience puzzle. Do not replace a clue with a "
+    'deep-cut British sense (e.g. SNIP as "A bargain"); prefer a plain '
+    "American everyday meaning.\n"
     "- ROMAN NUMERAL RULE: for answers that read as Roman numerals (III, "
     'LIV, MMX), avoid bare conversion clues ("54 in Roman numerals") and '
     "random filler contexts; prefer a real-world angle such as a person "
@@ -851,12 +925,14 @@ def build_clue_repair_messages(
             prior_clues_block = (
                 "\nPRIOR CLUES FOR THESE ANSWERS (already used in other "
                 "puzzles):\n"
-                "Do not reuse the meaning or angle of any clue below — not "
-                "just the exact words. A reworded clue that tests the same "
-                "definition, fact, or reference still counts as a repeat. For "
-                "each answer, come at it from a different direction than every "
-                "clue listed (a different sense, reference, wordplay, or "
-                "fill-in-the-blank).\n"
+                "Try to avoid an exact or near-exact copy of the clues below, "
+                "and where an answer has another EVERYDAY, broadly-known angle "
+                "the prior clues did not use, prefer that for variety. This is "
+                "a soft preference: do NOT reach for an obscure or deep-cut "
+                "meaning just to differ from these. For an answer whose only "
+                "fair angles are already listed, reuse a known angle — an "
+                "occasional repeat is much better than a clue solvers will not "
+                "recognize.\n"
                 + "\n".join(prior_lines)
                 + "\n"
             )

@@ -135,7 +135,7 @@ class TestHappyPath:
         )
 
         assert "Reward clues that are easier than NYT Monday" in prompt
-        assert "Do not penalize plain definitions" in prompt
+        assert "Never penalize a clue for being too plain" in prompt
         assert "too hard for this audience" in prompt
 
     def test_hard_evaluation_rewards_tuesday_level_clues(self) -> None:

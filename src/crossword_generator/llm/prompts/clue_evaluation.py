@@ -79,6 +79,14 @@ _RUBRIC = (
     'with "kneel"; LUNAR with moon-root Latin; SOLAR with sun-root words. Also '
     "fail clues that spell out a fragment of the answer: TRI clued "
     '"Start of triangle"; PRE clued "Prefix meaning before." '
+    "CRITICAL — hidden-answer leaks: heavily penalize (fairness 0-8) a clue "
+    "whose words CONTAIN the answer's letters in sequence anywhere — at the "
+    "start, middle, or END of a longer clue word — even when that clue word "
+    "is unrelated in meaning and even when the answer is short. Examples to "
+    'fail: BOT clued "Robot, informally" (roBOT ends with BOT); TIL clued '
+    '"Until, briefly" (unTIL ends with TIL); MEN clued "Gentlemen" '
+    "(gentleMEN ends with MEN). These should be clued through the answer's "
+    "own meaning instead. "
     "famous-title fill-in-the-blanks that point at a different form of the "
     'answer, e.g. HOUSEWIFE clued via "Desperate ___wives." Does it avoid '
     "using any crossing words in the clue text? Penalize short answer roots "
@@ -101,7 +109,17 @@ _RUBRIC = (
     "several different words could plausibly complete the phrase. "
     "Is the clue culturally accessible without being obscure? Penalize "
     "strained pop-culture references, ultra-current slang, and Hard clues "
-    "that try to create Friday/Saturday-level difficulty. Apply a sliding "
+    "that try to create Friday/Saturday-level difficulty. "
+    "Penalize FRESHNESS (0-12) for deep-cut or obscure senses that most "
+    "solvers will not know, especially when a plain everyday angle exists — "
+    "this includes reaching for a barely-known meaning of a word just to "
+    'avoid reusing a prior clue (e.g. COS clued "Romaine lettuce variety" '
+    "instead of the companies or cosine sense). For this primarily "
+    "American-audience puzzle, also penalize FAIRNESS for deep-cut British "
+    'or regional slang an American solver would not know (e.g. SNIP clued '
+    '"A bargain"); common Briticisms in moderation are fine, but flag clues '
+    "that lean on obscure regional slang when a plain angle exists. "
+    "Apply a sliding "
     "familiarity standard to pop-culture, celebrity, entertainment, sports, "
     "brand, and historical references: the older or more niche the reference "
     "is, the more broadly iconic it must be. Penalize dated references that "
@@ -192,10 +210,21 @@ _OUTPUT_SECTION = (
 def _difficulty_note(puzzle_type: PuzzleType, difficulty: PuzzleDifficulty) -> str:
     if difficulty == PuzzleDifficulty.EASY:
         base = (
-            "This is an HGG Easy crossword. Reward clues that are easier than "
-            "NYT Monday: direct, obvious, familiar, and instantly solvable. "
-            "Do not penalize plain definitions or obvious fill-in-the-blank "
-            "clues for lack of cleverness. Penalize oblique definitions, "
+            "This is an HGG Easy crossword that should be ridiculously "
+            "beginner-friendly. Reward clues that are easier than NYT Monday: "
+            "direct, obvious, familiar, and instantly solvable — plain "
+            "definitions, obvious fill-in-the-blanks on familiar phrases, "
+            "one-word synonyms, clear antonyms, simple categories/examples, "
+            "and helpful sound-alikes. Never penalize a clue for being too "
+            "plain, too direct, or for reusing a familiar angle a prior clue "
+            "used — for Easy, staying easy is the goal. "
+            "CRITICAL — too-hard Easy clue: if a clue uses a secondary, "
+            "technical, or less-common sense of the answer when a plainer "
+            "everyday sense exists (e.g. DAM clued \"Foal's mother\" instead "
+            'of "River barrier"), or otherwise requires real thought, score '
+            'FRESHNESS 0-9 and state "too hard for Easy" in the feedback so '
+            "it is regenerated with a simpler angle. "
+            "Penalize oblique definitions, "
             "tricky wordplay, niche trivia, or lateral-thinking clues as too "
             "hard for this audience. A wordplay/tricky question-mark clue (a "
             'clue ending in a "?" that signals a pun or trick) is NOT allowed '
