@@ -812,8 +812,8 @@ class TestThemeAnnotationsInPrompt:
         )
 
         assert "PRIOR CLUES FOR THESE ANSWERS" in prompt
-        assert "avoid an exact or near-exact copy" in prompt
-        assert "soft preference" in prompt
+        assert "exact" in prompt
+        assert "Reusing the same angle" in prompt
         assert '- ABCDE: "First five letters"' in prompt
 
     def test_repair_prompt_applies_sliding_familiarity_to_references(self) -> None:
@@ -877,7 +877,7 @@ class TestThemeAnnotationsInPrompt:
 
         assert "PRIOR CLUES FOR THESE ANSWERS" in prompt
         assert "Sweetener brand in blue packets" in prompt
-        assert "soft preference" in prompt
+        assert "Reusing the same angle" in prompt
         # Only repaired answers' history is included.
         assert "Sandwich cookie" not in prompt
 

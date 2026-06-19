@@ -921,9 +921,15 @@ def _duplicate_clue_grade(
         craft=0,
         fairness=20,
         feedback=(
-            f"This answer ({hit.clue.answer}) has already been clued as: "
-            f"{used_list}. Write a NEW clue that is different from ALL of "
-            "these. Use a fresh angle — a different definition, wordplay, or "
-            "fill-in-the-blank."
+            f"This clue is an EXACT copy of one already used for "
+            f"{hit.clue.answer}: {used_list}. Reword it so it is not a "
+            "verbatim repeat of any clue listed. You do NOT need a different "
+            "angle or meaning — reusing the same reference or definition is "
+            "fine (e.g. \"Comedian Margaret's surname\" is an acceptable "
+            "rewrite of \"Comedian Margaret ___\"); just don't return the "
+            "exact same wording. Only the literal text must differ. If the "
+            "answer's natural angles are limited, a light rewording of an "
+            "existing angle is the right move — do not reach for an obscure "
+            "sense."
         ),
     )

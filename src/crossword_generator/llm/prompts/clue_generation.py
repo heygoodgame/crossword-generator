@@ -103,21 +103,19 @@ _GUIDELINES = (
     "- Vary clue styles within the target difficulty: definitional, "
     "fill-in-the-blank, wordplay, trivia, and lateral thinking are all "
     "available, but Easy clues should stay direct and obvious.\n"
-    "- Try not to repeat a prior clue for the same answer: if prior clues "
-    "are listed for an answer, prefer a clue that is not a near-identical "
-    "copy of one of them, and when an answer has several natural everyday "
-    "angles, reach for one the prior clues have not used. BUT this is a soft "
-    "preference, not a hard rule, and it is far less important than keeping "
-    "every clue accessible. Do NOT dig into obscure, deep-cut, or "
-    "barely-known senses just to avoid overlap — a clue almost no solver "
-    "knows is a worse outcome than an occasional repeat. Some short or "
-    "hard-to-clue answers only have one or two fair, well-known angles; for "
-    "those it is perfectly fine to reuse the meaning of a prior clue (and "
-    "even, occasionally, to repeat a prior clue almost verbatim) rather than "
-    "stretch for something nobody will recognize. For example, COS is "
-    "reasonably clued via companies/businesses (abbr.) or the trig cosine "
-    "function; do NOT reach for the obscure romaine-lettuce sense just "
-    "because those angles were used before.\n"
+    "- The only clue-reuse rule is: do not write the EXACT (word-for-word) "
+    "same clue already used for an answer. Reusing the same angle, reference, "
+    "meaning, or definition is completely fine — just word it differently. A "
+    "reworded clue on the same angle is NOT a repeat: if \"Comedian Margaret "
+    "___\" was used, \"Comedian Margaret's surname\" is a perfectly good, "
+    "non-duplicate clue. Never dig into an obscure, deep-cut, or barely-known "
+    "sense just to find a different angle — a clue almost no solver knows is "
+    "far worse than reusing a familiar angle. Many short answers have only one "
+    "or two fair, well-known angles; lightly rewording an existing one is "
+    "exactly right. For example, COS is reasonably clued via "
+    "companies/businesses (abbr.) or the trig cosine function; do NOT reach "
+    "for the obscure romaine-lettuce sense just because those angles were "
+    "used before.\n"
     "- Use misdirection and cleverness only when they fit the target "
     "difficulty. For Easy clues, clarity beats cleverness.\n"
     "- Use question marks for witty/punny clues only when the target "
@@ -163,15 +161,12 @@ _GUIDELINES = (
     "association is genuinely the best angle, phrase it so it stays true "
     'forever: "longtime", "Emmy-winning", or past tense ("Longtime \'All '
     "Things Considered' host Shapiro\").\n"
-    "- REFERENCE VARIETY: when an answer has several WELL-KNOWN angles, "
-    "prefer not to default to the single most famous reference every time. "
-    "If prior clues are listed for an answer, lean toward an angle or "
-    "reference those clues have not already used — e.g. if ALI has already "
-    "been clued via Muhammad Ali, a Mahershala Ali or Ali Baba angle adds "
-    "welcome variety. This applies only when the alternative angle is itself "
-    "broadly familiar; never trade a famous reference for an obscure one "
-    "just to be different. If every fresh angle for an answer would be a "
-    "deep cut, stay with a well-known angle even if a prior clue used it.\n"
+    "- REFERENCE VARIETY (optional nicety, never required): when an answer has "
+    "several EQUALLY well-known angles, you may pick one a prior clue did not "
+    "use — e.g. Mahershala Ali or Ali Baba instead of Muhammad Ali. But reusing "
+    "a prior angle (reworded) is NOT a defect and never needs fixing. Never "
+    "trade a famous reference for an obscure one just to be different; if the "
+    "only fresh angle would be a deep cut, reuse a well-known angle.\n"
     "- ROMAN NUMERAL RULE: if the answer reads as a Roman numeral (III, LIV, "
     'MMX), do not write a bare conversion clue like "54 in Roman numerals" '
     'or a random-context one like "Year in Claudius\'s reign". Prefer a '
@@ -393,18 +388,21 @@ _LEAK_EXAMPLES = (
     'won in 2020"\n'
     '   ANSWER: III  GOOD: "\\"Rocky ___\\" (1982 sequel)"\n'
     "\n"
-    "15. Reference variety across puzzles (a soft preference, never worth an "
-    "obscure clue):\n"
-    '   ANSWER: ALI  Prior clues: "Boxing legend Muhammad"; "The Greatest '
-    'of the ring"\n'
-    '   GOOD (fresh AND familiar): "Mahershala of \\"Green Book\\"" or '
-    '"Comedian Wong" — both broadly known, so prefer them for variety.\n'
-    '   OK (familiar repeat beats a deep cut): "Heavyweight champ Muhammad" '
-    "— reuses the boxing angle, but that is fine when the only fresher "
-    "angles would be obscure.\n"
+    "15. Clue reuse across puzzles — ONLY avoid verbatim repeats; reusing an "
+    "angle is fine:\n"
+    '   ANSWER: CHO  Prior clues: "Comedian Margaret ___"; "John of the '
+    'rebooted \\"Star Trek\\" films"\n'
+    '   BAD: "John of the rebooted \\"Star Trek\\" films" — exact word-for-word '
+    "repeat.\n"
+    '   GOOD: "Comedian Margaret\'s surname" or "Sulu portrayer John" — same '
+    "references as the prior clues, just reworded. NOT considered duplicates.\n"
+    "   ANSWER: ALI  Prior clue: \"Boxing legend Muhammad\"\n"
+    '   GOOD: "Heavyweight champ Muhammad" — reuses the boxing angle, reworded; '
+    "fine. (A different familiar angle like \"Mahershala of \\\"Green Book\\\"\" "
+    "is also fine, but not required.)\n"
     "   ANSWER: COS  Prior clues cover companies/businesses and cosine.\n"
     '   OK: "Trig ratio, for short" or "Businesses (abbr.)" — reuse a known '
-    'sense.  BAD: "Romaine lettuce variety" — chasing freshness into a '
+    'sense.  BAD: "Romaine lettuce variety" — chasing a different angle into a '
     "deep-cut sense most solvers do not know.\n"
     "\n"
     "16. Current-state / stale-fact clues (clue truth must not depend on the "
@@ -608,14 +606,17 @@ def build_clue_generation_messages(
             prior_clues_block = (
                 "\nPRIOR CLUES FOR THESE ANSWERS (already used in other "
                 "puzzles):\n"
-                "Try to avoid an exact or near-exact copy of the clues below, "
-                "and where an answer has another EVERYDAY, broadly-known angle "
-                "the prior clues did not use, prefer that for variety. This is "
-                "a soft preference: do NOT reach for an obscure or deep-cut "
-                "meaning just to differ from these. For an answer whose only "
-                "fair angles are already listed, reuse a known angle — an "
-                "occasional repeat is much better than a clue solvers will not "
-                "recognize.\n"
+                "The ONLY thing to avoid is writing a clue that is the exact "
+                "(or essentially word-for-word) same text as one listed below. "
+                "Reusing the same angle, reference, definition, or meaning is "
+                "completely fine — just word it differently. For example, if "
+                "\"Comedian Margaret ___\" is listed, \"Comedian Margaret's "
+                "surname\" is a perfectly good clue (same reference, different "
+                "words). Do NOT switch to an obscure or deep-cut sense to get a "
+                "different angle; a familiar reused angle, freshly worded, is "
+                "always better than a clue solvers won't recognize. For an "
+                "answer with only one or two natural angles, lightly rewording "
+                "an existing one is exactly right.\n"
                 + "\n".join(prior_lines)
                 + "\n"
             )
@@ -781,11 +782,11 @@ _REPAIR_GUIDELINES = (
     "shows, songs, albums, books, plays, and video games — including in "
     'fill-in-the-blank clues ("\\"Better Call ___\\"", not '
     '"Better Call ___").\n'
-    "- If a clue was flagged as a duplicate of prior clues, prefer a "
-    "different fair, broadly-known angle than the prior clues used — but do "
-    "NOT reach for an obscure or deep-cut sense just to differ. If every "
-    "fresh angle would be obscure, reuse a familiar known angle: an "
-    "occasional repeat is far better than a clue solvers will not recognize.\n"
+    "- If a clue was flagged as a duplicate of prior clues, it was a VERBATIM "
+    "(word-for-word) repeat — just reword it. You do NOT need a different "
+    "angle or meaning: keeping the same reference/definition and changing the "
+    "wording is fine (e.g. \"Comedian Margaret's surname\" for a prior "
+    "\"Comedian Margaret ___\"). Never switch to an obscure sense to differ.\n"
     "- BRITISH SLANG RULE: use British (or other regional) slang sparingly "
     "for this American-audience puzzle. Do not replace a clue with a "
     'deep-cut British sense (e.g. SNIP as "A bargain"); prefer a plain '
@@ -925,14 +926,17 @@ def build_clue_repair_messages(
             prior_clues_block = (
                 "\nPRIOR CLUES FOR THESE ANSWERS (already used in other "
                 "puzzles):\n"
-                "Try to avoid an exact or near-exact copy of the clues below, "
-                "and where an answer has another EVERYDAY, broadly-known angle "
-                "the prior clues did not use, prefer that for variety. This is "
-                "a soft preference: do NOT reach for an obscure or deep-cut "
-                "meaning just to differ from these. For an answer whose only "
-                "fair angles are already listed, reuse a known angle — an "
-                "occasional repeat is much better than a clue solvers will not "
-                "recognize.\n"
+                "The ONLY thing to avoid is writing a clue that is the exact "
+                "(or essentially word-for-word) same text as one listed below. "
+                "Reusing the same angle, reference, definition, or meaning is "
+                "completely fine — just word it differently. For example, if "
+                "\"Comedian Margaret ___\" is listed, \"Comedian Margaret's "
+                "surname\" is a perfectly good clue (same reference, different "
+                "words). Do NOT switch to an obscure or deep-cut sense to get a "
+                "different angle; a familiar reused angle, freshly worded, is "
+                "always better than a clue solvers won't recognize. For an "
+                "answer with only one or two natural angles, lightly rewording "
+                "an existing one is exactly right.\n"
                 + "\n".join(prior_lines)
                 + "\n"
             )
