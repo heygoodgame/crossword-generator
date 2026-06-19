@@ -37,6 +37,37 @@ EXPECTED_ENTRIES = [
 ]
 
 
+def _build_eval_json_subset(
+    keys: set[tuple[int, str]],
+    *,
+    accuracy: float = 20.0,
+    freshness: float = 20.0,
+    craft: float = 20.0,
+    fairness: float = 20.0,
+) -> str:
+    """Build an eval response covering ONLY the given (number, direction) keys.
+
+    Repair now re-grades just the repaired clues (ClueGrader.grade_subset), and
+    the grader's parser enforces that the response count matches the clues sent.
+    So a post-repair mock must return grades for exactly the repaired keys.
+    """
+    return json.dumps(
+        [
+            {
+                "number": e["number"],
+                "direction": e["direction"],
+                "accuracy": accuracy,
+                "freshness": freshness,
+                "craft": craft,
+                "fairness": fairness,
+                "feedback": "Good",
+            }
+            for e in EXPECTED_ENTRIES
+            if (e["number"], e["direction"]) in keys
+        ]
+    )
+
+
 def _build_clue_json() -> str:
     """Build a valid clue generation JSON response."""
     return json.dumps(
@@ -261,8 +292,8 @@ class TestMostlyGoodShortcut:
         repair_json = json.dumps(
             [{"number": 1, "direction": "across", "clue": "Fixed clue"}]
         )
-        re_eval_json = _build_eval_json(
-            accuracy=22, freshness=21, craft=22, fairness=20
+        re_eval_json = _build_eval_json_subset(
+            {(1, "across")}, accuracy=22, freshness=21, craft=22, fairness=20
         )
         llm = SequentialMockLLM([clue_json, eval_json, repair_json, re_eval_json])
         grader = ClueGrader(llm, min_passing_score=70)
@@ -353,8 +384,8 @@ class TestFairnessRepair:
         repair_json = json.dumps(
             [{"number": 1, "direction": "across", "clue": "Repair model clue"}]
         )
-        re_eval_json = _build_eval_json(
-            accuracy=22, freshness=20, craft=20, fairness=20
+        re_eval_json = _build_eval_json_subset(
+            {(1, "across")}, accuracy=22, freshness=20, craft=20, fairness=20
         )
         generation_llm = SequentialMockLLM([clue_json])
         grading_llm = SequentialMockLLM([eval_json, re_eval_json])
@@ -407,8 +438,8 @@ class TestFreshnessRepair:
         repair_json = json.dumps(
             [{"number": 1, "direction": "across", "clue": "Harder angle"}]
         )
-        re_eval_json = _build_eval_json(
-            accuracy=22, freshness=20, craft=20, fairness=20
+        re_eval_json = _build_eval_json_subset(
+            {(1, "across")}, accuracy=22, freshness=20, craft=20, fairness=20
         )
         llm = SequentialMockLLM([clue_json, eval_json, repair_json, re_eval_json])
         grader = ClueGrader(llm, min_passing_score=70)
@@ -462,8 +493,8 @@ class TestFreshnessRepair:
         repair_json = json.dumps(
             [{"number": 1, "direction": "across", "clue": "Harder angle"}]
         )
-        re_eval_json = _build_eval_json(
-            accuracy=22, freshness=20, craft=20, fairness=20
+        re_eval_json = _build_eval_json_subset(
+            {(1, "across")}, accuracy=22, freshness=20, craft=20, fairness=20
         )
         llm = SequentialMockLLM([clue_json, eval_json, repair_json, re_eval_json])
         grader = ClueGrader(llm, min_passing_score=70)
@@ -488,14 +519,14 @@ class TestVerifyAfterRepair:
         repair_1 = json.dumps(
             [{"number": 1, "direction": "across", "clue": "Still bad"}]
         )
-        re_eval_still_bad = _build_eval_json_mixed(
-            low_accuracy_entries={(1, "across")}, low_accuracy=5.0
+        re_eval_still_bad = _build_eval_json_subset(
+            {(1, "across")}, accuracy=5.0
         )
         repair_2 = json.dumps(
             [{"number": 1, "direction": "across", "clue": "Now good"}]
         )
-        re_eval_good = _build_eval_json(
-            accuracy=22, freshness=21, craft=22, fairness=20
+        re_eval_good = _build_eval_json_subset(
+            {(1, "across")}, accuracy=22, freshness=21, craft=22, fairness=20
         )
         llm = SequentialMockLLM(
             [
@@ -618,9 +649,9 @@ class TestAccuracyRepair:
                 {"number": 1, "direction": "across", "clue": "Repaired feline clue"},
             ]
         )
-        # Re-grade after repair: all good now
-        re_eval_json = _build_eval_json(
-            accuracy=22, freshness=20, craft=20, fairness=20
+        # Re-grade after repair: only the repaired clue is re-graded
+        re_eval_json = _build_eval_json_subset(
+            {(1, "across")}, accuracy=22, freshness=20, craft=20, fairness=20
         )
 
         llm = SequentialMockLLM(
@@ -683,8 +714,8 @@ class TestAccuracyRepair:
                 {"number": 1, "direction": "across", "clue": "Small house pet"},
             ]
         )
-        re_eval_json = _build_eval_json(
-            accuracy=22, freshness=20, craft=20, fairness=20
+        re_eval_json = _build_eval_json_subset(
+            {(1, "across")}, accuracy=22, freshness=20, craft=20, fairness=20
         )
 
         llm = SequentialMockLLM(
@@ -772,8 +803,9 @@ class TestAccuracyRepair:
                 {"number": 3, "direction": "down", "clue": "Fixed name clue"},
             ]
         )
-        re_eval_json = _build_eval_json(
-            accuracy=22, freshness=20, craft=20, fairness=20
+        re_eval_json = _build_eval_json_subset(
+            {(1, "across"), (3, "down")},
+            accuracy=22, freshness=20, craft=20, fairness=20,
         )
 
         llm = SequentialMockLLM(
@@ -841,8 +873,8 @@ class TestFactCheckRepair:
                 },
             ]
         )
-        re_eval_json = _build_eval_json(
-            accuracy=22, freshness=20, craft=20, fairness=20
+        re_eval_json = _build_eval_json_subset(
+            {(1, "across")}, accuracy=22, freshness=20, craft=20, fairness=20
         )
 
         clue_llm = SequentialMockLLM([clue_json, repair_json])
@@ -881,8 +913,8 @@ class TestDuplicateHistoryRepair:
                 {"number": 1, "direction": "across", "clue": "Small house pet"},
             ]
         )
-        re_eval_json = _build_eval_json(
-            accuracy=22, freshness=20, craft=20, fairness=20
+        re_eval_json = _build_eval_json_subset(
+            {(1, "across")}, accuracy=22, freshness=20, craft=20, fairness=20
         )
         history = ClueHistoryIndex()
         history.add("CAT", "Generated clue 1 across")
@@ -1001,8 +1033,11 @@ class TestExternalDuplicateRepair:
         repair_json = json.dumps(
             [{"number": 1, "direction": "across", "clue": "Fresh feline clue"}]
         )
-        # One repair pass = repair call + post-repair re-grade.
-        llm = SequentialMockLLM([repair_json, _build_eval_json()])
+        # One repair pass = repair call + post-repair re-grade (subset: only
+        # the repaired clue is re-graded).
+        llm = SequentialMockLLM(
+            [repair_json, _build_eval_json_subset({(1, "across")})]
+        )
         grader = ClueGrader(llm, min_passing_score=70)
         step = ClueWithGradingStep(llm, grader, clue_history=history)
 
@@ -1030,7 +1065,7 @@ class TestExternalDuplicateRepair:
         stuck = json.dumps(
             [{"number": 1, "direction": "across", "clue": cat_clue.clue}]
         )
-        responses = [stuck, _build_eval_json()] * 4
+        responses = [stuck, _build_eval_json_subset({(1, "across")})] * 4
         llm = SequentialMockLLM(responses)
         grader = ClueGrader(llm, min_passing_score=70)
         step = ClueWithGradingStep(

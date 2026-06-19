@@ -41,7 +41,35 @@ class ClueGrader:
 
     def grade(self, envelope: PuzzleEnvelope) -> ClueGradeReport:
         """Grade all clues in the envelope and return a report."""
-        if not envelope.clues:
+        return self._grade_clues(envelope, envelope.clues)
+
+    def grade_subset(
+        self,
+        envelope: PuzzleEnvelope,
+        keys: set[tuple[int, str]],
+    ) -> ClueGradeReport:
+        """Grade only the clues at ``keys`` (number, direction); merge-ready.
+
+        Used after a repair pass: only the repaired clues actually changed, so
+        re-scoring the whole puzzle wastes the bulk of the grader's (output-
+        dominated) cost. Crossing words are still computed from the FULL grid,
+        so each graded clue sees the same context as a full grade. The returned
+        report's ``clue_grades`` covers only ``keys`` — callers merge it into
+        the prior report (see ``_merge_grade_report``) and recompute the
+        aggregate over the full clue set.
+        """
+        subset = [
+            c for c in envelope.clues if (c.number, c.direction) in keys
+        ]
+        return self._grade_clues(envelope, subset)
+
+    def _grade_clues(
+        self,
+        envelope: PuzzleEnvelope,
+        clues_to_grade: list,
+    ) -> ClueGradeReport:
+        """Grade ``clues_to_grade`` (a subset of, or all of, the envelope)."""
+        if not clues_to_grade:
             return ClueGradeReport(
                 overall_score=0.0,
                 clue_count=0,
@@ -52,13 +80,14 @@ class ClueGrader:
         assert envelope.fill is not None
         grid = envelope.fill.grid
 
-        # Compute crossing words for the evaluation prompt
+        # Compute crossing words from the FULL grid so a subset clue still sees
+        # the same crossing context it would in a full grade.
         entries = compute_numbering(grid)
         crossing_words = compute_crossing_words(entries, grid)
 
         # Build evaluation prompt
         system_text, user_text = build_clue_evaluation_messages(
-            clues=envelope.clues,
+            clues=clues_to_grade,
             crossing_words=crossing_words,
             puzzle_type=envelope.puzzle_type,
             theme=envelope.theme,
@@ -84,7 +113,7 @@ class ClueGrader:
             )
             try:
                 clue_grades = _parse_evaluation_response(
-                    raw_response, envelope.clues
+                    raw_response, clues_to_grade
                 )
                 break
             except (json.JSONDecodeError, ValueError, KeyError) as exc:
@@ -103,7 +132,7 @@ class ClueGrader:
             )
             return ClueGradeReport(
                 overall_score=0.0,
-                clue_count=len(envelope.clues),
+                clue_count=len(clues_to_grade),
                 passing=False,
                 summary=(
                     f"Evaluation parse failed after "
@@ -112,7 +141,7 @@ class ClueGrader:
             )
 
         clue_grades = _apply_deterministic_clue_penalties(
-            clue_grades, envelope.clues
+            clue_grades, clues_to_grade
         )
 
         # Compute aggregate score

@@ -189,20 +189,35 @@ _EXAMPLE_OUTPUT = json.dumps(
             "freshness": 18,
             "craft": 20,
             "fairness": 15,
-            "feedback": "Good misdirection but slightly vague.",
+            "feedback": "Misdirection slightly vague.",
+        },
+        {
+            "number": 2,
+            "direction": "down",
+            "accuracy": 24,
+            "freshness": 23,
+            "craft": 24,
+            "fairness": 24,
         },
     ],
-    indent=2,
+    separators=(",", ":"),
 )
 
 _OUTPUT_SECTION = (
     "OUTPUT FORMAT:\n"
-    "Return ONLY a JSON array with one object per clue. "
-    "Return the four sub-scores (accuracy, freshness, craft, fairness — "
-    "each 0-25), NOT a total score. "
+    "Return ONLY a minified JSON array (no indentation, no spaces after "
+    "colons/commas) with one object per clue. Return the four sub-scores "
+    "(accuracy, freshness, craft, fairness — each 0-25), NOT a total score. "
+    "Include a SHORT \"feedback\" string (under ~10 words) ONLY for clues with "
+    "a real problem — name the issue tersely (e.g. \"leaks: navy\", \"too easy "
+    "for Hard\", \"wrong: Frank Lloyd Wright\"). OMIT the \"feedback\" field "
+    "entirely for clean, high-scoring clues; do not write praise. Keep the "
+    "exact issue keywords the repair step looks for. "
     "No other text before or after.\n"
     f"\n{_EXAMPLE_OUTPUT}\n"
-    "\nEvaluate every clue listed in the user message. "
+    "\n(First object: a flagged clue with terse feedback. Second: a clean clue "
+    "— scores only, no feedback field.)\n"
+    "Evaluate every clue listed in the user message. "
     "Return ONLY the JSON array."
 )
 

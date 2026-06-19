@@ -15,7 +15,10 @@ from crossword_generator.exporters.numbering import (
     compute_crossing_words,
     compute_numbering,
 )
-from crossword_generator.graders.clue_fact_checker import ClueFactChecker
+from crossword_generator.graders.clue_fact_checker import (
+    ClueFactCheckResult,
+    ClueFactChecker,
+)
 from crossword_generator.graders.clue_grader import ClueGrader
 from crossword_generator.graders.leak_detector import LeakFinding, detect_leaks
 from crossword_generator.llm.base import LLMProvider
@@ -63,6 +66,7 @@ class ClueWithGradingStep(PipelineStep):
         duplicate_repair_attempts: int = 4,
         leak_repair_attempts: int = 3,
         repair_verify_attempts: int = 2,
+        fact_check_repair_attempts: int = 2,
         generation_chunk_size: int = 0,
         parallel_chunks: bool = False,
         parallel_chunk_workers: int = 4,
@@ -85,6 +89,7 @@ class ClueWithGradingStep(PipelineStep):
         self._duplicate_repair_attempts = duplicate_repair_attempts
         self._leak_repair_attempts = leak_repair_attempts
         self._repair_verify_attempts = repair_verify_attempts
+        self._fact_check_repair_attempts = fact_check_repair_attempts
         self._clue_step = ClueGenerationStep(
             llm,
             clue_history=clue_history,
@@ -266,14 +271,60 @@ class ClueWithGradingStep(PipelineStep):
         return self._repair_entries(envelope, entries_to_repair)
 
     def _run_fact_check_repair(self, envelope: PuzzleEnvelope) -> PuzzleEnvelope:
-        """Run a second-pass fact-risk audit and repair uncertain clues."""
+        """Audit clues for fact risk, repair flagged ones, then re-audit.
+
+        A repair can swap one factual error for a fresh one (the model is told
+        the old clue is wrong, reaches for a new angle, and confabulates). So
+        after each repair we re-run the fact-checker on the rewritten clues and
+        repair again, up to ``fact_check_repair_attempts`` extra rounds. Any
+        clue still flagged ``incorrect`` after the last round is surfaced as a
+        soft error so it cannot ship unnoticed.
+        """
         if self._fact_checker is None:
             return envelope
 
-        fact_results = self._fact_checker.check(envelope)
-        if not fact_results:
-            return envelope
+        current = envelope
+        last_results: list[ClueFactCheckResult] = []
+        max_rounds = 1 + max(0, self._fact_check_repair_attempts)
+        for round_num in range(1, max_rounds + 1):
+            fact_results = self._fact_checker.check(current)
+            if not fact_results:
+                break
+            last_results = fact_results
+            current = self._record_fact_check_metadata(current, fact_results)
 
+            entries_to_repair = self._fact_check_repair_entries(current, fact_results)
+            if not entries_to_repair:
+                break
+
+            repair_answers = [c.answer for c, _ in entries_to_repair]
+            logger.info(
+                "Clue fact-check repair round %d/%d: %d clue(s): %s",
+                round_num,
+                max_rounds,
+                len(entries_to_repair),
+                ", ".join(repair_answers),
+            )
+
+            if round_num == max_rounds:
+                # Out of repair budget: leave the clues in place and let the
+                # soft-error surface below flag any that are still wrong.
+                break
+
+            repaired = self._repair_entries(current, entries_to_repair)
+            if repaired is current:
+                # Repair parse failed; stop trying.
+                break
+            current = repaired
+
+        return self._surface_fact_check_errors(current, last_results)
+
+    def _record_fact_check_metadata(
+        self,
+        envelope: PuzzleEnvelope,
+        fact_results: list[ClueFactCheckResult],
+    ) -> PuzzleEnvelope:
+        """Persist the latest fact-check verdicts onto the envelope metadata."""
         metadata = dict(envelope.metadata)
         metadata["clue_fact_check"] = [
             {
@@ -287,8 +338,14 @@ class ClueWithGradingStep(PipelineStep):
             }
             for result in fact_results
         ]
-        envelope = envelope.model_copy(update={"metadata": metadata})
+        return envelope.model_copy(update={"metadata": metadata})
 
+    def _fact_check_repair_entries(
+        self,
+        envelope: PuzzleEnvelope,
+        fact_results: list[ClueFactCheckResult],
+    ) -> list[tuple[ClueEntry, ClueGrade]]:
+        """Build repair entries for clues the fact-checker flagged."""
         clue_lookup = {(clue.number, clue.direction): clue for clue in envelope.clues}
         entries_to_repair: list[tuple[ClueEntry, ClueGrade]] = []
         for result in fact_results:
@@ -318,17 +375,46 @@ class ClueWithGradingStep(PipelineStep):
                     ),
                 )
             )
+        return entries_to_repair
 
-        if not entries_to_repair:
+    def _surface_fact_check_errors(
+        self,
+        envelope: PuzzleEnvelope,
+        fact_results: list[ClueFactCheckResult],
+    ) -> PuzzleEnvelope:
+        """Add a soft error for any clue still fact-flagged after all repairs.
+
+        The fact-check metadata reflects the latest audit, so we re-read the
+        current clue text per flagged entry and only surface clues whose text
+        is unchanged from what was judged ``incorrect`` (a clue rewritten in
+        the final round is re-judged on the next batch run, not here).
+        """
+        if not fact_results:
             return envelope
-
-        repair_answers = [c.answer for c, _ in entries_to_repair]
-        logger.info(
-            "Clue fact-check repair: %d clue(s): %s",
-            len(entries_to_repair),
-            ", ".join(repair_answers),
+        clue_lookup = {(c.number, c.direction): c for c in envelope.clues}
+        new_errors: list[str] = []
+        for result in fact_results:
+            if result.status != "incorrect":
+                continue
+            clue = clue_lookup.get((result.number, result.direction))
+            if clue is None or clue.clue != result.clue:
+                continue
+            new_errors.append(
+                f"FACT: {result.answer} ({result.number}-{result.direction}) "
+                f'clue "{result.clue}" flagged incorrect: {result.reason}'
+            )
+        if not new_errors:
+            return envelope
+        logger.warning(
+            "Fact-check repair left %d clue(s) still flagged incorrect: %s",
+            len(new_errors),
+            ", ".join(
+                r.answer for r in fact_results if r.status == "incorrect"
+            ),
         )
-        return self._repair_entries(envelope, entries_to_repair)
+        return envelope.model_copy(
+            update={"errors": list(envelope.errors) + new_errors}
+        )
 
     def _run_leak_repair(self, envelope: PuzzleEnvelope) -> PuzzleEnvelope:
         """Repair clues that mechanically leak their own answer.
@@ -433,18 +519,33 @@ class ClueWithGradingStep(PipelineStep):
 
         repaired_envelope = envelope.model_copy(update={"clues": updated_clues})
 
-        # Re-grade to get updated scores
+        # Re-grade ONLY the clues that changed, then merge their fresh grades
+        # into the prior report. Unrepaired clues are unchanged, so re-scoring
+        # the whole puzzle every repair pass just burns the grader's
+        # (output-dominated) cost. Crossing context is unchanged by a clue-text
+        # edit, so a subset grade sees the same inputs a full grade would.
         previous_score = (
             envelope.clue_grade_report.overall_score
             if envelope.clue_grade_report
             else 0.0
         )
-        new_report = self._grader.grade(repaired_envelope)
+        repaired_keys = set(repair_lookup.keys())
+        subset_report = self._grader.grade_subset(repaired_envelope, repaired_keys)
+        new_report = _merge_grade_report(
+            prior=envelope.clue_grade_report,
+            subset=subset_report,
+            repaired_keys=repaired_keys,
+            all_clues=updated_clues,
+            min_passing_score=self._grader._min_passing_score,
+        )
 
         logger.info(
-            "Post-repair score: %.1f/100 (was %.1f/100)",
+            "Post-repair score: %.1f/100 (was %.1f/100)"
+            " [re-graded %d of %d clue(s)]",
             new_report.overall_score,
             previous_score,
+            len(repaired_keys),
+            len(updated_clues),
         )
 
         # Update quality scores on clues
@@ -653,6 +754,54 @@ class ClueWithGradingStep(PipelineStep):
         if envelope.clues:
             errors.append("Envelope already has clues")
         return errors
+
+
+def _merge_grade_report(
+    *,
+    prior: ClueGradeReport | None,
+    subset: ClueGradeReport,
+    repaired_keys: set[tuple[int, str]],
+    all_clues: list[ClueEntry],
+    min_passing_score: float,
+) -> ClueGradeReport:
+    """Merge freshly-graded repaired clues into the prior full report.
+
+    Only the repaired clues were re-graded (see ``ClueGrader.grade_subset``);
+    every other clue keeps its prior grade. The returned report covers ALL
+    clues (downstream code maps grades back onto each clue) and recomputes the
+    aggregate over the full set. If there is no prior report (e.g. a forced
+    repair before any initial grade), fall back to the subset report as-is.
+    """
+    if prior is None or not prior.clue_grades:
+        return subset
+
+    subset_by_key = {(g.number, g.direction): g for g in subset.clue_grades}
+    prior_by_key = {(g.number, g.direction): g for g in prior.clue_grades}
+
+    merged: list[ClueGrade] = []
+    for clue in all_clues:
+        key = (clue.number, clue.direction)
+        if key in repaired_keys and key in subset_by_key:
+            merged.append(subset_by_key[key])
+        elif key in prior_by_key:
+            merged.append(prior_by_key[key])
+        # A clue with neither a prior nor a fresh grade is simply omitted,
+        # matching the old behavior where ungraded clues had no entry.
+
+    overall = (
+        sum(g.score for g in merged) / len(merged) if merged else 0.0
+    )
+    passing = overall >= min_passing_score
+    return ClueGradeReport(
+        overall_score=overall,
+        clue_count=len(merged),
+        passing=passing,
+        clue_grades=merged,
+        summary=(
+            f"{len(merged)} clues, score {overall:.1f}/100 "
+            f"({'PASS' if passing else 'FAIL'})"
+        ),
+    )
 
 
 def _parse_repair_response(
