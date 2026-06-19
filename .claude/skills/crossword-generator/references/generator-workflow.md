@@ -675,12 +675,26 @@ uv run crossword-generator check-batch-answers \
   --write-answers-file output/batches/<batch-id>/batch-answers.txt
 ```
 
-It exits non-zero when any cross-puzzle duplicate exists. Duplicates of
-3-letter answers confined to 9x9 puzzles are labelled `short-window` (the
-scheduler allows those 3+ days apart) but still count as failures — an
-all-unique batch schedules without manual care.
+It exits non-zero when any cross-puzzle duplicate exists, and labels each as
+either **blocking** or **short-window**:
 
-On duplicates: regenerate the affected puzzles (same batch id, same seeds,
+- **`short-window` (acceptable — do NOT regenerate):** 3-letter answers
+  confined to 9x9 puzzles. The scheduler spaces these out (it allows 3-letter
+  9x9 repeats 3+ days apart), so a week with only short-window dupes uploads
+  fine and schedules without manual care. This is the common case for hard 9x9
+  weeks — the weighted grids + biased CSP fill collide on short glue (ADS, IPO,
+  EAR, AND…), and intra-batch dedup deliberately ignores <=3-letter answers
+  (`--exclude-answers-min-length` default 4) because excluding them makes 9x9
+  grids unfillable. Operator decision (Jeff, June 2026): a non-zero gate exit
+  whose dupes are ALL short-window is NOT a blocker — proceed to upload. (This
+  has been re-litigated repeatedly; it is settled.)
+- **`blocking` (must fix):** any duplicate that is NOT short-window — i.e. a
+  >=4-letter answer shared by two puzzles, or any shared answer the scheduler's
+  windows would actually collide on. The gate prints a `N blocking` count;
+  if it is `0 blocking`, upload regardless of the non-zero exit.
+
+So: read the summary line. `0 blocking, K short-window` → upload as-is. Any
+blocking dupes → regenerate the affected puzzles (same batch id, same seeds,
 separate `-replace-*` output root, the affected `--buckets`), passing the
 batch answers file so the refill cannot reuse any answer already in the
 batch:

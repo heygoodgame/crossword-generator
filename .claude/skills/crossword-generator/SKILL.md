@@ -32,8 +32,12 @@ uploads.
   - DAILY (consecutive calendar slots): use the DEFAULT flags — do NOT pass any
     `--no-*` flag. Intra-batch dedup, recent-answer exclusion, and
     scheduled-sixty exclusion all stay ON; use `--max-workers 1`. Run
-    `check-batch-answers` and regenerate dups until all-unique BEFORE upload.
-    Upload as draft candidates with `save-generated-puzzles`; the admin
+    `check-batch-answers` BEFORE upload, but read its summary: `short-window`
+    dupes (3-letter answers in 9x9s) are ACCEPTABLE — the scheduler spaces
+    them, so `0 blocking, K short-window` means upload as-is (settled operator
+    decision, do NOT regenerate for those). Only regenerate when there are
+    `blocking` dupes (>=4-letter shared answers). Upload as draft candidates
+    with `save-generated-puzzles`; the admin
     schedules them (there is no "proposed" status — daily slots become
     `scheduled` only when actually scheduled, via the admin `schedule-daily`
     action, which the generator does NOT do). Only call `schedule-daily` if
