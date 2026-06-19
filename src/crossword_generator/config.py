@@ -182,9 +182,11 @@ class ClaudeConfig(BaseModel):
     # Opus 4.8 for the quality-critical generative step (Phase 3). Adaptive
     # thinking only; the provider omits temperature for Opus 4.7/4.8.
     clue_generation_model: str = "claude-opus-4-8"
-    # Surgical clue repair is narrower than first-pass generation, so Sonnet is
-    # the default repair writer while Opus remains the first-pass generator.
-    clue_repair_model: str = "claude-sonnet-4-6"
+    # Repair rewrites the clues that already failed grading — the highest-
+    # leverage place to spend on quality. Opus 4.8 (the first-pass generator)
+    # also writes repairs; the grading-cost cuts (subset re-grade + terser
+    # output) more than pay for the upgrade.
+    clue_repair_model: str = "claude-opus-4-8"
     # Grading is the leak/accuracy gate — Sonnet 4.6 for a stronger judge (P5).
     clue_grading_model: str = "claude-sonnet-4-6"
     clue_fact_check_model: str = "claude-sonnet-4-6"
