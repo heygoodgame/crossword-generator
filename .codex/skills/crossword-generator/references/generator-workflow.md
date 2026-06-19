@@ -764,6 +764,67 @@ That local output contained `OPAH`/`OPAHS`, which motivated the terminal-S
 variant rule. Regenerate and replace that deterministic record if asked to
 repair the old uploaded pilot batch.
 
+## Daily vs Unlimited Batches — generation flags (READ FIRST)
+
+The single most-repeated decision: a batch is either **dated dailies** (placed
+on consecutive calendar slots) or an **unlimited pool** (pulled by `public_id`,
+never schedule-adjacent). They need OPPOSITE generator flags. Decide which one
+the request is, then use the matching column. When unsure, ask — getting it
+wrong either ships an unschedulable daily week or needlessly starves an
+unlimited batch's fill pool.
+
+| Concern | DAILY (dated week) | UNLIMITED (pool) |
+|---|---|---|
+| `--intra-batch-dedup` | ON (default) — week is scheduled across consecutive days, so answers MUST be disjoint or they trip the no-repeat windows | `--no-intra-batch-dedup` — never adjacent; disjointness only hurts fill |
+| `--exclude-recent-answers` | ON (default) — avoid answers already scheduled around the first open slot | `--no-exclude-recent-answers` — no schedule to collide with |
+| `--exclude-scheduled-sixty` | ON (default) — for hard 7x7/9x9, respect the 180-day HGG-60 window | `--no-exclude-scheduled-sixty` |
+| `--avoid-existing-clues` | ON (default) | ON (default) — same either way |
+| `check-batch-answers` gate | RUN IT — must be all-unique before upload; regenerate dups | SKIP — intra-batch overlap is expected by design |
+| `--max-workers` | 1 (guarantees intra-batch uniqueness by construction) | 6+ (no shared-answer constraint, so parallel is safe) |
+| Answer scans (nsfw / removed / terminal-S) | run both | run both |
+| Token needed at generation time | yes (exclusions hit the admin API) | yes (only for `--avoid-existing-clues`) |
+
+After upload, the destination also differs — see the two subsections below
+(daily → leave as draft candidates for the admin to schedule, or
+`schedule-daily`; unlimited → `publish-unlimited`).
+
+### Daily (dated) batches
+
+Daily batches use the DEFAULT flags — do NOT pass any of the `--no-*`
+exclusion/dedup flags. Example: a week (7) of midi hard 9x9 dailies:
+
+```bash
+uv run crossword-generator generate-pilot-batch \
+  --output-root output/batches/daily-midi-hard9-<date> \
+  --batch-id daily-midi-hard9-<date> \
+  --buckets hard/9 \
+  --count 7 \
+  --seed-start 1 \
+  --max-workers 1 \
+  --llm claude
+```
+
+Then run the duplicate-answer gate (see "Intra-Batch Duplicate-Answer Gate")
+and the answer scans, regenerating any flagged puzzles, BEFORE upload.
+
+Upload paths for a daily batch:
+- **Draft only (default ask):** `save-generated-puzzles` writes draft
+  candidates to `crosswords/generated-puzzles`; the admin/editor then schedules
+  them onto calendar slots from the review UI. The generator has NO scheduling
+  command. "Upload to the proposed/daily bucket" usually means exactly this —
+  there is no "proposed" status in hey-you; daily slots are created as
+  `status=scheduled` only when actually scheduled.
+- **Direct schedule (only if explicitly asked):** the admin "Schedule" action
+  calls `POST /admin/crossword-puzzles/{record_id}/schedule-daily`
+  (`{"track":"easy"|"hard","date":"YYYY-MM-DD"}` — date optional; omit to let
+  the server place it at the first open slot for that game/track). This writes
+  the LIVE daily calendar and deletes the candidate, same shape as
+  `publish-unlimited`. Do not do this without explicit instruction.
+
+The generator cannot pin the recent-answer window to an arbitrary date; it
+auto-detects the first unscheduled slot server-side. If the operator says "the
+first open slot is <date>", the default detection already lands there.
+
 ## Unlimited-Pool Batches (non-scheduled)
 
 Unlimited puzzles are NOT placed on dated daily slots — players pull them from

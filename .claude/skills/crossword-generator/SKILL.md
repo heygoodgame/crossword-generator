@@ -25,19 +25,28 @@ uploads.
   with the same deterministic batch/difficulty/size/seed key.
 - Before uploading, run a dry run and scan answers for known disallowed
   patterns.
-- Before uploading a DATED daily batch, run `check-batch-answers --manifest ...`
-  and regenerate any puzzles sharing an answer with another puzzle in the batch
-  (same seed, `--exclude-answers-file` with the batch answer list) until the
-  batch is all-unique. See the duplicate-answer gate section in
-  references/generator-workflow.md.
-- For UNLIMITED-pool (non-scheduled) batches the rules differ: pass
-  `--no-intra-batch-dedup --no-exclude-recent-answers --no-exclude-scheduled-sixty`,
-  SKIP the `check-batch-answers` gate (intra-batch answer overlap is expected),
-  and after uploading draft candidates, PROMOTE each to the pool via
-  `POST /admin/crossword-puzzles/{record_id}/publish-unlimited`
-  (`{"difficulty":"easy"|"hard"}`). `save-generated-puzzles` alone does NOT
-  publish to unlimited. See the Unlimited-Pool Batches section in
-  references/generator-workflow.md.
+- FIRST decide whether a batch is DATED DAILIES or an UNLIMITED pool — they
+  need OPPOSITE generator flags, and this is the most-repeated decision. Ask if
+  the request doesn't make it clear. See the "Daily vs Unlimited Batches"
+  decision table in references/generator-workflow.md. In short:
+  - DAILY (consecutive calendar slots): use the DEFAULT flags — do NOT pass any
+    `--no-*` flag. Intra-batch dedup, recent-answer exclusion, and
+    scheduled-sixty exclusion all stay ON; use `--max-workers 1`. Run
+    `check-batch-answers` and regenerate dups until all-unique BEFORE upload.
+    Upload as draft candidates with `save-generated-puzzles`; the admin
+    schedules them (there is no "proposed" status — daily slots become
+    `scheduled` only when actually scheduled, via the admin `schedule-daily`
+    action, which the generator does NOT do). Only call `schedule-daily` if
+    explicitly told to write the live calendar.
+  - UNLIMITED (pool, never schedule-adjacent): pass
+    `--no-intra-batch-dedup --no-exclude-recent-answers --no-exclude-scheduled-sixty`
+    (`--max-workers 6`+ fine); SKIP `check-batch-answers` (overlap expected);
+    after uploading draft candidates, PROMOTE each via
+    `POST /admin/crossword-puzzles/{record_id}/publish-unlimited`
+    (`{"difficulty":"easy"|"hard"}`). `save-generated-puzzles` alone does NOT
+    publish to unlimited.
+  - Either way: keep `--avoid-existing-clues` ON and run the answer scans
+    (nsfw / prevalent-removed / terminal-S) before upload.
 - When asked for a generated batch across Mini Crossword and Midi Crossword
   without explicit size counts, default to a rough 5:2:7 ratio for 5x5, 7x7,
   and 9x9 puzzles. Midi Crossword always uses 9x9; Mini Crossword dailies are
