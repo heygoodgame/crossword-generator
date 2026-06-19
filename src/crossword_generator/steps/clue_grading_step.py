@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 
 from crossword_generator.clue_history import (
     ClueHistoryIndex,
@@ -794,6 +795,42 @@ def _merge_grade_report(
     )
 
 
+def _loose_parse_repair_items(array_text: str) -> list[dict]:
+    """Recover repair objects from JSON the model left with unescaped quotes.
+
+    Handles the common failure where a "clue" value contains literal double
+    quotes (e.g. ``"clue": ""I finally get it!""``) that break strict JSON.
+    Extracts ``number``, ``direction``, and ``clue`` per object by structure,
+    treating the clue as everything between the ``"clue":`` key and the object's
+    closing brace, then trimming one layer of surrounding quotes. Returns a list
+    of dicts shaped like the strict parser's items.
+    """
+    items: list[dict] = []
+    # Each object spans from "number" to the next "}" — objects don't nest here.
+    for obj in re.finditer(r"\{(.*?)\}", array_text, re.DOTALL):
+        body = obj.group(1)
+        num_m = re.search(r'"number"\s*:\s*(\d+)', body)
+        dir_m = re.search(r'"direction"\s*:\s*"(across|down)"', body, re.IGNORECASE)
+        clue_m = re.search(
+            r'"clue"\s*:\s*(.*?)\s*$', body.strip(), re.DOTALL | re.IGNORECASE
+        )
+        if not (num_m and dir_m and clue_m):
+            continue
+        clue = clue_m.group(1).strip().rstrip(",").strip()
+        # Trim one layer of surrounding double quotes (handles the doubled-quote
+        # case ""text"" -> "text", and the normal "text" -> text).
+        if len(clue) >= 2 and clue[0] == '"' and clue[-1] == '"':
+            clue = clue[1:-1]
+        items.append(
+            {
+                "number": int(num_m.group(1)),
+                "direction": dir_m.group(1),
+                "clue": clue,
+            }
+        )
+    return items
+
+
 def _parse_repair_response(
     raw_response: str,
     entries_to_repair: list[tuple[ClueEntry, ClueGrade]],
@@ -810,7 +847,16 @@ def _parse_repair_response(
     if start == -1 or end == -1 or end <= start:
         raise json.JSONDecodeError("No JSON array found in repair response", text, 0)
     text = text[start : end + 1]
-    parsed = json.loads(text)
+    try:
+        parsed = json.loads(text)
+    except json.JSONDecodeError:
+        # LLMs routinely emit clue strings whose own text contains literal
+        # double quotes (quoted exclamations/titles like ""I finally get it!""
+        # or ""Better Call ___""), unescaped, which is invalid JSON and made
+        # strict parsing throw — silently discarding an entire repair batch
+        # (~14% of repair calls in a 200-puzzle run). Recover the entries with
+        # a tolerant field extractor before giving up.
+        parsed = _loose_parse_repair_items(text)
 
     if not isinstance(parsed, list):
         raise ValueError(f"Expected JSON array, got {type(parsed).__name__}")

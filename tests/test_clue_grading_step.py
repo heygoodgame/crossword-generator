@@ -16,7 +16,10 @@ from crossword_generator.models import (
     PuzzleEnvelope,
     PuzzleType,
 )
-from crossword_generator.steps.clue_grading_step import ClueWithGradingStep
+from crossword_generator.steps.clue_grading_step import (
+    ClueWithGradingStep,
+    _loose_parse_repair_items,
+)
 
 # Simple 3x3 grid for testing
 MOCK_GRID = [
@@ -1300,3 +1303,39 @@ class TestLeakRepair:
         leak_errors = [e for e in result.errors if e.startswith("LEAK:")]
         assert len(leak_errors) == 1
         assert "CAT" in leak_errors[0]
+
+
+class TestLooseRepairParse:
+    """Recovery of repair responses the model left with unescaped quotes."""
+
+    def test_doubled_quotes_in_clue_recovered(self) -> None:
+        # The model wraps a quoted-exclamation clue in doubled quotes, which is
+        # invalid JSON; the loose parser must still recover it.
+        text = (
+            '[\n'
+            '  {"number": 1, "direction": "down", "clue": ""I finally get it!""},\n'
+            '  {"number": 6, "direction": "down", "clue": "Funnyman Bruce"},\n'
+            '  {"number": 8, "direction": "across", "clue": ""Gosh!""}\n'
+            ']'
+        )
+        # Strict JSON fails on this input.
+        import json as _json
+
+        with pytest.raises(_json.JSONDecodeError):
+            _json.loads(text)
+
+        items = _loose_parse_repair_items(text)
+        assert len(items) == 3
+        by = {(i["number"], i["direction"]): i["clue"] for i in items}
+        assert by[(1, "down")] == '"I finally get it!"'
+        assert by[(6, "down")] == "Funnyman Bruce"
+        assert by[(8, "across")] == '"Gosh!"'
+
+    def test_clean_json_also_parses(self) -> None:
+        text = (
+            '[{"number": 2, "direction": "across", "clue": "Plain clue"}]'
+        )
+        items = _loose_parse_repair_items(text)
+        assert items == [
+            {"number": 2, "direction": "across", "clue": "Plain clue"}
+        ]
