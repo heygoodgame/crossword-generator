@@ -41,6 +41,12 @@ grading:
 
 llm:
   provider: ollama  # "ollama" or "claude"
+  # Route only the clue fact-check pass to a different model family.
+  # Empty inherits `provider`. "openai" uses the `openai:` block below —
+  # cross-family checking catches confident factual errors that a model
+  # grading its own output would pass. Requires the `openai` extra and
+  # OPENAI_API_KEY (or OPENAI_API_KEY_CROSSWORD_GENERATOR).
+  clue_fact_check_provider: ""
   ollama:
     base_url: "http://localhost:11434"
     model: llama3
@@ -60,6 +66,15 @@ llm:
     effort: ""
     clue_generation_thinking_enabled: true
     clue_generation_effort: medium
+    max_tokens: 4096
+    timeout: 120
+  openai:
+    # Cross-family fact-checker. reasoning_effort applies only to
+    # o-series / gpt-5 models; temperature applies only to non-reasoning
+    # models. Used only when clue_fact_check_provider: openai.
+    model: gpt-5
+    reasoning_effort: medium
+    temperature: 0.2
     max_tokens: 4096
     timeout: 120
 

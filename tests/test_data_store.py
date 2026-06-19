@@ -123,10 +123,7 @@ def test_records_from_manifest_reads_successful_ipuz_files(tmp_path: Path) -> No
     assert records[0]["metadata"]["difficulty"] == "hard"
     assert records[0]["metadata"]["clue_score"] == 75.5
     assert records[0]["metadata"]["title"] == "Crossing Over"
-    assert (
-        records[0]["metadata"]["title_reasoning"]
-        == "Bridges literally cross over."
-    )
+    assert records[0]["metadata"]["title_reasoning"] == "Bridges literally cross over."
 
 
 def _leaky_manifest(tmp_path: Path) -> Path:
@@ -229,7 +226,7 @@ def test_records_from_manifest_uploads_only_clean_puzzles(tmp_path: Path) -> Non
                         "size": 5,
                         "seed": 2,
                         "error_message": (
-                            'LEAK: TRIAD (5-across) [shared_prefix] in clue '
+                            "LEAK: TRIAD (5-across) [shared_prefix] in clue "
                             '"Trio" (offending: "trio")'
                         ),
                     },
@@ -311,11 +308,22 @@ def test_flag_issues_parses_duplicate_form() -> None:
     assert issue["direction"] == "down"
 
 
+def test_flag_issues_parses_fact_form() -> None:
+    from crossword_generator.data_store import _parse_clue_issue
+
+    issue = _parse_clue_issue(
+        'FACT: ELENA (10-across) clue "Actress Longoria of \\"Desperate '
+        'Housewives\\"" flagged incorrect: It is Eva Longoria, not Elena.'
+    )
+    assert issue["kind"] == "FACT"
+    assert issue["answer"] == "ELENA"
+    assert issue["number"] == 10
+    assert issue["direction"] == "across"
+
+
 def test_allow_leaks_takes_precedence_over_flag_issues(tmp_path: Path) -> None:
     manifest_path = _leaky_manifest(tmp_path)
-    records = records_from_manifest(
-        manifest_path, allow_leaks=True, flag_issues=True
-    )
+    records = records_from_manifest(manifest_path, allow_leaks=True, flag_issues=True)
     assert len(records) == 1
     # allow_leaks short-circuits before flagging, so no issues are attached.
     assert "clue_issues" not in records[0]["metadata"]
@@ -506,6 +514,37 @@ def test_records_from_manifest_skips_duplicate_puzzle(tmp_path: Path) -> None:
     assert len(records_from_manifest(manifest_path, allow_leaks=True)) == 1
 
 
+def test_records_from_manifest_skips_fact_flagged_puzzle(tmp_path: Path) -> None:
+    """A FACT: soft error surviving repair holds the puzzle back from upload."""
+    puzzle_path = tmp_path / "seed-001.ipuz"
+    puzzle_path.write_text(json.dumps({"version": "http://ipuz.org/v2"}))
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "batch": "fact-batch",
+                "results": [
+                    {
+                        "success": True,
+                        "output_path": str(puzzle_path),
+                        "difficulty": "hard",
+                        "size": 9,
+                        "seed": 1,
+                        "error_message": (
+                            'FACT: ELENA (10-across) clue "Actress Longoria of '
+                            '\\"Desperate Housewives\\"" flagged incorrect: '
+                            "It is Eva Longoria."
+                        ),
+                    }
+                ],
+            }
+        )
+    )
+    assert records_from_manifest(manifest_path) == []
+    # The allow-leaks override force-includes it like other soft errors.
+    assert len(records_from_manifest(manifest_path, allow_leaks=True)) == 1
+
+
 def test_fetch_recent_sixty_answers_normalizes_and_validates(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -534,8 +573,7 @@ def test_fetch_recent_sixty_answers_normalizes_and_validates(
     assert calls == [
         (
             "GET",
-            "/admin/crossword-puzzles/daily-answers/recent-sixty"
-            "?window_days=180",
+            "/admin/crossword-puzzles/daily-answers/recent-sixty?window_days=180",
         )
     ]
 
@@ -583,9 +621,7 @@ def test_fetch_recent_daily_answers_normalizes_and_validates(
     assert recent.window_days == 7
     assert recent.first_unscheduled_date == "2026-06-20"
     assert recent.since_date == "2026-06-13"
-    assert calls == [
-        ("GET", "/admin/crossword-puzzles/daily-answers/recent")
-    ]
+    assert calls == [("GET", "/admin/crossword-puzzles/daily-answers/recent")]
 
 
 def test_fetch_recent_daily_answers_passes_window_override(
@@ -604,9 +640,7 @@ def test_fetch_recent_daily_answers_passes_window_override(
     recent = fetch_recent_daily_answers(window_days=3, token="token")
 
     assert recent.answers == []
-    assert calls == [
-        "/admin/crossword-puzzles/daily-answers/recent?window_days=3"
-    ]
+    assert calls == ["/admin/crossword-puzzles/daily-answers/recent?window_days=3"]
 
 
 def test_fetch_recent_daily_answers_rejects_bad_shape(

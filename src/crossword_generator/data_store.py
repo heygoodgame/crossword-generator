@@ -16,9 +16,7 @@ from urllib.request import Request, urlopen
 
 logger = logging.getLogger(__name__)
 
-API_BASE = os.environ.get(
-    "HEYGG_API_BASE_URL", "https://play.hey.gg/api"
-).rstrip("/")
+API_BASE = os.environ.get("HEYGG_API_BASE_URL", "https://play.hey.gg/api").rstrip("/")
 NAMESPACE = "crosswords"
 COLLECTION = "generated-puzzles"
 AUTHOR = "crossword-generator"
@@ -119,9 +117,10 @@ def make_record(
 
 
 # Soft-error prefixes that block a puzzle from uploading: an answer-leaking
-# clue or a clue that exactly duplicates an existing one, where repair could
-# not fix it. Both leave the puzzle saved but held back from upload.
-_BLOCKING_ERROR_PREFIXES = ("LEAK:", "DUPLICATE:")
+# clue, a clue that exactly duplicates an existing one, or a clue the
+# fact-checker still flags incorrect after repair — where repair could not fix
+# it. All leave the puzzle saved but held back from upload.
+_BLOCKING_ERROR_PREFIXES = ("LEAK:", "DUPLICATE:", "FACT:")
 
 
 def _blocking_errors(result: dict[str, Any], puzzle: dict[str, Any]) -> list[str]:
@@ -132,6 +131,7 @@ def _blocking_errors(result: dict[str, Any], puzzle: dict[str, Any]) -> list[str
     (a "; "-joined string of the envelope errors). We also check the puzzle
     payload's ``errors`` list in case a caller passes a full envelope.
     """
+
     def _is_blocking(text: str) -> bool:
         return text.startswith(_BLOCKING_ERROR_PREFIXES)
 
@@ -152,8 +152,9 @@ def _blocking_errors(result: dict[str, Any], puzzle: dict[str, Any]) -> list[str
 # Parse a soft-error string like:
 #   LEAK: ROB (17-down) [shared_prefix] in clue "Common nickname for Robert" ...
 #   DUPLICATE: EQUAL (6-down) clue "Sweetener brand..." already used (existing: ...)
+#   FACT: ELENA (10-across) clue "Actress Longoria..." flagged incorrect: ...
 _CLUE_ISSUE_RE = re.compile(
-    r"^(?P<kind>LEAK|DUPLICATE):\s*(?P<answer>\S+)\s*"
+    r"^(?P<kind>LEAK|DUPLICATE|FACT):\s*(?P<answer>\S+)\s*"
     r"\((?P<number>\d+)-(?P<direction>across|down)\)",
     re.IGNORECASE,
 )
@@ -258,9 +259,7 @@ def records_from_manifest(
                 fill_score=_optional_float(result.get("fill_score")),
                 clue_score=_optional_float(result.get("clue_score")),
                 title=_optional_str(result.get("title")),
-                title_reasoning=_optional_str(
-                    result.get("title_reasoning")
-                ),
+                title_reasoning=_optional_str(result.get("title_reasoning")),
                 clue_issues=clue_issues or None,
             )
         )
@@ -535,9 +534,7 @@ def fetch_recent_sixty_answers(
     )
     answers = response.get("answers", [])
     if not isinstance(answers, list):
-        raise DataStoreError(
-            f"Unexpected recent-sixty response shape: {response}"
-        )
+        raise DataStoreError(f"Unexpected recent-sixty response shape: {response}")
     return [str(answer).strip().upper() for answer in answers]
 
 
@@ -699,9 +696,7 @@ def validate_record(record: dict[str, Any]) -> None:
     if data_bytes > 1_000_000:
         raise DataStoreError(f"Record data exceeds 1 MB: {data_bytes} bytes")
     if metadata_bytes > 64_000:
-        raise DataStoreError(
-            f"Record metadata exceeds 64 KB: {metadata_bytes} bytes"
-        )
+        raise DataStoreError(f"Record metadata exceeds 64 KB: {metadata_bytes} bytes")
 
 
 def _request_json(
@@ -714,9 +709,11 @@ def _request_json(
     timeout: int = 60,
 ) -> dict[str, Any]:
     resolved_api_base = (api_base or API_BASE).rstrip("/")
-    resolved_token = token or os.environ.get("HEYGG_ADMIN_TOKEN") or os.environ[
-        "HEYGG_ADMIN_API_TOKEN"
-    ]
+    resolved_token = (
+        token
+        or os.environ.get("HEYGG_ADMIN_TOKEN")
+        or os.environ["HEYGG_ADMIN_API_TOKEN"]
+    )
     url = f"{resolved_api_base}{path}"
     headers = {
         "Authorization": f"Bearer {resolved_token}",

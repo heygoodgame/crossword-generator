@@ -1,6 +1,5 @@
 """Best-effort LLM cost estimation."""
 
-
 _ANTHROPIC_PRICING_USD_PER_MTOK = {
     "haiku": {
         "input_tokens": 1.00,
@@ -29,6 +28,19 @@ _ANTHROPIC_PRICING_USD_PER_MTOK = {
 }
 
 
+# OpenAI text pricing (USD per million tokens). Approximate; recorded with
+# the log record so downstream analysis can recompute if pricing changes.
+_OPENAI_PRICING_USD_PER_MTOK = {
+    "gpt-5-mini": {"input_tokens": 0.25, "output_tokens": 2.00},
+    "gpt-5-nano": {"input_tokens": 0.05, "output_tokens": 0.40},
+    "gpt-5": {"input_tokens": 1.25, "output_tokens": 10.00},
+    "gpt-4.1-mini": {"input_tokens": 0.40, "output_tokens": 1.60},
+    "gpt-4.1": {"input_tokens": 2.00, "output_tokens": 8.00},
+    "o4-mini": {"input_tokens": 1.10, "output_tokens": 4.40},
+    "o3": {"input_tokens": 2.00, "output_tokens": 8.00},
+}
+
+
 def estimate_llm_cost(
     provider: str,
     model: str | None,
@@ -39,6 +51,9 @@ def estimate_llm_cost(
     Prices are intentionally approximate and recorded alongside the log record
     so downstream analysis can recalculate if provider pricing changes.
     """
+    if provider == "openai" and model:
+        return _estimate_openai_cost(model, usage)
+
     if provider != "claude" or not model:
         return {
             "estimated_cost_usd": 0.0 if provider == "ollama" else None,
@@ -81,6 +96,40 @@ def estimate_llm_cost(
         "pricing": f"anthropic_{pricing_key}_usd_per_mtok",
         "rates_usd_per_mtok": dict(prices),
     }
+
+
+def _estimate_openai_cost(
+    model: str,
+    usage: dict[str, int | float],
+) -> dict[str, object]:
+    pricing_key = _openai_pricing_key(model)
+    if pricing_key is None:
+        return {
+            "estimated_cost_usd": None,
+            "currency": "USD",
+            "pricing": "unknown_openai_model",
+        }
+    prices = _OPENAI_PRICING_USD_PER_MTOK[pricing_key]
+    input_tokens = _usage_value(usage, "input_tokens")
+    output_tokens = _usage_value(usage, "output_tokens")
+    total = (
+        input_tokens * prices["input_tokens"] + output_tokens * prices["output_tokens"]
+    ) / 1_000_000
+    return {
+        "estimated_cost_usd": round(total, 8),
+        "currency": "USD",
+        "pricing": f"openai_{pricing_key}_usd_per_mtok",
+        "rates_usd_per_mtok": dict(prices),
+    }
+
+
+def _openai_pricing_key(model: str) -> str | None:
+    normalized = model.lower()
+    # Longest keys first so "gpt-5-mini" wins over "gpt-5".
+    for family in sorted(_OPENAI_PRICING_USD_PER_MTOK, key=len, reverse=True):
+        if normalized.startswith(family):
+            return family
+    return None
 
 
 def _anthropic_pricing_key(model: str) -> str | None:

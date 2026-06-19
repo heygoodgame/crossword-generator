@@ -16,8 +16,8 @@ from crossword_generator.exporters.numbering import (
     compute_numbering,
 )
 from crossword_generator.graders.clue_fact_checker import (
-    ClueFactCheckResult,
     ClueFactChecker,
+    ClueFactCheckResult,
 )
 from crossword_generator.graders.clue_grader import ClueGrader
 from crossword_generator.graders.leak_detector import LeakFinding, detect_leaks
@@ -408,9 +408,7 @@ class ClueWithGradingStep(PipelineStep):
         logger.warning(
             "Fact-check repair left %d clue(s) still flagged incorrect: %s",
             len(new_errors),
-            ", ".join(
-                r.answer for r in fact_results if r.status == "incorrect"
-            ),
+            ", ".join(r.answer for r in fact_results if r.status == "incorrect"),
         )
         return envelope.model_copy(
             update={"errors": list(envelope.errors) + new_errors}
@@ -540,8 +538,7 @@ class ClueWithGradingStep(PipelineStep):
         )
 
         logger.info(
-            "Post-repair score: %.1f/100 (was %.1f/100)"
-            " [re-graded %d of %d clue(s)]",
+            "Post-repair score: %.1f/100 (was %.1f/100) [re-graded %d of %d clue(s)]",
             new_report.overall_score,
             previous_score,
             len(repaired_keys),
@@ -571,9 +568,7 @@ class ClueWithGradingStep(PipelineStep):
         if self._clue_history is None:
             return envelope
         duplicate_hits = self._clue_history.find_duplicates(envelope.clues)
-        return self._repair_duplicates(
-            envelope, duplicate_hits, recheck_all_clues=True
-        )
+        return self._repair_duplicates(envelope, duplicate_hits, recheck_all_clues=True)
 
     def repair_external_duplicates(
         self, envelope: PuzzleEnvelope, duplicate_hits: list[DuplicateClueHit]
@@ -644,13 +639,10 @@ class ClueWithGradingStep(PipelineStep):
                 recheck_clues = current.clues
             else:
                 repaired_keys = {
-                    (hit.clue.number, hit.clue.direction)
-                    for hit in duplicate_hits
+                    (hit.clue.number, hit.clue.direction) for hit in duplicate_hits
                 }
                 recheck_clues = [
-                    c
-                    for c in current.clues
-                    if (c.number, c.direction) in repaired_keys
+                    c for c in current.clues if (c.number, c.direction) in repaired_keys
                 ]
             duplicate_hits = self._clue_history.find_duplicates(recheck_clues)
 
@@ -788,9 +780,7 @@ def _merge_grade_report(
         # A clue with neither a prior nor a fresh grade is simply omitted,
         # matching the old behavior where ungraded clues had no entry.
 
-    overall = (
-        sum(g.score for g in merged) / len(merged) if merged else 0.0
-    )
+    overall = sum(g.score for g in merged) / len(merged) if merged else 0.0
     passing = overall >= min_passing_score
     return ClueGradeReport(
         overall_score=overall,
@@ -937,4 +927,3 @@ def _duplicate_clue_grade(
             "fill-in-the-blank."
         ),
     )
-

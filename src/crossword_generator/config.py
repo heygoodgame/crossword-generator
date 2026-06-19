@@ -128,6 +128,13 @@ class ClueGradingConfig(BaseModel):
     parallel_chunk_max_workers: int = 4
     fact_check_enabled: bool = True
     fact_check_scope: str = "risky"  # "risky" or "all"
+    # How many times to re-fact-check after a fact-check repair rewrites a
+    # clue. A repair can swap one factual error for a fresh one (e.g. an
+    # ELENA clue rewritten from a bad "Helen of Troy" angle into the wrong
+    # "Eva Longoria" angle); re-checking the rewrite catches that. Clues
+    # still flagged incorrect after the last attempt are surfaced as soft
+    # errors rather than shipped silently. Set to 0 to disable re-checking.
+    fact_check_repair_attempts: int = 2
 
 
 class GradingConfig(BaseModel):
@@ -142,6 +149,22 @@ class OllamaConfig(BaseModel):
 
     base_url: str = "http://localhost:11434"
     model: str = "llama3"
+    timeout: int = 120
+
+
+class OpenAIConfig(BaseModel):
+    """OpenAI (Chat Completions API) LLM provider settings.
+
+    Used as a cross-family fact-checker. ``model`` is a reasoning-capable
+    default; ``reasoning_effort`` is sent only for o-series / gpt-5 models
+    and ignored otherwise. ``temperature`` applies only to non-reasoning
+    models (reasoning models reject it).
+    """
+
+    model: str = "gpt-5"
+    reasoning_effort: str = "medium"
+    temperature: float = 0.2
+    max_tokens: int = 4096
     timeout: int = 120
 
 
@@ -205,8 +228,14 @@ class LLMConfig(BaseModel):
     """LLM provider configuration."""
 
     provider: str = "ollama"  # "ollama" or "claude"
+    # Per-step provider override for the clue fact-check pass. Empty string
+    # inherits ``provider``. Set to "openai" to route fact-checking to a
+    # different model family (cross-family checking catches confident errors
+    # that a model grading its own output would pass).
+    clue_fact_check_provider: str = ""
     ollama: OllamaConfig = OllamaConfig()
     claude: ClaudeConfig = ClaudeConfig()
+    openai: OpenAIConfig = OpenAIConfig()
     logging: LLMLoggingConfig = LLMLoggingConfig()
 
 

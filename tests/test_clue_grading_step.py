@@ -484,9 +484,7 @@ class TestFreshnessRepair:
                     "freshness": 12 if low else 20,
                     "craft": 20,
                     "fairness": 20,
-                    "feedback": (
-                        "Too easy for a Hard puzzle" if low else "Good"
-                    ),
+                    "feedback": ("Too easy for a Hard puzzle" if low else "Good"),
                 }
             )
         eval_json = json.dumps(items)
@@ -519,9 +517,7 @@ class TestVerifyAfterRepair:
         repair_1 = json.dumps(
             [{"number": 1, "direction": "across", "clue": "Still bad"}]
         )
-        re_eval_still_bad = _build_eval_json_subset(
-            {(1, "across")}, accuracy=5.0
-        )
+        re_eval_still_bad = _build_eval_json_subset({(1, "across")}, accuracy=5.0)
         repair_2 = json.dumps(
             [{"number": 1, "direction": "across", "clue": "Now good"}]
         )
@@ -805,7 +801,10 @@ class TestAccuracyRepair:
         )
         re_eval_json = _build_eval_json_subset(
             {(1, "across"), (3, "down")},
-            accuracy=22, freshness=20, craft=20, fairness=20,
+            accuracy=22,
+            freshness=20,
+            craft=20,
+            fairness=20,
         )
 
         llm = SequentialMockLLM(
@@ -900,6 +899,150 @@ class TestFactCheckRepair:
         assert grade_llm.call_count == 2
         assert fact_llm.call_count == 1
 
+    def test_fact_check_reverifies_and_fixes_a_bad_repair(self) -> None:
+        """A repair that swaps in a fresh factual error gets re-checked.
+
+        Mirrors the ELENA bug: the first fact-check flags a clue, repair
+        rewrites it into another still-risky clue, the re-check flags that
+        too, and a second repair finally lands a safe clue. The puzzle ships
+        clean with no FACT: soft error.
+        """
+        clue_items = []
+        for e in EXPECTED_ENTRIES:
+            clue = f"Generated clue {e['number']} {e['direction']}"
+            if e["number"] == 1 and e["direction"] == "across":
+                clue = "Hit song by a famous singer"
+            clue_items.append(
+                {"number": e["number"], "direction": e["direction"], "clue": clue}
+            )
+        clue_json = json.dumps(clue_items)
+        eval_json = _build_eval_json(accuracy=23, freshness=22, craft=22, fairness=22)
+
+        # Round 1 flags the original "song" clue; round 2 flags the bad repair
+        # (still a risky "Actress ..." trivia clue); round 3 sees a safe clue.
+        fact_round1 = json.dumps(
+            [
+                {
+                    "number": 1,
+                    "direction": "across",
+                    "status": "incorrect",
+                    "reason": "Wrong song attribution.",
+                }
+            ]
+        )
+        fact_round2 = json.dumps(
+            [
+                {
+                    "number": 1,
+                    "direction": "across",
+                    "status": "incorrect",
+                    "reason": "Wrong actress attribution.",
+                }
+            ]
+        )
+        repair_bad = json.dumps(
+            [
+                {
+                    "number": 1,
+                    "direction": "across",
+                    "clue": "Actress Wrongname of a hit film",
+                }
+            ]
+        )
+        repair_good = json.dumps(
+            [{"number": 1, "direction": "across", "clue": "Common feline pet"}]
+        )
+        re_eval = _build_eval_json_subset(
+            {(1, "across")}, accuracy=22, freshness=20, craft=20, fairness=20
+        )
+
+        clue_llm = SequentialMockLLM([clue_json, repair_bad, repair_good])
+        grade_llm = SequentialMockLLM([eval_json, re_eval, re_eval])
+        fact_llm = SequentialMockLLM([fact_round1, fact_round2])
+        grader = ClueGrader(grade_llm, min_passing_score=70)
+        fact_checker = ClueFactChecker(fact_llm)
+        step = ClueWithGradingStep(
+            clue_llm,
+            grader,
+            max_retries=1,
+            fact_checker=fact_checker,
+            fact_check_repair_attempts=2,
+        )
+
+        result = step.run(_make_envelope())
+
+        clue_1a = next(
+            c for c in result.clues if c.number == 1 and c.direction == "across"
+        )
+        assert clue_1a.clue == "Common feline pet"
+        # Two fact-check rounds ran (original + re-check of the bad repair).
+        assert fact_llm.call_count == 2
+        # The final clue is clean, so no fact soft-error is surfaced.
+        assert not any(err.startswith("FACT:") for err in result.errors)
+
+    def test_fact_check_surfaces_soft_error_when_repair_stays_wrong(self) -> None:
+        """If repair keeps producing an incorrect clue, surface a FACT: error.
+
+        The clue is still flagged incorrect after the repair budget is spent,
+        so it must be held back from upload via a blocking soft error rather
+        than shipped silently.
+        """
+        clue_items = []
+        for e in EXPECTED_ENTRIES:
+            clue = f"Generated clue {e['number']} {e['direction']}"
+            if e["number"] == 1 and e["direction"] == "across":
+                clue = "Hit song by a famous singer"
+            clue_items.append(
+                {"number": e["number"], "direction": e["direction"], "clue": clue}
+            )
+        clue_json = json.dumps(clue_items)
+        eval_json = _build_eval_json(accuracy=23, freshness=22, craft=22, fairness=22)
+
+        fact_incorrect = json.dumps(
+            [
+                {
+                    "number": 1,
+                    "direction": "across",
+                    "status": "incorrect",
+                    "reason": "Wrong attribution.",
+                }
+            ]
+        )
+        repair_still_bad = json.dumps(
+            [
+                {
+                    "number": 1,
+                    "direction": "across",
+                    "clue": "Actress Stillwrong of a hit film",
+                }
+            ]
+        )
+        re_eval = _build_eval_json_subset(
+            {(1, "across")}, accuracy=22, freshness=20, craft=20, fairness=20
+        )
+
+        # One repair attempt: round 1 flags + repairs, round 2 flags again and
+        # the budget is spent, so the bad clue is surfaced as a soft error.
+        clue_llm = SequentialMockLLM([clue_json, repair_still_bad])
+        grade_llm = SequentialMockLLM([eval_json, re_eval])
+        fact_llm = SequentialMockLLM([fact_incorrect, fact_incorrect])
+        grader = ClueGrader(grade_llm, min_passing_score=70)
+        fact_checker = ClueFactChecker(fact_llm)
+        step = ClueWithGradingStep(
+            clue_llm,
+            grader,
+            max_retries=1,
+            fact_checker=fact_checker,
+            fact_check_repair_attempts=1,
+        )
+
+        result = step.run(_make_envelope())
+
+        fact_errors = [err for err in result.errors if err.startswith("FACT:")]
+        assert len(fact_errors) == 1
+        assert "CAT" in fact_errors[0]
+        assert "1-across" in fact_errors[0]
+
 
 class TestDuplicateHistoryRepair:
     """Tests for exact duplicate clue-history repair."""
@@ -990,9 +1133,7 @@ class TestDuplicateHistoryRepair:
 
         llm = SequentialMockLLM([clue_json, eval_json, fixed, eval_json])
         grader = ClueGrader(llm, min_passing_score=70)
-        step = ClueWithGradingStep(
-            llm, grader, max_retries=1, clue_history=history
-        )
+        step = ClueWithGradingStep(llm, grader, max_retries=1, clue_history=history)
         step.run(_make_envelope())
 
         # The repair prompt (3rd call) should mention all three used clues.
@@ -1035,9 +1176,7 @@ class TestExternalDuplicateRepair:
         )
         # One repair pass = repair call + post-repair re-grade (subset: only
         # the repaired clue is re-graded).
-        llm = SequentialMockLLM(
-            [repair_json, _build_eval_json_subset({(1, "across")})]
-        )
+        llm = SequentialMockLLM([repair_json, _build_eval_json_subset({(1, "across")})])
         grader = ClueGrader(llm, min_passing_score=70)
         step = ClueWithGradingStep(llm, grader, clue_history=history)
 

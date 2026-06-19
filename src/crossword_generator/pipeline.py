@@ -24,6 +24,7 @@ from crossword_generator.llm.logging_provider import (
     resolve_llm_logging,
 )
 from crossword_generator.llm.ollama_provider import OllamaProvider
+from crossword_generator.llm.openai_provider import OpenAIProvider
 from crossword_generator.models import PuzzleDifficulty, PuzzleEnvelope, PuzzleType
 from crossword_generator.steps.base import PipelineStep
 from crossword_generator.steps.clue_grading_step import ClueWithGradingStep
@@ -173,25 +174,16 @@ def create_pipeline(
     """
     # Select dictionary based on whether the puzzle is themed
     project_root = find_project_root()
-    is_themed = (
-        theme_file is not None
-        or (
-            PuzzleType(config.puzzle.type) == PuzzleType.MIDI
-            and config.theme.enabled
-        )
+    is_themed = theme_file is not None or (
+        PuzzleType(config.puzzle.type) == PuzzleType.MIDI and config.theme.enabled
     )
     if is_themed and config.dictionary.themed_path:
         dict_path = config.dictionary.themed_path
         dict_additional_paths = config.dictionary.themed_additional_paths
-        dict_additional_min_length = (
-            config.dictionary.themed_additional_min_length
-        )
-        dict_additional_max_length = (
-            config.dictionary.themed_additional_max_length
-        )
+        dict_additional_min_length = config.dictionary.themed_additional_min_length
+        dict_additional_max_length = config.dictionary.themed_additional_max_length
         dict_min_score = (
-            config.dictionary.themed_min_word_score
-            or config.dictionary.min_word_score
+            config.dictionary.themed_min_word_score or config.dictionary.min_word_score
         )
         dict_min_2letter = (
             config.dictionary.themed_min_2letter_score
@@ -222,8 +214,7 @@ def create_pipeline(
         removed = dictionary.remove_words(excluded_fill_words)
         if removed:
             logger.info(
-                "Removed %d already-used batch answer(s) from the fill "
-                "dictionary",
+                "Removed %d already-used batch answer(s) from the fill dictionary",
                 removed,
             )
 
@@ -266,6 +257,20 @@ def create_pipeline(
         puzzle_naming_provider = _claude_for("puzzle_naming")
     else:
         raise ValueError(f"Unknown LLM provider: {config.llm.provider}")
+
+    # Per-step provider override: route the clue fact-check pass to a
+    # different model family. Cross-family checking catches confident
+    # factual errors that a model grading its own output would pass.
+    if config.llm.clue_fact_check_provider == "openai":
+        clue_fact_check_llm = OpenAIProvider(config.llm.openai)
+        logger.info(
+            "Routing clue fact-check to OpenAI provider (model=%s)",
+            config.llm.openai.model,
+        )
+    elif config.llm.clue_fact_check_provider not in ("", config.llm.provider):
+        raise ValueError(
+            f"Unknown clue_fact_check_provider: {config.llm.clue_fact_check_provider!r}"
+        )
 
     llm_logging_enabled, llm_log_path = resolve_llm_logging(
         config.llm.logging,
@@ -349,6 +354,7 @@ def create_pipeline(
         ),
         surgical_repair_pass_ratio=config.grading.clue.surgical_repair_pass_ratio,
         repair_verify_attempts=config.grading.clue.repair_verify_attempts,
+        fact_check_repair_attempts=config.grading.clue.fact_check_repair_attempts,
         duplicate_repair_attempts=config.grading.clue.duplicate_repair_attempts,
         generation_chunk_size=config.grading.clue.generation_chunk_size,
         parallel_chunks=config.grading.clue.parallel_chunks,
