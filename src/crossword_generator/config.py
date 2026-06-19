@@ -189,7 +189,11 @@ class ClaudeConfig(BaseModel):
     clue_repair_model: str = "claude-opus-4-8"
     # Grading is the leak/accuracy gate — Sonnet 4.6 for a stronger judge (P5).
     clue_grading_model: str = "claude-sonnet-4-6"
-    clue_fact_check_model: str = "claude-sonnet-4-6"
+    # Fact-check is the accuracy gate. Opus 4.8 is stricter about word-precision
+    # (e.g. catching "Pope born in 2025" — Leo XIV was elected, not born, in
+    # 2025 — which Sonnet rationalized as "safe"). At ~3% of pipeline spend the
+    # upgrade adds only ~2% to total cost. See docs/clue-quality.md.
+    clue_fact_check_model: str = "claude-opus-4-8"
     # Naming is a trivial creative task — Haiku is sufficient (P5). Empty falls
     # back to ``model`` (also Haiku); set explicitly for clarity.
     puzzle_naming_model: str = "claude-haiku-4-5-20251001"
