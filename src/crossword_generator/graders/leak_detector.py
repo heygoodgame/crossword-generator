@@ -28,17 +28,26 @@ defect — without an LLM call. Rules, in order of precedence:
    with "law". Direction matters: only clue-word-inside-answer is checked here.
 8. ``reverse_compound`` — the OTHER direction: a clue word is a closed compound
    that contains the answer as its leading or trailing part, with the remainder
-   a real dictionary word (ROBE clued with "bathrobe", BERRY with "strawberry").
-   Needs a dictionary, so it only runs when one is passed to ``detect_leak`` /
-   ``detect_leaks``; otherwise skipped. Requiring the remainder to be a real
-   word leaves coincidences (CARDIAC, ELEPHANT) alone. Per editor (Jeff)
-   feedback on the 2026-06 batches.
+   a real dictionary word (ROBE clued with "bathrobe", BERRY with "strawberry",
+   CAT with "housecat", DOG with "bulldog"). Needs a dictionary, so it only runs
+   when one is passed to ``detect_leak`` / ``detect_leaks``; otherwise skipped.
+   Requiring the remainder to be a real word leaves coincidences with non-word
+   remainders (CARDIAC, ELEPHANT, NUCLEAR) alone. Answers down to 3 chars are
+   checked: per editor (Jeff) feedback, over-rejecting short answers in genuine
+   compounds (and the occasional coincidence like PALACE/ace, which just gets
+   regenerated) is preferable to shipping a clue that spells out the answer.
+9. ``embedded_substring`` — a curated catch for short answers embedded in a
+   longer, etymologically-related clue word the reverse-compound rule cannot
+   split because the remainder is not a word (roBOT = "ro" + BOT, unTIL =
+   "un" + TIL, gentleMEN = "gentle" + MEN). See ``EMBEDDED_SUBSTRING_LEAKS``.
 
-Scope note: morphological rules require answers of length >= 4. Three-letter
-answers get only exact-match and abbreviation checking — for short strings,
-substring/root matching produces too many coincidental false positives
-(CAT/category, EAR/early). Collocation fill-in-the-blank leaks ("___ sauce" =>
-SOY) are a SEMANTIC class this mechanical detector does not catch; see the plan.
+Scope note: the morphological/stem rules (2, shared_root) require answers of
+length >= 4 — for short strings, root matching produces too many coincidental
+false positives (CAT/category, EAR/early). Three-letter answers still get
+exact-match, abbreviation, shared-prefix, compound-containment, the curated
+embedded-substring map, and reverse-compound (gated by a real-word remainder)
+checking. Collocation fill-in-the-blank leaks ("___ sauce" => SOY) are a
+SEMANTIC class this mechanical detector does not catch; see the plan.
 
 The curated map (``LEAK_MAP``) and abbreviation map (``ABBREV_EXPANSIONS``)
 start small and high-precision. Grow them from real misses observed in
@@ -181,6 +190,22 @@ ABBREV_EXPANSION_WORDS: dict[str, frozenset[str]] = {
 }
 
 
+# Short answers (typically <= 3 letters, below the morphological floor) that
+# embed as a substring of a longer, etymologically-related clue word where the
+# remainder is NOT a clean dictionary word — so the reverse-compound rule cannot
+# catch them (robot = "ro" + BOT; until = "un" + TIL). High-precision and
+# curated, in the same spirit as LEAK_MAP / ABBREV_EXPANSION_WORDS: each entry
+# maps a short answer to the longer clue words it must not be clued by. Grow
+# from real editor (Jeff) misses on shipped batches. Lowercase.
+EMBEDDED_SUBSTRING_LEAKS: dict[str, frozenset[str]] = {
+    # Seeded from Jeff's 2026-06 review of the week-20260716 batch.
+    "bot": frozenset({"robot", "robots", "robotic", "robotics"}),
+    "til": frozenset({"until"}),
+    "men": frozenset({"gentlemen", "gentleman"}),
+    "man": frozenset({"gentleman", "gentlemen"}),
+}
+
+
 @dataclass(frozen=True)
 class LeakFinding:
     """A clue that echoes its own answer."""
@@ -189,7 +214,10 @@ class LeakFinding:
     direction: str
     answer: str
     clue: str
-    kind: str  # exact | substring | shared_root | irregular | abbrev_expansion
+    # exact | shared_root | irregular | abbrev_expansion | abbrev_expansion_word
+    # | shared_prefix | compound_containment | reverse_compound
+    # | embedded_substring
+    kind: str
     detail: str  # the offending clue word or expansion, for the repair prompt
 
 
@@ -317,6 +345,15 @@ def detect_leak(
             if w in related:
                 return _finding(answer, clue, "irregular", w)
 
+    # 4b. Curated embedded-substring leak: a short answer (below the
+    #     morphological floor) embedded in a longer etymologically-related clue
+    #     word the reverse-compound rule cannot split (robot/BOT, until/TIL).
+    embedding_words = EMBEDDED_SUBSTRING_LEAKS.get(answer_l)
+    if embedding_words:
+        for w in words:
+            if w in embedding_words:
+                return _finding(answer, clue, "embedded_substring", w)
+
     # 5. Abbreviation expansion + initialism.
     finding = _detect_abbrev_leak(answer, answer_l, clue_l, words)
     if finding is not None:
@@ -385,11 +422,16 @@ def _compound_containment_leak(answer_l: str, words: list[str]) -> str | None:
     return None
 
 
-# Floors for the reverse-compound rule. The answer must be >= 4 chars (shorter
-# answers embed coincidentally in too many words — CAT/category, EAR/early),
-# and the OTHER half of the compound must be >= 3 chars so we are splitting a
-# real two-part compound, not shaving a one- or two-letter fragment.
-_REVERSE_COMPOUND_MIN_ANSWER = 4
+# Floors for the reverse-compound rule. The OTHER half of the compound must be
+# >= 3 chars AND a real dictionary word, so we are splitting a genuine two-part
+# compound, not shaving a fragment. The answer floor is 3: per Jeff's standing
+# preference, over-rejecting is fine (PALACE/ace, KITTEN/ten get regenerated)
+# and clearly better than shipping a clue that spells out the answer inside one
+# of its words (SOMEONE/one, WEEKEND/end, WILDCAT/cat, BULLDOG/dog). The
+# real-remainder requirement still leaves pure coincidences with non-word
+# remainders alone (CARDIAC, ELEPHANT, ROBOT — the last caught instead by the
+# curated EMBEDDED_SUBSTRING_LEAKS map).
+_REVERSE_COMPOUND_MIN_ANSWER = 3
 _REVERSE_COMPOUND_MIN_REMAINDER = 3
 
 

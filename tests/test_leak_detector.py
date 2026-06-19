@@ -64,6 +64,14 @@ LEAKS = [
     ("LAWSUIT", "Court filing over a broken law", "compound_containment"),
     ("OUTLAWS", "Bandits outside the law", "compound_containment"),
     ("CARPET", "Floor covering a pet might nap on", "compound_containment"),
+    # Embedded-substring leaks: a short answer hidden inside a longer,
+    # related clue word the reverse-compound rule cannot split. Jeff's
+    # reported cases from the week-20260716 batch.
+    ("BOT", "Robot, informally", "embedded_substring"),
+    ("TIL", "Until, briefly", "embedded_substring"),
+    ("MEN", "Gentlemen", "embedded_substring"),
+    ("MAN", "Gentleman caller", "embedded_substring"),
+    ("BOT", "Robotic vacuum, casually", "embedded_substring"),
 ]
 
 
@@ -108,6 +116,12 @@ CLEAN = [
     ("GPA", "Report-card stat, for short"),
     ("ATM", "Convenience-store cash dispenser, briefly"),
     ("DOB", "Form datum, for short"),
+    # Embedded-substring answers clued through their own meaning — must NOT
+    # flag just because the short string could embed in some other word.
+    ("BOT", "Automated chat program, for short"),
+    ("TIL", "Up to that point, briefly"),
+    ("MEN", "Adult males"),
+    ("MEN", "Restroom door label"),
 ]
 
 
@@ -207,12 +221,27 @@ def test_reverse_compound_ignores_non_word_remainder() -> None:
     assert detect_leak("CARD", "Cardiac muscle, e.g.", _REVERSE_COMPOUND_DICT) is None
 
 
-def test_reverse_compound_ignores_short_answers() -> None:
-    # 3-letter answers are below the floor — CAT in HOUSECAT must not flag even
-    # though HOUSE is a word, to avoid CAT/category-style noise.
+def test_reverse_compound_flags_short_answer_in_real_compound() -> None:
+    # 3-letter answers ARE checked now: HOUSECAT splits into HOUSE + CAT, both
+    # real words, so it flags. Per Jeff's preference, over-rejecting short
+    # answers in genuine compounds beats shipping the spelled-out answer; the
+    # occasional coincidence (PALACE/ace) just gets regenerated.
     d = Dictionary(
         {"CAT": 60, "HOUSECAT": 60, "HOUSE": 60},
         min_word_score=0,
         min_2letter_score=0,
     )
-    assert detect_leak("CAT", "Housecat, for one", d) is None
+    finding = detect_leak("CAT", "Housecat, for one", d)
+    assert finding is not None
+    assert finding.kind == "reverse_compound"
+
+
+def test_reverse_compound_short_answer_nonword_remainder_safe() -> None:
+    # A 3-letter answer whose compound remainder is NOT a real word stays clean,
+    # so coincidental substrings (EAR in NUCLEAR -> "nucl") do not flag.
+    d = Dictionary(
+        {"EAR": 60, "NUCLEAR": 60},
+        min_word_score=0,
+        min_2letter_score=0,
+    )
+    assert detect_leak("EAR", "Nuclear option, so to speak", d) is None
