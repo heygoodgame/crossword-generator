@@ -177,6 +177,7 @@ class TestPipeline:
     ) -> None:
         cfg = load_config(project_root / "config.easy.yaml")
         cfg.llm.provider = "claude"
+        cfg.llm.claude.clue_repair_model = "claude-sonnet-4-6-repair"
 
         def fake_provider(config: object) -> MagicMock:
             provider = MagicMock()
@@ -198,6 +199,14 @@ class TestPipeline:
         ]
         assert len(clue_gen_configs) == 1
         assert clue_gen_configs[0].effort == "medium"
+
+        repair_configs = [
+            config
+            for config in provider_configs
+            if config.model == "claude-sonnet-4-6-repair"
+        ]
+        assert len(repair_configs) == 1
+        assert repair_configs[0].thinking_enabled is False
 
         # Naming runs on Haiku and must not enable thinking.
         naming_configs = [

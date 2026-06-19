@@ -343,6 +343,41 @@ class TestFairnessRepair:
         )
         assert clue_1a.clue == "Plain definition"
 
+    def test_repair_uses_separate_repair_llm(self) -> None:
+        clue_json = _build_clue_json()
+        eval_json = _build_eval_json_mixed(
+            low_accuracy_entries={(1, "across")},
+            low_accuracy=5.0,
+            normal_accuracy=22.0,
+        )
+        repair_json = json.dumps(
+            [{"number": 1, "direction": "across", "clue": "Repair model clue"}]
+        )
+        re_eval_json = _build_eval_json(
+            accuracy=22, freshness=20, craft=20, fairness=20
+        )
+        generation_llm = SequentialMockLLM([clue_json])
+        grading_llm = SequentialMockLLM([eval_json, re_eval_json])
+        repair_llm = SequentialMockLLM([repair_json])
+        grader = ClueGrader(grading_llm, min_passing_score=70)
+        step = ClueWithGradingStep(
+            generation_llm,
+            grader,
+            repair_llm=repair_llm,
+            max_retries=1,
+        )
+
+        result = step.run(_make_envelope())
+
+        clue_1a = next(
+            c for c in result.clues if c.number == 1 and c.direction == "across"
+        )
+        assert clue_1a.clue == "Repair model clue"
+        assert generation_llm.call_count == 1
+        assert grading_llm.call_count == 2
+        assert repair_llm.call_count == 1
+        assert "CLUES TO REPAIR" in repair_llm.prompts[0]
+
 
 class TestFreshnessRepair:
     """Hard configs route evaluator-flagged too-easy clues to repair."""

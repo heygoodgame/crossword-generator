@@ -51,6 +51,10 @@ output/*.puz
 output/*.ipuz
 output/*.json
 output/batches/
+# Ad-hoc operational scratch (per-run exclusion files, one-off cleanup/analysis scripts)
+output/*.txt
+output/*.py
+output/review/
 !output/.gitkeep
 
 # JavaScript dependencies

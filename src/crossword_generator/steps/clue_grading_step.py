@@ -49,6 +49,7 @@ class ClueWithGradingStep(PipelineStep):
         llm: LLMProvider,
         grader: ClueGrader,
         *,
+        repair_llm: LLMProvider | None = None,
         max_retries: int = 3,
         regenerate_on_fail: bool = True,
         accuracy_repair_threshold: float = 12,
@@ -68,6 +69,7 @@ class ClueWithGradingStep(PipelineStep):
         dictionary: Dictionary | None = None,
     ) -> None:
         self._llm = llm
+        self._repair_llm = repair_llm or llm
         self._dictionary = dictionary
         self._grader = grader
         self._max_retries = max_retries
@@ -410,7 +412,7 @@ class ClueWithGradingStep(PipelineStep):
 
         # Call LLM for repair
         try:
-            raw_response = self._llm.generate(user_text, system=system_text)
+            raw_response = self._repair_llm.generate(user_text, system=system_text)
             repaired_clues = _parse_repair_response(raw_response, entries_to_repair)
         except (json.JSONDecodeError, ValueError, KeyError) as exc:
             logger.warning(
@@ -786,5 +788,4 @@ def _duplicate_clue_grade(
             "fill-in-the-blank."
         ),
     )
-
 

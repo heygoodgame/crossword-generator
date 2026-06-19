@@ -14,6 +14,12 @@ _ANTHROPIC_PRICING_USD_PER_MTOK = {
         "cache_creation_input_tokens": 3.75,
         "cache_read_input_tokens": 0.30,
     },
+    "opus_4_5_plus": {
+        "input_tokens": 5.00,
+        "output_tokens": 25.00,
+        "cache_creation_input_tokens": 6.25,
+        "cache_read_input_tokens": 0.50,
+    },
     "opus": {
         "input_tokens": 15.00,
         "output_tokens": 75.00,
@@ -42,15 +48,15 @@ def estimate_llm_cost(
             else "unknown",
         }
 
-    model_family = _anthropic_model_family(model)
-    if model_family is None:
+    pricing_key = _anthropic_pricing_key(model)
+    if pricing_key is None:
         return {
             "estimated_cost_usd": None,
             "currency": "USD",
             "pricing": "unknown_anthropic_model",
         }
 
-    prices = _ANTHROPIC_PRICING_USD_PER_MTOK[model_family]
+    prices = _ANTHROPIC_PRICING_USD_PER_MTOK[pricing_key]
     input_tokens = _usage_value(usage, "input_tokens")
     output_tokens = _usage_value(usage, "output_tokens")
     cache_creation_tokens = _usage_value(usage, "cache_creation_input_tokens")
@@ -72,13 +78,18 @@ def estimate_llm_cost(
     return {
         "estimated_cost_usd": round(total, 8),
         "currency": "USD",
-        "pricing": f"anthropic_{model_family}_usd_per_mtok",
+        "pricing": f"anthropic_{pricing_key}_usd_per_mtok",
         "rates_usd_per_mtok": dict(prices),
     }
 
 
-def _anthropic_model_family(model: str) -> str | None:
+def _anthropic_pricing_key(model: str) -> str | None:
     normalized = model.lower()
+    if "opus" in normalized and any(
+        version in normalized
+        for version in ("opus-4-5", "opus-4-6", "opus-4-7", "opus-4-8")
+    ):
+        return "opus_4_5_plus"
     for family in _ANTHROPIC_PRICING_USD_PER_MTOK:
         if family in normalized:
             return family

@@ -235,6 +235,7 @@ def create_pipeline(
         theme_llm = llm_provider
         fill_select_llm = llm_provider
         clue_gen_llm = llm_provider
+        clue_repair_llm = llm_provider
         clue_grade_llm = llm_provider
         clue_fact_check_llm = llm_provider
         puzzle_naming_provider = llm_provider
@@ -259,6 +260,7 @@ def create_pipeline(
         theme_llm = _claude_for("theme")
         fill_select_llm = _claude_for("fill_selection")
         clue_gen_llm = _claude_for("clue_generation")
+        clue_repair_llm = _claude_for("clue_repair")
         clue_grade_llm = _claude_for("clue_grading")
         clue_fact_check_llm = _claude_for("clue_fact_check")
         puzzle_naming_provider = _claude_for("puzzle_naming")
@@ -288,6 +290,7 @@ def create_pipeline(
     fill_select_llm = _with_llm_logging("fill_selection", fill_select_llm)
     puzzle_naming_llm = _with_llm_logging("puzzle_naming", puzzle_naming_provider)
     clue_gen_llm = _with_llm_logging("clue_generation", clue_gen_llm)
+    clue_repair_llm = _with_llm_logging("clue_repair", clue_repair_llm)
     clue_grade_llm = _with_llm_logging("clue_grading", clue_grade_llm)
     clue_fact_check_llm = _with_llm_logging(
         "clue_fact_check",
@@ -334,6 +337,7 @@ def create_pipeline(
     clue_step = ClueWithGradingStep(
         clue_gen_llm,
         clue_grader,
+        repair_llm=clue_repair_llm,
         max_retries=3,
         regenerate_on_fail=config.grading.clue.regenerate_on_fail,
         accuracy_repair_threshold=config.grading.clue.accuracy_repair_threshold,
