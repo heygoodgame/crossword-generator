@@ -25,10 +25,18 @@ uploads.
   with the same deterministic batch/difficulty/size/seed key.
 - Before uploading, run a dry run and scan answers for known disallowed
   patterns.
-- Before uploading a batch, run `check-batch-answers --manifest ...` and
-  regenerate any puzzles sharing an answer with another puzzle in the batch
+- Before uploading a DATED daily batch, run `check-batch-answers --manifest ...`
+  and regenerate any puzzles sharing an answer with another puzzle in the batch
   (same seed, `--exclude-answers-file` with the batch answer list) until the
   batch is all-unique. See the duplicate-answer gate section in
+  references/generator-workflow.md.
+- For UNLIMITED-pool (non-scheduled) batches the rules differ: pass
+  `--no-intra-batch-dedup --no-exclude-recent-answers --no-exclude-scheduled-sixty`,
+  SKIP the `check-batch-answers` gate (intra-batch answer overlap is expected),
+  and after uploading draft candidates, PROMOTE each to the pool via
+  `POST /admin/crossword-puzzles/{record_id}/publish-unlimited`
+  (`{"difficulty":"easy"|"hard"}`). `save-generated-puzzles` alone does NOT
+  publish to unlimited. See the Unlimited-Pool Batches section in
   references/generator-workflow.md.
 - When asked for a generated batch across Mini Crossword and Midi Crossword
   without explicit size counts, default to a rough 5:2:7 ratio for 5x5, 7x7,
@@ -46,6 +54,8 @@ doing non-trivial work. It documents:
 - Word list management end-to-end (UI → consolidate-list → committed .txt → generator)
 - Single-puzzle and batch commands
 - Data-store upload contract and replacement workflow
+- Unlimited-pool (non-scheduled) batch generation and the two-step
+  upload-then-`publish-unlimited` promotion flow
 - Quality guardrails, including terminal-S duplicate variants
 - Verification commands and common failure modes
 

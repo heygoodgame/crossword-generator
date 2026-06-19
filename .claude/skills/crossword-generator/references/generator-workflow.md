@@ -763,3 +763,110 @@ output/batches/phase-2b-pilot/hard/9x9/seed-001.ipuz
 That local output contained `OPAH`/`OPAHS`, which motivated the terminal-S
 variant rule. Regenerate and replace that deterministic record if asked to
 repair the old uploaded pilot batch.
+
+## Unlimited-Pool Batches (non-scheduled)
+
+Unlimited puzzles are NOT placed on dated daily slots — players pull them from
+a published pool by `public_id`. This changes the batch workflow in three ways
+versus a dated weekly batch:
+
+1. **Disable date-based exclusions.** There is no schedule to avoid colliding
+   with, so pass `--no-exclude-recent-answers --no-exclude-scheduled-sixty`.
+   (Scheduled-sixty only matters for hard 7x7/9x9 anyway.)
+2. **Disable intra-batch answer dedup** with `--no-intra-batch-dedup`. For
+   dated dailies the run forces every puzzle's answers to be disjoint so a
+   week scheduled across consecutive days can't trip the no-repeat windows.
+   Unlimited puzzles are never schedule-adjacent, so forcing 50 minis to have
+   disjoint answer sets only starves the fill pool and hurts quality. With this
+   off, the `check-batch-answers` gate is NOT meaningful (intra-batch answer
+   overlap is expected) — skip it. Still run the disallowed-answer / terminal-S
+   scans (Answer Scans Before Upload).
+3. **Keep `--avoid-existing-clues` on.** Clue-angle variety vs. the live corpus
+   is still wanted and is unrelated to scheduling. Requires a prod admin token.
+
+Generate (example: 50 easy 5x5 for the mini unlimited pool):
+
+```bash
+uv run crossword-generator generate-pilot-batch \
+  --output-root output/batches/unlimited-easy5-<date> \
+  --batch-id unlimited-easy5-<date> \
+  --buckets easy/5 \
+  --count 50 \
+  --seed-start 1 \
+  --no-intra-batch-dedup \
+  --no-exclude-recent-answers \
+  --no-exclude-scheduled-sixty \
+  --avoid-existing-clues \
+  --max-workers 6 \
+  --llm claude
+```
+
+Hard 5x5 is the same with `--buckets hard/5` (selects `config.hard5.yaml`:
+hard clue difficulty, `hgg-hard.txt` fill, the hard-cross board rules). Hard
+clue scores run lower than Easy (different grading bar) — that is expected,
+not a defect.
+
+### Two-step publish: upload candidates, then promote
+
+Uploading with `save-generated-puzzles` only writes DRAFT candidates to
+`crosswords/generated-puzzles` — it does NOT publish to the unlimited pool.
+The pool is the data-store collection `unlimited-pool` with `status=active`;
+records land there only via the promote endpoint the admin "Save to Unlimited"
+button calls.
+
+Upload guard reminder: `save-generated-puzzles` refuses puzzles only for
+surviving `LEAK:`/`DUPLICATE:` issues. A "clue quality below threshold"
+`error_message` does NOT block upload — those puzzles upload unless you exclude
+them. To hold back specific seeds (e.g. low-scoring hards), write a filtered
+manifest copy dropping those `results` entries and upload that copy:
+
+```bash
+# filtered manifest dropping seeds 9 and 20, then upload the 48 that remain
+python3 - <<'PY'
+import json
+m=json.load(open("output/batches/<batch>/manifest.json"))
+m["results"]=[r for r in m["results"] if r["seed"] not in {9,20}]
+json.dump(m, open("output/batches/<batch>/manifest.publish.json","w"), indent=2)
+PY
+uv run crossword-generator save-generated-puzzles \
+  --manifest output/batches/<batch>/manifest.publish.json --dry-run
+# (then live upload with hgg-auth exec prod, see Upload Contract)
+```
+
+Then promote each uploaded candidate to the unlimited pool. There is no
+generator CLI for this; call the hey-you admin API directly (per-record, by the
+candidate's data-store record ID — NOT the `generated:...:seed-N` key):
+
+```
+POST /admin/crossword-puzzles/{record_id}/publish-unlimited
+body: {"difficulty": "easy"}   # or "hard"
+```
+
+The server creates an active `unlimited-pool` publication, assigns the next
+`public_id` for that route scope (e.g. `unlimited:5x5:N`), archives the
+candidate, and DELETES it from `generated-puzzles`. So the authoritative
+success check is that the batch's candidate count in `generated-puzzles` drains
+to 0.
+
+Collect the record IDs by listing `generated-puzzles` filtered to the batch id,
+then loop the promote call:
+
+```bash
+hgg-auth exec prod -- bash -c '
+  BASE="$HGG_ADMIN_BASE_URL/api"
+  # 1. collect candidate record IDs for this batch (paginate)
+  # GET $BASE/admin/data-store/records?namespace=crosswords&collection=generated-puzzles&game_key=minicrossword&per_page=100&page=N
+  #    keep rows whose "key" contains the batch id; capture each row "id"
+  # 2. for each id: POST $BASE/admin/crossword-puzzles/<urlencoded id>/publish-unlimited  -d {"difficulty":"easy"}
+  # 3. verify: re-list and confirm 0 candidates remain for the batch id
+'
+```
+
+**Byline / author.** The server stamps a personal byline only when the
+publishing user's id is in hey-you's `BYLINE_USER_IDS` (currently just Jeff
+Chen). Anyone else publishes with NO byline, and the client falls back to the
+house default "Hey Good Game". So to publish under the Hey Good Game byline,
+just publish as any admin who is not a credited constructor — no flag needed.
+
+**Game keys.** 5x5 and 7x7 -> `minicrossword`; 9x9 -> `midicrossword`. Mini
+unlimited is nested by size (`unlimited:5x5:N`); midi unlimited is flat.
