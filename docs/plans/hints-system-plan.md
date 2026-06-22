@@ -132,8 +132,10 @@ it in `docs/ipuz-extensions.md` so the convention is explicit.
   `data.hgg_admin_edit.puzzle` → patch record. Same leak/fact-check QA as W1.
 - **Idempotent:** skip clues that already have a hint; safe to re-run.
 - **Published puzzles** live in hey-you's `crossword_published_puzzles` table,
-  not just the data store. The script patches those through a new hey-you admin
-  endpoint (see W5) so **live** puzzles get hints without a re-publish.
+  not just the data store. The script reaches them through the **existing**
+  `GET /admin/crossword-puzzles/official` (list + ipuz) →
+  `PATCH /admin/crossword-puzzles/official/{id}` (store updated ipuz). No new
+  hey-you endpoint needed (see W5).
 
 ### W3 — Admin: view + edit hints (published and unpublished)
 **Repo:** `crossword-midi-and-mini`
@@ -155,14 +157,15 @@ it in `docs/ipuz-extensions.md` so the convention is explicit.
 - Once the API serves real 3rd elements, retire the dev fixture
   (`src/dev/dev-hints.ts`) and the `applyDevHints` shim in `puzzle-loader.ts`.
 
-### W5 — hey-you: published-puzzle hint endpoint
-**Repo:** `hey-you` (worktree feature branch — main tree gets reset by parallel
-sessions)
+### W5 — hey-you: published-puzzle hint endpoint — NOT NEEDED
 
-- Add an admin route (or extend `updateOfficial`) to patch hints into a
-  published puzzle's ipuz, validated by `validateOfficialIpuz`. Used by the W2
-  backfill for live puzzles. No change needed to the *serving* path — it already
-  returns ipuz verbatim.
+Resolved on inspection: the existing `PATCH /admin/crossword-puzzles/official/{id}`
+(`updateOfficial`) already accepts a full ipuz `puzzle` payload, validates only
+its shape (`validateOfficialIpuz` lets dict-form clues with `hints` through), and
+stores `$published->ipuz` verbatim. `serializePublishedPuzzle` returns that ipuz
+unchanged, and `officialIndex` lists every published puzzle with its ipuz. So the
+W2 backfill reaches live published puzzles through existing endpoints — **no
+hey-you change required.**
 
 ### W6 — Shared types
 **Repo:** `heygg-common`
