@@ -72,18 +72,36 @@ class IpuzExporter(Exporter):
             solution_grid.append(row_data_str)
 
         clue_map: dict[tuple[int, str], str] = {}
+        hint_map: dict[tuple[int, str], str] = {}
         for clue_entry in envelope.clues:
             clue_map[(clue_entry.number, clue_entry.direction)] = clue_entry.clue
+            if clue_entry.hint:
+                hint_map[(clue_entry.number, clue_entry.direction)] = (
+                    clue_entry.hint
+                )
 
-        across_clues: list[list[int | str]] = []
-        down_clues: list[list[int | str]] = []
+        # ipuz clue entries are either a [number, clue] list or, when we have an
+        # easier hint, the spec dict form {number, clue, hints:[...]} (the `hints`
+        # key is standard ipuz). Plain clues stay as 2-element lists so hint-less
+        # output is byte-for-byte the same as before.
+        across_clues: list[list[int | str] | dict[str, object]] = []
+        down_clues: list[list[int | str] | dict[str, object]] = []
         for entry in numbered:
             clue_text = clue_map.get((entry.number, entry.direction), "")
-            pair: list[int | str] = [entry.number, clue_text]
-            if entry.direction == "across":
-                across_clues.append(pair)
+            hint_text = hint_map.get((entry.number, entry.direction), "")
+            clue_obj: list[int | str] | dict[str, object]
+            if hint_text:
+                clue_obj = {
+                    "number": entry.number,
+                    "clue": clue_text,
+                    "hints": [hint_text],
+                }
             else:
-                down_clues.append(pair)
+                clue_obj = [entry.number, clue_text]
+            if entry.direction == "across":
+                across_clues.append(clue_obj)
+            else:
+                down_clues.append(clue_obj)
 
         ipuz_dict = {
             "version": "http://ipuz.org/v2",
