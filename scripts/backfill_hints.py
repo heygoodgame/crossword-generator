@@ -265,7 +265,16 @@ def load_candidate_targets(game_key: str, api_base: str, token: str) -> list[Tar
     return targets
 
 
-def load_official_targets(game_key: str, api_base: str, token: str) -> list[Target]:
+def load_official_targets(
+    game_key: str,
+    api_base: str,
+    token: str,
+    *,
+    date_from: str | None = None,
+    date_to: str | None = None,
+    day_from: int | None = None,
+    day_to: int | None = None,
+) -> list[Target]:
     from crossword_generator.data_store import list_official_puzzle_records
 
     records = list_official_puzzle_records(
@@ -273,6 +282,32 @@ def load_official_targets(game_key: str, api_base: str, token: str) -> list[Targ
     )
     targets: list[Target] = []
     for rec in records:
+        meta = rec.get("metadata") or {}
+        date = meta.get("date")
+        day = meta.get("day_number")
+
+        # Scope by day_number — the key the game actually serves by. This is
+        # authoritative: the client's daily epoch and the stored metadata.date
+        # can disagree, so date is NOT a reliable "which week players see"
+        # filter. Prefer --day-from/--day-to for daily scoping.
+        if day_from is not None or day_to is not None:
+            if day is None:
+                continue
+            if day_from is not None and day < day_from:
+                continue
+            if day_to is not None and day > day_to:
+                continue
+
+        # Optional secondary scope by stored date (rarely what you want — see
+        # above). Records without a date (e.g. unlimited) are excluded.
+        if date_from or date_to:
+            if not date:
+                continue
+            if date_from and date < date_from:
+                continue
+            if date_to and date > date_to:
+                continue
+
         data = rec.get("data") or {}
         # Unlimited puzzles serialize ipuz at data; daily at data.puzzle.
         if isinstance(data, dict) and "clues" in data and "solution" in data:
@@ -281,11 +316,16 @@ def load_official_targets(game_key: str, api_base: str, token: str) -> list[Targ
             ipuz = data["puzzle"]
         else:
             continue
+        label = str(rec.get("key") or rec.get("id"))
+        if day is not None:
+            label = f"{label} (day {day})"
+        elif date:
+            label = f"{label} ({date})"
         targets.append(
             Target(
                 kind="official",
                 record_id=str(rec.get("id")),
-                label=str(rec.get("key") or rec.get("id")),
+                label=label,
                 ipuz=ipuz,
             )
         )
@@ -392,6 +432,7 @@ class Stats:
     puzzles_changed: int = 0
     hints_written: int = 0
     skipped_full: int = 0
+    failed: int = 0
 
 
 def run(args: argparse.Namespace) -> int:
@@ -417,7 +458,15 @@ def run(args: argparse.Namespace) -> int:
         if args.target in ("candidate", "all"):
             targets += load_candidate_targets(game_key, api_base, token)
         if args.target in ("official", "all"):
-            targets += load_official_targets(game_key, api_base, token)
+            targets += load_official_targets(
+                game_key,
+                api_base,
+                token,
+                date_from=args.date_from,
+                date_to=args.date_to,
+                day_from=args.day_from,
+                day_to=args.day_to,
+            )
     logger.info("Loaded %d target puzzle(s).", len(targets))
 
     if anthropic is None and not args.dry_run:
@@ -444,25 +493,32 @@ def run(args: argparse.Namespace) -> int:
             # so a mixed invocation is rejected early.
             continue
 
-        hints = generate_hints_sync(target, client, args.model, dictionary)
-        applied = target.apply_hints(hints)
-        if applied:
-            write_target(target, api_base, token)
-            stats.puzzles_changed += 1
-            stats.hints_written += applied
-            logger.info("  wrote %d hint(s)", applied)
+        # Isolate per-puzzle failures: a bad LLM response or a rejected PATCH
+        # for one puzzle must not abort the whole backfill run.
+        try:
+            hints = generate_hints_sync(target, client, args.model, dictionary)
+            applied = target.apply_hints(hints)
+            if applied:
+                write_target(target, api_base, token)
+                stats.puzzles_changed += 1
+                stats.hints_written += applied
+                logger.info("  wrote %d hint(s)", applied)
+        except Exception as exc:  # noqa: BLE001 - log and continue
+            stats.failed += 1
+            logger.warning("  FAILED %s: %s", target.label, exc)
 
     if args.batch_api and not args.dry_run:
         _run_batch_mode(targets, client, args.model, dictionary, api_base, token, stats)
 
     logger.info(
-        "Done. puzzles=%d changed=%d hints=%d already-full=%d",
+        "Done. puzzles=%d changed=%d hints=%d already-full=%d failed=%d",
         stats.puzzles,
         stats.puzzles_changed,
         stats.hints_written,
         stats.skipped_full,
+        stats.failed,
     )
-    return 0
+    return 1 if stats.failed else 0
 
 
 def _run_batch_mode(
@@ -539,10 +595,14 @@ def _run_batch_mode(
         clean = _screen_hints(hints, entries, dictionary)
         applied = target.apply_hints(clean)
         if applied:
-            write_target(target, api_base, token)
-            stats.puzzles_changed += 1
-            stats.hints_written += applied
-            logger.info("  %s: wrote %d hint(s)", target.label, applied)
+            try:
+                write_target(target, api_base, token)
+                stats.puzzles_changed += 1
+                stats.hints_written += applied
+                logger.info("  %s: wrote %d hint(s)", target.label, applied)
+            except Exception as exc:  # noqa: BLE001 - log and continue
+                stats.failed += 1
+                logger.warning("  FAILED %s: %s", target.label, exc)
 
 
 def main() -> int:
@@ -572,6 +632,28 @@ def main() -> int:
     )
     parser.add_argument(
         "--limit", type=int, default=0, help="Process at most N puzzles (0 = all)."
+    )
+    parser.add_argument(
+        "--date-from",
+        default=None,
+        help="Only official daily puzzles on/after this date (YYYY-MM-DD).",
+    )
+    parser.add_argument(
+        "--date-to",
+        default=None,
+        help="Only official daily puzzles on/before this date (YYYY-MM-DD).",
+    )
+    parser.add_argument(
+        "--day-from",
+        type=int,
+        default=None,
+        help="Only daily puzzles with day_number >= this (the served key).",
+    )
+    parser.add_argument(
+        "--day-to",
+        type=int,
+        default=None,
+        help="Only daily puzzles with day_number <= this (the served key).",
     )
     args = parser.parse_args()
 

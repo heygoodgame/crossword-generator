@@ -74,3 +74,4 @@ data/
 # Logs
 *.log
 *.jsonl
+.gstack/
