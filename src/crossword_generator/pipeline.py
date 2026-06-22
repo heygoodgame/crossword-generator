@@ -29,6 +29,7 @@ from crossword_generator.models import PuzzleDifficulty, PuzzleEnvelope, PuzzleT
 from crossword_generator.steps.base import PipelineStep
 from crossword_generator.steps.clue_grading_step import ClueWithGradingStep
 from crossword_generator.steps.fill_step import FillWithGradingStep
+from crossword_generator.steps.hint_step import HintGenerationStep
 from crossword_generator.steps.puzzle_naming_step import PuzzleNamingStep
 from crossword_generator.steps.theme_step import ThemeGenerationStep
 
@@ -230,6 +231,7 @@ def create_pipeline(
         clue_grade_llm = llm_provider
         clue_fact_check_llm = llm_provider
         puzzle_naming_provider = llm_provider
+        hint_llm = llm_provider
     elif config.llm.provider == "claude":
         cc = config.llm.claude
 
@@ -255,6 +257,7 @@ def create_pipeline(
         clue_grade_llm = _claude_for("clue_grading")
         clue_fact_check_llm = _claude_for("clue_fact_check")
         puzzle_naming_provider = _claude_for("puzzle_naming")
+        hint_llm = _claude_for("hint_generation")
     else:
         raise ValueError(f"Unknown LLM provider: {config.llm.provider}")
 
@@ -301,6 +304,7 @@ def create_pipeline(
         "clue_fact_check",
         clue_fact_check_llm,
     )
+    hint_llm = _with_llm_logging("hint_generation", hint_llm)
 
     # Build filler
     if config.fill.provider == "csp":
@@ -393,6 +397,20 @@ def create_pipeline(
     naming_step = PuzzleNamingStep(puzzle_naming_llm)
 
     steps.extend([fill_step, clue_step, naming_step])
+
+    # Hint generation runs after clues exist so each hint can take a different,
+    # easier angle than the real clue. Leak-screened with the same detector the
+    # clues use.
+    if config.hint.enabled:
+        hint_step = HintGenerationStep(
+            hint_llm,
+            max_retries=config.hint.max_retries,
+            chunk_size=config.hint.generation_chunk_size,
+            parallel_chunks=config.hint.parallel_chunks,
+            parallel_chunk_workers=config.hint.parallel_chunk_max_workers,
+            dictionary=dictionary,
+        )
+        steps.append(hint_step)
 
     # Build exporters
     exporters: list[Exporter] = []
