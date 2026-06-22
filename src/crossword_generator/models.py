@@ -35,6 +35,9 @@ class ClueEntry(BaseModel):
     direction: str  # "across" or "down"
     answer: str
     clue: str = ""
+    # An easier alternate clue surfaced to solvers who ask for a hint. Empty
+    # until the hint step (or backfill) fills it in.
+    hint: str = ""
     quality_score: float | None = None
 
 

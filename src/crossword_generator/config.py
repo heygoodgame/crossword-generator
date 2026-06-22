@@ -197,6 +197,10 @@ class ClaudeConfig(BaseModel):
     # Naming is a trivial creative task — Haiku is sufficient (P5). Empty falls
     # back to ``model`` (also Haiku); set explicitly for clarity.
     puzzle_naming_model: str = "claude-haiku-4-5-20251001"
+    # Hints are easy beginner clues — a simpler task than clue generation, but
+    # still answer-leak-sensitive. Sonnet 4.6 is a good quality/cost balance;
+    # the leak detector screens its output. Empty falls back to ``model``.
+    hint_generation_model: str = "claude-sonnet-4-6"
     thinking_enabled: bool = False
     thinking_type: str = "adaptive"
     thinking_display: str = "omitted"
@@ -213,7 +217,7 @@ class ClaudeConfig(BaseModel):
         Args:
             step: One of "theme", "fill_selection", "clue_generation",
                   "clue_repair", "clue_grading", "clue_fact_check",
-                  "puzzle_naming".
+                  "puzzle_naming", "hint_generation".
 
         Returns:
             The per-step model if set, otherwise the default ``model``.
@@ -256,6 +260,19 @@ class ThemeConfig(BaseModel):
     max_avoid_in_prompt: int = 30
 
 
+class HintConfig(BaseModel):
+    """Hint generation settings (an easy alternate clue per entry)."""
+
+    enabled: bool = True
+    max_retries: int = 3
+    # Split hint generation into chunks of at most this many entries per LLM
+    # call (0 = one call for the whole puzzle). The cacheable system prompt is
+    # shared across chunks.
+    generation_chunk_size: int = 0
+    parallel_chunks: bool = False
+    parallel_chunk_max_workers: int = 4
+
+
 class OutputConfig(BaseModel):
     """Output directory and format settings."""
 
@@ -272,6 +289,7 @@ class Config(BaseModel):
     grading: GradingConfig = GradingConfig()
     llm: LLMConfig = LLMConfig()
     theme: ThemeConfig = ThemeConfig()
+    hint: HintConfig = HintConfig()
     output: OutputConfig = OutputConfig()
 
 

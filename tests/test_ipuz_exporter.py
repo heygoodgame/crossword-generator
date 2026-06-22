@@ -82,6 +82,44 @@ class TestIpuzExporter:
         assert len(clue_1) == 1
         assert clue_1[0][1] == "Expression of surprise"
 
+    def test_hint_emits_dict_form(
+        self, envelope_with_fill: PuzzleEnvelope, tmp_path: Path
+    ) -> None:
+        # A clue with a hint should serialize to the spec dict form with a
+        # native `hints` list; a clue without one stays a 2-element list.
+        clues = [
+            ClueEntry(
+                number=1,
+                direction="across",
+                answer="OH",
+                clue="Expression of surprise",
+                hint="Reaction when you stub your toe",
+            ),
+            ClueEntry(number=1, direction="down", answer="OF", clue="Belonging to"),
+        ]
+        envelope = envelope_with_fill.model_copy(update={"clues": clues})
+        exporter = IpuzExporter()
+        path = exporter.export(envelope, tmp_path)
+
+        data = ipuz.read(path.read_text())
+        across = {
+            (c["number"] if isinstance(c, dict) else c[0]): c
+            for c in data["clues"]["Across"]
+        }
+        down = {
+            (c["number"] if isinstance(c, dict) else c[0]): c
+            for c in data["clues"]["Down"]
+        }
+
+        hinted = across[1]
+        assert isinstance(hinted, dict)
+        assert hinted["clue"] == "Expression of surprise"
+        assert hinted["hints"] == ["Reaction when you stub your toe"]
+
+        # The hint-less down clue stays the compact list form.
+        assert isinstance(down[1], list)
+        assert len(down[1]) == 2
+
     def test_black_squares_in_puzzle_grid(
         self, envelope_with_fill: PuzzleEnvelope, tmp_path: Path
     ) -> None:
