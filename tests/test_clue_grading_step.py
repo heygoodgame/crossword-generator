@@ -983,6 +983,80 @@ class TestFactCheckRepair:
         # The final clue is clean, so no fact soft-error is surfaced.
         assert not any(err.startswith("FACT:") for err in result.errors)
 
+    def test_fact_check_reruns_after_dedup_repair_injects_bad_clue(self) -> None:
+        """The DAD bug: a dedup repair rewrites a clean clue into a
+        fill-in-the-blank whose blank resolves to a different word than the
+        answer, AFTER the first fact-check has already run. The final
+        fact-check pass must catch and repair it.
+
+        Generation produces a clean "Father, informally"-style clue. A clue
+        history hit forces a dedup repair, which reaches for a "fresh angle"
+        fill-in-the-blank that is factually wrong for the answer. Because this
+        is injected after the initial fact-check, only the re-run fact-check
+        gate can catch it.
+        """
+        # Generated clues are all clean and non-risky (no fill-in-the-blank),
+        # so the first fact-check pass flags nothing.
+        clue_json = _build_clue_json()
+        eval_json = _build_eval_json(accuracy=23, freshness=22, craft=22, fairness=22)
+
+        # Dedup repair injects a wrong fill-in-the-blank for 1-across (CAT):
+        # the blank reads as a different word than the answer.
+        dedup_repair = json.dumps(
+            [{"number": 1, "direction": "across", "clue": '"Copy ___" (imitate)'}]
+        )
+        # The re-run fact-check flags the injected blank as incorrect, and the
+        # final repair lands a safe clue.
+        fact_flag = json.dumps(
+            [
+                {
+                    "number": 1,
+                    "direction": "across",
+                    "status": "incorrect",
+                    "reason": "Blank resolves to a different word than CAT.",
+                }
+            ]
+        )
+        fact_repair = json.dumps(
+            [{"number": 1, "direction": "across", "clue": "Common feline pet"}]
+        )
+        re_eval = _build_eval_json_subset(
+            {(1, "across")}, accuracy=22, freshness=20, craft=20, fairness=20
+        )
+
+        history = ClueHistoryIndex()
+        history.add("CAT", "Generated clue 1 across")
+
+        # clue_llm doubles as repair_llm: gen, dedup-repair, fact-repair.
+        clue_llm = SequentialMockLLM([clue_json, dedup_repair, fact_repair])
+        # grade_llm: initial grade, dedup re-grade subset, fact re-grade subset.
+        grade_llm = SequentialMockLLM([eval_json, re_eval, re_eval])
+        # fact_llm: nothing risky on the first pass (no call), flags the
+        # injected blank on the re-run pass.
+        fact_llm = SequentialMockLLM([fact_flag])
+        grader = ClueGrader(grade_llm, min_passing_score=70)
+        fact_checker = ClueFactChecker(fact_llm)
+        step = ClueWithGradingStep(
+            clue_llm,
+            grader,
+            max_retries=1,
+            clue_history=history,
+            fact_checker=fact_checker,
+        )
+
+        result = step.run(_make_envelope())
+
+        clue_1a = next(
+            c for c in result.clues if c.number == 1 and c.direction == "across"
+        )
+        # The bad fill-in-the-blank was caught and replaced by the safe clue.
+        assert clue_1a.clue == "Common feline pet"
+        # The first fact-check had nothing risky to check; only the re-run pass
+        # (after the dedup repair) called the fact LLM.
+        assert fact_llm.call_count == 1
+        # No FACT: soft error survives — the clue shipped clean.
+        assert not any(err.startswith("FACT:") for err in result.errors)
+
     def test_fact_check_surfaces_soft_error_when_repair_stays_wrong(self) -> None:
         """If repair keeps producing an incorrect clue, surface a FACT: error.
 

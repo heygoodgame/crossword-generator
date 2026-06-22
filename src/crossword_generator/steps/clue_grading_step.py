@@ -186,6 +186,11 @@ class ClueWithGradingStep(PipelineStep):
         best_envelope = self._run_fact_check_repair(best_envelope)
         best_envelope = self._run_leak_repair(best_envelope)
         best_envelope = self._run_duplicate_clue_repairs(best_envelope)
+        # Leak and dedup repairs rewrite clues after the first fact-check, so a
+        # freshly injected clue (e.g. a "fresh angle" fill-in-the-blank whose
+        # blank resolves to a different word than the answer) would otherwise
+        # ship unaudited. Re-run the fact-check as the final validation gate.
+        best_envelope = self._run_fact_check_repair(best_envelope)
 
         # Fix step_history: clue_step already added "clue-generation",
         # replace with our composite name
