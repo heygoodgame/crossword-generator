@@ -349,7 +349,7 @@ def _screen_hints(
         answer = answers.get(key)
         if not answer or not hint:
             continue
-        if detect_leak(answer, hint, dictionary) is not None:
+        if detect_leak(answer, hint, dictionary, for_hint=True) is not None:
             logger.warning("  dropped leaking hint for %s-%s (%s)", *key, answer)
             continue
         clean[key] = hint

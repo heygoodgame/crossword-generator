@@ -245,3 +245,51 @@ def test_reverse_compound_short_answer_nonword_remainder_safe() -> None:
         min_2letter_score=0,
     )
     assert detect_leak("EAR", "Nuclear option, so to speak", d) is None
+
+
+# --- for_hint mode: compound-containment relaxed for solver hints ---
+
+
+def test_for_hint_allows_component_word_of_phrase() -> None:
+    # A giveaway hint may use ONE component of a multi-word answer.
+    # GOODKARMA hinted with "good deeds" leaks "good" in clue mode...
+    assert detect_leak("GOODKARMA", "Good deeds coming back to you").kind == (
+        "compound_containment"
+    )
+    # ...but is allowed for a hint.
+    assert (
+        detect_leak("GOODKARMA", "Good deeds coming back to you", for_hint=True)
+        is None
+    )
+
+
+def test_for_hint_allows_rhyme_component() -> None:
+    # The natural giveaway for ONEPOTATO is the rhyme itself.
+    assert (
+        detect_leak("ONEPOTATO", "Two potato, three potato, four", for_hint=True)
+        is None
+    )
+
+
+def test_for_hint_skips_reverse_compound() -> None:
+    d = Dictionary(
+        {"CAT": 60, "HOUSECAT": 60, "HOUSE": 60},
+        min_word_score=0,
+        min_2letter_score=0,
+    )
+    # reverse_compound flags in clue mode, but not for a hint.
+    assert detect_leak("CAT", "Housecat, for one", d).kind == "reverse_compound"
+    assert detect_leak("CAT", "Housecat, for one", d, for_hint=True) is None
+
+
+def test_for_hint_still_blocks_literal_answer() -> None:
+    # The one boundary stays: a hint may not contain the answer word itself.
+    finding = detect_leak("JELLY", "Peanut butter and jelly", for_hint=True)
+    assert finding is not None
+    assert finding.kind == "exact"
+
+
+def test_for_hint_still_blocks_abbreviation_expansion() -> None:
+    # Abbreviation expansion words remain blocked even for hints.
+    finding = detect_leak("ETA", "Estimated time of arrival", for_hint=True)
+    assert finding is not None

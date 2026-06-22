@@ -306,7 +306,11 @@ def _is_morphological_pair(answer: str, word: str) -> bool:
 
 
 def detect_leak(
-    answer: str, clue: str, dictionary: Dictionary | None = None
+    answer: str,
+    clue: str,
+    dictionary: Dictionary | None = None,
+    *,
+    for_hint: bool = False,
 ) -> LeakFinding | None:
     """Return the first leak found for one answer/clue pair, or None.
 
@@ -315,6 +319,14 @@ def detect_leak(
     is optional: when supplied it enables the reverse-compound rule (rule 8),
     which needs a wordlist to confirm a compound split; without it that one
     rule is skipped and every other rule behaves identically.
+
+    ``for_hint`` loosens the screen for solver HINTS (vs. clues). A hint is a
+    deliberate near-giveaway, so the compound-containment rules (7 and 8) are
+    too strict: using one component word of a multi-word answer in the hint
+    (GOODKARMA hinted with "good deeds"; ONEPOTATO with the "...potato"
+    rhyme) does not hand over the whole phrase. With ``for_hint=True`` those
+    two rules are skipped; the literal-answer, morphological, and
+    abbreviation-expansion rules still apply.
     """
     answer_l = answer.lower().strip()
     clue_l = clue.lower()
@@ -371,16 +383,19 @@ def detect_leak(
 
     # 7. Compound containment: a clue word is the leading or trailing
     #    component of the answer (SCOFFLAW / "laws", LAWSUIT / "law").
-    leak_word = _compound_containment_leak(answer_l, words)
-    if leak_word is not None:
-        return _finding(answer, clue, "compound_containment", leak_word)
+    #    Skipped for hints: a giveaway hint may name one part of a multi-word
+    #    answer without revealing the whole phrase.
+    if not for_hint:
+        leak_word = _compound_containment_leak(answer_l, words)
+        if leak_word is not None:
+            return _finding(answer, clue, "compound_containment", leak_word)
 
     # 8. Reverse compound containment: a clue word is a closed compound that
     #    CONTAINS the answer as its leading or trailing component (ROBE clued
     #    with "bathrobe", BERRY with "strawberry"). Needs a dictionary to
     #    confirm the remainder is a real word, so it only runs when one is
-    #    supplied. See rule 8 in the module docstring.
-    if dictionary is not None:
+    #    supplied. See rule 8 in the module docstring. Skipped for hints.
+    if dictionary is not None and not for_hint:
         leak_word = _reverse_compound_leak(answer_l, words, dictionary)
         if leak_word is not None:
             return _finding(answer, clue, "reverse_compound", leak_word)

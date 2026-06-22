@@ -196,7 +196,9 @@ class HintGenerationStep(PipelineStep):
                 if not hint:
                     still_pending.append(entry)
                     continue
-                leak = detect_leak(answers[key], hint, self._dictionary)
+                leak = detect_leak(
+                    answers[key], hint, self._dictionary, for_hint=True
+                )
                 if leak is not None:
                     logger.warning(
                         "Hint for %d-%s (%s) leaked (%s); regenerating",
