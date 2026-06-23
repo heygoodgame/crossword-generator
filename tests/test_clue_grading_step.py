@@ -508,6 +508,112 @@ class TestFreshnessRepair:
         assert clue_1a.clue == "Harder angle"
 
 
+class TestSoftFreshnessOnly:
+    """Guard (c): a fact-clean clue flagged only for "too easy" freshness is
+    rewritten at most once, not churned round after round (each rewrite is a
+    chance to inject a factual error — see the MAMMA/ABBA incident)."""
+
+    def _step(self) -> ClueWithGradingStep:
+        llm = SequentialMockLLM([])
+        grader = ClueGrader(llm, min_passing_score=70)
+        return ClueWithGradingStep(
+            llm, grader, max_retries=1, freshness_repair_threshold=10
+        )
+
+    def test_freshness_only_grade_is_soft(self) -> None:
+        from crossword_generator.models import ClueGrade
+
+        grade = ClueGrade(
+            number=1,
+            direction="across",
+            answer="MAMMA",
+            score=80,
+            accuracy=22,
+            freshness=8,
+            craft=18,
+            fairness=22,
+            feedback="too easy for Hard; plain definition",
+        )
+        assert self._step()._is_soft_freshness_only(grade) is True
+
+    def test_low_accuracy_is_not_soft(self) -> None:
+        from crossword_generator.models import ClueGrade
+
+        grade = ClueGrade(
+            number=1,
+            direction="across",
+            answer="MAMMA",
+            score=80,
+            accuracy=5,
+            freshness=8,
+            craft=18,
+            fairness=22,
+            feedback="too easy; also wrong",
+        )
+        assert self._step()._is_soft_freshness_only(grade) is False
+
+    def test_hard_feedback_marker_is_not_soft(self) -> None:
+        from crossword_generator.models import ClueGrade
+
+        grade = ClueGrade(
+            number=1,
+            direction="across",
+            answer="MAMMA",
+            score=80,
+            accuracy=22,
+            freshness=8,
+            craft=18,
+            fairness=22,
+            feedback="too easy; leaks: hidden in clue",
+        )
+        assert self._step()._is_soft_freshness_only(grade) is False
+
+    def test_freshness_only_clue_repaired_at_most_once(self) -> None:
+        """If a too-easy clue stays too-easy after one rewrite, the convergence
+        loop does not keep rewriting it for freshness alone."""
+        clue_json = _build_clue_json()
+        # 1-across is perpetually graded "too easy" (freshness 8), nothing else.
+        eval_low = self._eval_low_freshness_1a()
+        repair_1 = json.dumps(
+            [{"number": 1, "direction": "across", "clue": "Harder angle one"}]
+        )
+        # Re-grade still flags it too-easy on freshness only.
+        re_eval = _build_eval_json_subset(
+            {(1, "across")}, accuracy=22, freshness=8, craft=20, fairness=20
+        )
+        llm = SequentialMockLLM([clue_json, eval_low, repair_1, re_eval])
+        grader = ClueGrader(llm, min_passing_score=70)
+        step = ClueWithGradingStep(
+            llm, grader, max_retries=1, freshness_repair_threshold=10
+        )
+        result = step.run(_make_envelope())
+
+        clue_1a = next(
+            c for c in result.clues if c.number == 1 and c.direction == "across"
+        )
+        # Repaired exactly once; the second round did NOT re-flag it, so no
+        # third clue was ever requested (would raise StopIteration on the mock).
+        assert clue_1a.clue == "Harder angle one"
+
+    @staticmethod
+    def _eval_low_freshness_1a() -> str:
+        items = []
+        for e in EXPECTED_ENTRIES:
+            low = (e["number"], e["direction"]) == (1, "across")
+            items.append(
+                {
+                    "number": e["number"],
+                    "direction": e["direction"],
+                    "accuracy": 22,
+                    "freshness": 8 if low else 20,
+                    "craft": 20,
+                    "fairness": 20,
+                    "feedback": "too easy for Hard" if low else "Good",
+                }
+            )
+        return json.dumps(items)
+
+
 class TestVerifyAfterRepair:
     def test_repairs_again_when_still_flagged(self) -> None:
         """A clue still flagged after one repair is repaired a second time."""

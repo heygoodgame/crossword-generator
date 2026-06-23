@@ -276,9 +276,15 @@ class ClueWithGradingStep(PipelineStep):
         """
         current = envelope
         last_fact_results: list[ClueFactCheckResult] = []
+        # Clues already rewritten once purely to harden a "too easy" freshness
+        # flag. They are not re-flagged for freshness alone again — see
+        # _collect_findings — so a fact-checked-clean clue is not churned.
+        soft_freshness_spent: set[tuple[int, str]] = set()
         max_rounds = self._max_repair_rounds
         for round_num in range(1, max_rounds + 1):
-            findings, fact_results = self._collect_findings(current)
+            findings, fact_results = self._collect_findings(
+                current, soft_freshness_spent
+            )
             last_fact_results = fact_results
             if fact_results:
                 current = self._record_fact_check_metadata(current, fact_results)
@@ -289,6 +295,15 @@ class ClueWithGradingStep(PipelineStep):
                 # repair/re-grade calls.
                 logger.info("Clue convergence: round %d clean — converged", round_num)
                 break
+
+            # Record any clue being repaired this round whose only problem is a
+            # soft freshness flag, so the next sweep leaves it alone.
+            for key, triples in findings.items():
+                if any(
+                    name == "quality" and self._is_soft_freshness_only(grade)
+                    for name, _, grade in triples
+                ) and not any(name != "quality" for name, _, _ in triples):
+                    soft_freshness_spent.add(key)
 
             merged = self._merge_findings(findings)
             self._log_round(round_num, max_rounds, findings, merged)
@@ -315,7 +330,9 @@ class ClueWithGradingStep(PipelineStep):
         return current, last_fact_results
 
     def _collect_findings(
-        self, envelope: PuzzleEnvelope
+        self,
+        envelope: PuzzleEnvelope,
+        soft_freshness_spent: set[tuple[int, str]] | None = None,
     ) -> tuple[
         dict[tuple[int, str], list[tuple[str, ClueEntry, ClueGrade]]],
         list[ClueFactCheckResult],
@@ -328,16 +345,30 @@ class ClueWithGradingStep(PipelineStep):
         fact-check output (passed up so the caller can surface ``FACT:`` soft
         errors). Detectors return the same ClueGrade-shaped entries the old
         per-pass loops built; none of them call the repair LLM.
+
+        ``soft_freshness_spent`` lists clues already rewritten once for a
+        soft-freshness-only ("too easy") flag. A quality finding for such a clue
+        is dropped when freshness is its ONLY remaining problem — every rewrite
+        is a fresh chance to inject a factual error (see the MAMMA/ABBA
+        incident), so we cap purely-cosmetic "make it harder" churn at one pass
+        and keep the clue we already fact-checked clean. Hard defects (accuracy,
+        craft, fairness, fact, leak, hyphen, duplicate) always still repair.
         """
+        spent = soft_freshness_spent or set()
         findings: dict[
             tuple[int, str], list[tuple[str, ClueEntry, ClueGrade]]
         ] = {}
 
         def add(name: str, entries: list[tuple[ClueEntry, ClueGrade]]) -> None:
             for clue, grade in entries:
-                findings.setdefault((clue.number, clue.direction), []).append(
-                    (name, clue, grade)
-                )
+                key = (clue.number, clue.direction)
+                if (
+                    name == "quality"
+                    and key in spent
+                    and self._is_soft_freshness_only(grade)
+                ):
+                    continue
+                findings.setdefault(key, []).append((name, clue, grade))
 
         add("quality", self._detect_quality(envelope))
         fact_entries, fact_results = self._detect_facts(envelope)
@@ -346,6 +377,51 @@ class ClueWithGradingStep(PipelineStep):
         add("hyphen", self._detect_hyphens(envelope))
         add("duplicate", self._detect_duplicates(envelope))
         return findings, fact_results
+
+    def _is_soft_freshness_only(self, grade: ClueGrade) -> bool:
+        """True when the quality grade fires ONLY on the freshness threshold.
+
+        A "too easy for Hard" clue trips freshness while accuracy/craft/fairness
+        stay above their repair thresholds. Such a clue is factually fine — its
+        only sin is being plain — so it is safe to rewrite once and then leave
+        alone rather than churn it into riskier territory.
+        """
+        if (
+            grade.freshness is None
+            or grade.freshness >= self._freshness_repair_threshold
+        ):
+            return False
+        if (
+            grade.accuracy is not None
+            and grade.accuracy < self._accuracy_repair_threshold
+        ):
+            return False
+        if (
+            grade.fairness is not None
+            and grade.fairness < self._fairness_repair_threshold
+        ):
+            return False
+        if grade.craft is not None and grade.craft < self._craft_repair_threshold:
+            return False
+        # A low composite score or a hard feedback marker means there is more
+        # wrong than plainness; let those keep repairing.
+        if grade.score < self._individual_repair_score_threshold:
+            return False
+        hard_markers = (
+            "factual error",
+            "factually wrong",
+            "incorrect",
+            "not accurate",
+            "inaccurate",
+            "wrong proper noun",
+            "wrong song",
+            "wrong quote",
+            "leaks",
+            "contains the answer",
+            "part of the answer",
+        )
+        feedback = grade.feedback.lower()
+        return not any(marker in feedback for marker in hard_markers)
 
     def _merge_findings(
         self,
