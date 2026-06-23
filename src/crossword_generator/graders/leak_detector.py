@@ -26,6 +26,11 @@ defect — without an LLM call. Rules, in order of precedence:
 7. ``compound_containment`` — a clue word (or its stem) is the leading or
    trailing component of the answer: SCOFFLAW clued with "laws", LAWSUIT clued
    with "law". Direction matters: only clue-word-inside-answer is checked here.
+7b. ``shared_fragment`` — the answer and a clue word neither contains the other
+   but OVERLAP at a shared edge fragment that is a real word: MINIFIG ("mini" +
+   "fig") clued with "figure" ("fig" + "ure"). The shared fragment must be a
+   real dictionary word >= 3 chars sitting at an edge of both words, with each
+   word extending past it. Needs a dictionary, so skipped when none is passed.
 8. ``reverse_compound`` — the OTHER direction: a clue word is a closed compound
    that contains the answer as its leading or trailing part, with the remainder
    a real dictionary word (ROBE clued with "bathrobe", BERRY with "strawberry",
@@ -215,7 +220,7 @@ class LeakFinding:
     answer: str
     clue: str
     # exact | shared_root | irregular | abbrev_expansion | abbrev_expansion_word
-    # | shared_prefix | compound_containment | reverse_compound
+    # | shared_prefix | compound_containment | shared_fragment | reverse_compound
     # | embedded_substring
     kind: str
     detail: str  # the offending clue word or expansion, for the repair prompt
@@ -375,6 +380,18 @@ def detect_leak(
     if leak_word is not None:
         return _finding(answer, clue, "compound_containment", leak_word)
 
+    # 7b. Shared edge fragment: the answer and a clue word meet at a common
+    #     fragment that is the answer's leading/trailing component AND the clue
+    #     word's leading/trailing component, and that fragment is a real word.
+    #     Catches MINIFIG ("mini" + FIG) clued with "figure" ("fig" + "ure"),
+    #     which slips through compound_containment (the clue word "figure" is
+    #     longer than the FIG edge it shares). Needs a dictionary to confirm the
+    #     fragment is genuine, so it only runs when one is supplied.
+    if dictionary is not None:
+        leak_word = _shared_fragment_leak(answer_l, words, dictionary)
+        if leak_word is not None:
+            return _finding(answer, clue, "shared_fragment", leak_word)
+
     # 8. Reverse compound containment: a clue word is a closed compound that
     #    CONTAINS the answer as its leading or trailing component (ROBE clued
     #    with "bathrobe", BERRY with "strawberry"). Needs a dictionary to
@@ -469,6 +486,63 @@ def _reverse_compound_leak(
             continue
         if dictionary.contains(remainder):
             return w
+    return None
+
+
+# Floors for the shared-edge-fragment rule. The fragment shared between the
+# answer's edge and the clue word's edge must be >= 3 chars and a real word, and
+# both the answer and the clue word must extend BEYOND it by >= 2 chars (so we
+# are joining two distinct words at a shared morpheme, not re-deriving the
+# compound-containment / reverse-compound rules). Per Jeff's standing policy,
+# over-rejecting here is fine — a wrongly flagged fair clue is just regenerated.
+_SHARED_FRAGMENT_MIN = 3
+_SHARED_FRAGMENT_MIN_EXTRA = 2
+
+
+def _shared_fragment_leak(
+    answer_l: str, words: list[str], dictionary: Dictionary
+) -> str | None:
+    """Return a clue word that meets the answer at a shared real-word fragment.
+
+    Fires when the answer's leading or trailing edge is also the clue word's
+    leading or trailing edge, the shared fragment is a real dictionary word of
+    >= 3 chars, and BOTH the answer and the clue word extend past it. This is
+    the case compound_containment and reverse_compound both miss: neither word
+    contains the other, but they overlap at a meaningful root.
+
+    Example: MINIFIG ("mini" + "fig") clued with "figure" ("fig" + "ure").
+    "fig" is a real word, "mini" is a real word, so MINIFIG genuinely decomposes
+    into "mini" + "fig"; the clue word "figure" then begins with that same FIG
+    component, handing the solver part of the answer — which Jeff flagged.
+
+    To keep coincidental fragment-sharing out (WALLPAPER vs "person" both touch
+    "per"), the answer must be a GENUINE compound: the fragment AND the answer's
+    remainder around it must both be real words. That requirement keeps real
+    compounds (MINIFIG, GRANDSON) while dropping answers whose edge fragment is
+    just an incidental substring. Per Jeff's policy, over-rejecting a fair clue
+    is fine — it is simply regenerated.
+    """
+    # Edges where the answer splits into a real fragment + a real remainder, so
+    # the answer is a true two-part compound and the fragment is a real word.
+    answer_edges: list[str] = []
+    max_frag = len(answer_l) - _SHARED_FRAGMENT_MIN_EXTRA
+    for n in range(_SHARED_FRAGMENT_MIN, max_frag + 1):
+        prefix, rest = answer_l[:n], answer_l[n:]
+        if dictionary.contains(prefix) and dictionary.contains(rest):
+            answer_edges.append(prefix)
+        suffix, rest = answer_l[len(answer_l) - n :], answer_l[: len(answer_l) - n]
+        if dictionary.contains(suffix) and dictionary.contains(rest):
+            answer_edges.append(suffix)
+    if not answer_edges:
+        return None
+    for w in words:
+        if w == answer_l or len(w) < _SHARED_FRAGMENT_MIN + _SHARED_FRAGMENT_MIN_EXTRA:
+            continue
+        for frag in answer_edges:
+            if len(w) - len(frag) < _SHARED_FRAGMENT_MIN_EXTRA:
+                continue
+            if w.startswith(frag) or w.endswith(frag):
+                return w
     return None
 
 

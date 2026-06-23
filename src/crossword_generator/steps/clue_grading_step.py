@@ -21,6 +21,10 @@ from crossword_generator.graders.clue_fact_checker import (
     ClueFactCheckResult,
 )
 from crossword_generator.graders.clue_grader import ClueGrader
+from crossword_generator.graders.hyphen_detector import (
+    HyphenFinding,
+    detect_hyphens,
+)
 from crossword_generator.graders.leak_detector import LeakFinding, detect_leaks
 from crossword_generator.llm.base import LLMProvider
 from crossword_generator.llm.prompts.clue_generation import (
@@ -213,6 +217,8 @@ class ClueWithGradingStep(PipelineStep):
         # saves as a draft; the upload guard refuses any LEAK:/DUPLICATE: error.
         for finding in detect_leaks(best_envelope.clues, self._dictionary):
             new_errors.append(_leak_error_message(finding))
+        for hyphen in detect_hyphens(best_envelope.clues, self._dictionary):
+            new_errors.append(_hyphen_error_message(hyphen))
         if self._clue_history is not None:
             for hit in self._clue_history.find_duplicates(best_envelope.clues):
                 new_errors.append(duplicate_error_message(hit))
@@ -337,6 +343,7 @@ class ClueWithGradingStep(PipelineStep):
         fact_entries, fact_results = self._detect_facts(envelope)
         add("fact", fact_entries)
         add("leak", self._detect_leaks(envelope))
+        add("hyphen", self._detect_hyphens(envelope))
         add("duplicate", self._detect_duplicates(envelope))
         return findings, fact_results
 
@@ -437,6 +444,18 @@ class ClueWithGradingStep(PipelineStep):
             clue = clue_lookup.get((finding.number, finding.direction))
             if clue is not None:
                 entries.append((clue, _leak_clue_grade(finding)))
+        return entries
+
+    def _detect_hyphens(
+        self, envelope: PuzzleEnvelope
+    ) -> list[tuple[ClueEntry, ClueGrade]]:
+        """Clues that wrongly hyphenate an open compound (deterministic)."""
+        clue_lookup = {(c.number, c.direction): c for c in envelope.clues}
+        entries: list[tuple[ClueEntry, ClueGrade]] = []
+        for finding in detect_hyphens(envelope.clues, self._dictionary):
+            clue = clue_lookup.get((finding.number, finding.direction))
+            if clue is not None:
+                entries.append((clue, _hyphen_clue_grade(finding)))
         return entries
 
     def _detect_duplicates(
@@ -1074,6 +1093,35 @@ def _leak_clue_grade(finding: LeakFinding) -> ClueGrade:
         craft=10,
         fairness=0,
         feedback=_leak_feedback(finding),
+    )
+
+
+def _hyphen_clue_grade(finding: HyphenFinding) -> ClueGrade:
+    return ClueGrade(
+        number=finding.number,
+        direction=finding.direction,
+        answer=finding.answer,
+        score=0,
+        accuracy=25,
+        freshness=10,
+        craft=0,
+        fairness=25,
+        feedback=(
+            f'This clue hyphenates an open compound: "{finding.token}". '
+            f'Noun phrases like this are two separate words — write it as '
+            f'"{finding.suggestion}". Only keep a hyphen where standard '
+            "dictionary (Merriam-Webster) style requires it (compound "
+            'modifiers before a noun like "well-known author", or genuinely '
+            'hyphenated words like "self-esteem" and "X-ray").'
+        ),
+    )
+
+
+def _hyphen_error_message(finding: HyphenFinding) -> str:
+    return (
+        f"HYPHEN: {finding.answer} ({finding.number}-{finding.direction}) "
+        f'hyphenated open compound "{finding.token}" in clue '
+        f'"{finding.clue}" (should be "{finding.suggestion}")'
     )
 
 
