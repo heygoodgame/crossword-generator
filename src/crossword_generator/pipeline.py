@@ -399,8 +399,9 @@ def create_pipeline(
     steps.extend([fill_step, clue_step, naming_step])
 
     # Hint generation runs after clues exist so each hint can take a different,
-    # easier angle than the real clue. Leak-screened with the same detector the
-    # clues use.
+    # easier angle than the real clue. Each chunk converges independently:
+    # leak-screened with the same detector the clues use, then fact-checked and
+    # repaired with the shared clue fact-checker.
     if config.hint.enabled:
         hint_step = HintGenerationStep(
             hint_llm,
@@ -409,6 +410,11 @@ def create_pipeline(
             parallel_chunks=config.hint.parallel_chunks,
             parallel_chunk_workers=config.hint.parallel_chunk_max_workers,
             dictionary=dictionary,
+            fact_checker=(
+                clue_fact_checker if config.hint.fact_check_enabled else None
+            ),
+            repair_llm=hint_llm,
+            max_repair_rounds=config.hint.max_repair_rounds,
         )
         steps.append(hint_step)
 

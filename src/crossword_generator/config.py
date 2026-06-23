@@ -271,6 +271,14 @@ class HintConfig(BaseModel):
     generation_chunk_size: int = 0
     parallel_chunks: bool = False
     parallel_chunk_max_workers: int = 4
+    # Fact-check generated hints (reusing the clue fact-checker on hint text)
+    # and repair any that are flagged. Each chunk converges independently:
+    # leak-screen + fact-check, repair flagged hints, re-screen, until a clean
+    # sweep or the round budget is spent. A hint that cannot be made clean is
+    # dropped (the entry simply ships without a hint).
+    fact_check_enabled: bool = True
+    # Max repair rounds per chunk before giving up on still-flagged hints.
+    max_repair_rounds: int = 3
 
 
 class OutputConfig(BaseModel):
