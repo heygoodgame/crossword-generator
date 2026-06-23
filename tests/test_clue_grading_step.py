@@ -1413,3 +1413,140 @@ class TestLooseRepairParse:
         assert items == [
             {"number": 2, "direction": "across", "clue": "Plain clue"}
         ]
+
+
+class TestConvergenceLoop:
+    """Behavior of the order-independent convergence repair loop."""
+
+    def test_repair_reintroducing_a_different_problem_is_caught_later(self) -> None:
+        """A leak repair that injects a fact-risky clue is caught next round.
+
+        Round 1: the leak detector flags 1A (clue echoes the answer CAT) and the
+        repair lands a fill-in-the-blank that the fact-checker considers risky.
+        Round 2: with the leak gone, the fact-checker (which only fires on risky
+        clues) now sees the injected blank, flags it, and a second repair lands a
+        safe clue. Round 3: a clean sweep converges. This is the exact failure
+        the old fixed ordering needed a trailing fact-check band-aid to catch;
+        the loop catches it for free regardless of which repair runs first.
+        """
+        # 1A=CAT clued with the answer word -> exact leak; everything else clean.
+        clue_json = _build_clue_json_with({(1, "across"): "A pet cat"})
+        eval_json = _build_eval_json(accuracy=22, freshness=21, craft=22, fairness=20)
+
+        # Leak repair reaches for a "fresh angle" fill-in-the-blank (risky).
+        leak_repair = _build_repair_json({(1, "across"): "Copy ___ (imitate)"})
+        # The fact-checker, seeing the blank on the NEXT round, flags it.
+        fact_flag = json.dumps(
+            [
+                {
+                    "number": 1,
+                    "direction": "across",
+                    "status": "incorrect",
+                    "reason": "Blank resolves to a different word than CAT.",
+                }
+            ]
+        )
+        fact_repair = _build_repair_json({(1, "across"): "Common feline pet"})
+        re_eval = _build_eval_json_subset(
+            {(1, "across")}, accuracy=22, freshness=20, craft=20, fairness=20
+        )
+
+        clue_llm = SequentialMockLLM([clue_json, leak_repair, fact_repair])
+        grade_llm = SequentialMockLLM([eval_json, re_eval, re_eval])
+        # First sweep: the leaking clue isn't fact-risky, so no fact call. The
+        # injected blank is risky, so the second sweep calls the fact LLM once.
+        fact_llm = SequentialMockLLM([fact_flag])
+        grader = ClueGrader(grade_llm, min_passing_score=70)
+        fact_checker = ClueFactChecker(fact_llm)
+        step = ClueWithGradingStep(
+            clue_llm,
+            grader,
+            max_retries=1,
+            fact_checker=fact_checker,
+        )
+
+        result = step.run(_make_envelope())
+
+        clue_1a = next(
+            c for c in result.clues if c.number == 1 and c.direction == "across"
+        )
+        assert clue_1a.clue == "Common feline pet"
+        assert fact_llm.call_count == 1
+        # The puzzle ships clean: no leak and no fact soft error survive.
+        assert not any(e.startswith("LEAK:") for e in result.errors)
+        assert not any(e.startswith("FACT:") for e in result.errors)
+
+    def test_oscillation_terminates_with_soft_error(self) -> None:
+        """A repair that never changes the clue text stops the loop, surfacing
+        the surviving problem as a soft error instead of spinning to the cap.
+
+        The leak repair keeps returning a clue that still leaks "cat"; once the
+        text stops changing the loop bails and a LEAK: soft error is surfaced.
+        Crucially this needs at most a couple of repair calls, not one per
+        round up to the (larger) round budget.
+        """
+        clue_json = _build_clue_json_with({(1, "across"): "A pet cat"})
+        eval_json = _build_eval_json(accuracy=22, freshness=21, craft=22, fairness=20)
+        # Every repair returns the SAME still-leaking clue -> no text change.
+        stuck_repair = _build_repair_json({(1, "across"): "A wild cat"})
+        re_eval = _build_eval_json_subset(
+            {(1, "across")}, accuracy=22, freshness=20, craft=20, fairness=20
+        )
+
+        # gen, grade, then (repair, re-grade) once -> first repaired clue still
+        # leaks but differs from "A pet cat" (round 1 changed text), second
+        # repaired clue is identical to the first (round 2 no change -> stop).
+        llm = SequentialMockLLM(
+            [
+                clue_json,
+                eval_json,
+                stuck_repair,  # round 1 repair: "A pet cat" -> "A wild cat"
+                re_eval,
+                stuck_repair,  # round 2 repair: "A wild cat" -> "A wild cat"
+                re_eval,
+            ]
+        )
+        grader = ClueGrader(llm, min_passing_score=70)
+        step = ClueWithGradingStep(llm, grader, max_retries=1)
+
+        result = step.run(_make_envelope())
+
+        leak_errors = [e for e in result.errors if e.startswith("LEAK:")]
+        assert len(leak_errors) == 1
+        assert "CAT" in leak_errors[0]
+        # Stopped on the no-change round: gen+grade + two (repair, re-grade)
+        # cycles = 6 calls, NOT one repair per round up to the round budget.
+        assert llm.call_count == 6
+
+    def test_clean_puzzle_does_zero_repair_or_regrade_calls(self) -> None:
+        """A fully-clean puzzle converges on the first sweep with no repair and
+        no re-grade calls — only generation, the initial grade, and (when a
+        fact-checker is configured) one fact-check on risky clues, matching the
+        pre-refactor cost.
+        """
+        clue_json = _build_clue_json()
+        eval_json = _build_eval_json(accuracy=22, freshness=21, craft=22, fairness=20)
+        # No risky clues -> the fact-checker's risk filter selects nothing, so
+        # it never calls its LLM. The convergence loop's first sweep finds no
+        # findings and exits before any repair/re-grade.
+        clue_llm = SequentialMockLLM([clue_json])
+        grade_llm = SequentialMockLLM([eval_json])
+        fact_llm = SequentialMockLLM([])
+        grader = ClueGrader(grade_llm, min_passing_score=70)
+        fact_checker = ClueFactChecker(fact_llm)
+        step = ClueWithGradingStep(
+            clue_llm,
+            grader,
+            max_retries=1,
+            fact_checker=fact_checker,
+        )
+
+        result = step.run(_make_envelope())
+
+        assert result.clue_grade_report is not None
+        assert result.clue_grade_report.passing is True
+        # 1 generate, 1 grade, 0 repair, 0 re-grade, 0 fact (no risky clues).
+        assert clue_llm.call_count == 1
+        assert grade_llm.call_count == 1
+        assert fact_llm.call_count == 0
+        assert result.errors == []

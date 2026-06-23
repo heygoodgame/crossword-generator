@@ -181,23 +181,27 @@ class ClueWithGradingStep(PipelineStep):
         if best_envelope is None:
             raise ValueError(f"Clue generation failed on all {max_attempts} attempt(s)")
 
-        # --- Surgical repair pass ---
-        best_envelope = self._run_clue_repair(best_envelope)
-        best_envelope = self._run_fact_check_repair(best_envelope)
-        best_envelope = self._run_leak_repair(best_envelope)
-        best_envelope = self._run_duplicate_clue_repairs(best_envelope)
-        # Leak and dedup repairs rewrite clues after the first fact-check, so a
-        # freshly injected clue (e.g. a "fresh angle" fill-in-the-blank whose
-        # blank resolves to a different word than the answer) would otherwise
-        # ship unaudited. Re-run the fact-check as the final validation gate.
-        best_envelope = self._run_fact_check_repair(best_envelope)
+        # --- Convergence repair loop ---
+        # Instead of a fixed linear sequence of single-concern repair passes
+        # (quality -> facts -> leaks -> dupes -> facts-again), iterate toward a
+        # clean clue set: each round collects findings from ALL validators on
+        # the CURRENT clues, repairs the union in one call, and re-checks. A
+        # repair that breaks a different check is caught on the next round, so
+        # ordering no longer matters and no band-aid re-runs are needed.
+        best_envelope, last_fact_results = self._converge(best_envelope)
 
         # Fix step_history: clue_step already added "clue-generation",
         # replace with our composite name
         step_history = [s for s in best_envelope.step_history if s != "clue-generation"]
         step_history.append(self.name)
 
+        # Soft-error surface for any fact problem still flagged after the
+        # convergence loop (FACT:), appended onto the envelope's own errors.
+        best_envelope = self._surface_fact_check_errors(
+            best_envelope, last_fact_results
+        )
         new_errors = list(best_envelope.errors)
+
         report = best_envelope.clue_grade_report
         if not report or not report.passing:
             new_errors.append(
@@ -205,10 +209,13 @@ class ClueWithGradingStep(PipelineStep):
                 f"best score {best_score:.1f}"
             )
 
-        # Soft-error surface for any leak that survived repair. The puzzle still
-        # saves as a draft; the upload guard must refuse any "LEAK:" error.
+        # Surface any leak or duplicate that survived repair. The puzzle still
+        # saves as a draft; the upload guard refuses any LEAK:/DUPLICATE: error.
         for finding in detect_leaks(best_envelope.clues, self._dictionary):
             new_errors.append(_leak_error_message(finding))
+        if self._clue_history is not None:
+            for hit in self._clue_history.find_duplicates(best_envelope.clues):
+                new_errors.append(duplicate_error_message(hit))
 
         return best_envelope.model_copy(
             update={
@@ -217,37 +224,246 @@ class ClueWithGradingStep(PipelineStep):
             }
         )
 
-    def _run_clue_repair(
-        self,
-        envelope: PuzzleEnvelope,
-        forced_entries: list[tuple[ClueEntry, ClueGrade]] | None = None,
-    ) -> PuzzleEnvelope:
-        """Repair low-scoring or explicitly flawed clues, then verify.
+    # ------------------------------------------------------------------ #
+    # Convergence repair loop
+    # ------------------------------------------------------------------ #
 
-        Runs an initial repair (including any ``forced_entries``), then re-checks
-        the freshly re-graded clues and repairs any that are still flagged, up to
-        ``repair_verify_attempts`` extra rounds. This catches clues a single
-        repair pass fails to fix without re-running the whole pipeline.
+    @property
+    def _max_repair_rounds(self) -> int:
+        """Outer cap on convergence rounds.
+
+        We consolidated the four per-pass attempt knobs
+        (``repair_verify_attempts``, ``fact_check_repair_attempts``,
+        ``leak_repair_attempts``, ``duplicate_repair_attempts``) into a single
+        outer budget. Each round can repair every kind of problem at once, so
+        the loop needs at least as many rounds as the most stubborn single
+        concern would have used on its own, plus one for the final clean sweep.
+        The per-detector knobs are kept as constructor args (so existing configs
+        and the external-duplicate sweep can still set ``duplicate_repair_attempts``)
+        and feed this default; the in-run loop itself uses only this cap.
         """
-        current = self._run_clue_repair_once(envelope, forced_entries)
-        # Only verify further if the first pass actually changed something —
-        # a no-op (nothing flagged, or repair parse failure) returns the same
-        # envelope object, and re-running would just repeat a failing call.
-        if current is envelope:
-            return current
-        for _ in range(self._repair_verify_attempts):
-            repaired = self._run_clue_repair_once(current)
-            if repaired is current:
+        return (
+            max(
+                self._repair_verify_attempts,
+                self._fact_check_repair_attempts,
+                self._leak_repair_attempts,
+                self._duplicate_repair_attempts,
+            )
+            + 1
+        )
+
+    def _converge(
+        self, envelope: PuzzleEnvelope
+    ) -> tuple[PuzzleEnvelope, list[ClueFactCheckResult]]:
+        """Iterate detectors + repair until a full sweep finds nothing.
+
+        Each round runs every detector on the CURRENT clues, merges findings by
+        ``(number, direction)`` (so a clue flagged by several detectors is
+        repaired once with all reasons in the prompt), repairs the union in a
+        single ``_repair_entries`` call, and re-grades the changed clues. The
+        loop exits when a detector sweep finds nothing (converged), when a
+        repair produces no clue-text change (stuck — surface soft errors rather
+        than spin), or when the round budget is spent.
+
+        Returns the converged envelope and the latest fact-check results (so the
+        caller can surface ``FACT:`` soft errors for anything still flagged).
+        """
+        current = envelope
+        last_fact_results: list[ClueFactCheckResult] = []
+        max_rounds = self._max_repair_rounds
+        for round_num in range(1, max_rounds + 1):
+            findings, fact_results = self._collect_findings(current)
+            last_fact_results = fact_results
+            if fact_results:
+                current = self._record_fact_check_metadata(current, fact_results)
+
+            if not findings:
+                # First-sweep-clean is the common case: a clean puzzle exits
+                # here having spent at most one fact-check call and zero
+                # repair/re-grade calls.
+                logger.info("Clue convergence: round %d clean — converged", round_num)
+                break
+
+            merged = self._merge_findings(findings)
+            self._log_round(round_num, max_rounds, findings, merged)
+
+            before = {(c.number, c.direction): c.clue for c in current.clues}
+            repaired = self._repair_entries(current, merged)
+            after = {(c.number, c.direction): c.clue for c in repaired.clues}
+            if repaired is current or before == after:
+                # No clue text changed (parse failure or the model returned the
+                # same clues): we're stuck. Stop and let soft errors surface.
+                logger.info(
+                    "Clue convergence: round %d made no change — stopping (stuck)",
+                    round_num,
+                )
+                current = repaired
                 break
             current = repaired
-        return current
+        else:
+            logger.info(
+                "Clue convergence: hit round budget (%d) with findings remaining",
+                max_rounds,
+            )
+
+        return current, last_fact_results
+
+    def _collect_findings(
+        self, envelope: PuzzleEnvelope
+    ) -> tuple[
+        dict[tuple[int, str], list[tuple[str, ClueEntry, ClueGrade]]],
+        list[ClueFactCheckResult],
+    ]:
+        """Run every detector on the current clues.
+
+        Returns ``(findings, fact_results)`` where ``findings`` maps each flagged
+        ``(number, direction)`` to the list of ``(detector_name, ClueEntry,
+        ClueGrade)`` triples that flagged it, and ``fact_results`` is the raw
+        fact-check output (passed up so the caller can surface ``FACT:`` soft
+        errors). Detectors return the same ClueGrade-shaped entries the old
+        per-pass loops built; none of them call the repair LLM.
+        """
+        findings: dict[
+            tuple[int, str], list[tuple[str, ClueEntry, ClueGrade]]
+        ] = {}
+
+        def add(name: str, entries: list[tuple[ClueEntry, ClueGrade]]) -> None:
+            for clue, grade in entries:
+                findings.setdefault((clue.number, clue.direction), []).append(
+                    (name, clue, grade)
+                )
+
+        add("quality", self._detect_quality(envelope))
+        fact_entries, fact_results = self._detect_facts(envelope)
+        add("fact", fact_entries)
+        add("leak", self._detect_leaks(envelope))
+        add("duplicate", self._detect_duplicates(envelope))
+        return findings, fact_results
+
+    def _merge_findings(
+        self,
+        findings: dict[tuple[int, str], list[tuple[str, ClueEntry, ClueGrade]]],
+    ) -> list[tuple[ClueEntry, ClueGrade]]:
+        """Collapse multi-detector findings into one repair entry per clue.
+
+        When several detectors flag the same clue, the repair prompt must see
+        every reason at once, so feedback strings are concatenated and each
+        sub-score is taken as the strictest (minimum) flagged value. The
+        ``ClueEntry`` is the same live clue for every detector on a key.
+        """
+        merged: list[tuple[ClueEntry, ClueGrade]] = []
+        for triples in findings.values():
+            clue = triples[0][1]
+            if len(triples) == 1:
+                merged.append((clue, triples[0][2]))
+                continue
+
+            feedbacks = [
+                f"[{name}] {grade.feedback}".strip() for name, _, grade in triples
+            ]
+            sub_scores = [g for _, _, g in triples]
+            combined = sub_scores[0].model_copy(
+                update={
+                    "feedback": "\n".join(feedbacks),
+                    "score": min(g.score for g in sub_scores),
+                    "accuracy": _min_optional(g.accuracy for g in sub_scores),
+                    "freshness": _min_optional(g.freshness for g in sub_scores),
+                    "craft": _min_optional(g.craft for g in sub_scores),
+                    "fairness": _min_optional(g.fairness for g in sub_scores),
+                }
+            )
+            merged.append((clue, combined))
+        return merged
+
+    def _log_round(
+        self,
+        round_num: int,
+        max_rounds: int,
+        findings: dict[tuple[int, str], list[tuple[str, ClueEntry, ClueGrade]]],
+        merged: list[tuple[ClueEntry, ClueGrade]],
+    ) -> None:
+        by_detector: dict[str, int] = {}
+        for triples in findings.values():
+            for name, _, _ in triples:
+                by_detector[name] = by_detector.get(name, 0) + 1
+        summary = ", ".join(f"{k}:{v}" for k, v in sorted(by_detector.items()))
+        answers = ", ".join(clue.answer for clue, _ in merged)
+        logger.info(
+            "Clue convergence round %d/%d: %d clue(s) flagged (%s): %s",
+            round_num,
+            max_rounds,
+            len(merged),
+            summary or "none",
+            answers,
+        )
+
+    # ------------------------------------------------------------------ #
+    # Detectors — find problems, build repair entries, NO repair LLM call.
+    # ------------------------------------------------------------------ #
+
+    def _detect_quality(
+        self, envelope: PuzzleEnvelope
+    ) -> list[tuple[ClueEntry, ClueGrade]]:
+        """Clues the current grade report flags as low quality."""
+        report = envelope.clue_grade_report
+        if not report or not report.clue_grades:
+            return []
+        grade_lookup = {(g.number, g.direction): g for g in report.clue_grades}
+        entries: list[tuple[ClueEntry, ClueGrade]] = []
+        for clue in envelope.clues:
+            grade = grade_lookup.get((clue.number, clue.direction))
+            if grade and self._should_repair_grade(grade):
+                entries.append((clue, grade))
+        return entries
+
+    def _detect_facts(
+        self, envelope: PuzzleEnvelope
+    ) -> tuple[list[tuple[ClueEntry, ClueGrade]], list[ClueFactCheckResult]]:
+        """Fact-check risky clues (one LLM call) and flag those needing repair."""
+        if self._fact_checker is None:
+            return [], []
+        fact_results = self._fact_checker.check(envelope)
+        if not fact_results:
+            return [], []
+        return self._fact_check_repair_entries(envelope, fact_results), fact_results
+
+    def _detect_leaks(
+        self, envelope: PuzzleEnvelope
+    ) -> list[tuple[ClueEntry, ClueGrade]]:
+        """Clues that mechanically leak their own answer (deterministic)."""
+        clue_lookup = {(c.number, c.direction): c for c in envelope.clues}
+        entries: list[tuple[ClueEntry, ClueGrade]] = []
+        for finding in detect_leaks(envelope.clues, self._dictionary):
+            clue = clue_lookup.get((finding.number, finding.direction))
+            if clue is not None:
+                entries.append((clue, _leak_clue_grade(finding)))
+        return entries
+
+    def _detect_duplicates(
+        self, envelope: PuzzleEnvelope
+    ) -> list[tuple[ClueEntry, ClueGrade]]:
+        """Clues that exactly reuse one already in the shared history."""
+        if self._clue_history is None:
+            return []
+        entries: list[tuple[ClueEntry, ClueGrade]] = []
+        for hit in self._clue_history.find_duplicates(envelope.clues):
+            used = self._clue_history.clues_for_answer(hit.clue.answer) or [
+                hit.existing_clue
+            ]
+            entries.append((hit.clue, _duplicate_clue_grade(hit, used)))
+        return entries
 
     def _run_clue_repair_once(
         self,
         envelope: PuzzleEnvelope,
         forced_entries: list[tuple[ClueEntry, ClueGrade]] | None = None,
     ) -> PuzzleEnvelope:
-        """Single repair pass for low-scoring or explicitly flawed clues."""
+        """Single repair pass for low-scoring or explicitly flawed clues.
+
+        Used only by the external-duplicate sweep
+        (``repair_external_duplicates`` -> ``_repair_duplicates``), which runs
+        outside the in-run convergence loop and supplies its own forced entries.
+        """
         report = envelope.clue_grade_report
         forced_entries = forced_entries or []
         if not forced_entries and (not report or not report.clue_grades):
@@ -275,55 +491,6 @@ class ClueWithGradingStep(PipelineStep):
             return envelope
 
         return self._repair_entries(envelope, entries_to_repair)
-
-    def _run_fact_check_repair(self, envelope: PuzzleEnvelope) -> PuzzleEnvelope:
-        """Audit clues for fact risk, repair flagged ones, then re-audit.
-
-        A repair can swap one factual error for a fresh one (the model is told
-        the old clue is wrong, reaches for a new angle, and confabulates). So
-        after each repair we re-run the fact-checker on the rewritten clues and
-        repair again, up to ``fact_check_repair_attempts`` extra rounds. Any
-        clue still flagged ``incorrect`` after the last round is surfaced as a
-        soft error so it cannot ship unnoticed.
-        """
-        if self._fact_checker is None:
-            return envelope
-
-        current = envelope
-        last_results: list[ClueFactCheckResult] = []
-        max_rounds = 1 + max(0, self._fact_check_repair_attempts)
-        for round_num in range(1, max_rounds + 1):
-            fact_results = self._fact_checker.check(current)
-            if not fact_results:
-                break
-            last_results = fact_results
-            current = self._record_fact_check_metadata(current, fact_results)
-
-            entries_to_repair = self._fact_check_repair_entries(current, fact_results)
-            if not entries_to_repair:
-                break
-
-            repair_answers = [c.answer for c, _ in entries_to_repair]
-            logger.info(
-                "Clue fact-check repair round %d/%d: %d clue(s): %s",
-                round_num,
-                max_rounds,
-                len(entries_to_repair),
-                ", ".join(repair_answers),
-            )
-
-            if round_num == max_rounds:
-                # Out of repair budget: leave the clues in place and let the
-                # soft-error surface below flag any that are still wrong.
-                break
-
-            repaired = self._repair_entries(current, entries_to_repair)
-            if repaired is current:
-                # Repair parse failed; stop trying.
-                break
-            current = repaired
-
-        return self._surface_fact_check_errors(current, last_results)
 
     def _record_fact_check_metadata(
         self,
@@ -419,48 +586,6 @@ class ClueWithGradingStep(PipelineStep):
         return envelope.model_copy(
             update={"errors": list(envelope.errors) + new_errors}
         )
-
-    def _run_leak_repair(self, envelope: PuzzleEnvelope) -> PuzzleEnvelope:
-        """Repair clues that mechanically leak their own answer.
-
-        Uses the deterministic leak detector (no LLM) to find leaks, repairs
-        them via the existing per-clue repair path, and re-checks up to
-        ``leak_repair_attempts`` times. Leaks surviving all attempts are left
-        in place and surfaced as soft errors by the caller.
-        """
-        current = envelope
-        clue_lookup = {(c.number, c.direction): c for c in current.clues}
-        for attempt in range(1, self._leak_repair_attempts + 1):
-            findings = detect_leaks(current.clues, self._dictionary)
-            if not findings:
-                return current
-
-            logger.info(
-                "Leak repair attempt %d/%d: %d leak(s): %s",
-                attempt,
-                self._leak_repair_attempts,
-                len(findings),
-                ", ".join(f.answer for f in findings),
-            )
-
-            clue_lookup = {(c.number, c.direction): c for c in current.clues}
-            entries_to_repair: list[tuple[ClueEntry, ClueGrade]] = []
-            for finding in findings:
-                clue = clue_lookup.get((finding.number, finding.direction))
-                if clue is None:
-                    continue
-                entries_to_repair.append((clue, _leak_clue_grade(finding)))
-
-            if not entries_to_repair:
-                return current
-
-            repaired = self._repair_entries(current, entries_to_repair)
-            if repaired is current:
-                # Repair parse failed; stop trying.
-                break
-            current = repaired
-
-        return current
 
     def _repair_entries(
         self,
@@ -569,12 +694,6 @@ class ClueWithGradingStep(PipelineStep):
                 "clue_grade_report": new_report,
             }
         )
-
-    def _run_duplicate_clue_repairs(self, envelope: PuzzleEnvelope) -> PuzzleEnvelope:
-        if self._clue_history is None:
-            return envelope
-        duplicate_hits = self._clue_history.find_duplicates(envelope.clues)
-        return self._repair_duplicates(envelope, duplicate_hits, recheck_all_clues=True)
 
     def repair_external_duplicates(
         self, envelope: PuzzleEnvelope, duplicate_hits: list[DuplicateClueHit]
@@ -752,6 +871,17 @@ class ClueWithGradingStep(PipelineStep):
         if envelope.clues:
             errors.append("Envelope already has clues")
         return errors
+
+
+def _min_optional(values: object) -> float | None:
+    """Strictest (minimum) of an iterable of optional sub-scores.
+
+    Used when several detectors flag the same clue: each kept sub-score is the
+    most pessimistic value any detector assigned. ``None`` entries (a detector
+    that left a dimension unset) are ignored; all-``None`` yields ``None``.
+    """
+    present = [v for v in values if v is not None]  # type: ignore[union-attr]
+    return min(present) if present else None
 
 
 def _merge_grade_report(
