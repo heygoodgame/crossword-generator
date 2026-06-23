@@ -77,6 +77,11 @@ _GUIDELINES = (
     'ROBE with "Bathrobe, for example", BERRY with "Strawberry, e.g.", or CAKE '
     'with "Cheesecake type". The compound hands the answer to the solver; use a '
     "plain definition instead.\n"
+    "- SHARED-FRAGMENT RULE: if the answer is itself a compound (e.g. MINIFIG = "
+    'MINI + FIG), never use a clue word that shares one of those components, '
+    'even as a different word. Do not clue MINIFIG with "figure" or "figurine" '
+    "(both start with the FIG component). Clue the whole answer through its own "
+    'meaning instead (MINIFIG: "Tiny posable toy in a building-brick set").\n'
     "- DO NOT use any of an entry's crossing words "
     "in that entry's clue.\n"
     "- Accuracy is more important than cleverness, freshness, or difficulty. "
@@ -746,6 +751,10 @@ _REPAIR_GUIDELINES = (
     "answer's letters in sequence at its start, middle, or END, even when the "
     "clue word is unrelated in meaning and even for short answers — do not "
     'clue BOT via "Robot", TIL via "Until", or MEN via "Gentlemen". Clue the '
+    "answer through its own meaning instead.\n"
+    "- SHARED-FRAGMENT RULE: if the answer is itself a compound (e.g. MINIFIG = "
+    "MINI + FIG), the replacement must not use a clue word sharing one of those "
+    'components — do not clue MINIFIG via "figure"/"figurine". Define the whole '
     "answer through its own meaning instead.\n"
     "- Accuracy is more important than cleverness. Verify facts, grammar, "
     "number, tense, part of speech, and exact phrase match. If the old clue "

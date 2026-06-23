@@ -245,3 +245,50 @@ def test_reverse_compound_short_answer_nonword_remainder_safe() -> None:
         min_2letter_score=0,
     )
     assert detect_leak("EAR", "Nuclear option, so to speak", d) is None
+
+
+# --- Shared-edge-fragment rule (needs a dictionary) -------------------------
+
+# Holds the compound answers, their component parts, and the clue words that
+# share an edge component with them.
+_SHARED_FRAGMENT_DICT = Dictionary(
+    {
+        w: 60
+        for w in [
+            "MINI", "FIG", "FIGURE", "FIGURINE",
+            "GRAND", "SON", "PERSON",
+            # Coincidence-control: PAPER does not split into a real word + the
+            # "per" that PERSON shares, so WALLPAPER must NOT flag against it.
+            "PAPER", "WALL",
+        ]
+    },
+    min_word_score=0,
+    min_2letter_score=0,
+)
+
+
+@pytest.mark.parametrize(
+    "answer,clue",
+    [
+        ("MINIFIG", "A small plastic figure"),
+        ("MINIFIG", "Tiny collectible figure"),
+        ("MINIFIG", "Little figurine in a set"),
+        ("GRANDSON", "A young person in the family"),
+    ],
+)
+def test_shared_fragment_leak_detected(answer: str, clue: str) -> None:
+    finding = detect_leak(answer, clue, _SHARED_FRAGMENT_DICT)
+    assert finding is not None, f"expected leak for {answer} :: {clue}"
+    assert finding.kind == "shared_fragment"
+
+
+def test_shared_fragment_skipped_without_dictionary() -> None:
+    # The rule only runs when a dictionary is supplied.
+    assert detect_leak("MINIFIG", "A small plastic figure") is None
+
+
+def test_shared_fragment_requires_genuine_compound_answer() -> None:
+    # WALLPAPER and "person" both touch "per", but PAPER does not split into a
+    # real word + "per", so the answer is not a genuine compound at that edge
+    # and the coincidental fragment must not flag.
+    assert detect_leak("WALLPAPER", "A famous person", _SHARED_FRAGMENT_DICT) is None
