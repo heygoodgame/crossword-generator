@@ -9,7 +9,15 @@ from crossword_generator.graders.clue_fact_checker import (
     _fact_risk_reason,
 )
 from crossword_generator.llm.base import LLMProvider
-from crossword_generator.models import ClueEntry, PuzzleEnvelope, PuzzleType
+from crossword_generator.llm.prompts.clue_fact_check import (
+    build_clue_fact_check_messages,
+)
+from crossword_generator.models import (
+    ClueEntry,
+    PuzzleDifficulty,
+    PuzzleEnvelope,
+    PuzzleType,
+)
 
 
 class MockLLM(LLMProvider):
@@ -91,6 +99,33 @@ def test_fact_checker_checks_only_risky_clues() -> None:
     assert results[0].needs_repair is True
     assert results[0].answer == "CAT"
     assert results[0].risk_reason == "title or pop-culture claim"
+
+
+def test_repeated_word_title_clue_is_flagged_for_fact_check() -> None:
+    # Regression: MAMMA clued "Word repeated in an ABBA hit title" shipped
+    # because the deterministic prescreen must route it to the LLM checker.
+    # ('Mamma Mia!' contains MAMMA once; 'Money, Money, Money' is the
+    # ABBA title that actually repeats a word.)
+    assert _fact_risk_reason("Word repeated in an ABBA hit title")
+
+
+def test_literal_claim_rule_present_in_prompt() -> None:
+    # Regression: the fact checker rubber-stamped a false repeated-word
+    # claim. The LITERAL-CLAIM RULE tells it to verify the literal title
+    # string rather than accept the claim because the title is real.
+    clue = ClueEntry(
+        number=3,
+        direction="down",
+        answer="MAMMA",
+        clue="Word repeated in an ABBA hit title",
+    )
+    system, _ = build_clue_fact_check_messages(
+        [(clue, "title or pop-culture claim")],
+        PuzzleType.MIDI,
+        PuzzleDifficulty.HARD,
+    )
+    assert "LITERAL-CLAIM RULE" in system
+    assert "appear at least TWICE" in system
 
 
 def test_fact_checker_skips_when_no_risky_clues() -> None:

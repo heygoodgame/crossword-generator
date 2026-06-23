@@ -79,14 +79,14 @@ _RUBRIC = (
     'with "kneel"; LUNAR with moon-root Latin; SOLAR with sun-root words. Also '
     "fail clues that spell out a fragment of the answer: TRI clued "
     '"Start of triangle"; PRE clued "Prefix meaning before." '
-    "CRITICAL — hidden-answer leaks: heavily penalize (fairness 0-8) a clue "
-    "whose words CONTAIN the answer's letters in sequence anywhere — at the "
-    "start, middle, or END of a longer clue word — even when that clue word "
-    "is unrelated in meaning and even when the answer is short. Examples to "
-    'fail: BOT clued "Robot, informally" (roBOT ends with BOT); TIL clued '
-    '"Until, briefly" (unTIL ends with TIL); MEN clued "Gentlemen" '
-    "(gentleMEN ends with MEN). These should be clued through the answer's "
-    "own meaning instead. "
+    "DO NOT flag mechanical hidden-substring leaks yourself (the answer's "
+    "letters appearing in sequence inside an unrelated clue word, e.g. BOT in "
+    '"roBOT" or MEN in "gentleMEN"). A separate deterministic detector catches '
+    "those reliably; judging them by eye produces false positives. Only flag a "
+    "fairness leak when you can name the SEMANTIC relationship — a shared root, "
+    "meaning, expansion, or collocation — not a coincidental letter overlap. If "
+    "you are not sure the answer's letters are actually present and meaningful, "
+    "do not call it a leak. "
     "famous-title fill-in-the-blanks that point at a different form of the "
     'answer, e.g. HOUSEWIFE clued via "Desperate ___wives." Does it avoid '
     "using any crossing words in the clue text? Penalize short answer roots "
