@@ -42,11 +42,30 @@ _HINT_GUIDANCE = (
     "solver.\n"
     "- A hint that an average adult could not answer instantly is a FAILURE. "
     "When in doubt, make it even easier and more direct.\n"
+    "\n"
+    "A HINT IS OPTIONAL — ONLY GIVE ONE IF IT IS CLEARLY EASIER:\n"
+    "- A hint exists to RESCUE a stuck solver, so it is only worth giving when "
+    "you can make the entry MEANINGFULLY easier than the real clue. If the "
+    "real clue is already about as easy and direct as it gets — a short, "
+    "common word with a plain definition, where any beginner would already get "
+    "it — there is nothing to add. In that case, return an EMPTY hint (\"\") "
+    "for that entry. Do NOT invent a barely-different reword just to fill the "
+    "slot.\n"
+    "- Skipping is the right call whenever your best honest hint would be no "
+    "easier (or no clearer) than the clue already shown. A missing hint is far "
+    "better than a useless or redundant one.\n"
+    "- Only give a hint when there is a genuinely simpler angle: a more obvious "
+    "meaning, a more familiar example, or a plainer definition than the clue "
+    "uses. If that easier angle exists, give it. If it does not, return \"\".\n"
+    "- Never leave a hint empty merely because the entry is hard. A hard entry "
+    "with an easier angle available is EXACTLY where a hint helps most — write "
+    "the easy hint. Empty is only for entries that are already maximally easy.\n"
 )
 
 _EXAMPLE_OUTPUT = json.dumps(
     [
         {"number": 1, "direction": "across", "hint": "Frozen water"},
+        {"number": 3, "direction": "across", "hint": ""},
         {"number": 5, "direction": "down", "hint": "Opposite of yes"},
     ],
     indent=2,
@@ -56,9 +75,12 @@ _OUTPUT_SECTION = (
     "OUTPUT FORMAT:\n"
     "Return ONLY a JSON array with one object per entry, each having "
     '"number", "direction", and "hint". No other text before or after.\n'
+    "Include an object for EVERY entry listed in the user message. For an "
+    "entry whose real clue is already as easy as it can be, set its \"hint\" "
+    'to the empty string "" (as 3-across is below) rather than inventing a '
+    "redundant one.\n"
     f"\n{_EXAMPLE_OUTPUT}\n"
-    "\nWrite a hint for every entry listed in the user message. "
-    "Return ONLY the JSON array."
+    "\nReturn ONLY the JSON array."
 )
 
 
@@ -106,7 +128,86 @@ def build_hint_generation_messages(
         "ENTRIES TO WRITE HINTS FOR (answer + the existing clue to make "
         "easier):\n"
         f"{entries_block}\n\n"
-        f"Now write one easy hint for all {len(entries)} entries above."
+        f"Now write an easy hint for each of the {len(entries)} entries above, "
+        'using "" for any entry whose clue is already as easy as it can get.'
+    )
+
+    return system_text, user_text
+
+
+_REPAIR_GUIDANCE = (
+    "YOU ARE REPAIRING HINTS:\n"
+    "- Each entry below already has a hint that FAILED a check (it leaked its "
+    "answer, or stated something factually risky). Rewrite ONLY these hints.\n"
+    "- A rewritten hint must obey every rule above: maximally easy, the single "
+    "most common meaning, a different angle from the real clue, and it must "
+    "NEVER contain or hint at the answer's letters, roots, or word-parts.\n"
+    "- Fix the stated problem. For a leak, drop the offending word entirely "
+    "and use a plain definition. For a fact risk, switch to a plainer, "
+    "timeless definition or category that does not depend on a specific date, "
+    "title, quote, or trivia fact.\n"
+    "- If, after fixing the problem, you cannot write a hint that is genuinely "
+    'easier than the real clue, return "" for that entry. A missing hint is '
+    "always better than a broken one.\n"
+)
+
+
+def build_hint_repair_messages(
+    entries: list[NumberedEntry],
+    clues_by_key: dict[tuple[int, str], str],
+    current_hints: dict[tuple[int, str], str],
+    reasons_by_key: dict[tuple[int, str], list[str]],
+) -> tuple[str, str]:
+    """Build (system, user) messages for repairing flagged hints.
+
+    Shares the generation system rules (role, easy/optional guidance, leak
+    rules, output format) and appends repair-specific framing. The user text
+    lists each flagged entry with its answer, real clue, the current (broken)
+    hint, and the reasons it failed.
+
+    Args:
+        entries: The numbered grid entries whose hints need repair.
+        clues_by_key: Map of (number, direction) -> the entry's real clue.
+        current_hints: Map of (number, direction) -> the current broken hint.
+        reasons_by_key: Map of (number, direction) -> human-readable reasons
+            the hint was flagged (leak / fact risk).
+
+    Returns:
+        Tuple of (system_text, user_text).
+    """
+    system_text = "\n\n".join(
+        [
+            _ROLE,
+            _HINT_GUIDANCE,
+            _REPAIR_GUIDANCE,
+            _GUIDELINES,
+            _LEAK_EXAMPLES,
+            _OUTPUT_SECTION,
+        ]
+    )
+
+    entry_lines: list[str] = []
+    for entry in entries:
+        key = (entry.number, entry.direction)
+        clue = clues_by_key.get(key, "")
+        hint = current_hints.get(key, "")
+        reasons = reasons_by_key.get(key, [])
+        reason_str = "; ".join(reasons) if reasons else "flagged"
+        entry_lines.append(
+            f"- {entry.number}-{entry.direction.upper()}: {entry.answer}\n"
+            f'    Real clue: "{clue}"\n'
+            f'    Current hint: "{hint}"\n'
+            f"    Problem: {reason_str}"
+        )
+    entries_block = "\n".join(entry_lines)
+
+    user_text = (
+        "HINTS TO REPAIR (answer + real clue + the broken hint + why it "
+        "failed):\n"
+        f"{entries_block}\n\n"
+        f"Now rewrite a fixed, easy hint for each of the {len(entries)} "
+        'entries above, using "" if no hint easier than the real clue is '
+        "possible without reintroducing the problem."
     )
 
     return system_text, user_text
