@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 API_BASE = os.environ.get("HEYGG_API_BASE_URL", "https://play.hey.gg/api").rstrip("/")
 NAMESPACE = "crosswords"
 COLLECTION = "generated-puzzles"
+UNLIMITED_COLLECTION = "unlimited-pool"
 AUTHOR = "crossword-generator"
 KEY_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,190}$")
 MAX_BULK_RECORDS = 100
@@ -457,9 +458,39 @@ def list_generated_puzzle_records(
     return records
 
 
+def list_unlimited_puzzle_records(
+    *,
+    game_key: str,
+    size: int | None = None,
+    difficulty: str | None = None,
+    status: str | None = "active",
+    api_base: str | None = None,
+    token: str | None = None,
+    timeout: int = 60,
+    per_page: int = 100,
+) -> list[dict[str, Any]]:
+    """List published unlimited-pool records, paging through the admin API."""
+    records = list_official_puzzle_records(
+        game_key=game_key,
+        collection=UNLIMITED_COLLECTION,
+        status=status,
+        api_base=api_base,
+        token=token,
+        timeout=timeout,
+        per_page=per_page,
+    )
+
+    return [
+        record
+        for record in records
+        if _record_metadata_matches(record, size=size, difficulty=difficulty)
+    ]
+
+
 def list_official_puzzle_records(
     *,
     game_key: str,
+    collection: str | None = None,
     status: str | None = None,
     api_base: str | None = None,
     token: str | None = None,
@@ -478,6 +509,8 @@ def list_official_puzzle_records(
         "game_key": game_key,
         "per_page": per_page,
     }
+    if collection is not None:
+        filters["collection"] = collection
     if status is not None:
         filters["status"] = status
 
@@ -508,6 +541,22 @@ def list_official_puzzle_records(
         page = current_page + 1
 
     return records
+
+
+def _record_metadata_matches(
+    record: dict[str, Any],
+    *,
+    size: int | None = None,
+    difficulty: str | None = None,
+) -> bool:
+    metadata = record.get("metadata")
+    if not isinstance(metadata, dict):
+        return size is None and difficulty is None
+    if size is not None and str(metadata.get("size")) != str(size):
+        return False
+    if difficulty is not None and str(metadata.get("difficulty")) != difficulty:
+        return False
+    return True
 
 
 def fetch_recent_sixty_answers(

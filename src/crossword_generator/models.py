@@ -113,8 +113,11 @@ class FillSelectionMetadata(BaseModel):
     """Metadata about how the winning fill was selected from candidates."""
 
     candidates_collected: int
-    selection_method: str  # "llm" | "numeric_best" | "single"
+    selection_method: str  # "llm" | "numeric_best" | "single" | "answer_novelty"
     llm_rationale: str = ""
+    answer_novelty_score: float | None = None
+    answer_novelty_overlap_count: int | None = None
+    answer_novelty_max_count: int | None = None
 
 
 class FillResult(BaseModel):

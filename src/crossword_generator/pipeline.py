@@ -156,6 +156,7 @@ def create_pipeline(
     output_file: Path | None = None,
     clue_history: ClueHistoryIndex | None = None,
     excluded_fill_words: set[str] | None = None,
+    answer_usage_counts: dict[str, int] | None = None,
 ) -> tuple[Pipeline, PuzzleEnvelope]:
     """Wire up a Pipeline and initial PuzzleEnvelope from config.
 
@@ -333,6 +334,7 @@ def create_pipeline(
         collect_boards=config.grading.fill.collect_boards,
         llm_select=config.grading.fill.llm_select,
         llm_provider=fill_select_llm if config.grading.fill.llm_select else None,
+        answer_usage_counts=answer_usage_counts,
     )
 
     clue_grader = ClueGrader(

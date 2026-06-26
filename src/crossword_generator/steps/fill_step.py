@@ -5,10 +5,12 @@ from __future__ import annotations
 import itertools
 import json
 import logging
+import math
 from collections import Counter
 from dataclasses import dataclass, field
 
 from crossword_generator.dictionary import Dictionary
+from crossword_generator.exporters.numbering import compute_numbering
 from crossword_generator.fillers.base import FillError, GridFiller, GridSpec
 from crossword_generator.fillers.csp import extract_slots
 from crossword_generator.graders.fill_grader import FillGrader
@@ -288,6 +290,15 @@ class _CandidateCollector:
         return len(self.passing_results) >= self.target
 
 
+@dataclass(frozen=True)
+class _AnswerNoveltyStats:
+    """Existing-use penalty for a candidate fill."""
+
+    score: float
+    overlap_count: int
+    max_count: int
+
+
 # ---------------------------------------------------------------------------
 # Fill steps
 # ---------------------------------------------------------------------------
@@ -388,6 +399,7 @@ class FillWithGradingStep(PipelineStep):
         collect_boards: int = 1,
         llm_select: bool = False,
         llm_provider: LLMProvider | None = None,
+        answer_usage_counts: dict[str, int] | None = None,
     ) -> None:
         self._filler = filler
         self._grader = grader
@@ -399,6 +411,11 @@ class FillWithGradingStep(PipelineStep):
         self._collect_boards = collect_boards
         self._llm_select = llm_select
         self._llm_provider = llm_provider
+        self._answer_usage_counts = {
+            answer.strip().upper(): count
+            for answer, count in (answer_usage_counts or {}).items()
+            if answer.strip() and count > 0
+        }
 
     @property
     def name(self) -> str:
@@ -1059,17 +1076,24 @@ class FillWithGradingStep(PipelineStep):
 
         if len(collector.passing_results) == 1:
             result, subset = collector.passing_results[0]
+            novelty = self._answer_novelty_stats(result.grid)
             result = result.model_copy(
                 update={
                     "selection_metadata": FillSelectionMetadata(
                         candidates_collected=1,
                         selection_method="single",
+                        answer_novelty_score=novelty.score,
+                        answer_novelty_overlap_count=novelty.overlap_count,
+                        answer_novelty_max_count=novelty.max_count,
                     )
                 }
             )
             return result, subset
 
         # Multiple passing boards
+        if self._answer_usage_counts:
+            return self._answer_novelty_select_best(collector.passing_results)
+
         if self._llm_select and self._llm_provider is not None:
             return self._llm_select_best(collector.passing_results)
 
@@ -1088,6 +1112,53 @@ class FillWithGradingStep(PipelineStep):
             }
         )
         return result, subset
+
+    def _answer_novelty_select_best(
+        self,
+        candidates: list[tuple[FillResult, list[str]]],
+    ) -> tuple[FillResult, list[str]]:
+        """Select the passing board with the least previously used fill."""
+        scored = [
+            (self._answer_novelty_stats(result.grid), result, subset)
+            for result, subset in candidates
+        ]
+        novelty, result, subset = min(
+            scored,
+            key=lambda item: (
+                item[0].score,
+                item[0].overlap_count,
+                item[0].max_count,
+                -(item[1].quality_score or 0),
+            ),
+        )
+        result = result.model_copy(
+            update={
+                "selection_metadata": FillSelectionMetadata(
+                    candidates_collected=len(candidates),
+                    selection_method="answer_novelty",
+                    answer_novelty_score=round(novelty.score, 3),
+                    answer_novelty_overlap_count=novelty.overlap_count,
+                    answer_novelty_max_count=novelty.max_count,
+                )
+            }
+        )
+        return result, subset
+
+    def _answer_novelty_stats(
+        self,
+        grid: list[list[str]],
+    ) -> _AnswerNoveltyStats:
+        counts = [
+            self._answer_usage_counts.get(entry.answer.strip().upper(), 0)
+            for entry in compute_numbering(grid)
+        ]
+        if not counts:
+            return _AnswerNoveltyStats(score=0.0, overlap_count=0, max_count=0)
+        return _AnswerNoveltyStats(
+            score=sum(math.log2(count + 1) for count in counts),
+            overlap_count=sum(1 for count in counts if count > 0),
+            max_count=max(counts),
+        )
 
     def _llm_select_best(
         self,

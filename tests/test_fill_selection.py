@@ -323,6 +323,33 @@ class TestCollectMultipleBoards:
         assert result.fill.selection_metadata.candidates_collected == 2
         assert result.fill.selection_metadata.selection_method == "numeric_best"
 
+    def test_answer_novelty_selects_less_used_board(self) -> None:
+        """Existing answer counts prefer fresher fills among passing boards."""
+        dictionary = _make_dict(GOOD_WORDS)
+        grader = FillGrader(dictionary, min_passing_score=30)
+        filler = CyclingMockFiller([HIGH_QUALITY_GRID, ALT_GRID])
+        step = FillWithGradingStep(
+            filler,
+            grader,
+            max_retries=10,
+            collect_boards=2,
+            answer_usage_counts={
+                "STARE": 10,
+                "TONES": 10,
+                "STARS": 10,
+                "TORED": 10,
+            },
+        )
+
+        envelope = PuzzleEnvelope(puzzle_type=PuzzleType.MINI, grid_size=5)
+        result = step.run(envelope)
+
+        assert result.fill is not None
+        assert result.fill.grid == ALT_GRID
+        assert result.fill.selection_metadata is not None
+        assert result.fill.selection_metadata.selection_method == "answer_novelty"
+        assert result.fill.selection_metadata.answer_novelty_overlap_count == 0
+
 
 # ---------------------------------------------------------------------------
 # Integration: LLM selection

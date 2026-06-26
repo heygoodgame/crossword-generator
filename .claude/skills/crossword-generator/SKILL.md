@@ -44,8 +44,11 @@ uploads.
     explicitly told to write the live calendar.
   - UNLIMITED (pool, never schedule-adjacent): pass
     `--no-intra-batch-dedup --no-exclude-recent-answers --no-exclude-scheduled-sixty`
-    (`--max-workers 6`+ fine); SKIP `check-batch-answers` (overlap expected);
-    after uploading draft candidates, PROMOTE each via
+    (`--max-workers 6`+ fine); keep default `--unlimited-answer-novelty`
+    on so active unlimited-pool answers and already-completed batch answers
+    lower candidate-board priority; SKIP `check-batch-answers` (some overlap
+    is still expected and not a scheduling blocker); after uploading draft
+    candidates, PROMOTE each via
     `POST /admin/crossword-puzzles/{record_id}/publish-unlimited`
     (`{"difficulty":"easy"|"hard"}`). `save-generated-puzzles` alone does NOT
     publish to unlimited.

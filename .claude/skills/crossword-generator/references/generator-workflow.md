@@ -842,7 +842,7 @@ first open slot is <date>", the default detection already lands there.
 ## Unlimited-Pool Batches (non-scheduled)
 
 Unlimited puzzles are NOT placed on dated daily slots — players pull them from
-a published pool by `public_id`. This changes the batch workflow in three ways
+a published pool by `public_id`. This changes the batch workflow in four ways
 versus a dated weekly batch:
 
 1. **Disable date-based exclusions.** There is no schedule to avoid colliding
@@ -856,7 +856,17 @@ versus a dated weekly batch:
    off, the `check-batch-answers` gate is NOT meaningful (intra-batch answer
    overlap is expected) — skip it. Still run the disallowed-answer / terminal-S
    scans (Answer Scans Before Upload).
-3. **Keep `--avoid-existing-clues` on.** Clue-angle variety vs. the live corpus
+3. **Keep answer-novelty weighting on.** `generate-pilot-batch` defaults
+   `--unlimited-answer-novelty` on, but it only activates when
+   `--no-intra-batch-dedup` is passed. The runner fetches active
+   `crosswords/unlimited-pool` records for the requested size/difficulty,
+   counts existing answers, collects multiple passing fill candidates
+   (`--answer-novelty-candidates`, default 8), and picks the board with the
+   lowest frequency-weighted answer reuse. As each puzzle in the batch
+   completes, its answers increment the same in-memory weights for later
+   puzzles. With parallel workers, in-flight puzzles cannot see each other;
+   completed batch-mates are still counted by later workers.
+4. **Keep `--avoid-existing-clues` on.** Clue-angle variety vs. the live corpus
    is still wanted and is unrelated to scheduling. Requires a prod admin token.
 
 Generate (example: 50 easy 5x5 for the mini unlimited pool):
@@ -872,6 +882,7 @@ uv run crossword-generator generate-pilot-batch \
   --no-exclude-recent-answers \
   --no-exclude-scheduled-sixty \
   --avoid-existing-clues \
+  --answer-novelty-candidates 8 \
   --max-workers 6 \
   --llm claude
 ```

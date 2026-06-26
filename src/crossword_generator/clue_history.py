@@ -212,6 +212,16 @@ def _is_block_cell(cell: Any) -> bool:
 
 
 def _parse_ipuz_clue_item(item: object) -> tuple[int, str] | None:
+    if isinstance(item, dict):
+        try:
+            number = int(item.get("number"))
+        except (TypeError, ValueError):
+            return None
+        clue = item.get("clue")
+        if clue is None:
+            return None
+        return number, str(clue)
+
     if not isinstance(item, list) or len(item) < 2:
         return None
     try:

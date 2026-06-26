@@ -19,6 +19,7 @@ import click
 from crossword_generator.clue_history import (
     ClueHistoryIndex,
     duplicate_error_message,
+    extract_ipuz_answers,
 )
 from crossword_generator.config import Config, find_project_root, load_config
 from crossword_generator.exporters.base import Exporter
@@ -415,6 +416,25 @@ def generate(
     ),
 )
 @click.option(
+    "--unlimited-answer-novelty/--no-unlimited-answer-novelty",
+    default=True,
+    help=(
+        "For unlimited/non-scheduled batches (when --no-intra-batch-dedup), "
+        "fetch active unlimited-pool answers and prefer candidate fills that "
+        "reuse the least frequent answers. Generated answers increment the "
+        "same in-run weights for later batch items."
+    ),
+)
+@click.option(
+    "--answer-novelty-candidates",
+    type=int,
+    default=8,
+    help=(
+        "Number of passing fill candidates to collect per puzzle when "
+        "--unlimited-answer-novelty is active."
+    ),
+)
+@click.option(
     "--per-pattern-attempts",
     type=int,
     default=1,
@@ -482,6 +502,8 @@ def generate_pilot_batch(
     exclude_answers_files: tuple[str, ...],
     exclude_answers_min_length: int,
     intra_batch_dedup: bool,
+    unlimited_answer_novelty: bool,
+    answer_novelty_candidates: int,
     per_pattern_attempts: int,
     max_grid_variants: int,
     timeout_5: int,
@@ -495,6 +517,8 @@ def generate_pilot_batch(
     _setup_logging(verbose)
     if max_workers < 1:
         raise click.BadParameter("--max-workers must be >= 1")
+    if answer_novelty_candidates < 1:
+        raise click.BadParameter("--answer-novelty-candidates must be >= 1")
 
     project_root = find_project_root()
     root = Path(output_root)
@@ -684,6 +708,38 @@ def generate_pilot_batch(
     # can't see in-flight batch-mates; check-batch-answers catches the
     # residue after the run.
     used_answers = _UsedAnswerSet()
+    novelty_active = unlimited_answer_novelty and not intra_batch_dedup
+    answer_usage_by_bucket: dict[tuple[str, int], _AnswerUsageCounter] = {}
+    if novelty_active:
+        try:
+            answer_usage_by_bucket = _load_unlimited_answer_usage_by_bucket(
+                selected_buckets,
+                count_by_bucket,
+                api_base=api_base,
+            )
+        except KeyError as exc:
+            click.echo(
+                f"Missing required environment variable: {exc.args[0]}. "
+                "Unlimited answer novelty is loaded by default for "
+                "non-scheduled batches; pass --no-unlimited-answer-novelty "
+                "to skip.",
+                err=True,
+            )
+            sys.exit(1)
+        except Exception as exc:
+            click.echo(
+                f"Failed to load unlimited answer usage: {exc}. "
+                "Pass --no-unlimited-answer-novelty to skip.",
+                err=True,
+            )
+            sys.exit(1)
+        for (difficulty, size), usage in sorted(answer_usage_by_bucket.items()):
+            stats = usage.stats()
+            click.echo(
+                f"Loaded unlimited answer usage for {difficulty}/{size}x{size}: "
+                f"{stats['records']} record(s), {stats['answers']} answer(s), "
+                f"{stats['unique_answers']} unique."
+            )
 
     def _run_item(item: tuple[str, int, str, Path, int]) -> dict[str, object]:
         difficulty, size, puzzle_type, config_path, seed = item
@@ -713,10 +769,14 @@ def generate_pilot_batch(
             dictionary_overrides=dictionary_overrides,
             keep_sweep_context=max_workers > 1,
             excluded_fill_words=used_answers.snapshot(min_length=item_min_length),
+            answer_usage_counts=(
+                answer_usage_by_bucket[(difficulty, size)].snapshot()
+                if novelty_active and (difficulty, size) in answer_usage_by_bucket
+                else None
+            ),
+            answer_novelty_candidates=answer_novelty_candidates,
         )
         if result["success"] and intra_batch_dedup:
-            from crossword_generator.clue_history import extract_ipuz_answers
-
             try:
                 puzzle = json.loads(
                     Path(str(result["output_path"])).read_text()
@@ -728,6 +788,20 @@ def generate_pilot_batch(
                     "exclusion",
                     result["output_path"],
                 )
+        if result["success"] and novelty_active:
+            usage = answer_usage_by_bucket.get((difficulty, size))
+            if usage is not None:
+                try:
+                    puzzle = json.loads(
+                        Path(str(result["output_path"])).read_text()
+                    )
+                    usage.add(extract_ipuz_answers(puzzle), records=1)
+                except (OSError, json.JSONDecodeError):
+                    logging.getLogger(__name__).warning(
+                        "Could not index answers from %s for unlimited "
+                        "answer-novelty weighting",
+                        result["output_path"],
+                    )
         return result
 
     def _report(result: dict[str, object]) -> None:
@@ -812,6 +886,17 @@ def generate_pilot_batch(
             "min_length": exclude_answers_min_length,
         },
         "intra_batch_dedup": intra_batch_dedup,
+        "unlimited_answer_novelty": {
+            "enabled": unlimited_answer_novelty,
+            "active": novelty_active,
+            "answer_novelty_candidates": answer_novelty_candidates,
+            "loaded": {
+                f"{difficulty}/{size}": usage.stats()
+                for (difficulty, size), usage in sorted(
+                    answer_usage_by_bucket.items()
+                )
+            },
+        },
         "llm_logging_enabled": not no_llm_log,
         "max_workers": max_workers,
         "duplicate_sweep": {
@@ -927,6 +1012,83 @@ class _UsedAnswerSet:
                 for answer in answers
                 if len(answer.strip()) >= 3
             )
+
+
+class _AnswerUsageCounter:
+    """Thread-safe answer frequency map for novelty-aware unlimited fills."""
+
+    def __init__(self) -> None:
+        self._counts: dict[str, int] = {}
+        self._records = 0
+        self._answers = 0
+        self._lock = threading.Lock()
+
+    def snapshot(self) -> dict[str, int]:
+        with self._lock:
+            return dict(self._counts)
+
+    def add(self, answers: Iterable[str], *, records: int = 0) -> None:
+        normalized = [
+            answer.strip().upper()
+            for answer in answers
+            if len(answer.strip()) >= 3
+        ]
+        with self._lock:
+            self._records += records
+            self._answers += len(normalized)
+            for answer in normalized:
+                self._counts[answer] = self._counts.get(answer, 0) + 1
+
+    def stats(self) -> dict[str, int]:
+        with self._lock:
+            return {
+                "records": self._records,
+                "answers": self._answers,
+                "unique_answers": len(self._counts),
+            }
+
+
+def _load_unlimited_answer_usage_by_bucket(
+    selected_buckets: list[tuple[str, int, str, Path]],
+    count_by_bucket: dict[str, int],
+    *,
+    api_base: str | None = None,
+) -> dict[tuple[str, int], _AnswerUsageCounter]:
+    from crossword_generator.data_store import list_unlimited_puzzle_records
+
+    usage_by_bucket: dict[tuple[str, int], _AnswerUsageCounter] = {}
+    seen: set[tuple[str, int]] = set()
+    for difficulty, size, _, _ in selected_buckets:
+        if count_by_bucket[f"{difficulty}/{size}"] <= 0:
+            continue
+        key = (difficulty, size)
+        if key in seen:
+            continue
+        seen.add(key)
+
+        usage = _AnswerUsageCounter()
+        records = list_unlimited_puzzle_records(
+            game_key=_game_key_for_size(size),
+            size=size,
+            difficulty=difficulty,
+            api_base=api_base,
+        )
+        for record in records:
+            answers = _extract_record_answers(record)
+            if answers:
+                usage.add(answers, records=1)
+        usage_by_bucket[key] = usage
+    return usage_by_bucket
+
+
+def _extract_record_answers(record: dict[str, object]) -> list[str]:
+    data = record.get("data")
+    if not isinstance(data, dict):
+        return []
+    puzzle = data.get("puzzle")
+    if isinstance(puzzle, dict):
+        return extract_ipuz_answers(puzzle)
+    return extract_ipuz_answers(data)
 
 
 def _referenced_dictionary_filenames(
@@ -2331,6 +2493,8 @@ def _run_batch_item(
     dictionary_overrides: dict[str, str] | None = None,
     keep_sweep_context: bool = False,
     excluded_fill_words: set[str] | None = None,
+    answer_usage_counts: dict[str, int] | None = None,
+    answer_novelty_candidates: int = 1,
 ) -> dict[str, object]:
     bucket_dir = output_root / difficulty / f"{size}x{size}"
     bucket_dir.mkdir(parents=True, exist_ok=True)
@@ -2354,6 +2518,11 @@ def _run_batch_item(
     config.fill.max_retries = per_pattern_attempts
     config.fill.max_grid_variants = max_grid_variants
     config.fill.csp.timeout_by_size = timeout_by_size
+    if answer_usage_counts:
+        config.grading.fill.collect_boards = max(
+            config.grading.fill.collect_boards,
+            answer_novelty_candidates,
+        )
     config.llm.logging.enabled = llm_logging_enabled
     config.llm.logging.path = str(llm_log_path)
     if puzzle_type == "midi" and size == 9:
@@ -2388,6 +2557,7 @@ def _run_batch_item(
         "llm_log_path": str(llm_log_path) if llm_logging_enabled else None,
         "success": False,
         "fill_score": None,
+        "fill_selection": None,
         "clue_score": None,
         "title": None,
         "title_reasoning": None,
@@ -2408,6 +2578,7 @@ def _run_batch_item(
             output_file=output_path,
             clue_history=clue_history,
             excluded_fill_words=excluded_fill_words,
+            answer_usage_counts=answer_usage_counts,
         )
         completed = pipeline.run(envelope)
         if output_path.exists() and clue_history is not None:
@@ -2436,6 +2607,11 @@ def _run_batch_item(
                 "success": output_path.exists(),
                 "fill_score": (
                     completed.fill.quality_score if completed.fill else None
+                ),
+                "fill_selection": (
+                    completed.fill.selection_metadata.model_dump()
+                    if completed.fill and completed.fill.selection_metadata
+                    else None
                 ),
                 "clue_score": (
                     completed.clue_grade_report.overall_score

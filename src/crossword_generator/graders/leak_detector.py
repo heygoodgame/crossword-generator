@@ -83,6 +83,7 @@ _STOPWORDS = frozenset(
     this that these those from into onto off out up down over under
     """.split()
 )
+_STOPWORD_ANSWERS_ALLOWED = frozenset("down in off on out over under up".split())
 
 # Minimum answer length before substring / stem rules apply. Below this,
 # only the exact-word rule fires (a 3-letter answer appearing verbatim).
@@ -144,6 +145,8 @@ ABBREV_EXPANSIONS: dict[str, tuple[str, ...]] = {
     "epa": ("environmental protection agency",),
     "fbi": ("federal bureau of investigation",),
     "cia": ("central intelligence agency",),
+    "imo": ("in my opinion",),
+    "imho": ("in my humble opinion",),
 }
 
 # Abbreviation answers and the INDIVIDUAL words their letters stand for. Full
@@ -168,6 +171,8 @@ ABBREV_EXPANSION_WORDS: dict[str, frozenset[str]] = {
     # Common everyday initialisms
     "asap": frozenset({"soon", "possible"}),
     "fyi": frozenset({"information"}),
+    "imo": frozenset({"my", "opinion"}),
+    "imho": frozenset({"my", "humble", "opinion"}),
     "diy": frozenset({"yourself"}),
     "aka": frozenset({"known"}),
     "rsvp": frozenset({"respond", "please"}),
@@ -228,7 +233,12 @@ class LeakFinding:
 
 def _clue_words(clue: str) -> list[str]:
     """Lowercase alphabetic tokens in a clue, stopwords removed."""
-    return [w for w in re.findall(r"[a-z]+", clue.lower()) if w not in _STOPWORDS]
+    return [w for w in _raw_clue_words(clue) if w not in _STOPWORDS]
+
+
+def _raw_clue_words(clue: str) -> list[str]:
+    """Lowercase alphabetic tokens in a clue, including stopwords."""
+    return re.findall(r"[a-z]+", clue.lower())
 
 
 def _stem(word: str) -> str:
@@ -323,14 +333,24 @@ def detect_leak(
     """
     answer_l = answer.lower().strip()
     clue_l = clue.lower()
-    if not answer_l or answer_l in _STOPWORDS:
+    if not answer_l or (
+        answer_l in _STOPWORDS and answer_l not in _STOPWORD_ANSWERS_ALLOWED
+    ):
         return None
 
     # 1. Exact whole-word match.
     if re.search(rf"\b{re.escape(answer_l)}\b", clue_l):
         return _finding(answer, clue, "exact", answer_l)
 
-    words = _clue_words(clue)
+    raw_words = _raw_clue_words(clue)
+    words = [w for w in raw_words if w not in _STOPWORDS]
+
+    # 1b. Exact inflectional-base match. This catches short-base plural /
+    # third-person forms that the stem/root pass intentionally skips to avoid
+    # broad substring noise, e.g. OFFS clued with "off".
+    base = _inflectional_base_leak(answer_l, raw_words)
+    if base is not None:
+        return _finding(answer, clue, "inflectional_base", base)
 
     # 2. Morphological relation: the answer and a clue word are the same root
     #    +/- one known affix (care/careful, child/children, trims/trim,
@@ -402,6 +422,26 @@ def detect_leak(
         if leak_word is not None:
             return _finding(answer, clue, "reverse_compound", leak_word)
 
+    return None
+
+
+def _inflectional_base_leak(answer_l: str, words: list[str]) -> str | None:
+    forms: set[str] = set()
+    if answer_l.endswith("ies") and len(answer_l) > 4:
+        forms.add(answer_l[:-3] + "y")
+    if answer_l.endswith("ves") and len(answer_l) > 4:
+        forms.add(answer_l[:-3] + "f")
+        forms.add(answer_l[:-3] + "fe")
+    if answer_l.endswith("es") and len(answer_l) > 4:
+        forms.add(answer_l[:-2])
+    if answer_l.endswith("s") and not answer_l.endswith("ss") and len(answer_l) > 2:
+        forms.add(answer_l[:-1])
+
+    for form in forms:
+        if len(form) < 2 or form == answer_l:
+            continue
+        if form in words:
+            return form
     return None
 
 

@@ -17,6 +17,8 @@ from crossword_generator.models import ClueEntry
 LEAKS = [
     # (answer, clue, expected kind)
     ("OCEAN", "The ocean is vast", "exact"),
+    ("OFF", "Turned off", "exact"),
+    ("ON", "Switched on", "exact"),
     ("RAP", "A bad rap, so to speak", "exact"),
     ("TEACHER", "One who teaches math", "shared_root"),
     ("TEACHES", "What a teacher does", "shared_root"),
@@ -24,7 +26,13 @@ LEAKS = [
     ("RUNNER", "One running a race", "shared_root"),
     ("WRITER", "One who writes books", "shared_root"),
     ("EDITOR", "One who edits copy", "shared_root"),
-    ("TRIMS", "Cuts the hedge; a trim job", "shared_root"),
+    ("OFFS", "Turns off, as lights", "inflectional_base"),
+    ("OFFS", "Switches off", "inflectional_base"),
+    ("RUNS", "A run in a stocking", "inflectional_base"),
+    ("BOXES", "Put into a box", "inflectional_base"),
+    ("PONIES", "A pony at a fair", "inflectional_base"),
+    ("WOLVES", "A wolf pack member", "inflectional_base"),
+    ("TRIMS", "Cuts the hedge; a trim job", "inflectional_base"),
     ("CARE", "Look after; careful now", "shared_root"),
     ("HEAT", "Warm up; a heated debate", "shared_root"),
     ("HOPE", "A hopeless cause", "shared_root"),
@@ -45,6 +53,9 @@ LEAKS = [
     ("GPA", "Student's average, for short", "abbrev_expansion_word"),
     ("ATM", "Cash machine, in brief", "abbrev_expansion_word"),
     ("DOB", "Birth date, on a form", "abbrev_expansion_word"),
+    ("IMO", "Texter's lead-in to a personal opinion", "abbrev_expansion_word"),
+    ("IMO", '"In my opinion," briefly', "abbrev_expansion"),
+    ("IMHO", "Humble opinion intro, in texts", "abbrev_expansion_word"),
     # Shared-prefix / etymology / spelling-fragment leaks (aggressive rule).
     # Jeff's reported cases:
     ("NAVAL", "Of the navy", "shared_prefix"),

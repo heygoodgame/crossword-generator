@@ -39,6 +39,26 @@ def test_extract_ipuz_answer_clues_pairs_clues_with_numbered_answers() -> None:
     assert len(pairs) == 6
 
 
+def test_extract_ipuz_answer_clues_reads_object_clues_with_hints() -> None:
+    puzzle = {
+        "solution": [["O", "F", "F", "S"]],
+        "clues": {
+            "Across": [
+                {
+                    "number": 1,
+                    "clue": "Turns off, as lights",
+                    "hints": ["Switches off"],
+                }
+            ],
+            "Down": [],
+        },
+    }
+
+    pairs = extract_ipuz_answer_clues(puzzle)
+
+    assert pairs == [("OFFS", "Turns off, as lights")]
+
+
 def test_extract_ipuz_treats_null_cells_as_blocks() -> None:
     """Daily-schedule IPUZ uses JSON null (None) for blocks, not '#'.
 

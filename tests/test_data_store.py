@@ -18,6 +18,7 @@ from crossword_generator.data_store import (
     fetch_recent_daily_answers,
     fetch_recent_sixty_answers,
     list_generated_puzzle_records,
+    list_unlimited_puzzle_records,
     make_record,
     records_from_manifest,
 )
@@ -452,6 +453,56 @@ def test_list_generated_puzzle_records_paginates_and_filters(
     assert "collection=generated-puzzles" in calls[0][1]
     assert "game_key=minicrossword" in calls[0][1]
     assert "filters%5Bsize%5D=7" in calls[0][1]
+
+
+def test_list_unlimited_puzzle_records_filters_active_pool(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls: list[tuple[str, str]] = []
+
+    def fake_request(
+        method: str,
+        path: str,
+        body: dict[str, Any] | None = None,
+        *,
+        api_base: str | None = None,
+        token: str | None = None,
+        timeout: int = 60,
+    ) -> dict[str, Any]:
+        calls.append((method, path))
+        return {
+            "data": [
+                {
+                    "id": 1,
+                    "key": "unlimited:5x5:1",
+                    "collection": "unlimited-pool",
+                    "metadata": {"size": 5, "difficulty": "easy"},
+                },
+                {
+                    "id": 2,
+                    "key": "unlimited:7x7:1",
+                    "collection": "unlimited-pool",
+                    "metadata": {"size": 7, "difficulty": "easy"},
+                },
+            ],
+            "meta": {"current_page": 1, "last_page": 1},
+        }
+
+    monkeypatch.setattr(data_store, "_request_json", fake_request)
+
+    records = list_unlimited_puzzle_records(
+        game_key="minicrossword",
+        size=5,
+        difficulty="easy",
+        token="token",
+    )
+
+    assert [record["key"] for record in records] == ["unlimited:5x5:1"]
+    assert calls[0][0] == "GET"
+    assert calls[0][1].startswith("/admin/crossword-puzzles/official?")
+    assert "collection=unlimited-pool" in calls[0][1]
+    assert "game_key=minicrossword" in calls[0][1]
+    assert "status=active" in calls[0][1]
 
 
 def test_delete_generated_puzzle_records_deletes_by_id(
