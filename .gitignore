@@ -31,6 +31,7 @@ coverage.xml
 .idea/
 .vscode/
 *.code-workspace
+.gstack/
 
 # macOS
 .DS_Store
