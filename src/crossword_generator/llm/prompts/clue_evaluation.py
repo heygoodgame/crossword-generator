@@ -233,6 +233,14 @@ def _difficulty_note(puzzle_type: PuzzleType, difficulty: PuzzleDifficulty) -> s
             "and helpful sound-alikes. Never penalize a clue for being too "
             "plain, too direct, or for reusing a familiar angle a prior clue "
             "used — for Easy, staying easy is the goal. "
+            "CRITICAL — broad underconstrained Easy clues are defects, even "
+            "when they are simple. Given the clue and answer length, a casual "
+            "solver should not be able to name several equally plausible "
+            'answers. Penalize ACCURACY for category-only clues such as '
+            '"Common girl\'s name", "Three-letter animal", or "Thing in a '
+            'kitchen"; score ACCURACY 0-9 when many answers fit, and include '
+            'the phrase "too broad" in the feedback so the clue is regenerated '
+            "with a more specific hook. "
             "CRITICAL — too-hard Easy clue: if a clue uses a secondary, "
             "technical, or less-common sense of the answer when a plainer "
             "everyday sense exists (e.g. DAM clued \"Foal's mother\" instead "

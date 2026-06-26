@@ -138,6 +138,19 @@ class TestHappyPath:
         assert "Never penalize a clue for being too plain" in prompt
         assert "too hard for this audience" in prompt
 
+    def test_easy_evaluation_penalizes_broad_category_clues(self) -> None:
+        prompt = build_clue_evaluation_prompt(
+            MOCK_CLUES,
+            {},
+            PuzzleType.MIDI,
+            difficulty=PuzzleDifficulty.EASY,
+        )
+
+        assert "broad underconstrained Easy clues are defects" in prompt
+        assert "Common girl's name" in prompt
+        assert "too broad" in prompt
+        assert "score ACCURACY 0-9" in prompt
+
     def test_hard_evaluation_rewards_tuesday_level_clues(self) -> None:
         prompt = build_clue_evaluation_prompt(
             MOCK_CLUES,

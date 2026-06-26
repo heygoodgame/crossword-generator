@@ -473,6 +473,15 @@ def _difficulty_guidance(puzzle_type: PuzzleType, difficulty: PuzzleDifficulty) 
             '("Sounds like \\"two\\"" for TOO). Pick whichever is the most '
             "immediately gettable for that answer, and vary the technique "
             "across the puzzle so it does not feel formulaic. "
+            "CRITICAL — Easy clues must be specific enough to point to one "
+            "answer, not just a broad category. Given the clue and answer "
+            "length, a casual solver should not be able to name several "
+            'equally plausible answers. Never write underconstrained clues '
+            'like "Common girl\'s name", "Three-letter animal", or "Thing in '
+            'a kitchen." For names, initials, abbreviations, and short common '
+            "words, use a familiar unique hook, exact phrase, or plain "
+            "definition that singles out the answer; if no easy unique hook "
+            "exists, choose the least ambiguous everyday angle. "
             "CRITICAL — always clue the EASIEST common sense of the answer. "
             "Do NOT use a secondary, technical, or less-common meaning when a "
             'plain one exists: clue DAM as "River barrier," never "Foal\'s '

@@ -722,6 +722,24 @@ class TestThemeAnnotationsInPrompt:
         assert "totally obvious fill-in-the-blank" in prompt
         assert "choose instantly solvable" in prompt
 
+    def test_easy_prompt_rejects_broad_ambiguous_category_clues(self) -> None:
+        from crossword_generator.exporters.numbering import compute_numbering
+
+        entries = compute_numbering(MOCK_GRID)
+        crossing_words = compute_crossing_words(entries, MOCK_GRID)
+
+        prompt = build_clue_generation_prompt(
+            entries,
+            crossing_words,
+            PuzzleType.MIDI,
+            difficulty=PuzzleDifficulty.EASY,
+        )
+
+        assert "specific enough to point to one answer" in prompt
+        assert "Common girl's name" in prompt
+        assert "equally plausible answers" in prompt
+        assert "familiar unique hook" in prompt
+
     def test_hard_prompt_targets_tuesday_wordplay(self) -> None:
         """Hard guidance is tied to difficulty, even for mini puzzles."""
         from crossword_generator.exporters.numbering import compute_numbering
