@@ -59,10 +59,10 @@ llm:
     timeout: 120
   claude:
     model: claude-haiku-4-5-20251001
-    theme_model: claude-sonnet-4-6
+    theme_model: claude-sonnet-5
     clue_generation_model: claude-opus-4-8
     clue_repair_model: claude-opus-4-8
-    clue_grading_model: claude-sonnet-4-6
+    clue_grading_model: claude-sonnet-5
     clue_fact_check_model: claude-opus-4-8
     puzzle_naming_model: claude-haiku-4-5-20251001
     thinking_enabled: false
@@ -72,7 +72,7 @@ llm:
     effort: ""
     clue_generation_thinking_enabled: true
     clue_generation_effort: medium
-    max_tokens: 4096
+    max_tokens: 8192
     timeout: 120
 
 theme:

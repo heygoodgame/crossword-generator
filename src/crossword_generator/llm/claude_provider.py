@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import os
+import re
 import time
 
 from crossword_generator.config import ClaudeConfig
@@ -162,11 +163,17 @@ class ClaudeProvider(LLMProvider):
 def _rejects_sampling_params(model: str) -> bool:
     """True for models that 400 on temperature/top_p/top_k.
 
-    Opus 4.7 and 4.8 removed the sampling parameters. Sonnet/Haiku and Opus
+    Opus 4.7/4.8 and the entire Claude 5 family (Fable 5, Sonnet 5, and any
+    Opus/Haiku 5) removed the sampling parameters. Sonnet/Haiku 4.x and Opus
     4.6 and earlier still accept temperature.
     """
     m = model.lower()
-    return "opus-4-7" in m or "opus-4-8" in m
+    if "opus-4-7" in m or "opus-4-8" in m:
+        return True
+    # Claude 5 family: e.g. claude-sonnet-5, claude-opus-5, claude-fable-5,
+    # claude-haiku-5. Match the "-5" generation suffix (optionally followed by
+    # a dotted minor or date, e.g. -5-1 / -5-20260101).
+    return bool(re.search(r"-(?:sonnet|opus|haiku|fable)-5(?:\b|-)", m))
 
 
 def _resolve_api_key() -> str | None:
@@ -197,6 +204,21 @@ def _extract_text_content(content: object) -> str:
             text_parts.append(text)
 
     if not text_parts:
+        block_types = [
+            block.get("type")
+            if isinstance(block, dict)
+            else getattr(block, "type", None)
+            for block in content
+        ]
+        if block_types and all(bt == "thinking" for bt in block_types):
+            # Claude 5 thinks by default; if max_tokens is too small for the
+            # prompt, the whole budget is spent thinking and the response
+            # truncates (stop_reason=max_tokens) with no text block. Raise a
+            # ValueError so caller retry loops treat it as a parse failure.
+            raise ValueError(
+                "Claude response contained only a thinking block "
+                "(likely truncated at max_tokens); raise max_tokens"
+            )
         raise ValueError("Claude response did not contain a text block")
     return "".join(text_parts)
 

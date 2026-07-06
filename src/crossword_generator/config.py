@@ -177,7 +177,7 @@ class ClaudeConfig(BaseModel):
     """
 
     model: str = "claude-haiku-4-5-20251001"
-    theme_model: str = "claude-sonnet-4-6"
+    theme_model: str = "claude-sonnet-5"
     fill_selection_model: str = ""
     # Opus 4.8 for the quality-critical generative step (Phase 3). Adaptive
     # thinking only; the provider omits temperature for Opus 4.7/4.8.
@@ -187,8 +187,8 @@ class ClaudeConfig(BaseModel):
     # also writes repairs; the grading-cost cuts (subset re-grade + terser
     # output) more than pay for the upgrade.
     clue_repair_model: str = "claude-opus-4-8"
-    # Grading is the leak/accuracy gate — Sonnet 4.6 for a stronger judge (P5).
-    clue_grading_model: str = "claude-sonnet-4-6"
+    # Grading is the leak/accuracy gate — Sonnet 5 for a stronger judge (P5).
+    clue_grading_model: str = "claude-sonnet-5"
     # Fact-check is the accuracy gate. Opus 4.8 is stricter about word-precision
     # (e.g. catching "Pope born in 2025" — Leo XIV was elected, not born, in
     # 2025 — which Sonnet rationalized as "safe"). At ~3% of pipeline spend the
@@ -198,9 +198,15 @@ class ClaudeConfig(BaseModel):
     # back to ``model`` (also Haiku); set explicitly for clarity.
     puzzle_naming_model: str = "claude-haiku-4-5-20251001"
     # Hints are easy beginner clues — a simpler task than clue generation, but
-    # still answer-leak-sensitive. Sonnet 4.6 is a good quality/cost balance;
+    # still answer-leak-sensitive. Sonnet 5 is a good quality/cost balance;
     # the leak detector screens its output. Empty falls back to ``model``.
-    hint_generation_model: str = "claude-sonnet-4-6"
+    hint_generation_model: str = "claude-sonnet-5"
+    # 8192 (not 4096): the Claude 5 family thinks by default even when we do
+    # not request it, so a non-thinking call's budget must cover the model's
+    # internal reasoning AND the answer, or a large grading response truncates
+    # (stop_reason=max_tokens) with only a thinking block and no text — see
+    # _extract_text_content / _rejects_sampling_params.
+    max_tokens: int = 8192
     thinking_enabled: bool = False
     thinking_type: str = "adaptive"
     thinking_display: str = "omitted"
