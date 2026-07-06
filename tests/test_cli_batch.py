@@ -4,6 +4,9 @@ import logging
 import threading
 from pathlib import Path
 
+from click.testing import CliRunner
+
+from crossword_generator import cli as cli_module
 from crossword_generator.cli import (
     _apply_dictionary_overrides,
     _batch_bucket_configs,
@@ -16,6 +19,7 @@ from crossword_generator.cli import (
     _ThreadFilter,
     _UsedAnswerSet,
     _write_filtered_dictionary,
+    main,
 )
 from crossword_generator.clue_history import (
     ClueHistoryIndex,
@@ -218,6 +222,117 @@ def test_referenced_dictionary_filenames_skips_zero_count_buckets() -> None:
     assert Path(easy_config.dictionary.path).name in filenames
     # hard/7 has count 0, so its hgg-60 merge is not referenced.
     assert "hgg-60.txt" not in filenames
+
+
+def test_generate_pilot_batch_refreshes_dictionaries_by_default(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    refreshed: list[Path] = []
+    project_root = find_project_root()
+
+    def fake_refresh(**kwargs):
+        refreshed.append(kwargs["project_root"])
+
+    def fake_run_batch_item(**kwargs):
+        output_path = (
+            kwargs["output_root"]
+            / kwargs["difficulty"]
+            / f"{kwargs['size']}x{kwargs['size']}"
+            / f"seed-{kwargs['seed']:03d}.ipuz"
+        )
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(
+            '{"solution":[["A","P","P","L","E"]],"clues":{"Across":[],"Down":[]}}'
+        )
+        return {
+            "difficulty": kwargs["difficulty"],
+            "size": kwargs["size"],
+            "seed": kwargs["seed"],
+            "success": True,
+            "runtime_seconds": 0.0,
+            "output_path": str(output_path),
+            "clue_score": 80.0,
+        }
+
+    monkeypatch.setattr(
+        cli_module, "_refresh_dictionaries_for_generation", fake_refresh
+    )
+    monkeypatch.setattr(cli_module, "_run_batch_item", fake_run_batch_item)
+
+    result = CliRunner().invoke(
+        main,
+        [
+            "generate-pilot-batch",
+            "--output-root", str(tmp_path / "batch"),
+            "--batch-id", "test-batch",
+            "--buckets", "easy/5",
+            "--count", "1",
+            "--no-avoid-existing-clues",
+            "--no-exclude-recent-answers",
+            "--no-exclude-scheduled-sixty",
+            "--no-llm-log",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert refreshed == [project_root]
+
+
+def test_generate_pilot_batch_allows_dictionary_refresh_opt_out(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    refreshed = False
+
+    def fake_refresh(**_kwargs):
+        nonlocal refreshed
+        refreshed = True
+
+    def fake_run_batch_item(**kwargs):
+        output_path = (
+            kwargs["output_root"]
+            / kwargs["difficulty"]
+            / f"{kwargs['size']}x{kwargs['size']}"
+            / f"seed-{kwargs['seed']:03d}.ipuz"
+        )
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(
+            '{"solution":[["A","P","P","L","E"]],"clues":{"Across":[],"Down":[]}}'
+        )
+        return {
+            "difficulty": kwargs["difficulty"],
+            "size": kwargs["size"],
+            "seed": kwargs["seed"],
+            "success": True,
+            "runtime_seconds": 0.0,
+            "output_path": str(output_path),
+            "clue_score": 80.0,
+        }
+
+    monkeypatch.setattr(
+        cli_module, "_refresh_dictionaries_for_generation", fake_refresh
+    )
+    monkeypatch.setattr(cli_module, "_run_batch_item", fake_run_batch_item)
+
+    result = CliRunner().invoke(
+        main,
+        [
+            "generate-pilot-batch",
+            "--output-root", str(tmp_path / "batch"),
+            "--batch-id", "test-batch",
+            "--buckets", "easy/5",
+            "--count", "1",
+            "--no-refresh-dictionaries",
+            "--no-avoid-existing-clues",
+            "--no-exclude-recent-answers",
+            "--no-exclude-scheduled-sixty",
+            "--no-llm-log",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert refreshed is False
 
 
 class _StubExporter:

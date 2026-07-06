@@ -304,14 +304,16 @@ for the generator. They are kept in sync via a deliberate operator step.
 Jeff edits in /admin/lists  →  rows live in hey-you's MySQL
    (add word, remove, rescore, or thumbs-down during puzzle review)
 
-Operator runs `crossword-generator consolidate-list [slug]`
+Operator runs `crossword-generator refresh-dictionaries`, or starts a normal
+`generate-pilot-batch` run
    → GET /api/admin/crossword-lists/{slug}/download for each list
    → write to dictionaries/<file_path> (per registered file_path)
    → POST /mark-consolidated so /admin/lists shows freshness
+   → rebuild local `hgg-easy.txt`, `hgg-hard.txt`, and `hgg-60.txt`
 
 Operator reviews `git diff dictionaries/`, commits, pushes
 
-Next `publish-effective-dictionaries` run picks up the new state automatically
+Next `publish-effective-dictionaries` run publishes the new effective snapshot
    (including the auto-discovered HggThumbsDown*.txt files)
    → build/validate HGG Easy + HGG 60 together
    → POST `/admin/crossword-effective-dictionaries/publish`
@@ -344,10 +346,27 @@ Thumbs-down semantics:
 - **Hard puzzle thumbs-down** → row in `hgg-thumbs-down-hard`. Blocks
   from the hard dictionaries only; easy puzzles can still use the word.
 
+### `refresh-dictionaries` command
+
+Use this when you want to pull Jeff's latest list edits and rebuild local
+generator dictionaries without generating a batch:
+
+```bash
+uv run crossword-generator refresh-dictionaries
+
+# Prod vs beta (defaults to play.hey.gg)
+uv run crossword-generator refresh-dictionaries --api-base https://id-beta.hey.gg/api
+```
+
+`generate-pilot-batch` runs this same refresh by default before fill starts.
+Pass `--no-refresh-dictionaries` only for explicit offline/local-file
+experiments.
+
 ### `consolidate-list` command
 
 ```bash
-# Default: walk every registered list, write each .txt file, mark consolidated
+# Lower-level sync only: walk every registered list, write each .txt file,
+# mark consolidated, but do not rebuild hgg-easy/hgg-hard/hgg-60.
 HEYGG_ADMIN_TOKEN=<token> uv run crossword-generator consolidate-list
 
 # Single slug
@@ -368,9 +387,11 @@ HTTP layer lives in `src/crossword_generator/consolidate_list.py`.
 ### When NOT to use `consolidate-list`
 
 If you're experimenting locally with hand-edited `.txt` files (e.g.
-testing a new exclude rule), don't run `consolidate-list` against the
-shared environment — it will overwrite your local edits with the
-committed-from-UI state. Use `--dry-run` first if uncertain.
+testing a new exclude rule), don't run `refresh-dictionaries` or
+`consolidate-list` against the shared environment — they will overwrite your
+local edits with the committed-from-UI state. Use `consolidate-list --dry-run`
+first if uncertain. For a generation experiment against current local files,
+pass `--no-refresh-dictionaries`.
 
 ## Fill Quality Rules
 
@@ -451,6 +472,17 @@ that 28 puzzles produced 125 cross-puzzle duplicate answers. Never widen
 
 `generate-pilot-batch` creates manifest-driven batches. Despite the name, it is
 the current production batch runner.
+
+Before filling, `generate-pilot-batch` refreshes dictionaries by default:
+it consolidates every registered admin-managed list from hey-you, rebuilds
+local `dictionaries/hgg-easy.txt`, `dictionaries/hgg-hard.txt`, and
+`dictionaries/hgg-60.txt`, and records `refresh_dictionaries: true` in the
+manifest. This is the guardrail that makes Jeff's Easy/Hard moves take effect
+on the next normal run. The refresh uses the same `--api-base` as other
+admin-backed generation reads and requires `HEYGG_ADMIN_TOKEN` or
+`HEYGG_ADMIN_API_TOKEN`. Pass `--no-refresh-dictionaries` only for an explicit
+offline/local-file experiment; such manifests record `refresh_dictionaries:
+false`.
 
 When the batch includes a `hard/7` or `hard/9` bucket, the runner fetches
 scheduled HGG 60 answers from the admin API (requires `HEYGG_ADMIN_TOKEN` or

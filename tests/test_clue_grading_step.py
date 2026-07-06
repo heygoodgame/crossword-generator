@@ -472,9 +472,9 @@ class TestFreshnessRepair:
         assert clue_1a.clue == "Generated clue 1 across"
         assert llm.call_count == 2
 
-    def test_too_easy_feedback_marker_triggers_repair(self) -> None:
-        """Evaluator feedback containing "too easy" triggers repair even when
-        the numeric sub-scores all pass their thresholds."""
+    def test_too_easy_feedback_marker_does_not_override_passing_scores(self) -> None:
+        """The words "too easy" alone do not force repair when the calibrated
+        numeric sub-scores already pass their thresholds."""
         clue_json = _build_clue_json()
         items = []
         for e in EXPECTED_ENTRIES:
@@ -491,13 +491,7 @@ class TestFreshnessRepair:
                 }
             )
         eval_json = json.dumps(items)
-        repair_json = json.dumps(
-            [{"number": 1, "direction": "across", "clue": "Harder angle"}]
-        )
-        re_eval_json = _build_eval_json_subset(
-            {(1, "across")}, accuracy=22, freshness=20, craft=20, fairness=20
-        )
-        llm = SequentialMockLLM([clue_json, eval_json, repair_json, re_eval_json])
+        llm = SequentialMockLLM([clue_json, eval_json])
         grader = ClueGrader(llm, min_passing_score=70)
         step = ClueWithGradingStep(llm, grader, max_retries=1)
         result = step.run(_make_envelope())
@@ -505,7 +499,8 @@ class TestFreshnessRepair:
         clue_1a = next(
             c for c in result.clues if c.number == 1 and c.direction == "across"
         )
-        assert clue_1a.clue == "Harder angle"
+        assert clue_1a.clue == "Generated clue 1 across"
+        assert llm.call_count == 2
 
 
 class TestSoftFreshnessOnly:
@@ -1656,3 +1651,69 @@ class TestConvergenceLoop:
         assert grade_llm.call_count == 1
         assert fact_llm.call_count == 0
         assert result.errors == []
+
+    def test_final_repair_fact_error_rolls_back_to_previous_clue(self) -> None:
+        """A bad clue introduced by the final repair round is not shipped.
+
+        This mirrors CHOI getting repaired from a safe-but-niche Roy Choi clue
+        into a factually wrong Jon M. Chu clue after the normal round budget had
+        already been spent.
+        """
+        original = "Roy Choi of Kogi food truck fame"
+        wrong = '"Crazy Rich Asians" director Jon M. ___'
+        clue_json = _build_clue_json_with({(1, "across"): original})
+        eval_items = []
+        for e in EXPECTED_ENTRIES:
+            low = (e["number"], e["direction"]) == (1, "across")
+            eval_items.append(
+                {
+                    "number": e["number"],
+                    "direction": e["direction"],
+                    "accuracy": 22,
+                    "freshness": 8 if low else 20,
+                    "craft": 20,
+                    "fairness": 20,
+                    "feedback": "needs a fresher angle" if low else "Good",
+                }
+            )
+        eval_json = json.dumps(eval_items)
+        repair_json = _build_repair_json({(1, "across"): wrong})
+        re_eval = _build_eval_json_subset(
+            {(1, "across")}, accuracy=24, freshness=20, craft=22, fairness=24
+        )
+        fact_flag = json.dumps(
+            [
+                {
+                    "number": 1,
+                    "direction": "across",
+                    "status": "incorrect",
+                    "reason": "Jon M. Chu directed the film; CHOI does not fit.",
+                }
+            ]
+        )
+
+        clue_llm = SequentialMockLLM([clue_json, repair_json])
+        grade_llm = SequentialMockLLM([eval_json, re_eval])
+        fact_llm = SequentialMockLLM([fact_flag])
+        grader = ClueGrader(grade_llm, min_passing_score=70)
+        fact_checker = ClueFactChecker(fact_llm)
+        step = ClueWithGradingStep(
+            clue_llm,
+            grader,
+            max_retries=1,
+            fact_checker=fact_checker,
+            freshness_repair_threshold=10,
+            repair_verify_attempts=0,
+            fact_check_repair_attempts=0,
+            leak_repair_attempts=0,
+            duplicate_repair_attempts=0,
+        )
+
+        result = step.run(_make_envelope())
+
+        clue_1a = next(
+            c for c in result.clues if c.number == 1 and c.direction == "across"
+        )
+        assert clue_1a.clue == original
+        assert fact_llm.call_count == 1
+        assert not any(e.startswith("FACT:") for e in result.errors)

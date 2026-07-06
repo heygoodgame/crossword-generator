@@ -400,6 +400,15 @@ def detect_leak(
     if leak_word is not None:
         return _finding(answer, clue, "compound_containment", leak_word)
 
+    # 7a. Dictionary-backed full-answer embedding: a longer clue word contains
+    #     the whole answer in a real compound-like construction, but not at a
+    #     clean edge the reverse-compound rule can split. Catches POOL inside
+    #     "carpoolers" while avoiding incidental substrings like PAIN/painter.
+    if dictionary is not None:
+        leak_word = _embedded_answer_leak(answer_l, words, dictionary)
+        if leak_word is not None:
+            return _finding(answer, clue, "embedded_answer", leak_word)
+
     # 7b. Shared edge fragment: the answer and a clue word meet at a common
     #     fragment that is the answer's leading/trailing component AND the clue
     #     word's leading/trailing component, and that fragment is a real word.
@@ -422,6 +431,30 @@ def detect_leak(
         if leak_word is not None:
             return _finding(answer, clue, "reverse_compound", leak_word)
 
+    return None
+
+
+_EMBEDDED_ANSWER_SUFFIXES = frozenset(
+    "s es er ers ing ed d ly y ies able ible".split()
+)
+
+
+def _embedded_answer_leak(
+    answer_l: str, words: list[str], dictionary: Dictionary
+) -> str | None:
+    if len(answer_l) < 4:
+        return None
+    for w in words:
+        if w == answer_l or len(w) <= len(answer_l):
+            continue
+        start = w.find(answer_l)
+        if start <= 0:
+            continue
+        end = start + len(answer_l)
+        prefix = w[:start]
+        suffix = w[end:]
+        if dictionary.contains(prefix) and suffix in _EMBEDDED_ANSWER_SUFFIXES:
+            return w
     return None
 
 
