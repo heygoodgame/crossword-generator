@@ -105,13 +105,13 @@ class ClueGrader:
                 self._max_parse_retries,
                 self._llm.name,
             )
-            raw_response = self._llm.generate(user_text, system=system_text)
-            logger.debug(
-                "Raw evaluation response (%d chars): %.200s",
-                len(raw_response),
-                raw_response,
-            )
             try:
+                raw_response = self._llm.generate(user_text, system=system_text)
+                logger.debug(
+                    "Raw evaluation response (%d chars): %.200s",
+                    len(raw_response),
+                    raw_response,
+                )
                 clue_grades = _parse_evaluation_response(
                     raw_response, clues_to_grade
                 )

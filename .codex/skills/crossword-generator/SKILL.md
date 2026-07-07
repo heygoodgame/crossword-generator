@@ -23,6 +23,11 @@ uploads.
 - Keep generated records in `status=draft` with `metadata.review_status=unreviewed`.
 - If replacing an already-uploaded generated candidate, use `--replace-existing`
   with the same deterministic batch/difficulty/size/seed key.
+- `generate-pilot-batch` refreshes word lists by default before filling:
+  it pulls the latest admin-managed lists, rebuilds local `hgg-easy.txt`,
+  `hgg-hard.txt`, and `hgg-60.txt`, then continues generation. Do not pass
+  `--no-refresh-dictionaries` unless explicitly doing an offline/local-file
+  experiment.
 - Before uploading, run a dry run and scan answers for known disallowed
   patterns.
 - FIRST decide whether a batch is DATED DAILIES or an UNLIMITED pool — they
@@ -77,13 +82,21 @@ doing non-trivial work. It documents:
 
 ## Common Commands
 
-Batch generation loads prior-clue history from the admin API by default
-(`--avoid-existing-clues`), so `HEYGG_ADMIN_API_TOKEN` (or
-`HEYGG_ADMIN_TOKEN`) must be set in the environment before generating —
-not just before uploading. The history feeds already-used clues into the
-generation prompt so the model avoids exact repeats and varies its clue
-angles per answer. Only pass `--no-avoid-existing-clues` for throwaway
-local experiments.
+Batch generation refreshes dictionaries and loads prior-clue history from the
+admin API by default (`--refresh-dictionaries`, `--avoid-existing-clues`), so
+`HEYGG_ADMIN_API_TOKEN` (or `HEYGG_ADMIN_TOKEN`) must be set in the environment
+before generating — not just before uploading. The dictionary refresh pulls
+Jeff's latest Easy/Hard moves from the admin list UI into local effective
+generator files before any fill starts. The clue history feeds already-used
+clues into the generation prompt so the model avoids exact repeats and varies
+its clue angles per answer. Only pass `--no-refresh-dictionaries` or
+`--no-avoid-existing-clues` for throwaway local experiments.
+
+Refresh dictionaries without generating:
+
+```bash
+uv run crossword-generator refresh-dictionaries
+```
 
 Generate a clean cross-site Easy batch using the default 5x5:7x7:9x9 ratio:
 

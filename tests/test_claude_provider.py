@@ -160,6 +160,27 @@ class TestClaudeProvider:
         assert kwargs["model"] == "claude-opus-4-8"
         assert "temperature" not in kwargs
 
+    def test_sonnet_5_omits_temperature(self, config: ClaudeConfig) -> None:
+        """The Claude 5 family (Sonnet 5 etc.) rejects temperature too."""
+        with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key"}):
+            with patch("anthropic.Anthropic") as mock_cls:
+                mock_client = MagicMock()
+                mock_cls.return_value = mock_client
+                mock_text_block = MagicMock()
+                mock_text_block.text = "ok"
+                mock_message = MagicMock()
+                mock_message.content = [mock_text_block]
+                mock_client.messages.create.return_value = mock_message
+
+                from crossword_generator.llm.claude_provider import ClaudeProvider
+
+                provider = ClaudeProvider(config)
+                provider.generate("prompt", model="claude-sonnet-5")
+
+        _, kwargs = mock_client.messages.create.call_args
+        assert kwargs["model"] == "claude-sonnet-5"
+        assert "temperature" not in kwargs
+
     def test_sonnet_keeps_temperature(self, config: ClaudeConfig) -> None:
         """Sonnet still accepts temperature; it must be sent."""
         with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key"}):
@@ -236,6 +257,27 @@ class TestClaudeProvider:
                 result = provider.generate("prompt")
 
         assert result == "first second"
+
+    def test_thinking_only_response_raises_truncation_error(
+        self, config: ClaudeConfig
+    ) -> None:
+        """A Claude 5 response truncated at max_tokens (thinking only, no text)
+        raises a ValueError so caller retry loops treat it as a parse failure."""
+        with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key"}):
+            with patch("anthropic.Anthropic") as mock_cls:
+                mock_client = MagicMock()
+                mock_cls.return_value = mock_client
+                mock_message = MagicMock()
+                mock_message.content = [
+                    {"type": "thinking", "thinking": "reasoning...", "signature": "x"},
+                ]
+                mock_client.messages.create.return_value = mock_message
+
+                from crossword_generator.llm.claude_provider import ClaudeProvider
+
+                provider = ClaudeProvider(config)
+                with pytest.raises(ValueError, match="thinking block"):
+                    provider.generate("prompt")
 
     def test_generate_retries_overload_errors(self, config: ClaudeConfig) -> None:
         with patch.dict(

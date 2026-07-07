@@ -5,8 +5,10 @@ from __future__ import annotations
 import json
 import logging
 import random
+import shutil
 import subprocess
 import sys
+import tempfile
 import threading
 import time
 from collections.abc import Iterable
@@ -26,6 +28,11 @@ from crossword_generator.exporters.base import Exporter
 from crossword_generator.models import PuzzleEnvelope
 from crossword_generator.pipeline import create_pipeline
 from crossword_generator.steps.clue_grading_step import ClueWithGradingStep
+
+DEFAULT_EASY_EXCLUDE_SOURCES = (
+    "dictionaries/XwiJeffChenList-NotFamilyFriendly.txt",
+    "dictionaries/HggGeneratedSafetyExclude.txt",
+)
 
 
 @click.group()
@@ -351,9 +358,23 @@ def generate(
     ),
 )
 @click.option(
+    "--refresh-dictionaries/--no-refresh-dictionaries",
+    default=True,
+    help=(
+        "Before generation, pull the latest admin-managed crossword lists "
+        "and rebuild local hgg-easy/hgg-hard/hgg-60 dictionaries. On by "
+        "default so Jeff's Easy/Hard list moves are reflected in every "
+        "normal run; pass --no-refresh-dictionaries only for offline "
+        "experiments against the current local files."
+    ),
+)
+@click.option(
     "--api-base",
     default=None,
-    help="Override HEYGG_API_BASE_URL when loading existing clue history.",
+    help=(
+        "Override HEYGG_API_BASE_URL when refreshing dictionaries or loading "
+        "existing clue history."
+    ),
 )
 @click.option(
     "--exclude-scheduled-sixty/--no-exclude-scheduled-sixty",
@@ -496,6 +517,7 @@ def generate_pilot_batch(
     buckets: str | None,
     llm_provider: str,
     avoid_existing_clues: bool,
+    refresh_dictionaries: bool,
     api_base: str | None,
     exclude_scheduled_sixty: bool,
     exclude_recent_answers: bool,
@@ -547,6 +569,23 @@ def generate_pilot_batch(
         selected_buckets,
         count,
     )
+
+    if refresh_dictionaries and any(count > 0 for count in count_by_bucket.values()):
+        try:
+            _refresh_dictionaries_for_generation(
+                project_root=project_root,
+                api_base=api_base,
+                timeout=120,
+            )
+        except click.ClickException as exc:
+            click.echo(
+                f"Failed to refresh dictionaries before generation: {exc.message}. "
+                "This refresh is on by default so generator runs use Jeff's "
+                "latest Easy/Hard list moves; pass --no-refresh-dictionaries "
+                "only for offline experiments.",
+                err=True,
+            )
+            sys.exit(1)
 
     clue_history = ClueHistoryIndex()
     if avoid_existing_clues:
@@ -856,6 +895,7 @@ def generate_pilot_batch(
         "bucket_counts": count_by_bucket,
         "seed_start": seed_start,
         "llm_provider": llm_provider,
+        "refresh_dictionaries": refresh_dictionaries,
         "avoid_existing_clues": avoid_existing_clues,
         "exclude_scheduled_sixty": {
             "enabled": exclude_scheduled_sixty,
@@ -2091,10 +2131,7 @@ def prepare_dictionaries(
     "easy_exclude_sources",
     type=click.Path(exists=True),
     multiple=True,
-    default=(
-        "dictionaries/XwiJeffChenList-NotFamilyFriendly.txt",
-        "dictionaries/HggGeneratedSafetyExclude.txt",
-    ),
+    default=DEFAULT_EASY_EXCLUDE_SOURCES,
     help="Plain or semicolon-delimited word list to exclude from HGG Easy.",
 )
 @click.option(
@@ -2183,13 +2220,9 @@ def publish_effective_dictionaries(
     dry_run: bool,
 ) -> None:
     """Build, validate, and atomically publish HGG Easy + HGG 60."""
-    import shutil
-    import tempfile
-
     from crossword_generator.dictionary_prep import format_summary
     from crossword_generator.effective_dictionaries import (
         EffectiveDictionaryError,
-        build_effective_dictionaries,
         make_effective_dictionary_payload,
     )
     from crossword_generator.effective_dictionaries import (
@@ -2198,24 +2231,16 @@ def publish_effective_dictionaries(
 
     project_root = find_project_root()
 
-    def resolve_path(path: str) -> Path:
-        resolved = Path(path)
-        return resolved if resolved.is_absolute() else project_root / resolved
-
     with tempfile.TemporaryDirectory(prefix="hgg-effective-dicts-") as temp_dir:
         try:
-            build = build_effective_dictionaries(
+            build = _build_local_effective_dictionaries(
                 project_root=project_root,
                 output_dir=Path(temp_dir),
-                easy_source=resolve_path(easy_source),
-                easy_extra_sources=tuple(
-                    resolve_path(source) for source in easy_extra_sources
-                ),
-                easy_exclude_sources=tuple(
-                    resolve_path(source) for source in easy_exclude_sources
-                ),
-                hard_source=resolve_path(hard_source),
-                sixty_source=resolve_path(sixty_source),
+                easy_source=easy_source,
+                easy_extra_sources=easy_extra_sources,
+                easy_exclude_sources=easy_exclude_sources,
+                hard_source=hard_source,
+                sixty_source=sixty_source,
             )
             payload = make_effective_dictionary_payload(
                 build,
@@ -2262,17 +2287,269 @@ def publish_effective_dictionaries(
         click.echo(f"Published effective dictionaries: {result.action}")
 
         if write_local:
-            easy_output_path = resolve_path(easy_output)
-            hard_output_path = resolve_path(hard_output)
-            sixty_output_path = resolve_path(sixty_output)
-            for path in (easy_output_path, hard_output_path, sixty_output_path):
-                path.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copyfile(build.easy.path, easy_output_path)
-            shutil.copyfile(build.hard.path, hard_output_path)
-            shutil.copyfile(build.sixty.path, sixty_output_path)
-            click.echo(f"Wrote local output: {easy_output_path}")
-            click.echo(f"Wrote local output: {hard_output_path}")
-            click.echo(f"Wrote local output: {sixty_output_path}")
+            written = _write_effective_dictionary_outputs(
+                project_root=project_root,
+                build=build,
+                easy_output=easy_output,
+                hard_output=hard_output,
+                sixty_output=sixty_output,
+            )
+            for path in written:
+                click.echo(f"Wrote local output: {path}")
+
+
+@main.command(name="refresh-dictionaries")
+@click.option(
+    "--api-base",
+    default=None,
+    help=(
+        "Override the HeyGG admin API base URL. Defaults to the "
+        "HEYGG_API_BASE_URL env var or https://play.hey.gg/api."
+    ),
+)
+@click.option(
+    "--timeout",
+    type=int,
+    default=120,
+    show_default=True,
+    help="HTTP timeout for each list/download request.",
+)
+@click.option(
+    "--easy-source",
+    type=click.Path(exists=True),
+    default="dictionaries/HGGXW-Easy.txt",
+    show_default=True,
+    help="Path to the Easy source list after consolidation.",
+)
+@click.option(
+    "--easy-extra-source",
+    "easy_extra_sources",
+    type=click.Path(exists=True),
+    multiple=True,
+    default=(),
+    help="Additional source file to merge into HGG Easy.",
+)
+@click.option(
+    "--easy-exclude-source",
+    "easy_exclude_sources",
+    type=click.Path(exists=True),
+    multiple=True,
+    default=DEFAULT_EASY_EXCLUDE_SOURCES,
+    help="Plain or semicolon-delimited word list to exclude from HGG Easy.",
+)
+@click.option(
+    "--hard-source",
+    type=click.Path(exists=True),
+    default="dictionaries/HGGXW-Hard.txt",
+    show_default=True,
+    help="Path to the Hard fill list after consolidation.",
+)
+@click.option(
+    "--sixty-source",
+    type=click.Path(exists=True),
+    default="dictionaries/XwiJeffChenList.txt",
+    show_default=True,
+    help="Scored master list providing source-score 60 entries.",
+)
+@click.option(
+    "--easy-output",
+    type=click.Path(),
+    default="dictionaries/hgg-easy.txt",
+    show_default=True,
+    help="Local HGG Easy output path.",
+)
+@click.option(
+    "--hard-output",
+    type=click.Path(),
+    default="dictionaries/hgg-hard.txt",
+    show_default=True,
+    help="Local combined Easy+Hard output path.",
+)
+@click.option(
+    "--sixty-output",
+    type=click.Path(),
+    default="dictionaries/hgg-60.txt",
+    show_default=True,
+    help="Local HGG 60 output path.",
+)
+def refresh_dictionaries(
+    api_base: str | None,
+    timeout: int,
+    easy_source: str,
+    easy_extra_sources: tuple[str, ...],
+    easy_exclude_sources: tuple[str, ...],
+    hard_source: str,
+    sixty_source: str,
+    easy_output: str,
+    hard_output: str,
+    sixty_output: str,
+) -> None:
+    """Pull latest admin lists and rebuild local generator dictionaries."""
+    project_root = find_project_root()
+    try:
+        _refresh_dictionaries_for_generation(
+            project_root=project_root,
+            api_base=api_base,
+            timeout=timeout,
+            easy_source=easy_source,
+            easy_extra_sources=easy_extra_sources,
+            easy_exclude_sources=easy_exclude_sources,
+            hard_source=hard_source,
+            sixty_source=sixty_source,
+            easy_output=easy_output,
+            hard_output=hard_output,
+            sixty_output=sixty_output,
+        )
+    except click.ClickException:
+        raise
+    except Exception as exc:
+        raise click.ClickException(str(exc)) from exc
+
+
+def _refresh_dictionaries_for_generation(
+    *,
+    project_root: Path,
+    api_base: str | None,
+    timeout: int,
+    easy_source: str = "dictionaries/HGGXW-Easy.txt",
+    easy_extra_sources: tuple[str, ...] = (),
+    easy_exclude_sources: tuple[str, ...] = DEFAULT_EASY_EXCLUDE_SOURCES,
+    hard_source: str = "dictionaries/HGGXW-Hard.txt",
+    sixty_source: str = "dictionaries/XwiJeffChenList.txt",
+    easy_output: str = "dictionaries/hgg-easy.txt",
+    hard_output: str = "dictionaries/hgg-hard.txt",
+    sixty_output: str = "dictionaries/hgg-60.txt",
+) -> None:
+    """Sync admin-managed word lists and rebuild local generator dictionaries."""
+    from crossword_generator.consolidate_list import (
+        ConsolidateError,
+        consolidate_one,
+        list_registered_lists,
+    )
+    from crossword_generator.dictionary_prep import format_summary
+    from crossword_generator.effective_dictionaries import EffectiveDictionaryError
+
+    click.echo("Refreshing crossword word lists from admin API...")
+    try:
+        registered = list_registered_lists(api_base=api_base, timeout=timeout)
+    except ConsolidateError as exc:
+        raise click.ClickException(
+            f"Failed to list crossword word lists: {exc}"
+        ) from exc
+
+    slugs = [str(item["slug"]) for item in registered if item.get("slug")]
+    if not slugs:
+        raise click.ClickException("No registered crossword lists found.")
+
+    for slug in slugs:
+        try:
+            summary = consolidate_one(
+                slug,
+                project_root,
+                api_base=api_base,
+                timeout=timeout,
+            )
+        except ConsolidateError as exc:
+            raise click.ClickException(
+                f"Failed to consolidate {slug}: {exc}"
+            ) from exc
+        status = "wrote" if summary.wrote else "no changes"
+        click.echo(
+            f"  {summary.slug}: +{summary.added} / -{summary.removed} "
+            f"({summary.total_after} active) -> {summary.file_path} [{status}]"
+        )
+
+    with tempfile.TemporaryDirectory(prefix="hgg-effective-dicts-") as temp_dir:
+        try:
+            build = _build_local_effective_dictionaries(
+                project_root=project_root,
+                output_dir=Path(temp_dir),
+                easy_source=easy_source,
+                easy_extra_sources=easy_extra_sources,
+                easy_exclude_sources=easy_exclude_sources,
+                hard_source=hard_source,
+                sixty_source=sixty_source,
+            )
+        except EffectiveDictionaryError as exc:
+            raise click.ClickException(
+                f"Failed to rebuild local effective dictionaries: {exc}"
+            ) from exc
+
+        click.echo("Rebuilt local effective dictionaries.")
+        click.echo("")
+        click.echo("HGG Easy dictionary:")
+        click.echo(format_summary(build.easy_summary))
+        click.echo("")
+        click.echo("HGG Hard dictionary (Easy + Hard fill):")
+        click.echo(format_summary(build.hard_summary))
+        click.echo("")
+        click.echo("HGG 60 dictionary:")
+        click.echo(format_summary(build.sixty_summary))
+        click.echo("")
+
+        written = _write_effective_dictionary_outputs(
+            project_root=project_root,
+            build=build,
+            easy_output=easy_output,
+            hard_output=hard_output,
+            sixty_output=sixty_output,
+        )
+        for path in written:
+            click.echo(f"Wrote local output: {path}")
+
+
+def _build_local_effective_dictionaries(
+    *,
+    project_root: Path,
+    output_dir: Path,
+    easy_source: str,
+    easy_extra_sources: tuple[str, ...],
+    easy_exclude_sources: tuple[str, ...],
+    hard_source: str,
+    sixty_source: str,
+):
+    from crossword_generator.effective_dictionaries import build_effective_dictionaries
+
+    return build_effective_dictionaries(
+        project_root=project_root,
+        output_dir=output_dir,
+        easy_source=_resolve_project_path(project_root, easy_source),
+        easy_extra_sources=tuple(
+            _resolve_project_path(project_root, source)
+            for source in easy_extra_sources
+        ),
+        easy_exclude_sources=tuple(
+            _resolve_project_path(project_root, source)
+            for source in easy_exclude_sources
+        ),
+        hard_source=_resolve_project_path(project_root, hard_source),
+        sixty_source=_resolve_project_path(project_root, sixty_source),
+    )
+
+
+def _write_effective_dictionary_outputs(
+    *,
+    project_root: Path,
+    build,
+    easy_output: str,
+    hard_output: str,
+    sixty_output: str,
+) -> tuple[Path, Path, Path]:
+    easy_output_path = _resolve_project_path(project_root, easy_output)
+    hard_output_path = _resolve_project_path(project_root, hard_output)
+    sixty_output_path = _resolve_project_path(project_root, sixty_output)
+    outputs = (easy_output_path, hard_output_path, sixty_output_path)
+    for path in outputs:
+        path.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(build.easy.path, easy_output_path)
+    shutil.copyfile(build.hard.path, hard_output_path)
+    shutil.copyfile(build.sixty.path, sixty_output_path)
+    return outputs
+
+
+def _resolve_project_path(project_root: Path, path: str) -> Path:
+    resolved = Path(path)
+    return resolved if resolved.is_absolute() else project_root / resolved
 
 
 @main.command(name="consolidate-list")

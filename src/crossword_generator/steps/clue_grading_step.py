@@ -276,6 +276,8 @@ class ClueWithGradingStep(PipelineStep):
         """
         current = envelope
         last_fact_results: list[ClueFactCheckResult] = []
+        last_before_repair: PuzzleEnvelope | None = None
+        last_changed_keys: set[tuple[int, str]] = set()
         # Clues already rewritten once purely to harden a "too easy" freshness
         # flag. They are not re-flagged for freshness alone again — see
         # _collect_findings — so a fact-checked-clean clue is not churned.
@@ -309,6 +311,7 @@ class ClueWithGradingStep(PipelineStep):
             self._log_round(round_num, max_rounds, findings, merged)
 
             before = {(c.number, c.direction): c.clue for c in current.clues}
+            last_before_repair = current
             repaired = self._repair_entries(current, merged)
             after = {(c.number, c.direction): c.clue for c in repaired.clues}
             if repaired is current or before == after:
@@ -319,13 +322,37 @@ class ClueWithGradingStep(PipelineStep):
                     round_num,
                 )
                 current = repaired
+                last_changed_keys = set()
                 break
+            last_changed_keys = {
+                key for key, old_clue in before.items() if after.get(key) != old_clue
+            }
             current = repaired
         else:
             logger.info(
                 "Clue convergence: hit round budget (%d) with findings remaining",
                 max_rounds,
             )
+            final_findings, final_fact_results = self._collect_findings(
+                current, soft_freshness_spent
+            )
+            last_fact_results = final_fact_results
+            if final_fact_results:
+                current = self._record_fact_check_metadata(current, final_fact_results)
+            rollback_keys = self._final_rollback_keys(
+                final_findings, last_changed_keys
+            )
+            if rollback_keys and last_before_repair is not None:
+                logger.warning(
+                    "Clue convergence: final sweep found hard issue(s) in %d "
+                    "last-repaired clue(s); restoring previous clue text",
+                    len(rollback_keys),
+                )
+                current = self._restore_clues_from(
+                    current,
+                    last_before_repair,
+                    rollback_keys,
+                )
 
         return current, last_fact_results
 
@@ -478,6 +505,97 @@ class ClueWithGradingStep(PipelineStep):
             len(merged),
             summary or "none",
             answers,
+        )
+
+    def _final_rollback_keys(
+        self,
+        findings: dict[tuple[int, str], list[tuple[str, ClueEntry, ClueGrade]]],
+        changed_keys: set[tuple[int, str]],
+    ) -> set[tuple[int, str]]:
+        """Last-repair clues to restore after a final hard detector finding."""
+        rollback: set[tuple[int, str]] = set()
+        for key, triples in findings.items():
+            if key not in changed_keys:
+                continue
+            if any(
+                self._is_hard_final_finding(name, grade)
+                for name, _, grade in triples
+            ):
+                rollback.add(key)
+        return rollback
+
+    def _is_hard_final_finding(self, name: str, grade: ClueGrade) -> bool:
+        if name != "quality":
+            return True
+        if (
+            grade.accuracy is not None
+            and grade.accuracy < self._accuracy_repair_threshold
+        ):
+            return True
+        if (
+            grade.fairness is not None
+            and grade.fairness < self._fairness_repair_threshold
+        ):
+            return True
+        if grade.craft is not None and grade.craft < self._craft_repair_threshold:
+            return True
+        return grade.score < self._individual_repair_score_threshold
+
+    def _restore_clues_from(
+        self,
+        current: PuzzleEnvelope,
+        fallback: PuzzleEnvelope,
+        keys: set[tuple[int, str]],
+    ) -> PuzzleEnvelope:
+        fallback_clues = {(c.number, c.direction): c for c in fallback.clues}
+        restored_clues: list[ClueEntry] = []
+        for clue in current.clues:
+            key = (clue.number, clue.direction)
+            restored_clues.append(
+                fallback_clues.get(key, clue) if key in keys else clue
+            )
+
+        restored_report = current.clue_grade_report
+        if fallback.clue_grade_report is not None:
+            fallback_grades = [
+                grade
+                for grade in fallback.clue_grade_report.clue_grades
+                if (grade.number, grade.direction) in keys
+            ]
+            if fallback_grades:
+                subset = fallback.clue_grade_report.model_copy(
+                    update={
+                        "clue_grades": fallback_grades,
+                        "clue_count": len(fallback_grades),
+                    }
+                )
+                restored_report = _merge_grade_report(
+                    prior=current.clue_grade_report,
+                    subset=subset,
+                    repaired_keys=keys,
+                    all_clues=restored_clues,
+                    min_passing_score=self._grader._min_passing_score,
+                )
+
+        if restored_report is not None:
+            grade_lookup = {
+                (g.number, g.direction): g.score for g in restored_report.clue_grades
+            }
+            scored_clues = []
+            for clue in restored_clues:
+                key = (clue.number, clue.direction)
+                if key in grade_lookup:
+                    clue = clue.model_copy(
+                        update={"quality_score": grade_lookup[key]}
+                    )
+                scored_clues.append(clue)
+            restored_clues = scored_clues
+
+        return current.model_copy(
+            update={
+                "clues": restored_clues,
+                "clue_grade_report": restored_report,
+            }
         )
 
     # ------------------------------------------------------------------ #
@@ -951,7 +1069,6 @@ class ClueWithGradingStep(PipelineStep):
             "leaks",
             "should not be",
             "too obscure",
-            "too easy",
             "too hard",
             "ultra-current slang",
             "forced",

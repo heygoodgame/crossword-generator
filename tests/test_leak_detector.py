@@ -197,6 +197,7 @@ _REVERSE_COMPOUND_DICT = Dictionary(
             "CAKE", "CHEESECAKE", "CHEESE",
             "FISH", "SWORDFISH", "SWORD",
             "PORT", "AIRPORT", "AIR",
+            "POOL", "CARPOOLERS", "CAR",
             # Coincidence-control entries: the remainder is NOT a word.
             "CARD", "CARDIAC",
         ]
@@ -230,6 +231,17 @@ def test_reverse_compound_skipped_without_dictionary() -> None:
 def test_reverse_compound_ignores_non_word_remainder() -> None:
     # CARDIAC is not CARD + a dictionary word, so it must not flag.
     assert detect_leak("CARD", "Cardiac muscle, e.g.", _REVERSE_COMPOUND_DICT) is None
+
+
+def test_embedded_answer_leak_detected_with_dictionary() -> None:
+    # CARPOOLERS is not a leading/trailing compound split, but it still spells
+    # POOL inside a real compound word with an inflectional suffix.
+    finding = detect_leak(
+        "POOL", "Resource shared by carpoolers", _REVERSE_COMPOUND_DICT
+    )
+    assert finding is not None
+    assert finding.kind == "embedded_answer"
+    assert finding.detail == "carpoolers"
 
 
 def test_reverse_compound_flags_short_answer_in_real_compound() -> None:

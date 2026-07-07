@@ -138,9 +138,12 @@ def consolidate_one(
     api_base: str | None = None,
     token: str | None = None,
     dry_run: bool = False,
+    timeout: int = 300,
 ) -> ListSummary:
     """Sync one slug's .txt file from hey-you. Returns a summary for printing."""
-    metadata = fetch_list_metadata(slug, api_base=api_base, token=token)
+    metadata = fetch_list_metadata(
+        slug, api_base=api_base, token=token, timeout=timeout
+    )
     file_path = str(metadata.get("file_path") or "")
     if not file_path:
         raise ConsolidateError(f"List {slug!r} has no file_path registered.")
@@ -152,7 +155,9 @@ def consolidate_one(
     )
     target.parent.mkdir(parents=True, exist_ok=True)
 
-    new_body = fetch_list_contents(slug, api_base=api_base, token=token)
+    new_body = fetch_list_contents(
+        slug, api_base=api_base, token=token, timeout=timeout
+    )
     old_body = target.read_text() if target.exists() else ""
     added, removed = diff_words(old_body, new_body)
     total_after = len(_words_from(new_body))
