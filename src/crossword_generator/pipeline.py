@@ -26,6 +26,7 @@ from crossword_generator.llm.logging_provider import (
 from crossword_generator.llm.ollama_provider import OllamaProvider
 from crossword_generator.llm.openai_provider import OpenAIProvider
 from crossword_generator.models import PuzzleDifficulty, PuzzleEnvelope, PuzzleType
+from crossword_generator.proper_nouns import load_proper_noun_set
 from crossword_generator.steps.base import PipelineStep
 from crossword_generator.steps.clue_grading_step import ClueWithGradingStep
 from crossword_generator.steps.fill_step import FillWithGradingStep
@@ -315,6 +316,16 @@ def create_pipeline(
     hard_word_set = _load_hard_word_set(
         project_root, config.grading.fill.hard_cross_words_path
     )
+    proper_noun_set = None
+    if config.grading.fill.proper_nouns_path:
+        proper_noun_set = load_proper_noun_set(
+            project_root / config.grading.fill.proper_nouns_path
+        )
+        logger.info(
+            "Loaded %d proper-noun words for the proper-noun cap from %s",
+            len(proper_noun_set),
+            config.grading.fill.proper_nouns_path,
+        )
     grader = FillGrader(
         dictionary,
         min_passing_score=config.grading.fill.min_score,
@@ -322,6 +333,9 @@ def create_pipeline(
         exact_score_count_min_score=config.grading.fill.exact_score_count_min_score,
         exact_score_count=config.grading.fill.exact_score_count,
         hard_word_set=hard_word_set,
+        proper_noun_set=proper_noun_set,
+        max_proper_noun_ratio=config.grading.fill.max_proper_noun_ratio,
+        min_proper_noun_allowance=config.grading.fill.min_proper_noun_allowance,
     )
     fill_step = FillWithGradingStep(
         filler,

@@ -2641,6 +2641,143 @@ def consolidate_list(slug: str | None, dry_run: bool, api_base: str | None) -> N
         sys.exit(exit_code)
 
 
+@main.command(name="classify-proper-nouns")
+@click.option(
+    "--dictionary",
+    "dictionaries",
+    multiple=True,
+    type=click.Path(exists=True, path_type=Path),
+    help=(
+        "Dictionary file(s) to classify (word;score per line). Repeatable. "
+        "Defaults to the live fill dictionaries: hgg-easy.txt, hgg-hard.txt, "
+        "hgg-60.txt."
+    ),
+)
+@click.option(
+    "--output",
+    type=click.Path(path_type=Path),
+    default=None,
+    help=(
+        "Classification file to write (WORD;P|C per line). Defaults to "
+        "dictionaries/HggProperNounClassifications.txt."
+    ),
+)
+@click.option(
+    "--model",
+    default="claude-sonnet-5",
+    show_default=True,
+    help="Claude model to classify with.",
+)
+@click.option(
+    "--batch-size",
+    type=int,
+    default=100,
+    show_default=True,
+    help="Words per LLM call.",
+)
+@click.option(
+    "--max-workers",
+    type=int,
+    default=4,
+    show_default=True,
+    help="Concurrent LLM calls.",
+)
+@click.option(
+    "--limit",
+    type=int,
+    default=None,
+    help="Classify at most this many new words (for testing).",
+)
+def classify_proper_nouns(
+    dictionaries: tuple[Path, ...],
+    output: Path | None,
+    model: str,
+    batch_size: int,
+    max_workers: int,
+    limit: int | None,
+) -> None:
+    """Classify dictionary words as proper-noun-only (P) or common (C).
+
+    Incremental: words already present in the output file are skipped, so
+    rerun this after dictionary refreshes to classify only the new words.
+    The fill grader reads the output file via grading.fill.proper_nouns_path
+    to enforce the per-grid proper-noun cap.
+
+    Auth: requires ANTHROPIC_API_KEY (or ANTHROPIC_API_KEY_CROSSWORD_GENERATOR).
+    """
+    from crossword_generator.config import ClaudeConfig
+    from crossword_generator.llm.claude_provider import ClaudeProvider
+    from crossword_generator.proper_nouns import (
+        classify_words,
+        load_classifications,
+        save_classifications,
+    )
+
+    project_root = find_project_root()
+    if not dictionaries:
+        dictionaries = tuple(
+            project_root / "dictionaries" / name
+            for name in ("hgg-easy.txt", "hgg-hard.txt", "hgg-60.txt")
+        )
+    if output is None:
+        output = (
+            project_root / "dictionaries" / "HggProperNounClassifications.txt"
+        )
+
+    words: set[str] = set()
+    for path in dictionaries:
+        for line in path.read_text().splitlines():
+            word = line.split(";", 1)[0].strip().upper()
+            if word:
+                words.add(word)
+
+    existing = load_classifications(output)
+    pending = sorted(words - existing.keys())
+    if limit is not None:
+        pending = pending[:limit]
+
+    click.echo(
+        f"{len(words)} unique words across {len(dictionaries)} dictionaries; "
+        f"{len(existing)} already classified; {len(pending)} to classify "
+        f"with {model}"
+    )
+    if not pending:
+        click.echo("Nothing to do.")
+        return
+
+    # 16384: Claude 5 models think internally even without a thinking
+    # request, and a 100-word batch must fit that reasoning plus 100
+    # labeled lines — 8192 truncated to a thinking-only response.
+    provider = ClaudeProvider(ClaudeConfig(model=model, max_tokens=16384))
+    def _checkpoint(partial: dict[str, str]) -> None:
+        save_classifications(output, {**existing, **partial})
+
+    labels = classify_words(
+        provider,
+        pending,
+        batch_size=batch_size,
+        max_workers=max_workers,
+        checkpoint=_checkpoint,
+    )
+
+    merged = {**existing, **labels}
+    save_classifications(output, merged)
+
+    proper_total = sum(1 for label in merged.values() if label == "P")
+    unclassified = len(pending) - len(labels)
+    click.echo(
+        f"Classified {len(labels)} word(s) "
+        f"({sum(1 for v in labels.values() if v == 'P')} proper). "
+        f"File now has {len(merged)} entries, {proper_total} proper "
+        f"({proper_total / len(merged):.1%})."
+    )
+    if unclassified:
+        click.echo(
+            f"WARNING: {unclassified} word(s) left unclassified; rerun to retry.",
+            err=True,
+        )
+
+
 @main.command(name="validate-mini-patterns")
 def validate_mini_patterns() -> None:
     """Validate catalogued 5x5 and 7x7 mini grid patterns."""

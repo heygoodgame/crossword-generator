@@ -404,6 +404,21 @@ Current hard guardrails:
     Hard-list entries.
   The large Easy pool lets the filler satisfy both rules on essentially every
   seed.
+- `proper_noun_cap` hard fail (all difficulties/sizes, Jeff, 2026-07): at most
+  `max(2, floor(0.15 × answer_count))` proper-noun answers per grid — 2 for a
+  typical 5x5/7x7, 3 for a typical 9x9. "Too many names makes it a trivia
+  contest, not a word puzzle." Additionally, `proper_noun_first_across`
+  hard fail: 1-Across may never be a proper noun (solver's first
+  impression), regardless of the cap. A word counts only if it is viable SOLELY as a
+  proper noun (OPRAH, ERIE, OREO, NBA); dual-reading words (AMBER, CHINA,
+  MARK) do not count. Classifications live in
+  `dictionaries/HggProperNounClassifications.txt` (`WORD;P|C`), configured via
+  `grading.fill.proper_nouns_path` on every batch config. Theme seed entries
+  are not in the file, so intentional themed names never count.
+  **After any dictionary refresh (`consolidate-list` /
+  `prepare-dictionaries`), run `uv run crossword-generator
+  classify-proper-nouns` — it is incremental and only classifies words not
+  yet in the file — then commit the updated classification file.**
 
 When adding new fill-quality rules, prefer the fill grader if a board should
 be rejected before clue generation. Add focused tests in `tests/test_fill_grader.py`

@@ -31,6 +31,12 @@ grading:
     retry_on_fail: true
     collect_boards: 1       # Collect up to N unique passing boards (1 = stop at first)
     llm_select: false       # Use LLM to pick best board (requires collect_boards > 1)
+    # Proper-noun cap: grids with more than max(min_proper_noun_allowance,
+    # floor(max_proper_noun_ratio * answer_count)) proper-noun answers are a
+    # hard fail. Build the classification file with `classify-proper-nouns`.
+    # proper_nouns_path: dictionaries/HggProperNounClassifications.txt
+    # max_proper_noun_ratio: 0.15
+    # min_proper_noun_allowance: 2
   clue:
     min_score: 70           # Minimum clue quality score (0-100)
     regenerate_on_fail: true
