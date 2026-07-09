@@ -90,6 +90,14 @@ class FillGradingConfig(BaseModel):
     # entries. When set, any grid where two of these entries cross each
     # other is a hard fail. Set on Hard configs only.
     hard_cross_words_path: str | None = None
+    # Path to the proper-noun classification file (WORD;P|C per line,
+    # built by the classify-proper-nouns command). When set, grids with
+    # more than max(min_proper_noun_allowance,
+    # floor(max_proper_noun_ratio * answers)) proper-noun answers are a
+    # hard fail — Jeff's "word puzzle, not trivia contest" rule.
+    proper_nouns_path: str | None = None
+    max_proper_noun_ratio: float = 0.15
+    min_proper_noun_allowance: int = 2
 
 
 class ClueGradingConfig(BaseModel):

@@ -483,6 +483,120 @@ class TestHardCrossRule:
         assert report.passing is False
 
 
+class TestProperNounCapRule:
+    """At most max(2, 15% of answers) proper nouns per grid (Jeff, 2026-07)."""
+
+    # GOOD_GRID has 10 entries (5 across + 5 down), so the default cap is
+    # max(2, floor(10 * 0.15)) = 2.
+
+    def test_three_proper_nouns_in_5x5_fails(self) -> None:
+        grader = FillGrader(
+            GOOD_DICT,
+            min_passing_score=0,
+            proper_noun_set=frozenset({"PARSE", "ENTER", "ROSES"}),
+        )
+
+        report = grader.grade(GOOD_GRID)
+
+        assert report.penalties_applied["proper_noun_cap"] == 100.0
+        assert report.passing is False
+
+    def test_two_proper_nouns_passes(self) -> None:
+        grader = FillGrader(
+            GOOD_DICT,
+            min_passing_score=0,
+            proper_noun_set=frozenset({"PARSE", "ENTER"}),
+        )
+
+        report = grader.grade(GOOD_GRID)
+
+        assert "proper_noun_cap" not in report.penalties_applied
+        assert report.passing is True
+
+    def test_penalty_scales_with_excess(self) -> None:
+        grader = FillGrader(
+            GOOD_DICT,
+            min_passing_score=0,
+            proper_noun_set=frozenset({"PARSE", "ENTER", "ROSES", "ANGEL"}),
+        )
+
+        report = grader.grade(GOOD_GRID)
+
+        assert report.penalties_applied["proper_noun_cap"] == 200.0
+        assert report.passing is False
+
+    def test_ratio_raises_cap_for_larger_grids(self) -> None:
+        # With ratio 0.3 the cap for 10 entries is max(2, 3) = 3.
+        grader = FillGrader(
+            GOOD_DICT,
+            min_passing_score=0,
+            proper_noun_set=frozenset({"PARSE", "ENTER", "ROSES"}),
+            max_proper_noun_ratio=0.3,
+        )
+
+        report = grader.grade(GOOD_GRID)
+
+        assert "proper_noun_cap" not in report.penalties_applied
+        assert report.passing is True
+
+    def test_no_proper_noun_set_skips_rule(self) -> None:
+        grader = FillGrader(GOOD_DICT, min_passing_score=0)
+
+        report = grader.grade(GOOD_GRID)
+
+        assert "proper_noun_cap" not in report.penalties_applied
+
+
+class TestFirstAcrossProperNounRule:
+    """1-Across may never be a proper noun (Jeff, 2026-07)."""
+
+    # In GOOD_GRID, 1-Across is OCEAN and 1-Down is OPERA.
+
+    def test_proper_noun_at_one_across_fails(self) -> None:
+        # Within the cap (1 proper noun), but it sits at 1-Across.
+        grader = FillGrader(
+            GOOD_DICT,
+            min_passing_score=0,
+            proper_noun_set=frozenset({"OCEAN"}),
+        )
+
+        report = grader.grade(GOOD_GRID)
+
+        assert report.penalties_applied["proper_noun_first_across"] == 100.0
+        assert report.passing is False
+
+    def test_proper_noun_at_one_down_passes(self) -> None:
+        grader = FillGrader(
+            GOOD_DICT,
+            min_passing_score=0,
+            proper_noun_set=frozenset({"OPERA"}),
+        )
+
+        report = grader.grade(GOOD_GRID)
+
+        assert "proper_noun_first_across" not in report.penalties_applied
+        assert report.passing is True
+
+    def test_proper_noun_elsewhere_passes(self) -> None:
+        grader = FillGrader(
+            GOOD_DICT,
+            min_passing_score=0,
+            proper_noun_set=frozenset({"ANGEL"}),
+        )
+
+        report = grader.grade(GOOD_GRID)
+
+        assert "proper_noun_first_across" not in report.penalties_applied
+        assert report.passing is True
+
+    def test_no_proper_noun_set_skips_rule(self) -> None:
+        grader = FillGrader(GOOD_DICT, min_passing_score=0)
+
+        report = grader.grade(GOOD_GRID)
+
+        assert "proper_noun_first_across" not in report.penalties_applied
+
+
 class TestMinOneHardEntryRule:
     """Every Hard puzzle must contain a Hard-list entry (Jeff, 2026-06)."""
 

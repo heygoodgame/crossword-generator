@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import math
 from collections import defaultdict
 
 from crossword_generator.dictionary import Dictionary
@@ -65,6 +66,9 @@ class FillGrader:
         exact_score_count_min_score: int | None = None,
         exact_score_count: int | None = None,
         hard_word_set: frozenset[str] | None = None,
+        proper_noun_set: frozenset[str] | None = None,
+        max_proper_noun_ratio: float = 0.15,
+        min_proper_noun_allowance: int = 2,
     ) -> None:
         self._dictionary = dictionary
         self._min_passing_score = min_passing_score
@@ -78,6 +82,14 @@ class FillGrader:
         # entries are proper names; crossing two of them can force an
         # unsatisfying total guess when a solver knows neither.
         self._hard_word_set = hard_word_set
+        # Words only viable as proper nouns (see proper_nouns.py). Jeff's
+        # rule: too many names turns a word puzzle into a trivia contest —
+        # cap them at ~15% of answers, but never below 2 (his explicit
+        # allowance for a 5x5). Theme seed entries are not in the
+        # classification file, so intentional themed names never count.
+        self._proper_noun_set = proper_noun_set
+        self._max_proper_noun_ratio = max_proper_noun_ratio
+        self._min_proper_noun_allowance = min_proper_noun_allowance
 
     def grade(self, grid: list[list[str]]) -> FillGradeReport:
         """Grade a filled grid and return a report."""
@@ -109,6 +121,20 @@ class FillGrader:
                 0.0, overall_score - grid_penalties["hard_cross"]
             )
 
+        excess_proper_nouns = self._excess_proper_noun_count(entries)
+        if excess_proper_nouns > 0:
+            grid_penalties["proper_noun_cap"] = 100.0 * excess_proper_nouns
+            overall_score = max(
+                0.0, overall_score - grid_penalties["proper_noun_cap"]
+            )
+
+        if self._first_across_is_proper_noun(entries):
+            grid_penalties["proper_noun_first_across"] = 100.0
+            overall_score = max(
+                0.0,
+                overall_score - grid_penalties["proper_noun_first_across"],
+            )
+
         passing = overall_score >= self._min_passing_score
         if "terminal_s_variants" in grid_penalties:
             passing = False
@@ -121,6 +147,10 @@ class FillGrader:
         if "no_hard_entry" in grid_penalties:
             passing = False
         if "hard_cross" in grid_penalties:
+            passing = False
+        if "proper_noun_cap" in grid_penalties:
+            passing = False
+        if "proper_noun_first_across" in grid_penalties:
             passing = False
 
         summary_parts = [
@@ -167,6 +197,45 @@ class FillGrader:
             dictionary_score=dict_score,
             penalties=penalties,
             adjusted_score=adjusted,
+        )
+
+    def _excess_proper_noun_count(self, entries: list[NumberedEntry]) -> int:
+        """Count proper-noun answers beyond the per-grid cap.
+
+        The cap is the larger of ``min_proper_noun_allowance`` and
+        ``max_proper_noun_ratio`` of the answer count: 2 for a typical
+        5x5 or 7x7, 3 for a typical 9x9. Returns 0 when no proper-noun
+        set is configured.
+        """
+        if not self._proper_noun_set:
+            return 0
+        proper_count = sum(
+            1 for e in entries if e.answer in self._proper_noun_set
+        )
+        cap = max(
+            self._min_proper_noun_allowance,
+            math.floor(len(entries) * self._max_proper_noun_ratio),
+        )
+        return max(0, proper_count - cap)
+
+    def _first_across_is_proper_noun(
+        self, entries: list[NumberedEntry]
+    ) -> bool:
+        """Whether the first across entry (1-Across) is a proper noun.
+
+        1-Across is the solver's first impression; opening with a name
+        reads as trivia even when the grid total is within the cap, so it
+        is a hard fail regardless of the cap. Returns False when no
+        proper-noun set is configured.
+        """
+        if not self._proper_noun_set:
+            return False
+        first_across = next(
+            (e for e in entries if e.direction == "across"), None
+        )
+        return (
+            first_across is not None
+            and first_across.answer in self._proper_noun_set
         )
 
     def _hard_entry_count(self, entries: list[NumberedEntry]) -> int:

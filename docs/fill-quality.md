@@ -32,6 +32,25 @@
 -   Adjacent short crosswordese — one obscure entry is forgivable, but a cluster of them signals a construction problem
 -   "Natick" crossings — where two obscure entries cross at a letter the solver has no way to infer, creating an unfair guess
 
+**Proper-noun cap (Jeff, 2026-07):**
+
+Too many names turns a word puzzle into a trivia contest — a common
+complaint about mainstream crosswords. The fill grader hard-fails any grid
+with more than `max(2, floor(0.15 × answer_count))` proper-noun answers:
+2 for a typical 5x5 or 7x7, 3 for a typical 9x9. Independently of the
+cap, 1-Across may never be a proper noun — it is the solver's first
+impression, and opening with a name reads as trivia.
+
+A "proper-noun answer" is a word only viable in a crossword as a proper
+noun — any reasonable clue must reference a specific named entity (OPRAH,
+ERIE, OREO, NBA, ELSA). Words with a common-English reading (AMBER, CHINA,
+MARK) do not count, because they can be clued without trivia. The
+classification lives in `dictionaries/HggProperNounClassifications.txt`
+(`WORD;P|C` per line), built and incrementally refreshed by
+`crossword-generator classify-proper-nouns` after dictionary updates.
+Theme seed entries are not in the file, so intentional themed names never
+count against the cap.
+
 **Structural/holistic factors:**
 
 -   Grid density — how many theme entries and black squares constrain the fill; more openness generally allows cleaner fill

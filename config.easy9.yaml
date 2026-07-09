@@ -36,6 +36,8 @@ grading:
     retry_on_fail: true
     collect_boards: 1
     llm_select: false
+    # Cap proper-noun answers at max(2, 15% of entries) (Jeff, 2026-07).
+    proper_nouns_path: dictionaries/HggProperNounClassifications.txt
   clue:
     min_score: 70
     regenerate_on_fail: true
