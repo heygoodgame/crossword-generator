@@ -222,7 +222,6 @@ class ClaudeConfig(BaseModel):
     effort: str = ""
     clue_generation_thinking_enabled: bool = True
     clue_generation_effort: str = "medium"
-    max_tokens: int = 4096
     timeout: int = 120
 
     def model_for(self, step: str) -> str:
