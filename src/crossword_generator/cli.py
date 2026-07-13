@@ -331,8 +331,14 @@ def generate(
 @click.option(
     "--seed-start",
     type=int,
-    default=1,
-    help="First deterministic seed for every bucket.",
+    default=None,
+    help=(
+        "First deterministic seed for every bucket. Defaults to a random "
+        "value per run so repeated batches don't re-explore the same "
+        "grid-pattern/fill trajectories (seeds also pick the black-cell "
+        "pattern, so fixed 1..N starts reuse the same grids every batch). "
+        "Pass an explicit value to reproduce a prior run."
+    ),
 )
 @click.option(
     "--buckets",
@@ -513,7 +519,7 @@ def generate_pilot_batch(
     batch_id: str,
     count: int,
     bucket_counts: str | None,
-    seed_start: int,
+    seed_start: int | None,
     buckets: str | None,
     llm_provider: str,
     avoid_existing_clues: bool,
@@ -728,6 +734,14 @@ def generate_pilot_batch(
         click.echo(f"Filtered dictionary rows removed ({details}).")
 
     started_at = _utc_timestamp()
+
+    # A fresh random seed start per run keeps batches from re-walking the
+    # same grid-pattern/fill trajectories (the seed also selects the
+    # black-cell pattern). Echo it so any run stays reproducible via an
+    # explicit --seed-start.
+    if seed_start is None:
+        seed_start = random.randint(1, 1_000_000_000)
+        click.echo(f"Using random --seed-start {seed_start}")
 
     # Flatten all (bucket, seed) items into one work-list so they can run
     # concurrently. Puzzles are independent; the only shared state is the
