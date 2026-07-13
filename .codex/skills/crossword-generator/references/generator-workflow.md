@@ -549,7 +549,6 @@ uv run crossword-generator generate-pilot-batch \
   --batch-id <batch-id> \
   --buckets easy/5,easy/7,easy/9 \
   --bucket-counts 5=5,7=2,9=7 \
-  --seed-start 1 \
   --llm claude
 ```
 
@@ -560,7 +559,6 @@ uv run crossword-generator generate-pilot-batch \
   --output-root output/batches/<batch-id> \
   --batch-id <batch-id> \
   --bucket-counts 5=5,7=2,9=7 \
-  --seed-start 1 \
   --llm claude
 ```
 
@@ -572,7 +570,6 @@ uv run crossword-generator generate-pilot-batch \
   --batch-id <original-batch-id> \
   --buckets hard/9 \
   --count 1 \
-  --seed-start 1 \
   --llm claude
 ```
 
@@ -851,7 +848,21 @@ After upload, the destination also differs — see the two subsections below
 ### Daily (dated) batches
 
 Daily batches use the DEFAULT flags — do NOT pass any of the `--no-*`
-exclusion/dedup flags. Example: a week (7) of midi hard 9x9 dailies:
+exclusion/dedup flags — **when the batch targets ~30 puzzles or fewer**
+(Neil, 2026-07-10). Above that, pass `--no-intra-batch-dedup` (parallel
+`--max-workers` then OK; keep `--exclude-recent-answers` /
+`--exclude-scheduled-sixty` ON) and rely on the scheduling-time no-repeat
+windows to space shared answers. Rationale: the shared used-answer set grows
+with every completed puzzle, and on a 200-puzzle run it (a) degraded hard/9
+fills to ~1h each and (b) caused 21 of 32 hard/9 boards to exhaust all grid
+variants and export their best FAILING board (hard_cross/proper_noun_cap,
+score 0.0) while the batch reported "ok" — removing that much easy fill
+forces the CSP onto Hard-list words, making hard-cross violations
+unavoidable. The runner does NOT mark fill-threshold exhaustion as failure
+and `save-generated-puzzles` only auto-blocks `LEAK:`/`DUPLICATE:`, so after
+any slow batch verify `fill.grade_report.passing` in the final envelopes (or
+grep manifest `error_message` for "Fill quality below threshold") before
+upload. Example: a week (7) of midi hard 9x9 dailies:
 
 ```bash
 uv run crossword-generator generate-pilot-batch \
@@ -859,7 +870,6 @@ uv run crossword-generator generate-pilot-batch \
   --batch-id daily-midi-hard9-<date> \
   --buckets hard/9 \
   --count 7 \
-  --seed-start 1 \
   --max-workers 1 \
   --llm claude
 ```
@@ -923,7 +933,6 @@ uv run crossword-generator generate-pilot-batch \
   --batch-id unlimited-easy5-<date> \
   --buckets easy/5 \
   --count 50 \
-  --seed-start 1 \
   --no-intra-batch-dedup \
   --no-exclude-recent-answers \
   --no-exclude-scheduled-sixty \

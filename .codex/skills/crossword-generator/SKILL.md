@@ -36,7 +36,20 @@ uploads.
   decision table in references/generator-workflow.md. In short:
   - DAILY (consecutive calendar slots): use the DEFAULT flags — do NOT pass any
     `--no-*` flag. Intra-batch dedup, recent-answer exclusion, and
-    scheduled-sixty exclusion all stay ON; use `--max-workers 1`. Run
+    scheduled-sixty exclusion all stay ON; use `--max-workers 1`.
+    SIZE EXCEPTION (Neil, 2026-07-10): intra-batch dedup only scales to
+    batches of ~30 puzzles or fewer. For larger daily batches pass
+    `--no-intra-batch-dedup` (parallel `--max-workers` then OK; keep the
+    recent/sixty exclusions ON) and let the scheduler's no-repeat windows
+    space any shared answers. Full disjointness on a big batch starves the
+    fill pool: a 200-puzzle run degraded hard/9 fills to ~1h each and
+    silently exported 21 failing boards (hard_cross/proper_noun_cap,
+    score 0.0) marked "ok" — dedup had removed so many easy words that
+    hard-list crossings became unavoidable. The runner exports best-effort
+    FAILING boards on exhaustion and upload only auto-blocks
+    LEAK:/DUPLICATE:, so also verify `fill.grade_report.passing` (or
+    manifest `error_message` fill-threshold text) before uploading any
+    batch that ran slow. Run
     `check-batch-answers` BEFORE upload, but read its summary: `short-window`
     dupes (3-letter answers in 9x9s) are ACCEPTABLE — the scheduler spaces
     them, so `0 blocking, K short-window` means upload as-is (settled operator
@@ -98,6 +111,10 @@ Refresh dictionaries without generating:
 uv run crossword-generator refresh-dictionaries
 ```
 
+Seeds default to a RANDOM start per run (echoed in the output and recorded
+in the manifest) so repeated batches explore different grid patterns and
+fills. Only pass `--seed-start` to reproduce a specific prior run.
+
 Generate a clean cross-site Easy batch using the default 5x5:7x7:9x9 ratio:
 
 ```bash
@@ -106,7 +123,6 @@ uv run crossword-generator generate-pilot-batch \
   --batch-id <batch-id> \
   --buckets easy/5,easy/7,easy/9 \
   --bucket-counts 5=5,7=2,9=7 \
-  --seed-start 1 \
   --llm claude
 ```
 
@@ -117,7 +133,6 @@ uv run crossword-generator generate-pilot-batch \
   --output-root output/batches/<batch-id> \
   --batch-id <batch-id> \
   --bucket-counts 5=5,7=2,9=7 \
-  --seed-start 1 \
   --llm claude
 ```
 
