@@ -6,6 +6,7 @@ import json
 import logging
 import re
 
+from crossword_generator.graders.leak_detector import detect_leak
 from crossword_generator.llm.base import LLMProvider
 from crossword_generator.llm.prompts.puzzle_naming import (
     build_puzzle_naming_messages,
@@ -72,8 +73,8 @@ class PuzzleNamingStep(PipelineStep):
                 )
                 if offending:
                     last_error = (
-                        f"Title {candidate_title!r} contains answer "
-                        f"word {offending!r} as a whole word"
+                        f"Title {candidate_title!r} overlaps answer "
+                        f"word family {offending!r}"
                     )
                     logger.warning(
                         "Attempt %d: rejecting title — %s",
@@ -181,19 +182,19 @@ def _parse_title_response(raw_response: str) -> tuple[str, str]:
 
 
 def _title_contains_answer(title: str, answers: list[str]) -> str | None:
-    """Return the first answer word that appears as a whole token in the
-    title, or None if none do.
+    """Return the first answer whose lexical family leaks into ``title``.
 
-    Whole-token match is case-insensitive and ignores punctuation between
-    words. This catches "On the Rye" when RYE is an answer, but does not
-    flag titles where an answer is merely a substring (e.g. it won't
-    flag "Pressed" for the answer ESS).
+    Puzzle titles are visible before solving, so they follow the same
+    deterministic no-variation rule as clues. ``detect_leak`` catches exact
+    words plus inflections, shared roots, irregular forms, and the other
+    conservative lexical overlaps already maintained for clue quality. It
+    deliberately does not reject incidental substrings such as ESS in
+    "Pressed" or ARE in "Squared".
     """
-    title_tokens = {t for t in re.findall(r"[A-Za-z]+", title.lower()) if t}
     for answer in answers:
         if not answer:
             continue
-        if answer.lower() in title_tokens:
+        if detect_leak(answer, title) is not None:
             return answer
     return None
 

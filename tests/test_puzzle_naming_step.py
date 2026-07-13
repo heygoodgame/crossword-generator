@@ -245,6 +245,23 @@ class TestPuzzleNamingStep:
 
         assert result.title == "Digital Riffs"
 
+    def test_rejects_title_containing_answer_variation_and_retries(self) -> None:
+        """Titles must not give away fill through a related word form."""
+        clues = [
+            ClueEntry(number=1, direction="across", answer="SAFER", clue="More secure"),
+            ClueEntry(number=1, direction="down", answer="ROBOT", clue="Mech"),
+        ]
+        bad = json.dumps({"title": "Better Safe"})
+        good = json.dumps({"title": "Caution First"})
+        step = PuzzleNamingStep(
+            MockLLM(responses=[bad, good]),
+            max_retries=3,
+        )
+        envelope = _make_envelope(grid=MOCK_GRID, clues=clues)
+        result = step.run(envelope)
+
+        assert result.title == "Caution First"
+
     def test_rejects_sensitive_title_wordplay_and_retries(self) -> None:
         """Suggestive title framing around sensitive fill is disallowed."""
         clues = [
@@ -279,6 +296,9 @@ class TestTitleContainsAnswer:
         assert _title_contains_answer("Pressed for Time", ["ESS"]) is None
         # ARE appears inside "Square" but not as a token.
         assert _title_contains_answer("Squared Away", ["ARE"]) is None
+
+    def test_flags_morphological_variations(self) -> None:
+        assert _title_contains_answer("Better Safe", ["SAFER"]) == "SAFER"
 
     def test_handles_punctuation(self) -> None:
         # Apostrophes split tokens, so "Catcher's" tokenizes as
