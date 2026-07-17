@@ -8,6 +8,7 @@ from click.testing import CliRunner
 
 from crossword_generator import cli as cli_module
 from crossword_generator.cli import (
+    _OPT_IN_DIFFICULTIES,
     _apply_dictionary_overrides,
     _batch_bucket_configs,
     _extract_grid_variant,
@@ -125,7 +126,11 @@ def test_hard_7x7_batch_uses_dedicated_config(tmp_path) -> None:
 
 
 def test_parse_batch_count_overrides_applies_size_ratio(tmp_path) -> None:
-    selected_buckets = _batch_bucket_configs(tmp_path)
+    # A default batch (no --buckets) excludes opt-in difficulties like starter,
+    # so the size-ratio override only fans out across easy/hard.
+    selected_buckets = [
+        b for b in _batch_bucket_configs(tmp_path) if b[0] not in _OPT_IN_DIFFICULTIES
+    ]
 
     counts = _parse_batch_count_overrides("5=5,7=2,9=7", selected_buckets, 3)
 
@@ -137,6 +142,18 @@ def test_parse_batch_count_overrides_applies_size_ratio(tmp_path) -> None:
         "hard/7": 2,
         "hard/9": 7,
     }
+
+
+def test_starter_bucket_is_registered_but_opt_in(tmp_path) -> None:
+    buckets = _batch_bucket_configs(tmp_path)
+    configs = {f"{d}/{s}": path.name for d, s, _, path in buckets}
+
+    # Registered (so --buckets starter/5 resolves) ...
+    assert configs["starter/5"] == "config.starter.yaml"
+    # ... but excluded from a default full-batch selection.
+    assert "starter" in _OPT_IN_DIFFICULTIES
+    default = [b for b in buckets if b[0] not in _OPT_IN_DIFFICULTIES]
+    assert all(d != "starter" for d, _, _, _ in default)
 
 
 def test_parse_batch_count_overrides_allows_exact_bucket_override(tmp_path) -> None:

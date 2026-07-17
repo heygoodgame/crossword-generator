@@ -14,6 +14,7 @@ class PuzzleType(StrEnum):
 
 
 class PuzzleDifficulty(StrEnum):
+    STARTER = "starter"
     EASY = "easy"
     HARD = "hard"
 

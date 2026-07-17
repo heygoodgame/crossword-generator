@@ -568,7 +568,10 @@ def generate_pilot_batch(
             b for b in all_buckets if f"{b[0]}/{b[1]}" in wanted
         ]
     else:
-        selected_buckets = all_buckets
+        # Starter is opt-in: it must be requested explicitly via --buckets so a
+        # default full batch (easy/hard across sizes) never silently generates
+        # starter puzzles from the size-ratio overrides.
+        selected_buckets = [b for b in all_buckets if b[0] not in _OPT_IN_DIFFICULTIES]
 
     count_by_bucket = _parse_batch_count_overrides(
         bucket_counts,
@@ -3233,6 +3236,12 @@ def _summarize_batch_results(
     return summaries
 
 
+# Difficulties excluded from a default (no --buckets) batch. They are still
+# generatable when named explicitly via --buckets, but must not be swept in by
+# the size-ratio overrides of a normal easy/hard run.
+_OPT_IN_DIFFICULTIES = frozenset({"starter"})
+
+
 def _batch_bucket_configs(project_root: Path) -> list[tuple[str, int, str, Path]]:
     # Most-constrained first: 9x9 midis carry the heaviest fill (~13 3-letter
     # entries each) and the least slack, so they claim their answers before the
@@ -3247,6 +3256,10 @@ def _batch_bucket_configs(project_root: Path) -> list[tuple[str, int, str, Path]
         ("hard", 7, "mini", project_root / "config.hard7.yaml"),
         ("easy", 5, "mini", project_root / "config.easy.yaml"),
         ("hard", 5, "mini", project_root / "config.hard5.yaml"),
+        # Starter = "easier than Easy" 5x5 minis; fills from the smaller
+        # HGGXW Starter word pool (config.starter.yaml). No 7x7/9x9 starter
+        # buckets yet — the 3-5 letter pool cannot support longer slots.
+        ("starter", 5, "mini", project_root / "config.starter.yaml"),
     ]
 
 
