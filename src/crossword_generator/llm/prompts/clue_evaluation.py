@@ -223,7 +223,9 @@ _OUTPUT_SECTION = (
 
 
 def _difficulty_note(puzzle_type: PuzzleType, difficulty: PuzzleDifficulty) -> str:
-    if difficulty == PuzzleDifficulty.EASY:
+    # Starter shares Easy's beginner-friendly evaluation bar (see
+    # clue_generation._difficulty_guidance), never the Hard branch.
+    if difficulty in (PuzzleDifficulty.EASY, PuzzleDifficulty.STARTER):
         base = (
             "This is an HGG Easy crossword that should be ridiculously "
             "beginner-friendly. Reward clues that are easier than NYT Monday: "

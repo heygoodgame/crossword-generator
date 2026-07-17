@@ -457,7 +457,10 @@ _OUTPUT_SECTION = (
 
 
 def _difficulty_guidance(puzzle_type: PuzzleType, difficulty: PuzzleDifficulty) -> str:
-    if difficulty == PuzzleDifficulty.EASY:
+    # Starter is "easier than Easy": it shares the beginner-friendly Easy
+    # guidance (never the Hard branch). The dictionary pool is what makes it
+    # easier, not a distinct clue register.
+    if difficulty in (PuzzleDifficulty.EASY, PuzzleDifficulty.STARTER):
         base = (
             "This is an HGG Easy crossword for a very broad casual audience. "
             "The goal is to be RIDICULOUSLY beginner-friendly — easier than "

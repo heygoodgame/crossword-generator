@@ -89,7 +89,8 @@ _OUTPUT_SECTION = (
 def _difficulty_note(
     puzzle_type: PuzzleType, difficulty: PuzzleDifficulty
 ) -> str:
-    if difficulty == PuzzleDifficulty.EASY:
+    # Starter shares Easy's fact-check register (never the Hard branch).
+    if difficulty in (PuzzleDifficulty.EASY, PuzzleDifficulty.STARTER):
         base = (
             "This is an HGG Easy crossword. Favor direct, familiar clues over "
             "trivia or clever factual angles."
