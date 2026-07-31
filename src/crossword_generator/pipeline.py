@@ -349,6 +349,21 @@ def create_pipeline(
         llm_select=config.grading.fill.llm_select,
         llm_provider=fill_select_llm if config.grading.fill.llm_select else None,
         answer_usage_counts=answer_usage_counts,
+        seed_entry_length=(
+            config.grading.fill.exact_score_count_length
+            if config.grading.fill.seed_exact_score_entries
+            else None
+        ),
+        seed_entry_min_score=(
+            config.grading.fill.exact_score_count_min_score
+            if config.grading.fill.seed_exact_score_entries
+            else None
+        ),
+        seed_entry_count=(
+            config.grading.fill.exact_score_count
+            if config.grading.fill.seed_exact_score_entries
+            else None
+        ),
     )
 
     clue_grader = ClueGrader(

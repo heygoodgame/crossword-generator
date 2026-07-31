@@ -6,13 +6,18 @@ import itertools
 import json
 import logging
 import math
+import random
 from collections import Counter
 from dataclasses import dataclass, field
 
 from crossword_generator.dictionary import Dictionary
 from crossword_generator.exporters.numbering import compute_numbering
 from crossword_generator.fillers.base import FillError, GridFiller, GridSpec
-from crossword_generator.fillers.csp import extract_slots
+from crossword_generator.fillers.csp import (
+    Slot,
+    extract_slots,
+    map_seed_entries_to_slots,
+)
 from crossword_generator.graders.fill_grader import FillGrader
 from crossword_generator.grid_builder import build_themed_grids
 from crossword_generator.grid_pattern_generator import PatternConfig
@@ -190,6 +195,86 @@ def _assign_theme_to_spec(
     }
     logger.info("Assigned %d theme entries to grid slots", len(assignments))
     return seed_entries
+
+
+def _weighted_sample_without_replacement(
+    words: list[str],
+    weights: list[float],
+    k: int,
+    rng: random.Random,
+) -> list[str]:
+    """Draw up to k distinct words, sampling proportional to weight.
+
+    Uses the Efraimidis-Spirakis exponential-jump trick: each item gets a
+    key of -log(U)/weight and the k smallest keys are the sample. This is
+    an unbiased weighted sample without replacement in a single pass.
+    """
+    keyed: list[tuple[float, str]] = []
+    for word, weight in zip(words, weights):
+        if weight <= 0:
+            continue
+        u = rng.random()
+        if u <= 0.0:
+            u = 1e-12
+        keyed.append((-math.log(u) / weight, word))
+    keyed.sort(key=lambda pair: pair[0])
+    return [word for _, word in keyed[:k]]
+
+
+def _select_seed_candidates(
+    dictionary: Dictionary,
+    *,
+    length: int,
+    min_score: int,
+    count: int,
+    rng: random.Random,
+    usage_counts: dict[str, int] | None = None,
+) -> list[str]:
+    """Pick candidate seed entries of a given length and minimum score.
+
+    Every qualifying entry is eligible, so the fill draws uniformly from the
+    whole pool instead of re-discovering whichever entries happen to be
+    easiest to fill around. When usage_counts is supplied, entries already
+    used in the batch are down-weighted by 1/(1+count) so repeats become
+    progressively less likely without ever being hard-excluded (a hard
+    exclusion would make late puzzles in a large batch unfillable).
+    """
+    pool = dictionary.words_by_length(length, min_score=min_score)
+    if not pool:
+        return []
+
+    if usage_counts:
+        weights = [
+            1.0 / (1.0 + usage_counts.get(word.upper(), 0)) for word in pool
+        ]
+    else:
+        weights = [1.0] * len(pool)
+
+    return _weighted_sample_without_replacement(pool, weights, count, rng)
+
+
+def _seed_entry_spec_key(
+    word: str,
+    slots: list[Slot],
+    used_indices: set[int],
+) -> str | None:
+    """Return a "row,col,direction" key for placing word, or None.
+
+    Prefers across slots and slots nearer the grid centre, matching the
+    convention already used for themed seed entries.
+    """
+    try:
+        assignment = assign_seed_entries_to_slots(
+            [word],
+            "",
+            [slot for slot in slots if slot.index not in used_indices],
+        )
+    except ValueError:
+        return None
+    if not assignment:
+        return None
+    placed = assignment[0]
+    return f"{placed.row},{placed.col},{placed.direction}"
 
 
 def _has_theme(envelope: PuzzleEnvelope) -> bool:
@@ -400,6 +485,9 @@ class FillWithGradingStep(PipelineStep):
         llm_select: bool = False,
         llm_provider: LLMProvider | None = None,
         answer_usage_counts: dict[str, int] | None = None,
+        seed_entry_length: int | None = None,
+        seed_entry_min_score: int | None = None,
+        seed_entry_count: int | None = None,
     ) -> None:
         self._filler = filler
         self._grader = grader
@@ -411,6 +499,9 @@ class FillWithGradingStep(PipelineStep):
         self._collect_boards = collect_boards
         self._llm_select = llm_select
         self._llm_provider = llm_provider
+        self._seed_entry_length = seed_entry_length
+        self._seed_entry_min_score = seed_entry_min_score
+        self._seed_entry_count = seed_entry_count
         self._answer_usage_counts = {
             answer.strip().upper(): count
             for answer, count in (answer_usage_counts or {}).items()
@@ -896,10 +987,21 @@ class FillWithGradingStep(PipelineStep):
 
         return best_result, total_attempts
 
+    @property
+    def _seeds_required_entry(self) -> bool:
+        """True when a required entry should be pre-placed before filling."""
+        return (
+            self._seed_entry_length is not None
+            and self._seed_entry_min_score is not None
+            and self._seed_entry_count
+            and self._dictionary is not None
+        )
+
     def _run_direct(self, envelope: PuzzleEnvelope) -> PuzzleEnvelope:
         """Original fill path: use seed_entries directly."""
         base_seed = envelope.metadata.get("seed")
         has_theme = _has_theme(envelope)
+        seed_required = self._seeds_required_entry and not has_theme
         max_grid_variants = (
             self._max_grid_variants
             if has_theme or self._dictionary is not None
@@ -962,6 +1064,48 @@ class FillWithGradingStep(PipelineStep):
                     )
                     continue  # no matching slots in this grid pattern
 
+            # Pre-place a required high-score entry so it is sampled from the
+            # whole eligible pool rather than whichever entries the filler
+            # happens to converge on. Each grid variant draws its own
+            # candidates, so an infeasible pick costs one variant, not the run.
+            seed_candidates: list[str] = []
+            if seed_required:
+                assert self._dictionary is not None
+                assert self._seed_entry_length is not None
+                assert self._seed_entry_min_score is not None
+                slots = extract_slots(
+                    spec.rows, spec.cols, set(spec.black_cells)
+                )
+                if not any(
+                    slot.length == self._seed_entry_length for slot in slots
+                ):
+                    incompatible_skips += 1
+                    logger.info(
+                        "Grid variant %d skipped: no slot of length %d for the "
+                        "required seed entry",
+                        grid_variant,
+                        self._seed_entry_length,
+                    )
+                    continue
+                seed_rng = random.Random(
+                    (base_seed or 0) * 1_000_003 + grid_variant
+                )
+                seed_candidates = _select_seed_candidates(
+                    self._dictionary,
+                    length=self._seed_entry_length,
+                    min_score=self._seed_entry_min_score,
+                    count=max_fill_attempts,
+                    rng=seed_rng,
+                    usage_counts=self._answer_usage_counts,
+                )
+                if not seed_candidates:
+                    logger.warning(
+                        "No dictionary entries of length %d with score >= %d; "
+                        "falling back to unseeded fill",
+                        self._seed_entry_length,
+                        self._seed_entry_min_score,
+                    )
+
             if grid_variant > 0:
                 logger.info(
                     "Trying grid variant %d (seed=%s)",
@@ -974,6 +1118,38 @@ class FillWithGradingStep(PipelineStep):
                     break
 
                 collector.total_attempts += 1
+
+                # Each attempt places a different drawn candidate, so a pick
+                # the CSP cannot satisfy costs one attempt rather than
+                # biasing the run back toward easy-to-fill entries.
+                if seed_candidates:
+                    word = seed_candidates[(attempt - 1) % len(seed_candidates)]
+                    slots = extract_slots(
+                        spec.rows, spec.cols, set(spec.black_cells)
+                    )
+                    used = set()
+                    if spec.seed_entries:
+                        used = set(
+                            map_seed_entries_to_slots(
+                                spec.seed_entries, slots
+                            )
+                        )
+                    key = _seed_entry_spec_key(word, slots, used)
+                    if key is None:
+                        logger.info(
+                            "Grid variant %d: no free slot for seed entry %r",
+                            grid_variant,
+                            word,
+                        )
+                        break
+                    spec.seed_entries = {**spec.seed_entries, key: word}
+                    logger.info(
+                        "Seeding required entry %r at %s (variant %d)",
+                        word,
+                        key,
+                        grid_variant,
+                    )
+
                 logger.info(
                     "Fill attempt %d/%d (grid variant %d) with %s (%dx%d)",
                     attempt,
@@ -988,6 +1164,17 @@ class FillWithGradingStep(PipelineStep):
                     filled = self._filler.fill(spec)
                 except FillError as exc:
                     filler_failures += 1
+                    if seed_candidates:
+                        logger.info(
+                            "Grid variant %d: seed entry %r infeasible (%s), "
+                            "trying next candidate",
+                            grid_variant,
+                            seed_candidates[
+                                (attempt - 1) % len(seed_candidates)
+                            ],
+                            exc,
+                        )
+                        continue  # next candidate, not next grid
                     if has_theme:
                         logger.warning(
                             "Grid variant %d: fill infeasible with theme "

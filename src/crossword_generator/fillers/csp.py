@@ -198,7 +198,7 @@ def _arc_revise(
     return supported
 
 
-def _map_seed_entries_to_slots(
+def map_seed_entries_to_slots(
     seed_entries: dict[str, str],
     slots: list[Slot],
 ) -> dict[int, str]:
@@ -307,7 +307,7 @@ class CSPFiller(GridFiller):
         # Parse seed entries from spec
         seed_assignments: dict[int, str] = {}
         if spec.seed_entries:
-            seed_slot_map = _map_seed_entries_to_slots(spec.seed_entries, slots)
+            seed_slot_map = map_seed_entries_to_slots(spec.seed_entries, slots)
             seed_assignments = seed_slot_map
             logger.info(
                 "CSP: %d seed entries to place", len(seed_assignments)

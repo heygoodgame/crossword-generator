@@ -86,6 +86,13 @@ class FillGradingConfig(BaseModel):
     exact_score_count_length: int | None = None
     exact_score_count_min_score: int | None = None
     exact_score_count: int | None = None
+    # When true, the entries counted by exact_score_count are pre-placed in
+    # the grid before filling instead of only being graded for afterwards.
+    # Grading for the count still applies; seeding makes the entry a uniform
+    # draw from the whole eligible pool rather than whichever entries the
+    # filler converges on, which otherwise concentrates a handful of
+    # easy-to-fill entries across a batch.
+    seed_exact_score_entries: bool = False
     # Path to a plain word list (one word per line) of Jeff's Hard-list
     # entries. When set, any grid where two of these entries cross each
     # other is a hard fail. Set on Hard configs only.
