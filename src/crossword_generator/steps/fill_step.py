@@ -24,7 +24,12 @@ from crossword_generator.grid_pattern_generator import PatternConfig
 from crossword_generator.grid_specs import get_grid_spec
 from crossword_generator.llm.base import LLMProvider
 from crossword_generator.llm.prompts.fill_selection import build_fill_selection_prompt
-from crossword_generator.models import FillResult, FillSelectionMetadata, PuzzleEnvelope
+from crossword_generator.models import (
+    FillResult,
+    FillSelectionMetadata,
+    PuzzleDifficulty,
+    PuzzleEnvelope,
+)
 from crossword_generator.steps.base import PipelineStep
 from crossword_generator.steps.crossing_scorer import rank_candidates
 from crossword_generator.steps.theme_slot_assigner import assign_seed_entries_to_slots
@@ -99,9 +104,7 @@ def _prescan_grid_signatures(
         slots = extract_slots(spec.rows, spec.cols, black)
 
         counts = Counter(s.length for s in slots)
-        sig = SlotSignature(
-            length_counts=tuple(sorted(counts.items()))
-        )
+        sig = SlotSignature(length_counts=tuple(sorted(counts.items())))
 
         if sig not in groups:
             groups[sig] = SignatureGroup(signature=sig)
@@ -117,10 +120,7 @@ def _prescan_grid_signatures(
         "Pre-scanned %d grid variants → %d signature groups: %s",
         num_variants,
         len(result),
-        [
-            (dict(g.signature.length_counts), len(g.grid_seeds))
-            for g in result
-        ],
+        [(dict(g.signature.length_counts), len(g.grid_seeds)) for g in result],
     )
 
     return result
@@ -167,9 +167,7 @@ def _generate_subsets_for_signature(
 # ---------------------------------------------------------------------------
 
 
-def _assign_theme_to_spec(
-    envelope: PuzzleEnvelope, spec: GridSpec
-) -> dict[str, str]:
+def _assign_theme_to_spec(envelope: PuzzleEnvelope, spec: GridSpec) -> dict[str, str]:
     """Assign theme seed entries and revealer to grid slots.
 
     Args:
@@ -190,8 +188,7 @@ def _assign_theme_to_spec(
         slots,
     )
     seed_entries = {
-        f"{a.row},{a.col},{a.direction}": a.word.upper()
-        for a in assignments
+        f"{a.row},{a.col},{a.direction}": a.word.upper() for a in assignments
     }
     logger.info("Assigned %d theme entries to grid slots", len(assignments))
     return seed_entries
@@ -244,9 +241,7 @@ def _select_seed_candidates(
         return []
 
     if usage_counts:
-        weights = [
-            1.0 / (1.0 + usage_counts.get(word.upper(), 0)) for word in pool
-        ]
+        weights = [1.0 / (1.0 + usage_counts.get(word.upper(), 0)) for word in pool]
     else:
         weights = [1.0] * len(pool)
 
@@ -280,8 +275,7 @@ def _seed_entry_spec_key(
 def _has_theme(envelope: PuzzleEnvelope) -> bool:
     """Check if the envelope has theme data that needs slot assignment."""
     return bool(
-        envelope.theme
-        and (envelope.theme.seed_entries or envelope.theme.revealer)
+        envelope.theme and (envelope.theme.seed_entries or envelope.theme.revealer)
     )
 
 
@@ -340,9 +334,7 @@ class _CandidateCollector:
     """Collects unique passing fill results up to a target count."""
 
     target: int
-    passing_results: list[tuple[FillResult, list[str]]] = field(
-        default_factory=list
-    )
+    passing_results: list[tuple[FillResult, list[str]]] = field(default_factory=list)
     best_result: FillResult | None = None
     best_subset: list[str] = field(default_factory=list)
     total_attempts: int = 0
@@ -389,6 +381,15 @@ class _AnswerNoveltyStats:
 # ---------------------------------------------------------------------------
 
 
+def _exclude_open_grids(envelope: PuzzleEnvelope) -> bool:
+    """Starter puzzles never use an all-white grid.
+
+    An open 5x5 makes every answer a 5-letter word — too demanding for the
+    beginner audience (and for the small Starter word pool).
+    """
+    return envelope.difficulty == PuzzleDifficulty.STARTER
+
+
 class FillStep(PipelineStep):
     """Pipeline step that fills an empty grid using a GridFiller backend."""
 
@@ -406,7 +407,12 @@ class FillStep(PipelineStep):
             raise ValueError(f"FillStep validation failed: {'; '.join(errors)}")
 
         seed = envelope.metadata.get("seed")
-        spec = get_grid_spec(envelope.puzzle_type, envelope.grid_size, seed=seed)
+        spec = get_grid_spec(
+            envelope.puzzle_type,
+            envelope.grid_size,
+            seed=seed,
+            exclude_open=_exclude_open_grids(envelope),
+        )
 
         # Propagate theme seed entries as fill constraints
         if _has_theme(envelope):
@@ -548,9 +554,7 @@ class FillWithGradingStep(PipelineStep):
         # Original path: use seed_entries directly
         return self._run_direct(envelope)
 
-    def _run_with_subset_selection(
-        self, envelope: PuzzleEnvelope
-    ) -> PuzzleEnvelope:
+    def _run_with_subset_selection(self, envelope: PuzzleEnvelope) -> PuzzleEnvelope:
         """Fill using theme-first construction, then random-grid fallback."""
         theme = envelope.theme
         assert theme is not None
@@ -561,9 +565,7 @@ class FillWithGradingStep(PipelineStep):
         assert self._dictionary is not None
 
         # 1. Rank candidates once globally by crossing friendliness
-        ranked = rank_candidates(
-            candidates, revealer, self._dictionary, grid_size
-        )
+        ranked = rank_candidates(candidates, revealer, self._dictionary, grid_size)
         ranked_words = [word for word, _ in ranked]
         logger.info(
             "Ranked %d candidates by crossing score: %s",
@@ -574,9 +576,7 @@ class FillWithGradingStep(PipelineStep):
         collector = _CandidateCollector(target=self._collect_boards)
 
         # Phase 1: Theme-first construction (primary strategy)
-        self._try_theme_first_fill(
-            envelope, ranked_words, revealer, collector
-        )
+        self._try_theme_first_fill(envelope, ranked_words, revealer, collector)
 
         if collector.is_full():
             logger.info(
@@ -606,9 +606,7 @@ class FillWithGradingStep(PipelineStep):
 
         # Phase 2: Random-grid search (fallback — existing signature-based)
         if not collector.is_full():
-            self._try_random_grid_fill(
-                envelope, ranked_words, revealer, collector
-            )
+            self._try_random_grid_fill(envelope, ranked_words, revealer, collector)
 
         if collector.best_result is None:
             raise FillError(
@@ -657,14 +655,13 @@ class FillWithGradingStep(PipelineStep):
             words_for_size = ranked_words
             if target_size >= 4:
                 max_entry_len = (grid_size + 1) // 2  # 5 for 9x9
-                words_for_size = [
-                    w for w in ranked_words if len(w) <= max_entry_len
-                ]
+                words_for_size = [w for w in ranked_words if len(w) <= max_entry_len]
                 if len(words_for_size) < target_size:
                     logger.debug(
-                        "Skipping target_size=%d: only %d entries ≤ %d "
-                        "letters",
-                        target_size, len(words_for_size), max_entry_len,
+                        "Skipping target_size=%d: only %d entries ≤ %d letters",
+                        target_size,
+                        len(words_for_size),
+                        max_entry_len,
                     )
                     continue
 
@@ -724,9 +721,9 @@ class FillWithGradingStep(PipelineStep):
 
                     if report.passing:
                         logger.info(
-                            "Theme-first passing fill: subset %s, "
-                            "score %.1f",
-                            subset, report.overall_score,
+                            "Theme-first passing fill: subset %s, score %.1f",
+                            subset,
+                            report.overall_score,
                         )
 
     def _try_random_grid_fill(
@@ -764,17 +761,14 @@ class FillWithGradingStep(PipelineStep):
             words_for_size = ranked_words
             if target_size >= 4:
                 max_entry_len = (grid_size + 1) // 2  # 5 for 9x9
-                words_for_size = [
-                    w for w in ranked_words if len(w) <= max_entry_len
-                ]
+                words_for_size = [w for w in ranked_words if len(w) <= max_entry_len]
                 if len(words_for_size) < target_size:
                     continue
 
             subsets_tried = 0
 
             eligible_groups = [
-                g for g in sig_groups
-                if len(revealer) in g.signature.available_lengths
+                g for g in sig_groups if len(revealer) in g.signature.available_lengths
             ]
             if len(eligible_groups) > self.MAX_ELIGIBLE_GROUPS:
                 logger.info(
@@ -782,13 +776,11 @@ class FillWithGradingStep(PipelineStep):
                     len(eligible_groups),
                     self.MAX_ELIGIBLE_GROUPS,
                 )
-                eligible_groups = eligible_groups[:self.MAX_ELIGIBLE_GROUPS]
+                eligible_groups = eligible_groups[: self.MAX_ELIGIBLE_GROUPS]
             num_eligible = len(eligible_groups)
             if num_eligible == 0:
                 continue
-            per_group_budget = max(
-                1, self.MAX_SUBSETS_PER_SIZE // num_eligible
-            )
+            per_group_budget = max(1, self.MAX_SUBSETS_PER_SIZE // num_eligible)
 
             for group in eligible_groups:
                 if collector.is_full():
@@ -831,9 +823,7 @@ class FillWithGradingStep(PipelineStep):
                     trial_theme = theme.model_copy(
                         update={"seed_entries": list(subset)}
                     )
-                    trial_envelope = envelope.model_copy(
-                        update={"theme": trial_theme}
-                    )
+                    trial_envelope = envelope.model_copy(update={"theme": trial_theme})
 
                     result, attempts = self._try_fill_with_grid_seeds(
                         trial_envelope,
@@ -847,13 +837,9 @@ class FillWithGradingStep(PipelineStep):
                     if result is not None:
                         collector.add(result, list(subset))
 
-                        if (
-                            result.grade_report
-                            and result.grade_report.passing
-                        ):
+                        if result.grade_report and result.grade_report.passing:
                             logger.info(
-                                "Random-grid passing fill with subset %s "
-                                "(size %d)",
+                                "Random-grid passing fill with subset %s (size %d)",
                                 subset,
                                 target_size,
                             )
@@ -917,7 +903,10 @@ class FillWithGradingStep(PipelineStep):
 
         for grid_variant, grid_seed in enumerate(grid_seeds[:max_seeds]):
             spec = get_grid_spec(
-                envelope.puzzle_type, envelope.grid_size, seed=grid_seed
+                envelope.puzzle_type,
+                envelope.grid_size,
+                seed=grid_seed,
+                exclude_open=_exclude_open_grids(envelope),
             )
 
             long_entry_count = _long_entry_count_8_9(spec)
@@ -1003,9 +992,7 @@ class FillWithGradingStep(PipelineStep):
         has_theme = _has_theme(envelope)
         seed_required = self._seeds_required_entry and not has_theme
         max_grid_variants = (
-            self._max_grid_variants
-            if has_theme or self._dictionary is not None
-            else 1
+            self._max_grid_variants if has_theme or self._dictionary is not None else 1
         )
         max_fill_attempts = self._max_retries if self._retry_on_fail else 1
 
@@ -1019,7 +1006,10 @@ class FillWithGradingStep(PipelineStep):
 
             grid_seed = _grid_seed_for_variant(base_seed, grid_variant)
             spec = get_grid_spec(
-                envelope.puzzle_type, envelope.grid_size, seed=grid_seed
+                envelope.puzzle_type,
+                envelope.grid_size,
+                seed=grid_seed,
+                exclude_open=_exclude_open_grids(envelope),
             )
 
             long_entry_count = _long_entry_count_8_9(spec)
@@ -1073,12 +1063,8 @@ class FillWithGradingStep(PipelineStep):
                 assert self._dictionary is not None
                 assert self._seed_entry_length is not None
                 assert self._seed_entry_min_score is not None
-                slots = extract_slots(
-                    spec.rows, spec.cols, set(spec.black_cells)
-                )
-                if not any(
-                    slot.length == self._seed_entry_length for slot in slots
-                ):
+                slots = extract_slots(spec.rows, spec.cols, set(spec.black_cells))
+                if not any(slot.length == self._seed_entry_length for slot in slots):
                     incompatible_skips += 1
                     logger.info(
                         "Grid variant %d skipped: no slot of length %d for the "
@@ -1087,9 +1073,7 @@ class FillWithGradingStep(PipelineStep):
                         self._seed_entry_length,
                     )
                     continue
-                seed_rng = random.Random(
-                    (base_seed or 0) * 1_000_003 + grid_variant
-                )
+                seed_rng = random.Random((base_seed or 0) * 1_000_003 + grid_variant)
                 seed_candidates = _select_seed_candidates(
                     self._dictionary,
                     length=self._seed_entry_length,
@@ -1124,16 +1108,10 @@ class FillWithGradingStep(PipelineStep):
                 # biasing the run back toward easy-to-fill entries.
                 if seed_candidates:
                     word = seed_candidates[(attempt - 1) % len(seed_candidates)]
-                    slots = extract_slots(
-                        spec.rows, spec.cols, set(spec.black_cells)
-                    )
+                    slots = extract_slots(spec.rows, spec.cols, set(spec.black_cells))
                     used = set()
                     if spec.seed_entries:
-                        used = set(
-                            map_seed_entries_to_slots(
-                                spec.seed_entries, slots
-                            )
-                        )
+                        used = set(map_seed_entries_to_slots(spec.seed_entries, slots))
                     key = _seed_entry_spec_key(word, slots, used)
                     if key is None:
                         logger.info(
@@ -1169,9 +1147,7 @@ class FillWithGradingStep(PipelineStep):
                             "Grid variant %d: seed entry %r infeasible (%s), "
                             "trying next candidate",
                             grid_variant,
-                            seed_candidates[
-                                (attempt - 1) % len(seed_candidates)
-                            ],
+                            seed_candidates[(attempt - 1) % len(seed_candidates)],
                             exc,
                         )
                         continue  # next candidate, not next grid
@@ -1183,8 +1159,7 @@ class FillWithGradingStep(PipelineStep):
                         )
                         break  # try next grid pattern
                     logger.warning(
-                        "Fill attempt %d failed with FillError (%s), "
-                        "retrying",
+                        "Fill attempt %d failed with FillError (%s), retrying",
                         attempt,
                         exc,
                     )
@@ -1362,9 +1337,7 @@ class FillWithGradingStep(PipelineStep):
         for attempt in range(1, max_retries + 1):
             try:
                 raw = self._llm_provider.generate(prompt)
-                idx, rationale = _parse_selection_response(
-                    raw, len(candidates)
-                )
+                idx, rationale = _parse_selection_response(raw, len(candidates))
 
                 result, subset = candidates[idx]
                 result = result.model_copy(
@@ -1393,8 +1366,7 @@ class FillWithGradingStep(PipelineStep):
 
         # Fallback to numeric best
         logger.warning(
-            "LLM selection failed after %d attempts, falling back to "
-            "numeric best",
+            "LLM selection failed after %d attempts, falling back to numeric best",
             max_retries,
         )
         best_idx = max(
@@ -1422,9 +1394,7 @@ class FillWithGradingStep(PipelineStep):
         return errors
 
 
-def _parse_selection_response(
-    raw: str, num_candidates: int
-) -> tuple[int, str]:
+def _parse_selection_response(raw: str, num_candidates: int) -> tuple[int, str]:
     """Parse LLM fill selection response.
 
     Args:
@@ -1452,10 +1422,7 @@ def _parse_selection_response(
     # Convert 1-based to 0-based
     idx = int(selected) - 1
     if idx < 0 or idx >= num_candidates:
-        raise ValueError(
-            f"selected_board {selected} out of range "
-            f"(1-{num_candidates})"
-        )
+        raise ValueError(f"selected_board {selected} out of range (1-{num_candidates})")
 
     return idx, rationale
 
