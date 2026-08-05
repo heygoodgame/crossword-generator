@@ -62,6 +62,17 @@ class TestGetGridSpec:
             patterns_seen.add(tuple(sorted(spec.black_cells)))
         assert len(patterns_seen) > 1
 
+    def test_exclude_open_never_yields_all_white_mini_5(self) -> None:
+        """exclude_open drops the all-white 5x5 pattern for every seed."""
+        for seed in range(300):
+            spec = get_grid_spec(PuzzleType.MINI, 5, seed=seed, exclude_open=True)
+            assert spec.black_cells, f"seed {seed} produced an open grid"
+
+    def test_exclude_open_default_mini_5_has_black_cells(self) -> None:
+        """With exclude_open, the no-seed default is no longer the open grid."""
+        spec = get_grid_spec(PuzzleType.MINI, 5, exclude_open=True)
+        assert spec.black_cells
+
     def test_weighted_selection_mini_5(self) -> None:
         """5x5 patterns are selected with weighted probability."""
         patterns_seen = set()
