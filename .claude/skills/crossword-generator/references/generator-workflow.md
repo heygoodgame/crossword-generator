@@ -512,18 +512,26 @@ Three generator-side changes, all ON by default for daily runs:
   log and manifest report variant rows removed per dictionary.
 - **Usage-frequency penalty.** The `/daily-answers/recent` endpoint (hey-you
   PR #263) returns `counts` — scheduled daily slots per answer over
-  `--daily-count-window-days` (default 90), global across games/tracks. The
-  CSP orders candidates by `score - k*log2(1+count)` with
-  `k = fill.csp.answer_usage_penalty` (4.0; override with
-  `--daily-usage-penalty`, 0 disables): used once ≈ −4 (stays in tier, sorts
-  behind fresh peers), used 3× ≈ −8, used 7× ≈ −12 (a full tier down), used
-  15× ≈ −16. Tier *eligibility* still uses the raw score, so overused words
-  remain available as a last resort. The same counts weight
-  `seed_exact_score_entries` sampling and enable the best-of-N board pick
-  (`--daily-novelty-candidates`, default 4, bounded for cost). Servers
-  without `counts` degrade to the hard exclusions only (logged). Unlimited
-  runs are unchanged (seed weighting + best-of-8 against the pool, no CSP
-  penalty).
+  `--daily-count-window-days` (default 90), global across games/tracks.
+  Inside each raw-score tier the CSP now draws candidates by a *weighted
+  shuffle* with weight `(1+count)^-β`, `β = fill.csp.answer_usage_penalty`
+  (1.0; override with `--daily-usage-penalty`, 0 disables): a word used once
+  is half as likely as a fresh word to be tried first, used 7× is 8× less
+  likely, 15× is 16× less likely — but never strictly last, and tier
+  *eligibility* still uses the raw score, so nothing becomes unfillable.
+  Do NOT replace this with a deterministic `score - k*log2(1+count)`
+  deduction: the production lists are flat (every Easy word is 50), so a
+  deduction degenerates into a strict sort by usage, and with ~95% of the
+  3-letter pool carrying a count the CSP tries the 15 never-used glue words
+  first and times out on the open 5x5 on every seed (measured 2026-08-21).
+  The same counts weight `seed_exact_score_entries` sampling and enable the
+  best-of-N board pick (`--daily-novelty-candidates`, default 4, bounded for
+  cost). Measured against live counts, the default stack (β=1, best-of-4)
+  versus the old behaviour: mean 90-day usage per answer easy/5 1.66 → 1.25,
+  easy/9 2.46 → 2.20, hard/9 1.86 → 1.57, all fills succeeding, fill time
+  ≈4× (seconds; clue generation dominates). Servers without `counts` degrade
+  to the hard exclusions only (logged). Unlimited runs are unchanged (seed
+  weighting + best-of-8 against the pool, no CSP penalty).
 
 Grid selection notes:
 

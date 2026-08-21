@@ -11,7 +11,7 @@ from crossword_generator.fillers.csp import (
     CSPFiller,
     _extract_slots,
     _shuffle_within_tiers,
-    usage_adjusted_score,
+    usage_weight,
 )
 
 
@@ -381,70 +381,84 @@ class TestCSPFiller:
 
 
 class TestUsagePenaltyOrdering:
-    """Recent-schedule usage demotes answers within/between score tiers."""
+    """Recent-schedule usage makes answers less likely to be tried first."""
 
-    def test_adjusted_score_is_log_scaled_and_monotone(self) -> None:
-        assert usage_adjusted_score(60, 0, 4.0) == 60
-        assert usage_adjusted_score(60, 1, 4.0) == 56
-        assert usage_adjusted_score(60, 3, 4.0) == 52
-        assert usage_adjusted_score(60, 7, 4.0) == 48
-        assert usage_adjusted_score(60, 7, 0.0) == 60
-        scores = [usage_adjusted_score(60, n, 4.0) for n in range(0, 20)]
-        assert scores == sorted(scores, reverse=True)
+    def test_usage_weight_is_inverse_power_and_monotone(self) -> None:
+        assert usage_weight(0, 1.0) == 1.0
+        assert usage_weight(1, 1.0) == 0.5
+        assert usage_weight(7, 1.0) == 0.125
+        assert usage_weight(15, 1.0) == 1 / 16
+        assert usage_weight(7, 0.0) == 1.0
+        assert usage_weight(3, 2.0) == 1 / 16
+        weights = [usage_weight(n, 1.0) for n in range(0, 20)]
+        assert weights == sorted(weights, reverse=True)
 
-    def test_overused_word_drops_below_fresh_lower_tier_word(self) -> None:
+    def test_overused_word_is_usually_tried_after_fresh_peers(self) -> None:
         import random
 
-        # idx0: ETA score 59 used 7x; idx1: fresh 55; idx2: fresh 48.
-        scores = [59, 55, 48]
-        ordered = _shuffle_within_tiers(
-            [0, 1, 2],
-            scores,
-            random.Random(1),
-            usage_counts=[7, 0, 0],
-            usage_penalty=4.0,
-        )
-        # ETA (59 -> 47) leaves the 50s tier: the fresh 55 is now tried
-        # first. 47 and 48 share the 40s tier and are shuffled together.
-        assert ordered[0] == 1
-        assert set(ordered[1:]) == {0, 2}
+        # Same tier (flat 50, like the production Easy list): idx0 used 7x,
+        # idx1 and idx2 fresh. Over many draws the used word should come
+        # first far less often than 1/3, but not never.
+        rng = random.Random(123)
+        first = [0, 0, 0]
+        trials = 3000
+        for _ in range(trials):
+            ordered = _shuffle_within_tiers(
+                [0, 1, 2],
+                [50, 50, 50],
+                rng,
+                usage_counts=[7, 0, 0],
+                usage_penalty=1.0,
+            )
+            first[ordered[0]] += 1
+        # Expected P(first) for idx0 = 0.125 / 2.125 ~ 5.9%.
+        assert 0.02 * trials < first[0] < 0.10 * trials
+        assert abs(first[1] - first[2]) < 0.1 * trials
 
-        heavy = _shuffle_within_tiers(
-            [0, 1, 2],
-            scores,
-            random.Random(1),
-            usage_counts=[127, 0, 0],  # 59 -> 31: a tier of its own
-            usage_penalty=4.0,
-        )
-        assert heavy == [1, 2, 0]
-
-    def test_no_penalty_keeps_raw_score_order(self) -> None:
+    def test_zero_penalty_is_uniform_shuffle(self) -> None:
         import random
 
-        ordered = _shuffle_within_tiers(
-            [0, 1, 2],
-            [59, 55, 48],
-            random.Random(1),
-            usage_counts=[7, 0, 0],
+        rng = random.Random(7)
+        first = [0, 0, 0]
+        trials = 3000
+        for _ in range(trials):
+            ordered = _shuffle_within_tiers(
+                [0, 1, 2],
+                [50, 50, 50],
+                rng,
+                usage_counts=[7, 0, 0],
+                usage_penalty=0.0,
+            )
+            first[ordered[0]] += 1
+        assert all(0.28 * trials < count < 0.39 * trials for count in first)
+
+    def test_zero_penalty_matches_legacy_ordering_for_same_seed(self) -> None:
+        import random
+
+        legacy = _shuffle_within_tiers([0, 1, 2, 3], [59, 55, 48, 41], random.Random(5))
+        same = _shuffle_within_tiers(
+            [0, 1, 2, 3],
+            [59, 55, 48, 41],
+            random.Random(5),
+            usage_counts=[9, 9, 9, 9],
             usage_penalty=0.0,
         )
-        # 59 and 55 share the 50s tier (shuffled); 48 is always last.
-        assert set(ordered[:2]) == {0, 1}
-        assert ordered[2] == 2
+        assert legacy == same
 
-    def test_lightly_used_word_stays_in_tier_but_behind_peers(self) -> None:
+    def test_tiers_still_win_over_usage(self) -> None:
         import random
 
-        # Used once: 59 -> 55, still in the 50s tier with a fresh 55; the
-        # tier shuffle, not the penalty, decides order inside the tier.
-        ordered = _shuffle_within_tiers(
-            [0, 1],
-            [59, 55],
-            random.Random(3),
-            usage_counts=[1, 0],
-            usage_penalty=4.0,
-        )
-        assert set(ordered) == {0, 1}
+        # A fresh 48 never jumps ahead of a used 59: tiers are decided on the
+        # raw score, usage only reorders inside the tier.
+        for seed in range(50):
+            ordered = _shuffle_within_tiers(
+                [0, 1],
+                [59, 48],
+                random.Random(seed),
+                usage_counts=[50, 0],
+                usage_penalty=1.0,
+            )
+            assert ordered == [0, 1]
 
     def test_filler_accepts_usage_counts(self, real_dictionary: Dictionary) -> None:
         config = CSPFillerConfig(timeout=30)
@@ -452,7 +466,7 @@ class TestUsagePenaltyOrdering:
             config, real_dictionary, answer_usage_counts={"era": 9, "ETA": 5}
         )
         assert filler._usage_counts == {"ERA": 9, "ETA": 5}
-        assert filler._usage_penalty == 4.0
+        assert filler._usage_penalty == 1.0
         spec = GridSpec(rows=5, cols=5, black_cells=[])
         result = filler.fill(spec, seed=42)
         assert isinstance(result, FilledGrid)

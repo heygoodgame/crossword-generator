@@ -125,19 +125,45 @@ def _iter_bits(n: int) -> list[int]:
     return bits
 
 
-def usage_adjusted_score(score: int, usage_count: int, penalty: float) -> int:
-    """Dictionary score minus a log-scaled penalty for recent schedule usage.
+def usage_weight(usage_count: int, penalty: float) -> float:
+    """Relative draw weight of a candidate given its recent schedule usage.
 
-    ``penalty * log2(1 + count)`` grows slowly, so a word used once in the
-    count window barely moves while a word used weekly for three months sinks
-    a full 10-point tier relative to fresh words of the same quality. The
-    adjustment only affects value *ordering* inside the CSP — tier
-    eligibility is decided on the raw dictionary score — so a heavily used
-    word is still available when nothing else fits; it is just tried last.
+    ``(1 + count) ** -penalty``: with the default penalty of 1.0 a word used
+    once in the count window is half as likely as a fresh word to be tried
+    first, a word used 7 times is 8x less likely, 15 times 16x less likely.
+
+    The weight drives a *weighted shuffle inside each raw-score tier* rather
+    than a deterministic score deduction. That distinction matters because
+    the production HGG lists are flat (every Easy word scores 50): a
+    deduction there degenerates into a strict sort by usage, and since ~95%
+    of the 3-letter pool carries a count, the CSP would try the 15 never-used
+    glue words first and time out on tight grids (the open 5x5 failed on
+    every seed). A weighted shuffle keeps overused words *less likely* to be
+    tried first without ever making them strictly last, and tier eligibility
+    still uses the raw dictionary score, so nothing becomes unfillable.
     """
     if usage_count <= 0 or penalty <= 0:
-        return score
-    return score - int(round(penalty * math.log2(1 + usage_count)))
+        return 1.0
+    return (1.0 + usage_count) ** -penalty
+
+
+def _weighted_shuffle(
+    items: list[int],
+    weights: list[float],
+    rng: random.Random,
+) -> list[int]:
+    """Order ``items`` by weighted sampling without replacement.
+
+    Efraimidis-Spirakis: key = log(u) / w with u uniform(0, 1]; descending
+    keys give a draw order where each item's chance of coming next is
+    proportional to its weight.
+    """
+    keyed = []
+    for item, weight in zip(items, weights, strict=True):
+        u = rng.random() or 1e-12
+        keyed.append((math.log(u) / weight, item))
+    keyed.sort(reverse=True)
+    return [item for _, item in keyed]
 
 
 def _shuffle_within_tiers(
@@ -151,17 +177,22 @@ def _shuffle_within_tiers(
     """Sort indices by score descending, then shuffle within 10-point tiers.
 
     When ``usage_counts`` (parallel to ``scores``) and a positive
-    ``usage_penalty`` are given, each score is first reduced by
-    :func:`usage_adjusted_score`, so overused answers sort into lower tiers.
+    ``usage_penalty`` are given, the shuffle inside each tier is weighted by
+    :func:`usage_weight`, so recently overused answers tend to be tried
+    later than fresh answers of the same quality.
     """
-    if usage_counts is not None and usage_penalty > 0:
-        pairs = [
-            (i, usage_adjusted_score(scores[i], usage_counts[i], usage_penalty))
-            for i in indices
-        ]
-    else:
-        pairs = [(i, scores[i]) for i in indices]
+    pairs = [(i, scores[i]) for i in indices]
     pairs.sort(key=lambda p: p[1], reverse=True)
+
+    weighted = usage_counts is not None and usage_penalty > 0
+
+    def _flush(tier: list[int]) -> list[int]:
+        if not weighted:
+            rng.shuffle(tier)
+            return tier
+        assert usage_counts is not None
+        weights = [usage_weight(usage_counts[i], usage_penalty) for i in tier]
+        return _weighted_shuffle(tier, weights, rng)
 
     result: list[int] = []
     tier: list[int] = []
@@ -172,15 +203,13 @@ def _shuffle_within_tiers(
         if tier_floor is None:
             tier_floor = floor
         if floor != tier_floor:
-            rng.shuffle(tier)
-            result.extend(tier)
+            result.extend(_flush(tier))
             tier = []
             tier_floor = floor
         tier.append(idx)
 
     if tier:
-        rng.shuffle(tier)
-        result.extend(tier)
+        result.extend(_flush(tier))
 
     return result
 

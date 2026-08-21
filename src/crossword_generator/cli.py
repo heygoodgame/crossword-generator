@@ -510,11 +510,12 @@ def generate(
     type=float,
     default=None,
     help=(
-        "Daily batches: soft CSP penalty k in score - k*log2(1+uses), where "
-        "uses is how many scheduled daily slots (all games/tracks) used the "
-        "answer over --daily-count-window-days. Overused answers are tried "
-        "last but stay fillable. Defaults to fill.csp.answer_usage_penalty "
-        "(4.0). Pass 0 to disable."
+        "Daily batches: soft CSP usage penalty. Inside each score tier, "
+        "candidates are drawn with weight (1+uses)^-penalty, where uses is "
+        "how many scheduled daily slots (all games/tracks) used the answer "
+        "over --daily-count-window-days; a word used 7x is 8x less likely "
+        "than a fresh word to be tried first, but stays fillable. Defaults "
+        "to fill.csp.answer_usage_penalty (1.0). Pass 0 to disable."
     ),
 )
 @click.option(
