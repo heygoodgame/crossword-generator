@@ -487,6 +487,44 @@ a fill pool, and is left untouched. This is on by default; pass
 records the exclusion under `exclude_recent_answers`, including the window,
 the first unscheduled date, and per-dictionary removed-row counts.
 
+### Reuse reduction (August 2026)
+
+A coworker audit of the first 62 scheduled days found 121 answers used 5+
+times (ETA x10, ART x9, RIO x9) and 274 singular/plural pairs both scheduled.
+Three generator-side changes, all ON by default for daily runs:
+
+- **Longer lookback, split by length.** `--recent-window-days` (default 30,
+  was 7) applies to answers of 4+ letters; `--recent-short-window-days`
+  (default 7) applies to 3-letter glue; `--recent-forward-days` (default 13)
+  is the forward bound. Measured against the live schedule (2026-08-21):
+  easy 3-letter pool 597 → 278 (7d) → 91 (30d) → 29 (60d); 4-letter
+  1837 → 1424 → 1064; 5-letter 2892 → 2600 → 2304. Hard: 3-letter
+  787 → 411 → 172; 4-letter 2164 → 1708 → 1313; 5-letter 3500 → 3184 → 2860.
+  A 30-day window on glue leaves easy 5x5 open-grid fills at 10/16; keeping
+  glue on 7 days keeps every 5x5 pattern filling on every seed.
+- **Inflectional variants.** `--exclude-answer-variants` expands the
+  short-window recent answers and the scheduled-60 answers with
+  +S/+ES/+ED/+ER/+ING, IES↔Y and strip -S/-ES (`answer_variants.py`). Only
+  4+ letter words are expanded and no variant shorter than 4 letters is ever
+  excluded. Variants are expanded from the 7-day list on purpose: expanding
+  the 30-day list removes ~300 five-letter plurals and makes the fully open
+  5x5 (the highest-weighted easy pattern) unfillable on every seed. The run
+  log and manifest report variant rows removed per dictionary.
+- **Usage-frequency penalty.** The `/daily-answers/recent` endpoint (hey-you
+  PR #263) returns `counts` — scheduled daily slots per answer over
+  `--daily-count-window-days` (default 90), global across games/tracks. The
+  CSP orders candidates by `score - k*log2(1+count)` with
+  `k = fill.csp.answer_usage_penalty` (4.0; override with
+  `--daily-usage-penalty`, 0 disables): used once ≈ −4 (stays in tier, sorts
+  behind fresh peers), used 3× ≈ −8, used 7× ≈ −12 (a full tier down), used
+  15× ≈ −16. Tier *eligibility* still uses the raw score, so overused words
+  remain available as a last resort. The same counts weight
+  `seed_exact_score_entries` sampling and enable the best-of-N board pick
+  (`--daily-novelty-candidates`, default 4, bounded for cost). Servers
+  without `counts` degrade to the hard exclusions only (logged). Unlimited
+  runs are unchanged (seed weighting + best-of-8 against the pool, no CSP
+  penalty).
+
 Grid selection notes:
 
 - 5x5 and 7x7 minis use weighted pattern catalogs from `grid_specs.py`.

@@ -171,6 +171,10 @@ def create_pipeline(
             the filler sees it. Batch runs pass the answers already used by
             completed batch-mates so puzzles scheduled in the same window
             cannot repeat each other's answers.
+        answer_usage_counts: Per-answer usage counts (unlimited pool or
+            recent daily schedule). Soft signal only: the CSP penalizes
+            overused answers in value ordering, seed entries are sampled
+            1/(1+count), and the best-of-N board pick minimizes total usage.
 
     Returns:
         Tuple of (Pipeline, initial PuzzleEnvelope).
@@ -310,7 +314,14 @@ def create_pipeline(
 
     # Build filler
     if config.fill.provider == "csp":
-        filler = CSPFiller(config.fill.csp, dictionary)
+        # Usage counts feed both the CSP's soft value-ordering penalty
+        # (overused answers are tried last) and the fill step's seed-entry
+        # weighting / best-of-N novelty pick.
+        filler = CSPFiller(
+            config.fill.csp,
+            dictionary,
+            answer_usage_counts=answer_usage_counts,
+        )
     else:
         raise ValueError(f"Unknown fill provider: {config.fill.provider}")
     hard_word_set = _load_hard_word_set(

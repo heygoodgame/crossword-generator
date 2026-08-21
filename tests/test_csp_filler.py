@@ -7,7 +7,12 @@ import pytest
 from crossword_generator.config import CSPFillerConfig
 from crossword_generator.dictionary import Dictionary
 from crossword_generator.fillers.base import FilledGrid, FillError, GridSpec
-from crossword_generator.fillers.csp import CSPFiller, _extract_slots
+from crossword_generator.fillers.csp import (
+    CSPFiller,
+    _extract_slots,
+    _shuffle_within_tiers,
+    usage_adjusted_score,
+)
 
 
 @pytest.fixture
@@ -373,3 +378,81 @@ class TestCSPFiller:
         assert len(result.grid) == 5
         for word in result.words_across + result.words_down:
             assert real_dictionary.contains(word)
+
+
+class TestUsagePenaltyOrdering:
+    """Recent-schedule usage demotes answers within/between score tiers."""
+
+    def test_adjusted_score_is_log_scaled_and_monotone(self) -> None:
+        assert usage_adjusted_score(60, 0, 4.0) == 60
+        assert usage_adjusted_score(60, 1, 4.0) == 56
+        assert usage_adjusted_score(60, 3, 4.0) == 52
+        assert usage_adjusted_score(60, 7, 4.0) == 48
+        assert usage_adjusted_score(60, 7, 0.0) == 60
+        scores = [usage_adjusted_score(60, n, 4.0) for n in range(0, 20)]
+        assert scores == sorted(scores, reverse=True)
+
+    def test_overused_word_drops_below_fresh_lower_tier_word(self) -> None:
+        import random
+
+        # idx0: ETA score 59 used 7x; idx1: fresh 55; idx2: fresh 48.
+        scores = [59, 55, 48]
+        ordered = _shuffle_within_tiers(
+            [0, 1, 2],
+            scores,
+            random.Random(1),
+            usage_counts=[7, 0, 0],
+            usage_penalty=4.0,
+        )
+        # ETA (59 -> 47) leaves the 50s tier: the fresh 55 is now tried
+        # first. 47 and 48 share the 40s tier and are shuffled together.
+        assert ordered[0] == 1
+        assert set(ordered[1:]) == {0, 2}
+
+        heavy = _shuffle_within_tiers(
+            [0, 1, 2],
+            scores,
+            random.Random(1),
+            usage_counts=[127, 0, 0],  # 59 -> 31: a tier of its own
+            usage_penalty=4.0,
+        )
+        assert heavy == [1, 2, 0]
+
+    def test_no_penalty_keeps_raw_score_order(self) -> None:
+        import random
+
+        ordered = _shuffle_within_tiers(
+            [0, 1, 2],
+            [59, 55, 48],
+            random.Random(1),
+            usage_counts=[7, 0, 0],
+            usage_penalty=0.0,
+        )
+        # 59 and 55 share the 50s tier (shuffled); 48 is always last.
+        assert set(ordered[:2]) == {0, 1}
+        assert ordered[2] == 2
+
+    def test_lightly_used_word_stays_in_tier_but_behind_peers(self) -> None:
+        import random
+
+        # Used once: 59 -> 55, still in the 50s tier with a fresh 55; the
+        # tier shuffle, not the penalty, decides order inside the tier.
+        ordered = _shuffle_within_tiers(
+            [0, 1],
+            [59, 55],
+            random.Random(3),
+            usage_counts=[1, 0],
+            usage_penalty=4.0,
+        )
+        assert set(ordered) == {0, 1}
+
+    def test_filler_accepts_usage_counts(self, real_dictionary: Dictionary) -> None:
+        config = CSPFillerConfig(timeout=30)
+        filler = CSPFiller(
+            config, real_dictionary, answer_usage_counts={"era": 9, "ETA": 5}
+        )
+        assert filler._usage_counts == {"ERA": 9, "ETA": 5}
+        assert filler._usage_penalty == 4.0
+        spec = GridSpec(rows=5, cols=5, black_cells=[])
+        result = filler.fill(spec, seed=42)
+        assert isinstance(result, FilledGrid)

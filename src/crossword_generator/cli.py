@@ -404,6 +404,50 @@ def generate(
     ),
 )
 @click.option(
+    "--recent-window-days",
+    type=int,
+    default=30,
+    help=(
+        "Lookback (days before the first unscheduled daily slot) for "
+        "--exclude-recent-answers, applied to answers of 4+ letters. The "
+        "scheduler only enforces +/-6 days, but a 7-day lookback let the "
+        "same words recur every week; 30 days spaces repeats out by about a "
+        "month while keeping 4+/5+ letter pools within ~75-90% of the 7-day "
+        "size. Answers of <= 3 letters use --recent-short-window-days."
+    ),
+)
+@click.option(
+    "--recent-short-window-days",
+    type=int,
+    default=7,
+    help=(
+        "Lookback for answers of <= 3 letters (glue). A 30-day window would "
+        "remove about two thirds of the 3-letter pool and make 5x5/9x9 "
+        "grids unfillable; the scheduler already spaces short repeats."
+    ),
+)
+@click.option(
+    "--recent-forward-days",
+    type=int,
+    default=13,
+    help=(
+        "Days after the first unscheduled daily slot whose scheduled answers "
+        "are excluded by --exclude-recent-answers."
+    ),
+)
+@click.option(
+    "--exclude-answer-variants/--no-exclude-answer-variants",
+    default=True,
+    help=(
+        "Also exclude inflectional variants (+S/+ES/+ED/+ER/+ING, IES<->Y, "
+        "strip -S/-ES) of the scheduled-60 answers and of the recent-daily "
+        "answers inside --recent-short-window-days (the scheduler-adjacent "
+        "range), so PART on Monday does not become PARTS on Tuesday. Only "
+        "4+ letter words are expanded and no variant shorter than 4 letters "
+        "is excluded, so 3-letter glue pools are untouched."
+    ),
+)
+@click.option(
     "--exclude-answers-file",
     "exclude_answers_files",
     multiple=True,
@@ -459,6 +503,34 @@ def generate(
     help=(
         "Number of passing fill candidates to collect per puzzle when "
         "--unlimited-answer-novelty is active."
+    ),
+)
+@click.option(
+    "--daily-usage-penalty",
+    type=float,
+    default=None,
+    help=(
+        "Daily batches: soft CSP penalty k in score - k*log2(1+uses), where "
+        "uses is how many scheduled daily slots (all games/tracks) used the "
+        "answer over --daily-count-window-days. Overused answers are tried "
+        "last but stay fillable. Defaults to fill.csp.answer_usage_penalty "
+        "(4.0). Pass 0 to disable."
+    ),
+)
+@click.option(
+    "--daily-count-window-days",
+    type=int,
+    default=90,
+    help="Lookback for the per-answer usage counts behind --daily-usage-penalty.",
+)
+@click.option(
+    "--daily-novelty-candidates",
+    type=int,
+    default=4,
+    help=(
+        "Daily batches: passing fill boards to collect per puzzle before "
+        "picking the one with the least recently used answers. 1 disables "
+        "the best-of-N pick (the CSP penalty still applies)."
     ),
 )
 @click.option(
@@ -527,11 +599,18 @@ def generate_pilot_batch(
     api_base: str | None,
     exclude_scheduled_sixty: bool,
     exclude_recent_answers: bool,
+    recent_window_days: int,
+    recent_short_window_days: int,
+    recent_forward_days: int,
+    exclude_answer_variants: bool,
     exclude_answers_files: tuple[str, ...],
     exclude_answers_min_length: int,
     intra_batch_dedup: bool,
     unlimited_answer_novelty: bool,
     answer_novelty_candidates: int,
+    daily_usage_penalty: float | None,
+    daily_count_window_days: int,
+    daily_novelty_candidates: int,
     per_pattern_attempts: int,
     max_grid_variants: int,
     timeout_5: int,
@@ -547,6 +626,12 @@ def generate_pilot_batch(
         raise click.BadParameter("--max-workers must be >= 1")
     if answer_novelty_candidates < 1:
         raise click.BadParameter("--answer-novelty-candidates must be >= 1")
+    if daily_novelty_candidates < 1:
+        raise click.BadParameter("--daily-novelty-candidates must be >= 1")
+    if min(recent_window_days, recent_short_window_days, recent_forward_days) < 0:
+        raise click.BadParameter("--recent-*-days must be >= 0")
+    if daily_usage_penalty is not None and daily_usage_penalty < 0:
+        raise click.BadParameter("--daily-usage-penalty must be >= 0")
 
     project_root = find_project_root()
     root = Path(output_root)
@@ -659,6 +744,7 @@ def generate_pilot_batch(
 
     recent_answers: list[str] = []
     recent_meta = None
+    short_meta = None
     needs_recent_exclusion = exclude_recent_answers and any(
         count > 0 for count in count_by_bucket.values()
     )
@@ -666,7 +752,22 @@ def generate_pilot_batch(
         from crossword_generator.data_store import fetch_recent_daily_answers
 
         try:
-            recent_meta = fetch_recent_daily_answers(api_base=api_base)
+            recent_meta = fetch_recent_daily_answers(
+                window_days=recent_window_days,
+                forward_days=recent_forward_days,
+                count_window_days=daily_count_window_days,
+                api_base=api_base,
+            )
+            # Short glue (<= 3 letters) gets its own, shorter lookback: the
+            # scheduler tolerates 3-letter repeats a few days apart, and a
+            # 30-day window removes ~2/3 of the 3-letter pool (easy 278 ->
+            # 91), which is what makes 5x5 and 9x9 grids unfillable.
+            if recent_short_window_days < recent_window_days:
+                short_meta = fetch_recent_daily_answers(
+                    window_days=recent_short_window_days,
+                    forward_days=recent_forward_days,
+                    api_base=api_base,
+                )
         except KeyError as exc:
             click.echo(
                 f"Missing required environment variable: {exc.args[0]}. "
@@ -683,12 +784,62 @@ def generate_pilot_batch(
                 err=True,
             )
             sys.exit(1)
-        recent_answers = recent_meta.answers
+        if short_meta is None:
+            recent_answers = list(recent_meta.answers)
+            short_note = ""
+        else:
+            long_words = [
+                answer
+                for answer in recent_meta.answers
+                if len(answer) > SHORT_ANSWER_MAX_LENGTH
+            ]
+            short_words = [
+                answer
+                for answer in short_meta.answers
+                if len(answer) <= SHORT_ANSWER_MAX_LENGTH
+            ]
+            recent_answers = sorted(set(long_words) | set(short_words))
+            short_note = (
+                f"; <= {SHORT_ANSWER_MAX_LENGTH}-letter answers use a "
+                f"{short_meta.window_days}-day window ({len(short_words)} "
+                f"of them)"
+            )
         click.echo(
             f"Excluding {len(recent_answers)} recently scheduled answer(s) "
             f"from fill pools ({recent_meta.window_days}-day window before "
-            f"first unscheduled slot {recent_meta.first_unscheduled_date})."
+            f"first unscheduled slot {recent_meta.first_unscheduled_date}, "
+            f"{recent_meta.forward_days} day(s) after{short_note})."
         )
+        if recent_meta.counts:
+            click.echo(
+                f"Loaded daily usage counts for {len(recent_meta.counts)} "
+                f"answer(s) over {recent_meta.count_window_days}-day window."
+            )
+        else:
+            click.echo(
+                "Server returned no daily usage counts; skipping the "
+                "usage-frequency penalty for this run."
+            )
+
+    # Inflectional variants of the API-driven exclusions. Kept separate from
+    # the base sets so the removed-row log can attribute rows to variants.
+    #
+    # Variants are expanded from the SHORT-window list (7 days back + 13
+    # forward = the scheduler-adjacent range), not the 30-day list: +S
+    # plurals of a month of 4-letter answers remove ~300 five-letter words,
+    # which makes the fully open 5x5 pattern (the highest-weighted easy
+    # pattern) unfillable on every seed. Variants of the 7-day list leave it
+    # fillable and still stop ART on Monday / ARTS on Tuesday.
+    recent_variants: set[str] = set()
+    sixty_variants: set[str] = set()
+    if exclude_answer_variants and (recent_answers or scheduled_sixty):
+        from crossword_generator.answer_variants import expand_answer_variants
+
+        variant_source = (
+            short_meta.answers if short_meta is not None else recent_answers
+        )
+        recent_variants = expand_answer_variants(variant_source)
+        sixty_variants = expand_answer_variants(scheduled_sixty)
 
     extra_excluded_answers: set[str] = set()
     for answers_file in exclude_answers_files:
@@ -710,31 +861,53 @@ def generate_pilot_batch(
     # exclude any --exclude-answers-file words.
     dictionary_overrides: dict[str, str] = {}
     removed_by_dictionary: dict[str, int] = {}
+    variant_rows_removed_by_dictionary: dict[str, int] = {}
     for filename in sorted(
         _referenced_dictionary_filenames(selected_buckets, count_by_bucket)
     ):
         excluded = set(recent_answers) | extra_excluded_answers
+        variants = set(recent_variants)
         if filename == SIXTY_DICTIONARY_FILENAME:
             excluded.update(scheduled_sixty)
+            variants.update(sixty_variants)
+        variants -= excluded
         source = project_root / "dictionaries" / filename
-        if not excluded or not source.exists():
+        if not (excluded or variants) or not source.exists():
             continue
         target_filename = (
             SIXTY_FILTERED_FILENAME
             if filename == SIXTY_DICTIONARY_FILENAME
             else f"{Path(filename).stem}-recent-filtered.txt"
         )
-        override_path, removed = _write_filtered_dictionary(
-            project_root, root, filename, sorted(excluded), target_filename
+        override_path, removed, removed_variants = _write_filtered_dictionary(
+            project_root,
+            root,
+            filename,
+            sorted(excluded),
+            target_filename,
+            variant_answers=sorted(variants),
         )
         dictionary_overrides[filename] = override_path
         removed_by_dictionary[filename] = removed
+        variant_rows_removed_by_dictionary[filename] = removed_variants
     if removed_by_dictionary:
         details = ", ".join(
             f"{name}: {removed}"
             for name, removed in sorted(removed_by_dictionary.items())
         )
         click.echo(f"Filtered dictionary rows removed ({details}).")
+        if exclude_answer_variants:
+            variant_details = ", ".join(
+                f"{name}: {removed}"
+                for name, removed in sorted(
+                    variant_rows_removed_by_dictionary.items()
+                )
+            )
+            click.echo(
+                f"  of which inflectional-variant rows "
+                f"({len(recent_variants | sixty_variants)} variant(s) of "
+                f"4+ letter exclusions): {variant_details}."
+            )
 
     started_at = _utc_timestamp()
 
@@ -765,6 +938,20 @@ def generate_pilot_batch(
     # residue after the run.
     used_answers = _UsedAnswerSet()
     novelty_active = unlimited_answer_novelty and not intra_batch_dedup
+    # Daily runs: global per-answer schedule usage over the count window.
+    # Unlike the hard recent-window exclusion this is a soft signal (CSP
+    # value-ordering penalty, seed weighting, best-of-N board pick) so words
+    # like ETA/ART/RIO stop appearing weekly without becoming unfillable.
+    daily_usage_counts: dict[str, int] = (
+        dict(recent_meta.counts)
+        if recent_meta is not None and not novelty_active
+        else {}
+    )
+    daily_penalty_active = bool(daily_usage_counts) and (
+        daily_usage_penalty is None or daily_usage_penalty > 0
+    )
+    if daily_usage_counts and not daily_penalty_active:
+        click.echo("Daily usage penalty disabled (--daily-usage-penalty 0).")
     answer_usage_by_bucket: dict[tuple[str, int], _AnswerUsageCounter] = {}
     if novelty_active:
         try:
@@ -828,9 +1015,24 @@ def generate_pilot_batch(
             answer_usage_counts=(
                 answer_usage_by_bucket[(difficulty, size)].snapshot()
                 if novelty_active and (difficulty, size) in answer_usage_by_bucket
+                else daily_usage_counts
+                if daily_penalty_active
                 else None
             ),
-            answer_novelty_candidates=answer_novelty_candidates,
+            answer_novelty_candidates=(
+                answer_novelty_candidates
+                if novelty_active
+                else daily_novelty_candidates
+            ),
+            # Unlimited runs keep their existing behaviour (seed weighting +
+            # best-of-N only); the CSP ordering penalty is a daily feature.
+            answer_usage_penalty=(
+                0.0
+                if novelty_active
+                else daily_usage_penalty
+                if daily_penalty_active
+                else None
+            ),
         )
         if result["success"] and intra_batch_dedup:
             try:
@@ -929,6 +1131,10 @@ def generate_pilot_batch(
             "applied": bool(recent_answers),
             "answer_count": len(recent_answers),
             "window_days": recent_meta.window_days if recent_meta else None,
+            "short_window_days": (
+                short_meta.window_days if short_meta is not None else None
+            ),
+            "short_answer_max_length": SHORT_ANSWER_MAX_LENGTH,
             "forward_days": recent_meta.forward_days if recent_meta else None,
             "until_date": recent_meta.until_date if recent_meta else None,
             "first_unscheduled_date": (
@@ -936,6 +1142,20 @@ def generate_pilot_batch(
             ),
             "removed_by_dictionary": removed_by_dictionary,
             "dictionary_paths": dictionary_overrides,
+            "exclude_answer_variants": exclude_answer_variants,
+            "variant_count": len(recent_variants | sixty_variants),
+            "variant_rows_removed_by_dictionary": (
+                variant_rows_removed_by_dictionary
+            ),
+        },
+        "daily_usage_penalty": {
+            "applied": daily_penalty_active,
+            "count_window_days": (
+                recent_meta.count_window_days if recent_meta else None
+            ),
+            "answers_with_counts": len(daily_usage_counts),
+            "penalty": daily_usage_penalty,
+            "novelty_candidates": daily_novelty_candidates,
         },
         "exclude_answers_files": {
             "paths": list(exclude_answers_files),
@@ -1040,6 +1260,9 @@ def _parse_bucket_count_size_key(raw_key: str) -> int | None:
 
 SIXTY_DICTIONARY_FILENAME = "hgg-60.txt"
 SIXTY_FILTERED_FILENAME = "hgg-60-scheduled-filtered.txt"
+# Answers this short are "glue": the scheduler tolerates repeating them a few
+# days apart, and the fill pools cannot survive excluding a month of them.
+SHORT_ANSWER_MAX_LENGTH = 3
 
 
 class _UsedAnswerSet:
@@ -1178,25 +1401,38 @@ def _write_filtered_dictionary(
     source_filename: str,
     excluded_answers: list[str],
     target_filename: str,
-) -> tuple[str, int]:
+    *,
+    variant_answers: list[str] | None = None,
+) -> tuple[str, int, int]:
     """Write a copy of a dictionary without the excluded answers.
 
-    Returns the absolute path of the filtered file and the number of
-    dictionary rows removed.
+    ``variant_answers`` are inflectional variants of the exclusions; they are
+    removed too, but counted separately so the run log can say how many rows
+    the variant expansion cost.
+
+    Returns the absolute path of the filtered file, the number of dictionary
+    rows removed for base exclusions, and the number removed for variants.
     """
     source = project_root / "dictionaries" / source_filename
     excluded = {answer.strip().upper() for answer in excluded_answers}
+    variants = {
+        answer.strip().upper() for answer in (variant_answers or [])
+    } - excluded
     kept: list[str] = []
     removed = 0
+    removed_variants = 0
     for line in source.read_text().splitlines():
         word = line.split(";", 1)[0].strip().upper()
         if word and word in excluded:
             removed += 1
             continue
+        if word and word in variants:
+            removed_variants += 1
+            continue
         kept.append(line)
     target = output_root / target_filename
     target.write_text("\n".join(kept) + "\n")
-    return str(target), removed
+    return str(target), removed, removed_variants
 
 
 def _apply_dictionary_overrides(
@@ -2926,6 +3162,7 @@ def _run_batch_item(
     excluded_fill_words: set[str] | None = None,
     answer_usage_counts: dict[str, int] | None = None,
     answer_novelty_candidates: int = 1,
+    answer_usage_penalty: float | None = None,
 ) -> dict[str, object]:
     bucket_dir = output_root / difficulty / f"{size}x{size}"
     bucket_dir.mkdir(parents=True, exist_ok=True)
@@ -2954,6 +3191,8 @@ def _run_batch_item(
             config.grading.fill.collect_boards,
             answer_novelty_candidates,
         )
+        if answer_usage_penalty is not None:
+            config.fill.csp.answer_usage_penalty = answer_usage_penalty
     config.llm.logging.enabled = llm_logging_enabled
     config.llm.logging.path = str(llm_log_path)
     if puzzle_type == "midi" and size == 9:

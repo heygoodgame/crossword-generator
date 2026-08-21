@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import math
 import random
 import time
 from dataclasses import dataclass, field
@@ -124,14 +125,42 @@ def _iter_bits(n: int) -> list[int]:
     return bits
 
 
+def usage_adjusted_score(score: int, usage_count: int, penalty: float) -> int:
+    """Dictionary score minus a log-scaled penalty for recent schedule usage.
+
+    ``penalty * log2(1 + count)`` grows slowly, so a word used once in the
+    count window barely moves while a word used weekly for three months sinks
+    a full 10-point tier relative to fresh words of the same quality. The
+    adjustment only affects value *ordering* inside the CSP — tier
+    eligibility is decided on the raw dictionary score — so a heavily used
+    word is still available when nothing else fits; it is just tried last.
+    """
+    if usage_count <= 0 or penalty <= 0:
+        return score
+    return score - int(round(penalty * math.log2(1 + usage_count)))
+
+
 def _shuffle_within_tiers(
     indices: list[int],
     scores: list[int],
     rng: random.Random,
     tier_size: int = 10,
+    usage_counts: list[int] | None = None,
+    usage_penalty: float = 0.0,
 ) -> list[int]:
-    """Sort indices by score descending, then shuffle within 10-point tiers."""
-    pairs = [(i, scores[i]) for i in indices]
+    """Sort indices by score descending, then shuffle within 10-point tiers.
+
+    When ``usage_counts`` (parallel to ``scores``) and a positive
+    ``usage_penalty`` are given, each score is first reduced by
+    :func:`usage_adjusted_score`, so overused answers sort into lower tiers.
+    """
+    if usage_counts is not None and usage_penalty > 0:
+        pairs = [
+            (i, usage_adjusted_score(scores[i], usage_counts[i], usage_penalty))
+            for i in indices
+        ]
+    else:
+        pairs = [(i, scores[i]) for i in indices]
     pairs.sort(key=lambda p: p[1], reverse=True)
 
     result: list[int] = []
@@ -245,9 +274,28 @@ def map_seed_entries_to_slots(
 class CSPFiller(GridFiller):
     """Grid filler using constraint satisfaction with backtracking."""
 
-    def __init__(self, config: CSPFillerConfig, dictionary: Dictionary) -> None:
+    def __init__(
+        self,
+        config: CSPFillerConfig,
+        dictionary: Dictionary,
+        *,
+        answer_usage_counts: dict[str, int] | None = None,
+        answer_usage_penalty: float | None = None,
+    ) -> None:
         self._config = config
         self._dictionary = dictionary
+        # Recent-schedule usage per answer (uppercase). Drives a soft
+        # value-ordering penalty so globally overused fill is tried last.
+        self._usage_counts = {
+            str(answer).strip().upper(): int(count)
+            for answer, count in (answer_usage_counts or {}).items()
+            if int(count) > 0
+        }
+        self._usage_penalty = (
+            config.answer_usage_penalty
+            if answer_usage_penalty is None
+            else answer_usage_penalty
+        )
 
     @classmethod
     def from_config(cls, config: CSPFillerConfig) -> CSPFiller:
@@ -397,10 +445,17 @@ class CSPFiller(GridFiller):
 
             # Pre-compute word scores for value ordering
             scores_by_slot: list[list[int]] = []
+            usage_by_slot: list[list[int]] | None = None
+            if self._usage_counts and self._usage_penalty > 0:
+                usage_by_slot = []
             for slot_cands in candidates_by_slot:
                 scores_by_slot.append(
                     [self._dictionary.score(w) or 0 for w in slot_cands]
                 )
+                if usage_by_slot is not None:
+                    usage_by_slot.append(
+                        [self._usage_counts.get(w, 0) for w in slot_cands]
+                    )
 
             # Domains as bitsets
             initial_domains: list[int] = [
@@ -446,6 +501,7 @@ class CSPFiller(GridFiller):
                 spec, slots, candidates_by_slot, slot_li, tries,
                 scores_by_slot, initial_domains, black, seed, deadline,
                 timeout, seed_assignments,
+                usage_by_slot=usage_by_slot,
             )
             if result is not None:
                 return result
@@ -476,11 +532,14 @@ class CSPFiller(GridFiller):
         deadline: float,
         timeout: int,
         seed_assignments: dict[int, str] | None = None,
+        *,
+        usage_by_slot: list[list[int]] | None = None,
     ) -> FilledGrid | None:
         """Run the random-restart solve loop. Returns FilledGrid or None."""
         if seed_assignments is None:
             seed_assignments = {}
         rng = random.Random(seed)
+        usage_penalty = self._usage_penalty if usage_by_slot is not None else 0.0
 
         # Mutable state (reset per restart attempt)
         domains: list[int] = list(initial_domains)
@@ -534,6 +593,10 @@ class CSPFiller(GridFiller):
                 domain_indices,
                 scores_by_slot[best_slot],
                 rng,
+                usage_counts=(
+                    usage_by_slot[best_slot] if usage_by_slot is not None else None
+                ),
+                usage_penalty=usage_penalty,
             )
 
             for wi in ordered:

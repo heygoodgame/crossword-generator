@@ -64,6 +64,10 @@ class CSPFillerConfig(BaseModel):
     timeout: int = 30
     timeout_by_size: dict[int, int] | None = None
     quality_tiers: list[int] = [58, 52, 45]
+    # Soft value-ordering penalty for answers recently used in the daily
+    # schedule: score - k * log2(1 + uses). Only applied when usage counts are
+    # supplied (daily batches); never affects tier eligibility.
+    answer_usage_penalty: float = 4.0
 
 
 class FillConfig(BaseModel):
