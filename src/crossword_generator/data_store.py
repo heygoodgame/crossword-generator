@@ -7,7 +7,7 @@ import logging
 import os
 import re
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 from urllib.error import HTTPError
@@ -597,11 +597,18 @@ class RecentDailyAnswers:
     since_date: str | None
     forward_days: int | None = None
     until_date: str | None = None
+    # Per-answer count of scheduled daily slots (all games/tracks) that used
+    # the answer over ``count_window_days``. Empty when the server predates
+    # the counts extension; callers must degrade gracefully.
+    counts: dict[str, int] = field(default_factory=dict)
+    count_window_days: int | None = None
 
 
 def fetch_recent_daily_answers(
     *,
     window_days: int | None = None,
+    forward_days: int | None = None,
+    count_window_days: int | None = None,
     api_base: str | None = None,
     token: str | None = None,
     timeout: int = 60,
@@ -613,10 +620,23 @@ def fetch_recent_daily_answers(
     7) back through ``forward_days`` (server default 13) ahead. Batches
     exclude these from fill pools so new candidates don't collide with the
     +/-6-day no-repeat rule when scheduled.
+
+    When the server supports it, ``count_window_days`` (server default 90)
+    selects the lookback for the ``counts`` object — how many scheduled daily
+    slots used each answer — which the batch runner turns into a soft
+    usage penalty during fill. Older servers omit ``counts``; the returned
+    dict is then empty.
     """
     path = "/admin/crossword-puzzles/daily-answers/recent"
+    params: dict[str, int] = {}
     if window_days is not None:
-        path += f"?{urlencode({'window_days': window_days})}"
+        params["window_days"] = window_days
+    if forward_days is not None:
+        params["forward_days"] = forward_days
+    if count_window_days is not None:
+        params["count_window_days"] = count_window_days
+    if params:
+        path += f"?{urlencode(params)}"
     response = _request_json(
         "GET",
         path,
@@ -629,14 +649,32 @@ def fetch_recent_daily_answers(
         raise DataStoreError(
             f"Unexpected recent daily answers response shape: {response}"
         )
-    forward_days = response.get("forward_days")
+    forward_days_value = response.get("forward_days")
+    raw_counts = response.get("counts")
+    counts: dict[str, int] = {}
+    if isinstance(raw_counts, dict):
+        for answer, count in raw_counts.items():
+            key = str(answer).strip().upper()
+            try:
+                value = int(count)
+            except (TypeError, ValueError):
+                continue
+            if key and value > 0:
+                counts[key] = value
+    count_window_value = response.get("count_window_days")
     return RecentDailyAnswers(
         answers=[str(answer).strip().upper() for answer in answers],
         window_days=int(response.get("window_days", window_days or 0)),
         first_unscheduled_date=response.get("first_unscheduled_date"),
         since_date=response.get("since_date"),
-        forward_days=int(forward_days) if forward_days is not None else None,
+        forward_days=(
+            int(forward_days_value) if forward_days_value is not None else None
+        ),
         until_date=response.get("until_date"),
+        counts=counts,
+        count_window_days=(
+            int(count_window_value) if count_window_value is not None else None
+        ),
     )
 
 

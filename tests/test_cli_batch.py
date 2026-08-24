@@ -1,5 +1,6 @@
 """Tests for batch CLI helpers."""
 
+import json
 import logging
 import threading
 from pathlib import Path
@@ -180,7 +181,7 @@ def test_write_filtered_dictionary_removes_scheduled_words(
     output_root = tmp_path / "batch"
     output_root.mkdir()
 
-    path, removed = _write_filtered_dictionary(
+    path, removed, removed_variants = _write_filtered_dictionary(
         tmp_path,
         output_root,
         "hgg-60.txt",
@@ -189,9 +190,40 @@ def test_write_filtered_dictionary_removes_scheduled_words(
     )
 
     assert removed == 2
+    assert removed_variants == 0
     assert path == str(output_root / "hgg-60-scheduled-filtered.txt")
     assert (output_root / "hgg-60-scheduled-filtered.txt").read_text() == (
         "zucchini;60\n"
+    )
+
+
+def test_write_filtered_dictionary_counts_variant_rows_separately(
+    tmp_path,
+) -> None:
+    dictionaries = tmp_path / "dictionaries"
+    dictionaries.mkdir()
+    (dictionaries / "hgg-easy.txt").write_text(
+        "party;55\nparties;55\npartied;50\nart;60\narts;60\nzebra;55\n"
+    )
+    output_root = tmp_path / "batch"
+    output_root.mkdir()
+
+    path, removed, removed_variants = _write_filtered_dictionary(
+        tmp_path,
+        output_root,
+        "hgg-easy.txt",
+        ["PARTY", "ART"],
+        "hgg-easy-recent-filtered.txt",
+        # ART is a 3-letter base, so the caller would not have expanded it;
+        # ARTS is passed here only to prove the variant set is honoured and
+        # counted separately from base exclusions.
+        variant_answers=["PARTIES", "PARTIED", "ARTS", "PARTY"],
+    )
+
+    assert removed == 2
+    assert removed_variants == 3
+    assert (output_root / "hgg-easy-recent-filtered.txt").read_text() == (
+        "zebra;55\n"
     )
 
 
@@ -539,3 +571,181 @@ def test_used_answer_set_is_thread_safe() -> None:
         t.join()
 
     assert len(used.snapshot(min_length=4)) == 8 * 100
+
+
+def test_generate_pilot_batch_daily_exclusions_merge_windows_and_pass_counts(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    """Long window for 4+ letters, short window for glue, variants expanded,
+    and the server usage counts reach the fill step with the daily defaults."""
+    from crossword_generator.data_store import RecentDailyAnswers
+
+    fetch_calls: list[dict[str, object]] = []
+    run_kwargs: list[dict[str, object]] = []
+
+    def fake_fetch(**kwargs):
+        fetch_calls.append(kwargs)
+        if kwargs.get("window_days") == 7:
+            return RecentDailyAnswers(
+                answers=["ETA", "WALK", "ART"],
+                window_days=7,
+                first_unscheduled_date="2026-08-22",
+                since_date="2026-08-15",
+                forward_days=13,
+            )
+        return RecentDailyAnswers(
+            answers=["ERA", "PARTY", "WALK"],
+            window_days=30,
+            first_unscheduled_date="2026-08-22",
+            since_date="2026-07-23",
+            forward_days=13,
+            counts={"ETA": 7, "WALK": 2},
+            count_window_days=90,
+        )
+
+    def fake_run_batch_item(**kwargs):
+        run_kwargs.append(kwargs)
+        output_path = (
+            kwargs["output_root"] / "easy" / "5x5" / f"seed-{kwargs['seed']:03d}.ipuz"
+        )
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(
+            '{"solution":[["A","P","P","L","E"]],"clues":{"Across":[],"Down":[]}}'
+        )
+        return {
+            "difficulty": "easy",
+            "size": 5,
+            "seed": kwargs["seed"],
+            "success": True,
+            "runtime_seconds": 0.0,
+            "output_path": str(output_path),
+            "clue_score": 80.0,
+        }
+
+    import crossword_generator.data_store as data_store_module
+
+    monkeypatch.setattr(
+        data_store_module, "fetch_recent_daily_answers", fake_fetch
+    )
+    monkeypatch.setattr(cli_module, "_run_batch_item", fake_run_batch_item)
+
+    result = CliRunner().invoke(
+        main,
+        [
+            "generate-pilot-batch",
+            "--output-root", str(tmp_path / "batch"),
+            "--batch-id", "test-batch",
+            "--buckets", "easy/5",
+            "--count", "1",
+            "--seed-start", "1",
+            "--no-avoid-existing-clues",
+            "--no-refresh-dictionaries",
+            "--no-exclude-scheduled-sixty",
+            "--no-llm-log",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    # Two fetches: the 30-day (with counts) and the 7-day glue window.
+    assert [call["window_days"] for call in fetch_calls] == [30, 7]
+    assert fetch_calls[0]["count_window_days"] == 90
+    assert fetch_calls[0]["forward_days"] == 13
+
+    # Filtered dictionary: 4+ letter words from the long window, 3-letter
+    # words from the short window only, plus inflectional variants.
+    filtered = tmp_path / "batch" / "hgg-easy-recent-filtered.txt"
+    words = {
+        line.split(";", 1)[0].strip().upper()
+        for line in filtered.read_text().splitlines()
+        if line.strip()
+    }
+    assert {"PARTY", "WALK", "ETA", "ART"}.isdisjoint(words)
+    # Variants come from the 7-day list only: WALK's are excluded, but
+    # PARTY (30-day list only) keeps its inflections.
+    assert {"WALKS", "WALKED", "WALKING"}.isdisjoint(words)
+    assert "PARTIES" in words
+    # ERA is a 3-letter answer that appears only in the 30-day list; glue
+    # follows the 7-day window, so it stays available.
+    assert "ERA" in words
+
+    (kwargs,) = run_kwargs
+    assert kwargs["answer_usage_counts"] == {"ETA": 7, "WALK": 2}
+    assert kwargs["answer_novelty_candidates"] == 4
+    assert kwargs["answer_usage_penalty"] is None  # config default (4.0)
+
+    manifest = json.loads((tmp_path / "batch" / "manifest.json").read_text())
+    recent = manifest["exclude_recent_answers"]
+    assert recent["window_days"] == 30
+    assert recent["short_window_days"] == 7
+    assert recent["exclude_answer_variants"] is True
+    assert recent["variant_rows_removed_by_dictionary"]["hgg-easy.txt"] >= 1
+    assert manifest["daily_usage_penalty"]["applied"] is True
+    assert manifest["daily_usage_penalty"]["novelty_candidates"] == 4
+
+
+def test_generate_pilot_batch_degrades_without_server_counts(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    from crossword_generator.data_store import RecentDailyAnswers
+
+    run_kwargs: list[dict[str, object]] = []
+
+    def fake_fetch(**kwargs):
+        return RecentDailyAnswers(
+            answers=["WALK"],
+            window_days=kwargs.get("window_days") or 7,
+            first_unscheduled_date="2026-08-22",
+            since_date="2026-07-23",
+            forward_days=13,
+        )
+
+    def fake_run_batch_item(**kwargs):
+        run_kwargs.append(kwargs)
+        output_path = (
+            kwargs["output_root"] / "easy" / "5x5" / f"seed-{kwargs['seed']:03d}.ipuz"
+        )
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(
+            '{"solution":[["A","P","P","L","E"]],"clues":{"Across":[],"Down":[]}}'
+        )
+        return {
+            "difficulty": "easy",
+            "size": 5,
+            "seed": kwargs["seed"],
+            "success": True,
+            "runtime_seconds": 0.0,
+            "output_path": str(output_path),
+            "clue_score": 80.0,
+        }
+
+    import crossword_generator.data_store as data_store_module
+
+    monkeypatch.setattr(
+        data_store_module, "fetch_recent_daily_answers", fake_fetch
+    )
+    monkeypatch.setattr(cli_module, "_run_batch_item", fake_run_batch_item)
+
+    result = CliRunner().invoke(
+        main,
+        [
+            "generate-pilot-batch",
+            "--output-root", str(tmp_path / "batch"),
+            "--batch-id", "test-batch",
+            "--buckets", "easy/5",
+            "--count", "1",
+            "--seed-start", "1",
+            "--no-avoid-existing-clues",
+            "--no-refresh-dictionaries",
+            "--no-exclude-scheduled-sixty",
+            "--no-llm-log",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert "no daily usage counts" in result.output
+    (kwargs,) = run_kwargs
+    assert kwargs["answer_usage_counts"] is None
+    manifest = json.loads((tmp_path / "batch" / "manifest.json").read_text())
+    assert manifest["daily_usage_penalty"]["applied"] is False

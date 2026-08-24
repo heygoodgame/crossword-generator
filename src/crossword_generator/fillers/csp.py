@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import math
 import random
 import time
 from dataclasses import dataclass, field
@@ -124,15 +125,74 @@ def _iter_bits(n: int) -> list[int]:
     return bits
 
 
+def usage_weight(usage_count: int, penalty: float) -> float:
+    """Relative draw weight of a candidate given its recent schedule usage.
+
+    ``(1 + count) ** -penalty``: with the default penalty of 1.0 a word used
+    once in the count window is half as likely as a fresh word to be tried
+    first, a word used 7 times is 8x less likely, 15 times 16x less likely.
+
+    The weight drives a *weighted shuffle inside each raw-score tier* rather
+    than a deterministic score deduction. That distinction matters because
+    the production HGG lists are flat (every Easy word scores 50): a
+    deduction there degenerates into a strict sort by usage, and since ~95%
+    of the 3-letter pool carries a count, the CSP would try the 15 never-used
+    glue words first and time out on tight grids (the open 5x5 failed on
+    every seed). A weighted shuffle keeps overused words *less likely* to be
+    tried first without ever making them strictly last, and tier eligibility
+    still uses the raw dictionary score, so nothing becomes unfillable.
+    """
+    if usage_count <= 0 or penalty <= 0:
+        return 1.0
+    return (1.0 + usage_count) ** -penalty
+
+
+def _weighted_shuffle(
+    items: list[int],
+    weights: list[float],
+    rng: random.Random,
+) -> list[int]:
+    """Order ``items`` by weighted sampling without replacement.
+
+    Efraimidis-Spirakis: key = log(u) / w with u uniform(0, 1]; descending
+    keys give a draw order where each item's chance of coming next is
+    proportional to its weight.
+    """
+    keyed = []
+    for item, weight in zip(items, weights, strict=True):
+        u = rng.random() or 1e-12
+        keyed.append((math.log(u) / weight, item))
+    keyed.sort(reverse=True)
+    return [item for _, item in keyed]
+
+
 def _shuffle_within_tiers(
     indices: list[int],
     scores: list[int],
     rng: random.Random,
     tier_size: int = 10,
+    usage_counts: list[int] | None = None,
+    usage_penalty: float = 0.0,
 ) -> list[int]:
-    """Sort indices by score descending, then shuffle within 10-point tiers."""
+    """Sort indices by score descending, then shuffle within 10-point tiers.
+
+    When ``usage_counts`` (parallel to ``scores``) and a positive
+    ``usage_penalty`` are given, the shuffle inside each tier is weighted by
+    :func:`usage_weight`, so recently overused answers tend to be tried
+    later than fresh answers of the same quality.
+    """
     pairs = [(i, scores[i]) for i in indices]
     pairs.sort(key=lambda p: p[1], reverse=True)
+
+    weighted = usage_counts is not None and usage_penalty > 0
+
+    def _flush(tier: list[int]) -> list[int]:
+        if not weighted:
+            rng.shuffle(tier)
+            return tier
+        assert usage_counts is not None
+        weights = [usage_weight(usage_counts[i], usage_penalty) for i in tier]
+        return _weighted_shuffle(tier, weights, rng)
 
     result: list[int] = []
     tier: list[int] = []
@@ -143,15 +203,13 @@ def _shuffle_within_tiers(
         if tier_floor is None:
             tier_floor = floor
         if floor != tier_floor:
-            rng.shuffle(tier)
-            result.extend(tier)
+            result.extend(_flush(tier))
             tier = []
             tier_floor = floor
         tier.append(idx)
 
     if tier:
-        rng.shuffle(tier)
-        result.extend(tier)
+        result.extend(_flush(tier))
 
     return result
 
@@ -245,9 +303,28 @@ def map_seed_entries_to_slots(
 class CSPFiller(GridFiller):
     """Grid filler using constraint satisfaction with backtracking."""
 
-    def __init__(self, config: CSPFillerConfig, dictionary: Dictionary) -> None:
+    def __init__(
+        self,
+        config: CSPFillerConfig,
+        dictionary: Dictionary,
+        *,
+        answer_usage_counts: dict[str, int] | None = None,
+        answer_usage_penalty: float | None = None,
+    ) -> None:
         self._config = config
         self._dictionary = dictionary
+        # Recent-schedule usage per answer (uppercase). Drives a soft
+        # value-ordering penalty so globally overused fill is tried last.
+        self._usage_counts = {
+            str(answer).strip().upper(): int(count)
+            for answer, count in (answer_usage_counts or {}).items()
+            if int(count) > 0
+        }
+        self._usage_penalty = (
+            config.answer_usage_penalty
+            if answer_usage_penalty is None
+            else answer_usage_penalty
+        )
 
     @classmethod
     def from_config(cls, config: CSPFillerConfig) -> CSPFiller:
@@ -397,10 +474,17 @@ class CSPFiller(GridFiller):
 
             # Pre-compute word scores for value ordering
             scores_by_slot: list[list[int]] = []
+            usage_by_slot: list[list[int]] | None = None
+            if self._usage_counts and self._usage_penalty > 0:
+                usage_by_slot = []
             for slot_cands in candidates_by_slot:
                 scores_by_slot.append(
                     [self._dictionary.score(w) or 0 for w in slot_cands]
                 )
+                if usage_by_slot is not None:
+                    usage_by_slot.append(
+                        [self._usage_counts.get(w, 0) for w in slot_cands]
+                    )
 
             # Domains as bitsets
             initial_domains: list[int] = [
@@ -446,6 +530,7 @@ class CSPFiller(GridFiller):
                 spec, slots, candidates_by_slot, slot_li, tries,
                 scores_by_slot, initial_domains, black, seed, deadline,
                 timeout, seed_assignments,
+                usage_by_slot=usage_by_slot,
             )
             if result is not None:
                 return result
@@ -476,11 +561,14 @@ class CSPFiller(GridFiller):
         deadline: float,
         timeout: int,
         seed_assignments: dict[int, str] | None = None,
+        *,
+        usage_by_slot: list[list[int]] | None = None,
     ) -> FilledGrid | None:
         """Run the random-restart solve loop. Returns FilledGrid or None."""
         if seed_assignments is None:
             seed_assignments = {}
         rng = random.Random(seed)
+        usage_penalty = self._usage_penalty if usage_by_slot is not None else 0.0
 
         # Mutable state (reset per restart attempt)
         domains: list[int] = list(initial_domains)
@@ -534,6 +622,10 @@ class CSPFiller(GridFiller):
                 domain_indices,
                 scores_by_slot[best_slot],
                 rng,
+                usage_counts=(
+                    usage_by_slot[best_slot] if usage_by_slot is not None else None
+                ),
+                usage_penalty=usage_penalty,
             )
 
             for wi in ordered:
