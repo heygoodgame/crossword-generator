@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 import random
 from dataclasses import dataclass
 
@@ -725,11 +726,38 @@ def get_grid_patterns(
     return patterns
 
 
+def _apply_short_slot_bias(
+    size: int,
+    patterns: tuple[list[tuple[int, int]], ...],
+    weights: tuple[int, ...],
+    strength: float,
+) -> tuple[float, ...]:
+    """Down-weight patterns in proportion to their 3-letter slot count.
+
+    Each pattern's catalog weight is multiplied by
+    ``exp(-strength * (threes - fewest_threes))``, so the leanest grids in
+    the catalog keep their full weight and heavier ones decay smoothly.
+    Anchoring on the catalog minimum keeps the curve meaningful for sizes
+    like 9x9, where every pattern has a large absolute 3-letter count.
+    """
+    three_counts = [
+        sum(1 for length in _slot_lengths(size, tuple(sorted(black_cells)))
+            if length == 3)
+        for black_cells in patterns
+    ]
+    fewest = min(three_counts)
+    return tuple(
+        weight * math.exp(-strength * (threes - fewest))
+        for weight, threes in zip(weights, three_counts)
+    )
+
+
 def get_grid_spec(
     puzzle_type: PuzzleType | str,
     grid_size: int,
     *,
     seed: int | None = None,
+    short_slot_bias: float = 0.0,
 ) -> GridSpec:
     """Return a GridSpec for the given puzzle type and size.
 
@@ -739,6 +767,11 @@ def get_grid_spec(
         seed: Optional seed to randomly select a black cell pattern
               using weighted sampling. When None, uses the most common
               pattern as default.
+        short_slot_bias: Strength of the penalty applied to patterns with
+              many 3-letter slots. 0.0 (default) leaves the catalog
+              weights untouched. Larger values shift selection toward
+              grids with fewer 3-letter answers. Only affects seeded
+              (weighted) selection.
 
     Returns:
         GridSpec with the appropriate rows, cols, and black cells.
@@ -762,6 +795,10 @@ def get_grid_spec(
     if pattern_data:
         if seed is not None:
             patterns, weights = zip(*pattern_data)
+            if short_slot_bias:
+                weights = _apply_short_slot_bias(
+                    rows, patterns, weights, short_slot_bias
+                )
             rng = random.Random(seed)
             black_cells = rng.choices(patterns, weights=weights, k=1)[0]
         else:

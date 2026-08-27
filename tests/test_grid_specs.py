@@ -7,7 +7,11 @@ from crossword_generator.grid_pattern_validation import (
     validate_pattern,
     validate_weighted_patterns,
 )
-from crossword_generator.grid_specs import get_grid_patterns, get_grid_spec
+from crossword_generator.grid_specs import (
+    _slot_lengths,
+    get_grid_patterns,
+    get_grid_spec,
+)
 from crossword_generator.models import PuzzleType
 
 
@@ -432,3 +436,41 @@ def _long_slot_count(
                 count += 1
 
     return count
+
+
+class TestShortSlotBias:
+    """Weighted selection can be biased away from 3-letter-heavy grids."""
+
+    @staticmethod
+    def _mean_three_slots(bias: float, samples: int = 500) -> float:
+        counts = []
+        for seed in range(samples):
+            spec = get_grid_spec(
+                PuzzleType.MIDI, 9, seed=seed, short_slot_bias=bias
+            )
+            lengths = _slot_lengths(9, tuple(sorted(spec.black_cells)))
+            counts.append(sum(1 for length in lengths if length == 3))
+        return sum(counts) / len(counts)
+
+    def test_bias_reduces_three_letter_slots(self) -> None:
+        assert self._mean_three_slots(0.5) < self._mean_three_slots(0.0) - 1.0
+
+    def test_zero_bias_matches_unbiased_selection(self) -> None:
+        for seed in range(200):
+            assert (
+                get_grid_spec(PuzzleType.MINI, 7, seed=seed).black_cells
+                == get_grid_spec(
+                    PuzzleType.MINI, 7, seed=seed, short_slot_bias=0.0
+                ).black_cells
+            )
+
+    def test_bias_preserves_grid_variety(self) -> None:
+        grids = {
+            tuple(sorted(
+                get_grid_spec(
+                    PuzzleType.MIDI, 9, seed=seed, short_slot_bias=0.5
+                ).black_cells
+            ))
+            for seed in range(300)
+        }
+        assert len(grids) > 20

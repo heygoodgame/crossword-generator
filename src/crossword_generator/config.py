@@ -79,6 +79,11 @@ class FillConfig(BaseModel):
     max_retries: int = 5
     max_grid_variants: int = 100
     max_long_entries_8_9: int | None = None
+    # Down-weights grid patterns in proportion to how many 3-letter slots
+    # they contain, so a batch leans on grids with fewer 3-letter answers.
+    # 0.0 keeps the raw catalog weights. Each pattern's weight is scaled by
+    # exp(-bias * (threes - fewest_threes_in_catalog)).
+    short_slot_bias: float = 0.0
     csp: CSPFillerConfig = CSPFillerConfig()
 
 
