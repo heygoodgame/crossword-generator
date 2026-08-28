@@ -356,6 +356,7 @@ def create_pipeline(
         max_grid_variants=config.fill.max_grid_variants,
         max_long_entries_8_9=config.fill.max_long_entries_8_9,
         short_slot_bias=config.fill.short_slot_bias,
+        four_glut_bias=config.fill.four_glut_bias,
         retry_on_fail=config.grading.fill.retry_on_fail,
         collect_boards=config.grading.fill.collect_boards,
         llm_select=config.grading.fill.llm_select,

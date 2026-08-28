@@ -86,6 +86,7 @@ def _prescan_grid_signatures(
     base_seed: int | None,
     num_variants: int,
     short_slot_bias: float = 0.0,
+    four_glut_bias: float = 0.0,
 ) -> list[SignatureGroup]:
     """Scan grid variants and group them by slot-length signature.
 
@@ -100,6 +101,7 @@ def _prescan_grid_signatures(
             grid_size,
             seed=grid_seed,
             short_slot_bias=short_slot_bias,
+            four_glut_bias=four_glut_bias,
         )
         black = set(spec.black_cells)
         slots = extract_slots(spec.rows, spec.cols, black)
@@ -487,6 +489,7 @@ class FillWithGradingStep(PipelineStep):
         max_grid_variants: int = 100,
         max_long_entries_8_9: int | None = None,
         short_slot_bias: float = 0.0,
+        four_glut_bias: float = 0.0,
         retry_on_fail: bool = True,
         collect_boards: int = 1,
         llm_select: bool = False,
@@ -503,6 +506,7 @@ class FillWithGradingStep(PipelineStep):
         self._max_grid_variants = max_grid_variants
         self._max_long_entries_8_9 = max_long_entries_8_9
         self._short_slot_bias = short_slot_bias
+        self._four_glut_bias = four_glut_bias
         self._retry_on_fail = retry_on_fail
         self._collect_boards = collect_boards
         self._llm_select = llm_select
@@ -761,6 +765,7 @@ class FillWithGradingStep(PipelineStep):
             base_seed,
             self._max_grid_variants,
             self._short_slot_bias,
+            self._four_glut_bias,
         )
 
         max_seed_size = min(len(ranked_words), 4)
@@ -930,6 +935,7 @@ class FillWithGradingStep(PipelineStep):
                 envelope.grid_size,
                 seed=grid_seed,
                 short_slot_bias=self._short_slot_bias,
+                four_glut_bias=self._four_glut_bias,
             )
 
             long_entry_count = _long_entry_count_8_9(spec)
@@ -1035,6 +1041,7 @@ class FillWithGradingStep(PipelineStep):
                 envelope.grid_size,
                 seed=grid_seed,
                 short_slot_bias=self._short_slot_bias,
+                four_glut_bias=self._four_glut_bias,
             )
 
             long_entry_count = _long_entry_count_8_9(spec)

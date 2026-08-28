@@ -84,6 +84,10 @@ class FillConfig(BaseModel):
     # 0.0 keeps the raw catalog weights. Each pattern's weight is scaled by
     # exp(-bias * (threes - fewest_threes_in_catalog)).
     short_slot_bias: float = 0.0
+    # Penalty on grids with more than 12 four-letter slots. Pair with
+    # short_slot_bias: penalizing 3-letter slots alone steers toward
+    # 4-letter-saturated grids, which fail Hard fill (hard_cross).
+    four_glut_bias: float = 0.0
     csp: CSPFillerConfig = CSPFillerConfig()
 
 

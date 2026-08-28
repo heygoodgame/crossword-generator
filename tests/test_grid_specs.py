@@ -474,3 +474,57 @@ class TestShortSlotBias:
             for seed in range(300)
         }
         assert len(grids) > 20
+
+
+class TestFourGlutBias:
+    """The 4-letter-glut penalty counteracts the 3-letter penalty.
+
+    Penalizing 3-letter slots alone steers 9x9 selection toward
+    4-letter-saturated grids with no mid-length slots, which fail Hard
+    fill by forcing two Jeff Hard-list entries to cross.
+    """
+
+    @staticmethod
+    def _rates(b3: float, b4: float, samples: int = 400) -> tuple[float, float]:
+        zero_five = 0
+        heavy_four = 0
+        for seed in range(samples):
+            spec = get_grid_spec(
+                PuzzleType.MIDI,
+                9,
+                seed=seed,
+                short_slot_bias=b3,
+                four_glut_bias=b4,
+            )
+            lengths = _slot_lengths(9, tuple(sorted(spec.black_cells)))
+            if not any(length == 5 for length in lengths):
+                zero_five += 1
+            if sum(1 for length in lengths if length == 4) >= 16:
+                heavy_four += 1
+        return zero_five / samples, heavy_four / samples
+
+    def test_three_penalty_alone_causes_four_glut(self) -> None:
+        base_zero5, base_heavy4 = self._rates(0.0, 0.0)
+        biased_zero5, biased_heavy4 = self._rates(0.5, 0.0)
+        assert biased_zero5 > base_zero5 * 2
+        assert biased_heavy4 > base_heavy4 * 2
+
+    def test_glut_penalty_restores_safety(self) -> None:
+        base_zero5, base_heavy4 = self._rates(0.0, 0.0)
+        fixed_zero5, fixed_heavy4 = self._rates(0.5, 0.5)
+        assert fixed_zero5 <= base_zero5
+        assert fixed_heavy4 <= base_heavy4
+
+    def test_glut_penalty_keeps_three_letter_reduction(self) -> None:
+        counts = []
+        for seed in range(400):
+            spec = get_grid_spec(
+                PuzzleType.MIDI,
+                9,
+                seed=seed,
+                short_slot_bias=0.5,
+                four_glut_bias=0.5,
+            )
+            lengths = _slot_lengths(9, tuple(sorted(spec.black_cells)))
+            counts.append(sum(1 for length in lengths if length == 3))
+        assert sum(counts) / len(counts) < 12.5
