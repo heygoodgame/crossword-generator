@@ -19,6 +19,13 @@ fill:
   max_retries: 5
   max_grid_variants: 100
   max_long_entries_8_9: 3
+  # Bias grid selection away from patterns with many 3-letter slots.
+  # exp(-0.5 * (threes - catalog_min)) drops the expected 3-letter slot
+  # count on 9x9 from ~13.6 to ~10.5 while keeping grid variety.
+  short_slot_bias: 0.5
+  # Counterweight: without this, the 3-letter penalty steers toward
+  # 4-letter-saturated grids that fail Hard fill via hard_cross.
+  four_glut_bias: 0.5
   csp:
     dictionary_path: dictionaries/hgg-easy.txt
     min_word_score: 50

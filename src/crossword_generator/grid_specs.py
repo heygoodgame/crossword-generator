@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 import random
 from dataclasses import dataclass
 
@@ -725,11 +726,54 @@ def get_grid_patterns(
     return patterns
 
 
+def _apply_short_slot_bias(
+    size: int,
+    patterns: tuple[list[tuple[int, int]], ...],
+    weights: tuple[int, ...],
+    strength: float,
+    glut_strength: float = 0.0,
+    glut_threshold: int = 12,
+) -> tuple[float, ...]:
+    """Down-weight 3-letter-heavy patterns, and 4-letter-glut patterns.
+
+    Each pattern's catalog weight is multiplied by
+    ``exp(-strength * (threes - fewest_threes))``, so the leanest grids in
+    the catalog keep their full weight and heavier ones decay smoothly.
+    Anchoring on the catalog minimum keeps the curve meaningful for sizes
+    like 9x9, where every pattern has a large absolute 3-letter count.
+
+    The 3-letter penalty alone is not safe on its own: in the 9x9 catalog,
+    fewer 3-letter slots almost always means *more* 4-letter slots (only 6
+    of 47 patterns have both few threes and a healthy 5-letter count).
+    Grids saturated with 4-letter slots and no mid-length slots are the ones
+    that fail Hard fill — the pool cannot supply that many 4-letter answers
+    without forcing two Jeff Hard-list entries to cross. So patterns with
+    more than ``glut_threshold`` 4-letter slots take a second penalty of
+    ``exp(-glut_strength * (fours - glut_threshold))``.
+    """
+    three_counts: list[int] = []
+    four_counts: list[int] = []
+    for black_cells in patterns:
+        lengths = _slot_lengths(size, tuple(sorted(black_cells)))
+        three_counts.append(sum(1 for length in lengths if length == 3))
+        four_counts.append(sum(1 for length in lengths if length == 4))
+
+    fewest = min(three_counts)
+    return tuple(
+        weight
+        * math.exp(-strength * (threes - fewest))
+        * math.exp(-glut_strength * max(0, fours - glut_threshold))
+        for weight, threes, fours in zip(weights, three_counts, four_counts)
+    )
+
+
 def get_grid_spec(
     puzzle_type: PuzzleType | str,
     grid_size: int,
     *,
     seed: int | None = None,
+    short_slot_bias: float = 0.0,
+    four_glut_bias: float = 0.0,
 ) -> GridSpec:
     """Return a GridSpec for the given puzzle type and size.
 
@@ -739,6 +783,16 @@ def get_grid_spec(
         seed: Optional seed to randomly select a black cell pattern
               using weighted sampling. When None, uses the most common
               pattern as default.
+        short_slot_bias: Strength of the penalty applied to patterns with
+              many 3-letter slots. 0.0 (default) leaves the catalog
+              weights untouched. Larger values shift selection toward
+              grids with fewer 3-letter answers. Only affects seeded
+              (weighted) selection.
+        four_glut_bias: Strength of the penalty applied to patterns with
+              more than 12 four-letter slots. Pair this with
+              short_slot_bias: penalizing 3-letter slots alone pushes
+              selection toward 4-letter-saturated grids, which fail Hard
+              fill by forcing Jeff Hard-list entries to cross.
 
     Returns:
         GridSpec with the appropriate rows, cols, and black cells.
@@ -762,6 +816,14 @@ def get_grid_spec(
     if pattern_data:
         if seed is not None:
             patterns, weights = zip(*pattern_data)
+            if short_slot_bias or four_glut_bias:
+                weights = _apply_short_slot_bias(
+                    rows,
+                    patterns,
+                    weights,
+                    short_slot_bias,
+                    four_glut_bias,
+                )
             rng = random.Random(seed)
             black_cells = rng.choices(patterns, weights=weights, k=1)[0]
         else:
