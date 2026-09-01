@@ -37,11 +37,23 @@ uploads.
   - DAILY (consecutive calendar slots): use the DEFAULT flags — do NOT pass any
     `--no-*` flag. Intra-batch dedup, recent-answer exclusion, and
     scheduled-sixty exclusion all stay ON; use `--max-workers 1`. Run
-    `check-batch-answers` BEFORE upload, but read its summary: `short-window`
-    dupes (3-letter answers in 9x9s) are ACCEPTABLE — the scheduler spaces
-    them, so `0 blocking, K short-window` means upload as-is (settled operator
-    decision, do NOT regenerate for those). Only regenerate when there are
-    `blocking` dupes (>=4-letter shared answers). Upload as draft candidates
+    `check-batch-answers` BEFORE upload and read its summary. It judges
+    3-letter 9x9 repeats against the scheduler's +/-2-day window ASSUMING
+    THE SET IS SCHEDULED IN SEED ORDER (each puzzle's day = its seed rank in
+    its bucket, easy/hard tracks aligned by day): `short-window` = the two
+    puzzles are 3+ days apart in that order (fine — upload as-is);
+    `blocking` = a >=4-letter shared answer OR a 3-letter repeat within 2
+    days. Regenerate only blocking offenders, as a continuation run with
+    `--prior-batch-manifest <manifest>` (seeds the used-answer counts so the
+    new puzzles take the next days) — never with `--exclude-answers-min-length
+    3`, which starves 9x9 fill (2026-09-01: puzzle 5 of 7 ran >4h and failed).
+    The generator enforces the same window while filling
+    (`--intra-batch-short-window 2`, soft `--intra-batch-short-penalty`,
+    backstop `--intra-batch-short-cap`), so a clean run usually gates clean.
+    Tell the scheduler to place each bucket in seed order. Jeff (2026-09-01):
+    a set where ALL/TED/OWE each hit 3-4 puzzles could only fill 2 of 7 open
+    slots, so multiplicity/spacing — not pairwise repeats — is the constraint.
+    Upload as draft candidates
     with `save-generated-puzzles`; the admin
     schedules them (there is no "proposed" status — daily slots become
     `scheduled` only when actually scheduled, via the admin `schedule-daily`
