@@ -708,46 +708,80 @@ uv run crossword-generator check-batch-answers \
 ```
 
 It exits non-zero when any cross-puzzle duplicate exists, and labels each as
-either **blocking** or **short-window**:
+either **blocking** or **short-window**. The labels assume the set will be
+scheduled in **seed order**: each puzzle's *day* is its seed rank within its
+bucket (day 1 = lowest seed), and the easy/hard tracks are aligned by day.
+That is also the order the generator enforced while filling (below), so a
+clean run normally gates clean.
 
-- **`short-window` (acceptable — do NOT regenerate):** 3-letter answers
-  confined to 9x9 puzzles. The scheduler spaces these out (it allows 3-letter
-  9x9 repeats 3+ days apart), so a week with only short-window dupes uploads
-  fine and schedules without manual care. This is the common case for hard 9x9
-  weeks — the weighted grids + biased CSP fill collide on short glue (ADS, IPO,
-  EAR, AND…), and intra-batch dedup deliberately ignores <=3-letter answers
-  (`--exclude-answers-min-length` default 4) because excluding them makes 9x9
-  grids unfillable. Operator decision (Jeff, June 2026): a non-zero gate exit
-  whose dupes are ALL short-window is NOT a blocker — proceed to upload. (This
-  has been re-litigated repeatedly; it is settled.)
-- **`blocking` (must fix):** any duplicate that is NOT short-window — i.e. a
-  >=4-letter answer shared by two puzzles, or any shared answer the scheduler's
-  windows would actually collide on. The gate prints a `N blocking` count;
-  if it is `0 blocking`, upload regardless of the non-zero exit.
+- **`short-window` (acceptable — do NOT regenerate):** a 3-letter answer
+  shared only by 9x9 puzzles whose days are 3+ apart. hey-you allows
+  3-letter 9x9 repeats outside a +/-2-day window, so these schedule fine as
+  long as the buckets are placed in seed order.
+- **`blocking` (must fix):** a >=4-letter answer shared by two puzzles, a
+  3-letter answer shared with a mini, or a 3-letter 9x9 repeat whose puzzles
+  are within 2 days of each other in seed order (cross-track counts: easy
+  day 3 and hard day 4 share calendar days).
 
-So: read the summary line. `0 blocking, K short-window` → upload as-is. Any
-blocking dupes → regenerate the affected puzzles (same batch id, same seeds,
-separate `-replace-*` output root, the affected `--buckets`), passing the
-batch answers file so the refill cannot reuse any answer already in the
-batch:
+Why spacing rather than "pairwise is fine" (Jeff, 2026-09-01): the easy set
+from `daily-midi-9x9-2026-08-31` had ALL in four puzzles and TED/ATE/OWE in
+three each; after editing, only 2 of 7 could be placed into 7 open October
+slots, because a word in N puzzles needs ~3(N-1) days of spread. Pairwise
+repeats are not enough either — the first `cap=2` run of 2026-09-01 had only
+pairwise repeats yet no ordering into 7 consecutive days existed. The
+scheduler's actual window, applied to a concrete order, is the constraint.
+
+### How the generator keeps a weekly set schedulable
+
+Intra-batch dedup (`--intra-batch-dedup`, default on) tracks every completed
+batch-mate's answers with its size and day:
+
+- 4+ letter answers (`--exclude-answers-min-length`, default 4) are removed
+  from every later puzzle's fill pool after one use.
+- 3-letter glue follows three softer rules instead of a hard exclusion:
+  - `--intra-batch-short-window` (default 2): glue used by a same-size
+    batch-mate within +/-2 days (seed order) is excluded — at most ~2
+    puzzles' glue per track at a time, cheap for the CSP.
+  - `--intra-batch-short-penalty` (default 8.0): every prior batch use adds
+    8 to the answer's usage count in the CSP's existing weighted value
+    ordering and best-of-N board pick, so a once-used ALL/OWE is ~9x less
+    likely to be tried first anywhere in the set, but never unfillable.
+  - `--intra-batch-short-cap` (default 3): backstop — a glue word used in
+    that many puzzles is excluded regardless of spacing.
+
+Do NOT reach for `--exclude-answers-min-length 3` on 9x9 batches to force
+zero repeats: measured 2026-09-01 on easy/9, per-puzzle fill went
+6 → 10 → 20 → 27 min and puzzle 5 spent 4h20m failing 286/400 grid variants
+before being killed. The window policy filled the same positions in 3-12 min
+each with only pairwise, 3+-day-spaced repeats.
+
+### Fixing blocking duplicates
+
+Regenerate only the offending puzzles as a **continuation** of the batch:
+drop them from the manifest, then run the same bucket with
+`--prior-batch-manifest` so the kept puzzles seed the used-answer counts and
+the new puzzles take the next days (use a `--seed-start` above the kept
+seeds so seed rank stays consistent):
 
 ```bash
 uv run crossword-generator generate-pilot-batch \
-  --output-root output/batches/<batch-id>-replace-<bucket> \
+  --output-root output/batches/<batch-id>-cont \
   --batch-id <batch-id> \
   --buckets <difficulty>/<size> \
-  --count 1 \
-  --seed-start <original-seed> \
-  --exclude-answers-file output/batches/<batch-id>/batch-answers.txt \
+  --count <missing> \
+  --seed-start <highest-kept-seed + 1> \
+  --prior-batch-manifest output/batches/<batch-id>/manifest.json \
+  --max-workers 1 \
   --llm claude
 ```
 
-The same seed refills differently because the pool changed. Re-run
-`check-batch-answers` across the combined set (kept + replacements) until
-clean, then upload the main manifest and the replacement manifests (the
-replacement upload overwrites the deterministic keys when the originals were
-already uploaded; for a fresh batch, upload main first, then replacements
-with `--replace-existing`).
+Merge the continuation results into the main manifest (match on
+`(difficulty, seed)` — seeds repeat across buckets), re-run
+`check-batch-answers`, and upload the merged manifest. `--prior-batch-manifest`
+is also the crash-resume path: if a run dies before writing `manifest.json`,
+synthesize one from the per-seed intermediates (`fill.quality_score`,
+`clue_grade_report.overall_score`, `title`, `errors` → `error_message`; check
+`fill.grade_report.passing`) and continue from it.
 
 ## Answer Scans Before Upload
 

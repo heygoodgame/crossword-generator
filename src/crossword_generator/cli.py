@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import itertools
 import json
 import logging
 import random
@@ -33,6 +34,10 @@ DEFAULT_EASY_EXCLUDE_SOURCES = (
     "dictionaries/XwiJeffChenList-NotFamilyFriendly.txt",
     "dictionaries/HggGeneratedSafetyExclude.txt",
 )
+
+# hey-you allows a 3-letter answer to repeat between 9x9 dailies placed more
+# than this many days apart (CrosswordPuzzleController's short-answer window).
+SHORT_ANSWER_WINDOW_DAYS = 2
 
 
 @click.group()
@@ -487,6 +492,56 @@ def generate(
     ),
 )
 @click.option(
+    "--prior-batch-manifest",
+    "prior_batch_manifests",
+    multiple=True,
+    type=click.Path(exists=True, dir_okay=False),
+    help=(
+        "Seed the intra-batch used-answer counts from the successful puzzles "
+        "in a prior run's manifest, so a continuation or crash-resume run "
+        "treats those puzzles as batch-mates (4+ letter answers excluded, "
+        "short glue capped/penalised by exact multiplicity). Repeatable."
+    ),
+)
+@click.option(
+    "--intra-batch-short-window",
+    type=int,
+    default=SHORT_ANSWER_WINDOW_DAYS,
+    help=(
+        "Intra-batch dedup: exclude an answer shorter than "
+        "--exclude-answers-min-length from a puzzle's fill pool when a "
+        "same-size batch-mate within this many days already used it, where "
+        "a puzzle's day is its seed-order position in its bucket. Mirrors "
+        "the scheduler's +/-2-day 3-letter window so a weekly set scheduled "
+        "in seed order never trips it, while only ~2 puzzles' glue per track "
+        "is ever excluded at once. 0 disables."
+    ),
+)
+@click.option(
+    "--intra-batch-short-cap",
+    type=int,
+    default=3,
+    help=(
+        "Intra-batch dedup backstop: how many puzzles in this batch may "
+        "share an answer shorter than --exclude-answers-min-length, "
+        "regardless of spacing, before it is dropped from later fill pools. "
+        "0 disables the cap."
+    ),
+)
+@click.option(
+    "--intra-batch-short-penalty",
+    type=float,
+    default=8.0,
+    help=(
+        "Intra-batch dedup: synthetic usage count added per prior batch use "
+        "of an answer shorter than --exclude-answers-min-length, merged into "
+        "the CSP's weighted value ordering and best-of-N board pick (same "
+        "(1+uses)^-penalty weighting as --daily-usage-penalty). At the "
+        "default a once-used glue word is ~9x less likely than a fresh one "
+        "to be tried first, but stays fillable. 0 disables."
+    ),
+)
+@click.option(
     "--unlimited-answer-novelty/--no-unlimited-answer-novelty",
     default=True,
     help=(
@@ -607,6 +662,10 @@ def generate_pilot_batch(
     exclude_answers_files: tuple[str, ...],
     exclude_answers_min_length: int,
     intra_batch_dedup: bool,
+    prior_batch_manifests: tuple[str, ...],
+    intra_batch_short_window: int,
+    intra_batch_short_cap: int,
+    intra_batch_short_penalty: float,
     unlimited_answer_novelty: bool,
     answer_novelty_candidates: int,
     daily_usage_penalty: float | None,
@@ -633,6 +692,12 @@ def generate_pilot_batch(
         raise click.BadParameter("--recent-*-days must be >= 0")
     if daily_usage_penalty is not None and daily_usage_penalty < 0:
         raise click.BadParameter("--daily-usage-penalty must be >= 0")
+    if intra_batch_short_window < 0:
+        raise click.BadParameter("--intra-batch-short-window must be >= 0")
+    if intra_batch_short_cap < 0:
+        raise click.BadParameter("--intra-batch-short-cap must be >= 0")
+    if intra_batch_short_penalty < 0:
+        raise click.BadParameter("--intra-batch-short-penalty must be >= 0")
 
     project_root = find_project_root()
     root = Path(output_root)
@@ -938,6 +1003,45 @@ def generate_pilot_batch(
     # can't see in-flight batch-mates; check-batch-answers catches the
     # residue after the run.
     used_answers = _UsedAnswerSet()
+    # A puzzle's "day" is its seed-order position within its bucket — the
+    # order a weekly set is scheduled in. Prior-manifest puzzles occupy the
+    # first days of their bucket; this run's items continue after them.
+    prior_by_bucket: dict[tuple[str, int], list[tuple[int, Path]]] = {}
+    for prior_manifest in prior_batch_manifests:
+        prior = json.loads(Path(prior_manifest).read_text())
+        for prior_result in prior.get("results", []):
+            if not prior_result.get("success"):
+                continue
+            prior_path = Path(str(prior_result.get("output_path", "")))
+            if not prior_path.is_absolute():
+                prior_path = Path(prior_manifest).parent / prior_path
+            bucket = (str(prior_result["difficulty"]), int(prior_result["size"]))
+            prior_by_bucket.setdefault(bucket, []).append(
+                (int(prior_result["seed"]), prior_path)
+            )
+    prior_puzzles_seeded = 0
+    for bucket, entries in prior_by_bucket.items():
+        for day, (_, prior_path) in enumerate(sorted(entries)):
+            try:
+                prior_puzzle = json.loads(prior_path.read_text())
+            except (OSError, json.JSONDecodeError) as exc:
+                raise click.ClickException(
+                    f"Could not read prior batch puzzle {prior_path}: {exc}"
+                ) from exc
+            used_answers.add(
+                extract_ipuz_answers(prior_puzzle), size=bucket[1], day=day
+            )
+            prior_puzzles_seeded += 1
+    if prior_batch_manifests:
+        click.echo(
+            f"Seeded intra-batch used answers from {prior_puzzles_seeded} "
+            f"prior puzzle(s) in {len(prior_batch_manifests)} manifest(s)."
+        )
+    day_by_item: dict[tuple[str, int, int], int] = {}
+    for difficulty, size, _, _, seed in work_items:
+        day_by_item[(difficulty, size, seed)] = len(
+            prior_by_bucket.get((difficulty, size), [])
+        ) + (seed - seed_start)
     novelty_active = unlimited_answer_novelty and not intra_batch_dedup
     # Daily runs: global per-answer schedule usage over the count window.
     # Unlike the hard recent-window exclusion this is a soft signal (CSP
@@ -948,11 +1052,29 @@ def generate_pilot_batch(
         if recent_meta is not None and not novelty_active
         else {}
     )
-    daily_penalty_active = bool(daily_usage_counts) and (
-        daily_usage_penalty is None or daily_usage_penalty > 0
-    )
+    usage_penalty_enabled = daily_usage_penalty is None or daily_usage_penalty > 0
+    daily_penalty_active = bool(daily_usage_counts) and usage_penalty_enabled
     if daily_usage_counts and not daily_penalty_active:
         click.echo("Daily usage penalty disabled (--daily-usage-penalty 0).")
+    # Short glue used by completed batch-mates rides the same weighted value
+    # ordering as the schedule counts instead of being hard-excluded, so a
+    # week's fills try hard not to repeat ETA/ALL/OWE while staying fillable.
+    short_penalty_active = (
+        intra_batch_dedup
+        and not novelty_active
+        and intra_batch_short_penalty > 0
+        and usage_penalty_enabled
+    )
+    if intra_batch_dedup and not novelty_active:
+        short_penalty_label = (
+            intra_batch_short_penalty if short_penalty_active else "off"
+        )
+        click.echo(
+            "Intra-batch short-answer policy: seed-order window "
+            f"+/-{intra_batch_short_window or 'off'} day(s), cap "
+            f"{intra_batch_short_cap or 'off'} puzzle(s) per answer, "
+            f"soft penalty {short_penalty_label}."
+        )
     answer_usage_by_bucket: dict[tuple[str, int], _AnswerUsageCounter] = {}
     if novelty_active:
         try:
@@ -996,6 +1118,19 @@ def generate_pilot_batch(
             if size in (5, 7)
             else exclude_answers_min_length
         )
+        item_usage_counts: dict[str, int] | None
+        if novelty_active and (difficulty, size) in answer_usage_by_bucket:
+            item_usage_counts = answer_usage_by_bucket[(difficulty, size)].snapshot()
+        else:
+            item_usage_counts = dict(daily_usage_counts) if daily_penalty_active else {}
+            if short_penalty_active:
+                for answer, uses in used_answers.short_counts(
+                    min_length=item_min_length
+                ).items():
+                    boost = int(round(uses * intra_batch_short_penalty))
+                    item_usage_counts[answer] = item_usage_counts.get(answer, 0) + boost
+            if not item_usage_counts:
+                item_usage_counts = None
         result = _run_batch_item(
             difficulty=difficulty,
             size=size,
@@ -1012,14 +1147,14 @@ def generate_pilot_batch(
             llm_logging_enabled=not no_llm_log,
             dictionary_overrides=dictionary_overrides,
             keep_sweep_context=max_workers > 1,
-            excluded_fill_words=used_answers.snapshot(min_length=item_min_length),
-            answer_usage_counts=(
-                answer_usage_by_bucket[(difficulty, size)].snapshot()
-                if novelty_active and (difficulty, size) in answer_usage_by_bucket
-                else daily_usage_counts
-                if daily_penalty_active
-                else None
+            excluded_fill_words=used_answers.snapshot(
+                min_length=item_min_length,
+                short_cap=intra_batch_short_cap if intra_batch_dedup else 0,
+                short_window=intra_batch_short_window if intra_batch_dedup else 0,
+                size=size,
+                day=day_by_item[(difficulty, size, seed)],
             ),
+            answer_usage_counts=item_usage_counts,
             answer_novelty_candidates=(
                 answer_novelty_candidates
                 if novelty_active
@@ -1031,7 +1166,7 @@ def generate_pilot_batch(
                 0.0
                 if novelty_active
                 else daily_usage_penalty
-                if daily_penalty_active
+                if item_usage_counts
                 else None
             ),
         )
@@ -1040,7 +1175,11 @@ def generate_pilot_batch(
                 puzzle = json.loads(
                     Path(str(result["output_path"])).read_text()
                 )
-                used_answers.add(extract_ipuz_answers(puzzle))
+                used_answers.add(
+                    extract_ipuz_answers(puzzle),
+                    size=size,
+                    day=day_by_item[(difficulty, size, seed)],
+                )
             except (OSError, json.JSONDecodeError):
                 logging.getLogger(__name__).warning(
                     "Could not index answers from %s for in-batch "
@@ -1164,6 +1303,16 @@ def generate_pilot_batch(
             "min_length": exclude_answers_min_length,
         },
         "intra_batch_dedup": intra_batch_dedup,
+        "intra_batch_short_policy": {
+            "window_days": intra_batch_short_window,
+            "cap": intra_batch_short_cap,
+            "penalty": intra_batch_short_penalty,
+            "penalty_applied": short_penalty_active,
+        },
+        "prior_batch_manifests": {
+            "paths": list(prior_batch_manifests),
+            "puzzles_seeded": prior_puzzles_seeded,
+        },
         "unlimited_answer_novelty": {
             "enabled": unlimited_answer_novelty,
             "active": novelty_active,
@@ -1267,32 +1416,74 @@ SHORT_ANSWER_MAX_LENGTH = 3
 
 
 class _UsedAnswerSet:
-    """Thread-safe set of answers used by completed batch items.
+    """Thread-safe per-answer use counts across completed batch items.
 
     All answers (length >= 3) are tracked; the length floor is applied per
     consumer at ``snapshot`` time, not at ``add`` time. This lets a mini
     (5x5/7x7) exclude a 3-letter answer a midi already used while a midi keeps
-    its 3-letter glue (excluding it makes 9x9 grids unfillable). The
+    its 3-letter glue (excluding it outright makes 9x9 grids unfillable). The
     scheduler's +/-2 short-answer window only protects 9x9 placements, so a
     3-letter answer shared between a mini and a midi within 6 days is a real
     conflict — driven by the mini side — and the mini must avoid it.
+
+    Answers at or above the floor are excluded after their first use. Shorter
+    answers ("short glue") are handled against the scheduler's actual rule
+    instead of being excluded outright (Jeff, 2026-09-01: a set whose glue
+    repeats could not be spaced into a 7-slot block). Each use is recorded
+    with the puzzle's grid size and its *day* — its seed-order position
+    within its bucket, which is the order a weekly set is scheduled in:
+
+    - ``short_window``: a short answer used by a same-size batch-mate within
+      that many days of the puzzle being filled is excluded, so the set is
+      schedulable in seed order under the scheduler's +/-2-day 9x9 window.
+    - ``short_cap``: a backstop excluding a short answer once it has been
+      used in that many puzzles regardless of spacing.
+    - ``short_counts`` exposes prior uses as synthetic usage counts for the
+      CSP's weighted value ordering, so glue is avoided softly everywhere.
     """
 
     def __init__(self) -> None:
-        self._answers: set[str] = set()
+        self._uses: dict[str, list[tuple[int, int]]] = {}
         self._lock = threading.Lock()
 
-    def snapshot(self, *, min_length: int = 4) -> set[str]:
+    def snapshot(
+        self,
+        *,
+        min_length: int = 4,
+        short_cap: int = 0,
+        short_window: int = 0,
+        size: int | None = None,
+        day: int | None = None,
+    ) -> set[str]:
         with self._lock:
-            return {a for a in self._answers if len(a) >= min_length}
+            excluded: set[str] = set()
+            for answer, uses in self._uses.items():
+                if len(answer) >= min_length:
+                    excluded.add(answer)
+                elif short_cap > 0 and len(uses) >= short_cap:
+                    excluded.add(answer)
+                elif (
+                    short_window > 0
+                    and day is not None
+                    and any(
+                        used_size == size and abs(used_day - day) <= short_window
+                        for used_size, used_day in uses
+                    )
+                ):
+                    excluded.add(answer)
+            return excluded
 
-    def add(self, answers: Iterable[str]) -> None:
+    def short_counts(self, *, min_length: int = 4) -> dict[str, int]:
         with self._lock:
-            self._answers.update(
-                answer.strip().upper()
-                for answer in answers
-                if len(answer.strip()) >= 3
-            )
+            return {
+                a: len(uses) for a, uses in self._uses.items() if len(a) < min_length
+            }
+
+    def add(self, answers: Iterable[str], *, size: int = 0, day: int = 0) -> None:
+        with self._lock:
+            for answer in {a.strip().upper() for a in answers}:
+                if len(answer) >= 3:
+                    self._uses.setdefault(answer, []).append((size, day))
 
 
 class _AnswerUsageCounter:
@@ -1507,14 +1698,24 @@ def check_batch_answers(
     A weekly batch is scheduled across consecutive days, so any answer
     appearing in two puzzles would trip the scheduling-time no-repeat
     windows. Exits non-zero when any cross-puzzle duplicate exists.
-    Duplicates of 3-letter answers confined to 9x9 puzzles are labelled
-    short-window (the scheduler allows those 3+ days apart), but still
-    count as failures: an all-unique batch schedules without manual care.
+
+    Duplicates of 3-letter answers confined to 9x9 puzzles are judged
+    against the scheduler's +/-2-day window assuming the set is scheduled
+    in seed order (each puzzle's day is its seed rank within its bucket,
+    tracks aligned by day): a repeat whose puzzles land 3+ days apart is
+    labelled short-window, one within 2 days is blocking. A set with only
+    short-window repeats is schedulable as-is in seed order.
     """
     from crossword_generator.clue_history import extract_ipuz_answers
 
     manifest = json.loads(Path(manifest_path).read_text())
-    puzzles: list[tuple[str, int, list[str]]] = []
+    puzzles: list[tuple[str, int, int, list[str]]] = []
+    seeds_by_bucket: dict[tuple[str, int], list[int]] = {}
+    for result in manifest.get("results", []):
+        if result.get("success"):
+            seeds_by_bucket.setdefault(
+                (str(result["difficulty"]), int(result["size"])), []
+            ).append(int(result["seed"]))
     for result in manifest.get("results", []):
         if not result.get("success"):
             continue
@@ -1532,14 +1733,16 @@ def check_batch_answers(
                 json.loads(output_path.read_text())
             )
         ]
-        puzzles.append((label, int(result["size"]), answers))
+        bucket = (str(result["difficulty"]), int(result["size"]))
+        day = sorted(seeds_by_bucket[bucket]).index(int(result["seed"]))
+        puzzles.append((label, int(result["size"]), day, answers))
 
     # Dedupe within each puzzle: the fill grader already guards intra-puzzle
     # repeats; this check targets answers shared across puzzles.
-    by_answer: dict[str, list[tuple[str, int]]] = {}
-    for label, size, answers in puzzles:
+    by_answer: dict[str, list[tuple[str, int, int]]] = {}
+    for label, size, day, answers in puzzles:
         for answer in sorted(set(answers)):
-            by_answer.setdefault(answer, []).append((label, size))
+            by_answer.setdefault(answer, []).append((label, size, day))
 
     if write_answers_file:
         Path(write_answers_file).write_text(
@@ -1549,7 +1752,7 @@ def check_batch_answers(
             f"Wrote {len(by_answer)} unique answer(s) to {write_answers_file}"
         )
 
-    total_answers = sum(len(answers) for _, _, answers in puzzles)
+    total_answers = sum(len(answers) for _, _, _, answers in puzzles)
     duplicates = {
         answer: hits
         for answer, hits in by_answer.items()
@@ -1567,15 +1770,22 @@ def check_batch_answers(
     short_window_count = 0
     for answer in sorted(duplicates):
         hits = duplicates[answer]
-        short_window = len(answer) <= 3 and all(
-            size == 9 for _, size in hits
+        nine_only = len(answer) <= 3 and all(size == 9 for _, size, _ in hits)
+        spaced = nine_only and all(
+            abs(a_day - b_day) > SHORT_ANSWER_WINDOW_DAYS
+            for (_, _, a_day), (_, _, b_day) in itertools.combinations(hits, 2)
         )
-        if short_window:
+        if spaced:
             short_window_count += 1
+            kind = "short-window (9x9-only, 3+ days apart in seed order)"
         else:
             blocking_count += 1
-        kind = "short-window (9x9-only, +/-2 days)" if short_window else "blocking"
-        labels = ", ".join(label for label, _ in hits)
+            kind = (
+                "blocking (9x9 3-letter within +/-2 days in seed order)"
+                if nine_only
+                else "blocking"
+            )
+        labels = ", ".join(f"{label} (day {day + 1})" for label, _, day in hits)
         click.echo(f"DUPLICATE [{kind}]: {answer} — {labels}")
     click.echo(
         f"{len(duplicates)} duplicate answer(s) across puzzles "
@@ -1583,13 +1793,13 @@ def check_batch_answers(
     )
     if blocking_count or not allow_short_window:
         click.echo(
-            "Regenerate the affected puzzles with --exclude-answers-file "
+            "Regenerate the affected puzzles with --prior-batch-manifest "
             "before uploading."
         )
         sys.exit(1)
     click.echo(
         "Short-window duplicates allowed (--allow-short-window): schedule "
-        "the affected 9x9s 3+ days apart."
+        "each bucket in seed order (day 1 first), tracks aligned by day."
     )
 
 
