@@ -12,6 +12,7 @@ from crossword_generator.graders.clue_grader import ClueGrader
 from crossword_generator.llm.base import LLMProvider
 from crossword_generator.models import (
     ClueEntry,
+    ClueGrade,
     FillResult,
     PuzzleEnvelope,
     PuzzleType,
@@ -19,6 +20,7 @@ from crossword_generator.models import (
 from crossword_generator.steps.clue_grading_step import (
     ClueWithGradingStep,
     _loose_parse_repair_items,
+    _parse_repair_response,
 )
 
 # Simple 3x3 grid for testing
@@ -1514,6 +1516,60 @@ class TestLooseRepairParse:
         assert items == [
             {"number": 2, "direction": "across", "clue": "Plain clue"}
         ]
+
+
+class TestTolerantRepairParse:
+    """A stray or missing entry must not discard the whole repair batch."""
+
+    @staticmethod
+    def _requests() -> list[tuple[ClueEntry, ClueGrade]]:
+        return [
+            (
+                ClueEntry(number=1, direction="across", answer="CAT", clue="old"),
+                ClueGrade(number=1, direction="across", answer="CAT", score=10),
+            ),
+            (
+                ClueEntry(number=3, direction="down", answer="TED", clue="old"),
+                ClueGrade(number=3, direction="down", answer="TED", score=10),
+            ),
+        ]
+
+    def test_unexpected_entry_is_skipped_not_fatal(self) -> None:
+        raw = json.dumps(
+            [
+                {"number": 1, "direction": "across", "clue": "Feline"},
+                {"number": 8, "direction": "across", "clue": "Not asked for"},
+                {"number": 3, "direction": "down", "clue": "Talks-with-a-mission"},
+            ]
+        )
+        repaired = _parse_repair_response(raw, self._requests())
+        assert {(c.number, c.direction): c.clue for c in repaired} == {
+            (1, "across"): "Feline",
+            (3, "down"): "Talks-with-a-mission",
+        }
+        assert all(c.answer in {"CAT", "TED"} for c in repaired)
+
+    def test_partial_response_is_applied(self) -> None:
+        raw = json.dumps([{"number": 3, "direction": "down", "clue": "Ed's kin"}])
+        repaired = _parse_repair_response(raw, self._requests())
+        assert [(c.number, c.direction, c.clue) for c in repaired] == [
+            (3, "down", "Ed's kin")
+        ]
+
+    def test_duplicate_entry_keeps_first(self) -> None:
+        raw = json.dumps(
+            [
+                {"number": 1, "direction": "across", "clue": "First"},
+                {"number": 1, "direction": "across", "clue": "Second"},
+            ]
+        )
+        repaired = _parse_repair_response(raw, self._requests())
+        assert [(c.number, c.clue) for c in repaired] == [(1, "First")]
+
+    def test_no_requested_entries_raises(self) -> None:
+        raw = json.dumps([{"number": 8, "direction": "across", "clue": "Stray"}])
+        with pytest.raises(ValueError, match="no requested entries"):
+            _parse_repair_response(raw, self._requests())
 
 
 class TestConvergenceLoop:
