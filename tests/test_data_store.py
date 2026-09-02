@@ -753,3 +753,39 @@ def test_fetch_recent_daily_answers_rejects_bad_shape(
 
     with pytest.raises(DataStoreError):
         fetch_recent_daily_answers(token="token")
+
+
+def test_resolve_admin_token_prefers_service_account(monkeypatch) -> None:
+    from crossword_generator.data_store import resolve_admin_token
+
+    for name in (
+        "HEYGG_CROSSWORD_GENERATOR_TOKEN",
+        "HEYGG_ADMIN_TOKEN",
+        "HEYGG_ADMIN_API_TOKEN",
+    ):
+        monkeypatch.delenv(name, raising=False)
+    assert resolve_admin_token() is None
+
+    monkeypatch.setenv("HEYGG_ADMIN_API_TOKEN", "api")
+    assert resolve_admin_token() == "api"
+    monkeypatch.setenv("HEYGG_ADMIN_TOKEN", "admin")
+    assert resolve_admin_token() == "admin"
+    # The service-account token wins over personal admin JWTs, and an
+    # empty value is treated as unset.
+    monkeypatch.setenv("HEYGG_CROSSWORD_GENERATOR_TOKEN", "")
+    assert resolve_admin_token() == "admin"
+    monkeypatch.setenv("HEYGG_CROSSWORD_GENERATOR_TOKEN", "svc")
+    assert resolve_admin_token() == "svc"
+
+
+def test_request_json_without_any_token_raises_key_error(monkeypatch) -> None:
+    from crossword_generator.data_store import _request_json
+
+    for name in (
+        "HEYGG_CROSSWORD_GENERATOR_TOKEN",
+        "HEYGG_ADMIN_TOKEN",
+        "HEYGG_ADMIN_API_TOKEN",
+    ):
+        monkeypatch.delenv(name, raising=False)
+    with pytest.raises(KeyError, match="HEYGG_CROSSWORD_GENERATOR_TOKEN"):
+        _request_json("GET", "/admin/anything", None)

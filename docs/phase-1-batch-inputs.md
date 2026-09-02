@@ -214,7 +214,7 @@ target staging (`https://id-beta.hey.gg/api`):
 
 ```bash
 export HEYGG_API_BASE_URL=https://play.hey.gg/api
-export HEYGG_ADMIN_API_TOKEN=<prod admin API token>
+export HEYGG_CROSSWORD_GENERATOR_TOKEN=<crossword-generator service-account token>
 
 uv run crossword-generator save-generated-puzzles \
   --manifest output/batches/phase-2b-pilot/manifest.json

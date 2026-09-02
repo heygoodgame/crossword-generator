@@ -23,6 +23,8 @@ from pathlib import Path
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
+from crossword_generator.data_store import resolve_admin_token
+
 API_BASE = os.environ.get(
     "HEYGG_API_BASE_URL", "https://play.hey.gg/api"
 ).rstrip("/")
@@ -197,12 +199,11 @@ def _request(
     as_text: bool = False,
 ):
     resolved_api_base = (api_base or API_BASE).rstrip("/")
-    resolved_token = token or os.environ.get("HEYGG_ADMIN_TOKEN") or os.environ.get(
-        "HEYGG_ADMIN_API_TOKEN"
-    )
+    resolved_token = token or resolve_admin_token()
     if not resolved_token:
         raise ConsolidateError(
-            "HEYGG_ADMIN_TOKEN (or HEYGG_ADMIN_API_TOKEN) must be set."
+            "HEYGG_CROSSWORD_GENERATOR_TOKEN (or HEYGG_ADMIN_TOKEN / "
+            "HEYGG_ADMIN_API_TOKEN) must be set."
         )
     url = f"{resolved_api_base}{path}"
     headers = {

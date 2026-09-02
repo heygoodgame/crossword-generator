@@ -17,6 +17,22 @@ from urllib.request import Request, urlopen
 logger = logging.getLogger(__name__)
 
 API_BASE = os.environ.get("HEYGG_API_BASE_URL", "https://play.hey.gg/api").rstrip("/")
+
+# Checked in order; the service-account token wins over personal admin JWTs.
+ADMIN_TOKEN_ENV_VARS = (
+    "HEYGG_CROSSWORD_GENERATOR_TOKEN",
+    "HEYGG_ADMIN_TOKEN",
+    "HEYGG_ADMIN_API_TOKEN",
+)
+
+
+def resolve_admin_token() -> str | None:
+    """Return the first non-empty admin token from ADMIN_TOKEN_ENV_VARS."""
+    for name in ADMIN_TOKEN_ENV_VARS:
+        value = os.environ.get(name)
+        if value:
+            return value
+    return None
 NAMESPACE = "crosswords"
 COLLECTION = "generated-puzzles"
 UNLIMITED_COLLECTION = "unlimited-pool"
@@ -796,11 +812,12 @@ def _request_json(
     timeout: int = 60,
 ) -> dict[str, Any]:
     resolved_api_base = (api_base or API_BASE).rstrip("/")
-    resolved_token = (
-        token
-        or os.environ.get("HEYGG_ADMIN_TOKEN")
-        or os.environ["HEYGG_ADMIN_API_TOKEN"]
-    )
+    resolved_token = token or resolve_admin_token()
+    if not resolved_token:
+        raise KeyError(
+            "HEYGG_CROSSWORD_GENERATOR_TOKEN (or HEYGG_ADMIN_TOKEN / "
+            "HEYGG_ADMIN_API_TOKEN) must be set."
+        )
     url = f"{resolved_api_base}{path}"
     headers = {
         "Authorization": f"Bearer {resolved_token}",

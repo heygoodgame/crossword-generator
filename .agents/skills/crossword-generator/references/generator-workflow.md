@@ -479,13 +479,13 @@ local `dictionaries/hgg-easy.txt`, `dictionaries/hgg-hard.txt`, and
 `dictionaries/hgg-60.txt`, and records `refresh_dictionaries: true` in the
 manifest. This is the guardrail that makes Jeff's Easy/Hard moves take effect
 on the next normal run. The refresh uses the same `--api-base` as other
-admin-backed generation reads and requires `HEYGG_ADMIN_TOKEN` or
+admin-backed generation reads and requires `HEYGG_CROSSWORD_GENERATOR_TOKEN`, `HEYGG_ADMIN_TOKEN`, or
 `HEYGG_ADMIN_API_TOKEN`. Pass `--no-refresh-dictionaries` only for an explicit
 offline/local-file experiment; such manifests record `refresh_dictionaries:
 false`.
 
 When the batch includes a `hard/7` or `hard/9` bucket, the runner fetches
-scheduled HGG 60 answers from the admin API (requires `HEYGG_ADMIN_TOKEN` or
+scheduled HGG 60 answers from the admin API (requires `HEYGG_CROSSWORD_GENERATOR_TOKEN`, `HEYGG_ADMIN_TOKEN`, or
 `HEYGG_ADMIN_API_TOKEN`) and writes `hgg-60-scheduled-filtered.txt` into the
 output root; every `hgg-60.txt` config reference is pointed at that filtered
 copy for the run. This is on by default; pass `--no-exclude-scheduled-sixty`
@@ -653,7 +653,7 @@ hgg-auth exec prod -- bash -c '
 ```
 
 `hgg-auth exec <profile>` exports `HGG_ADMIN_BASE_URL` and `HEYGG_ADMIN_TOKEN`;
-the uploader reads `HEYGG_API_BASE_URL` and `HEYGG_ADMIN_TOKEN`, so set the
+the uploader reads `HEYGG_API_BASE_URL` and `HEYGG_CROSSWORD_GENERATOR_TOKEN` (service account, checked first), then `HEYGG_ADMIN_TOKEN`, so set the
 former from the latter as shown. The uploader defaults the base URL to
 play.hey.gg (prod), so set `HEYGG_API_BASE_URL` explicitly when targeting beta.
 
