@@ -36,6 +36,14 @@ class Slot:
 _Slot = Slot
 
 
+def _first_across_slot(slots: list[Slot]) -> int | None:
+    """Index of 1-Across: the across slot whose start cell numbers first."""
+    across = [s for s in slots if s.direction == "across"]
+    if not across:
+        return None
+    return min(across, key=lambda s: (s.row, s.col)).index
+
+
 def extract_slots(rows: int, cols: int, black: set[tuple[int, int]]) -> list[Slot]:
     """Extract word slots from grid dimensions and black cell positions."""
     slots: list[_Slot] = []
@@ -310,9 +318,23 @@ class CSPFiller(GridFiller):
         *,
         answer_usage_counts: dict[str, int] | None = None,
         answer_usage_penalty: float | None = None,
+        hard_word_set: frozenset[str] | None = None,
+        proper_noun_set: frozenset[str] | None = None,
+        max_proper_noun_ratio: float = 0.15,
+        min_proper_noun_allowance: int = 2,
     ) -> None:
         self._config = config
         self._dictionary = dictionary
+        # The fill grader's board-level hard fails, enforced during search
+        # when ``enforce_grid_rules`` is on: no two Hard-list words may cross,
+        # at most max(allowance, floor(ratio * slots)) proper-noun answers,
+        # and 1-Across is never a proper noun. Same sets and cap formula as
+        # FillGrader so the search never converges on a board it rejects.
+        enforce = config.enforce_grid_rules
+        self._hard_word_set = hard_word_set if enforce else None
+        self._proper_noun_set = proper_noun_set if enforce else None
+        self._max_proper_noun_ratio = max_proper_noun_ratio
+        self._min_proper_noun_allowance = min_proper_noun_allowance
         # Recent-schedule usage per answer (uppercase). Drives a soft
         # value-ordering penalty so globally overused fill is tried last.
         self._usage_counts = {
@@ -349,6 +371,31 @@ class CSPFiller(GridFiller):
     @property
     def name(self) -> str:
         return "csp"
+
+    @staticmethod
+    def _candidate_masks(
+        candidates_by_slot: list[list[str]],
+        word_set: frozenset[str] | None,
+        seed_assignments: dict[int, str],
+    ) -> list[int] | None:
+        """Per-slot bitmask of candidate indices whose word is in ``word_set``.
+
+        Seeded (theme) slots get an empty mask: intentional themed names
+        never count, matching the grader.
+        """
+        if not word_set:
+            return None
+        masks: list[int] = []
+        for si, cands in enumerate(candidates_by_slot):
+            if si in seed_assignments:
+                masks.append(0)
+                continue
+            mask = 0
+            for wi, word in enumerate(cands):
+                if word in word_set:
+                    mask |= 1 << wi
+            masks.append(mask)
+        return masks
 
     def fill(self, spec: GridSpec, *, seed: int | None = None) -> FilledGrid:
         """Fill a grid using CSP backtracking with quality-tier passes."""
@@ -491,6 +538,27 @@ class CSPFiller(GridFiller):
                 (1 << len(cands)) - 1 for cands in candidates_by_slot
             ]
 
+            # Grid-rule masks: which candidate indices per slot are Hard-list
+            # words / proper nouns. Seeded slots are exempt (theme entries).
+            hard_masks = self._candidate_masks(
+                candidates_by_slot, self._hard_word_set, seed_assignments
+            )
+            proper_masks = self._candidate_masks(
+                candidates_by_slot, self._proper_noun_set, seed_assignments
+            )
+            proper_cap = (
+                max(
+                    self._min_proper_noun_allowance,
+                    math.floor(len(slots) * self._max_proper_noun_ratio),
+                )
+                if proper_masks is not None
+                else None
+            )
+            if proper_masks is not None:
+                first_across = _first_across_slot(slots)
+                if first_across is not None:
+                    initial_domains[first_across] &= ~proper_masks[first_across]
+
             # Initial arc consistency
             self._initial_ac3_flat(slots, initial_domains, slot_li)
 
@@ -531,6 +599,9 @@ class CSPFiller(GridFiller):
                 scores_by_slot, initial_domains, black, seed, deadline,
                 timeout, seed_assignments,
                 usage_by_slot=usage_by_slot,
+                hard_masks=hard_masks,
+                proper_masks=proper_masks,
+                proper_cap=proper_cap,
             )
             if result is not None:
                 return result
@@ -563,6 +634,9 @@ class CSPFiller(GridFiller):
         seed_assignments: dict[int, str] | None = None,
         *,
         usage_by_slot: list[list[int]] | None = None,
+        hard_masks: list[int] | None = None,
+        proper_masks: list[int] | None = None,
+        proper_cap: int | None = None,
     ) -> FilledGrid | None:
         """Run the random-restart solve loop. Returns FilledGrid or None."""
         if seed_assignments is None:
@@ -578,6 +652,8 @@ class CSPFiller(GridFiller):
         check_interval = 1000
         backtracks = 0
         backtrack_limit = 10_000
+        # Proper-noun answers placed so far (grid rule: at most proper_cap).
+        proper_count = 0
 
         class _BacktrackLimitError(Exception):
             pass
@@ -590,7 +666,7 @@ class CSPFiller(GridFiller):
             return count
 
         def solve() -> bool:
-            nonlocal backtracks
+            nonlocal backtracks, proper_count
 
             if len(assignment) == len(slots):
                 return True
@@ -641,6 +717,13 @@ class CSPFiller(GridFiller):
                 if word in used_words:
                     continue
 
+                is_hard = bool(hard_masks and hard_masks[best_slot] >> wi & 1)
+                is_proper = bool(
+                    proper_masks and proper_masks[best_slot] >> wi & 1
+                )
+                if is_proper and proper_cap is not None and proper_count >= proper_cap:
+                    continue
+
                 # Prefix pruning
                 prefix_dead = False
                 for pos_in_this, other_si, pos_in_other in slot.crossings:
@@ -676,11 +759,21 @@ class CSPFiller(GridFiller):
                         if word[pos_in_this] != other_word[pos_in_other]:
                             feasible = False
                             break
+                        # hard_cross: two Hard-list words may not cross.
+                        if (
+                            is_hard
+                            and hard_masks is not None
+                            and hard_masks[other_si] >> assignment[other_si] & 1
+                        ):
+                            feasible = False
+                            break
                     else:
                         letter = word[pos_in_this]
                         matching = slot_li[other_si][
                             pos_in_other * 26 + ord(letter) - 65
                         ]
+                        if is_hard and hard_masks is not None:
+                            matching &= ~hard_masks[other_si]
                         if other_si not in saved_domains:
                             saved_domains[other_si] = domains[other_si]
                         domains[other_si] = domains[other_si] & matching
@@ -688,6 +781,27 @@ class CSPFiller(GridFiller):
                             feasible = False
                             break
                         fc_reduced.append(other_si)
+
+                # proper_noun_cap: once this word fills the last allowed
+                # proper-noun slot, no unassigned slot may take one.
+                if (
+                    feasible
+                    and is_proper
+                    and proper_masks is not None
+                    and proper_cap is not None
+                    and proper_count + 1 >= proper_cap
+                ):
+                    for other_si in range(len(slots)):
+                        if other_si == best_slot or other_si in assignment:
+                            continue
+                        pruned = domains[other_si] & ~proper_masks[other_si]
+                        if pruned != domains[other_si]:
+                            if other_si not in saved_domains:
+                                saved_domains[other_si] = domains[other_si]
+                            domains[other_si] = pruned
+                            if not pruned:
+                                feasible = False
+                                break
 
                 # One-level propagation: for each FC-reduced slot,
                 # check its other crossings for support
@@ -717,6 +831,8 @@ class CSPFiller(GridFiller):
                 if feasible:
                     assignment[best_slot] = wi
                     used_words.add(word)
+                    if is_proper:
+                        proper_count += 1
                     newly_placed: list[tuple[int, int]] = []
                     for pos, cell in enumerate(slot.cells):
                         if cell not in placed:
@@ -726,6 +842,8 @@ class CSPFiller(GridFiller):
                         return True
                     del assignment[best_slot]
                     used_words.discard(word)
+                    if is_proper:
+                        proper_count -= 1
                     for cell in newly_placed:
                         del placed[cell]
 
@@ -744,6 +862,7 @@ class CSPFiller(GridFiller):
             used_words.clear()
             placed.clear()
             backtracks = 0
+            proper_count = 0
             domains[:] = list(initial_domains)
 
             # Pre-assign seed entry slots

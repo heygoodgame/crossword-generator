@@ -470,3 +470,74 @@ class TestUsagePenaltyOrdering:
         spec = GridSpec(rows=5, cols=5, black_cells=[])
         result = filler.fill(spec, seed=42)
         assert isinstance(result, FilledGrid)
+
+
+class TestGridRulesInSearch:
+    """The grader's board-level hard fails are enforced during search."""
+
+    @staticmethod
+    def _words(grid: list[list[str]]) -> tuple[list[str], list[str]]:
+        across = ["".join(row) for row in grid]
+        down = ["".join(col) for col in zip(*grid, strict=True)]
+        return across, down
+
+    def test_no_two_hard_words_cross(self, real_dictionary: Dictionary) -> None:
+        # In an open 5x5 every across word crosses every down word, so the
+        # rule allows Hard-list words in at most one direction.
+        hard = frozenset(
+            w for w in real_dictionary.words_by_length(5) if w[0] in "ST"
+        )
+        assert len(hard) > 500
+        filler = CSPFiller(
+            CSPFillerConfig(timeout=30), real_dictionary, hard_word_set=hard
+        )
+        saw_hard = False
+        spec = GridSpec(rows=5, cols=5)
+        for seed in range(8):
+            across, down = self._words(filler.fill(spec, seed=seed).grid)
+            hard_across = any(w in hard for w in across)
+            hard_down = any(w in hard for w in down)
+            assert not (hard_across and hard_down), (across, down)
+            saw_hard |= hard_across or hard_down
+        # The rule limits crossings; it does not ban Hard-list words outright.
+        assert saw_hard
+
+    def test_proper_noun_cap_and_first_across(
+        self, real_dictionary: Dictionary
+    ) -> None:
+        proper = frozenset(
+            w for w in real_dictionary.words_by_length(5) if w[0] in "ASTC"
+        )
+        spec = GridSpec(rows=5, cols=5)
+
+        unconstrained = CSPFiller(CSPFillerConfig(timeout=30), real_dictionary)
+        worst = max(
+            sum(
+                w in proper
+                for words in self._words(unconstrained.fill(spec, seed=s).grid)
+                for w in words
+            )
+            for s in range(8)
+        )
+        assert worst > 2, "fixture too weak: the cap never binds"
+
+        # 10 slots -> cap = max(2, floor(10 * 0.15)) = 2, matching FillGrader.
+        filler = CSPFiller(
+            CSPFillerConfig(timeout=30), real_dictionary, proper_noun_set=proper
+        )
+        for seed in range(8):
+            across, down = self._words(filler.fill(spec, seed=seed).grid)
+            assert sum(w in proper for w in across + down) <= 2, (across, down)
+            assert across[0] not in proper, across
+
+    def test_enforce_grid_rules_off_ignores_sets(
+        self, small_dictionary: Dictionary
+    ) -> None:
+        filler = CSPFiller(
+            CSPFillerConfig(timeout=10, enforce_grid_rules=False),
+            small_dictionary,
+            hard_word_set=frozenset({"ACE"}),
+            proper_noun_set=frozenset({"ACT"}),
+        )
+        assert filler._hard_word_set is None
+        assert filler._proper_noun_set is None

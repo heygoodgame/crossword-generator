@@ -70,6 +70,12 @@ class CSPFillerConfig(BaseModel):
     # fresh word to be tried first. Only applied when usage counts are
     # supplied (daily batches); never affects tier eligibility.
     answer_usage_penalty: float = 1.0
+    # Enforce the grader's board-level hard fails (hard_cross,
+    # proper_noun_cap, proper_noun_first_across) inside the search instead
+    # of only rejecting finished boards. Under exclusion pressure the CSP
+    # otherwise converges on boards the grader can never accept (hard/9,
+    # 2026-09-02: 399/399 complete fills rejected on four seeds).
+    enforce_grid_rules: bool = True
 
 
 class FillConfig(BaseModel):
