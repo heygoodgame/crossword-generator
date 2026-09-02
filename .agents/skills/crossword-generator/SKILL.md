@@ -96,7 +96,7 @@ doing non-trivial work. It documents:
 
 Batch generation refreshes dictionaries and loads prior-clue history from the
 admin API by default (`--refresh-dictionaries`, `--avoid-existing-clues`), so
-`HEYGG_ADMIN_API_TOKEN` (or `HEYGG_ADMIN_TOKEN`) must be set in the environment
+`HEYGG_CROSSWORD_GENERATOR_TOKEN` (service account; falls back to `HEYGG_ADMIN_TOKEN`, then `HEYGG_ADMIN_API_TOKEN`) must be set in the environment
 before generating — not just before uploading. The dictionary refresh pulls
 Jeff's latest Easy/Hard moves from the admin list UI into local effective
 generator files before any fill starts. The clue history feeds already-used
