@@ -531,14 +531,16 @@ def generate(
 @click.option(
     "--intra-batch-short-penalty",
     type=float,
-    default=8.0,
+    default=2.0,
     help=(
         "Intra-batch dedup: synthetic usage count added per prior batch use "
         "of an answer shorter than --exclude-answers-min-length, merged into "
         "the CSP's weighted value ordering and best-of-N board pick (same "
         "(1+uses)^-penalty weighting as --daily-usage-penalty). At the "
-        "default a once-used glue word is ~9x less likely than a fresh one "
-        "to be tried first, but stays fillable. 0 disables."
+        "default a once-used glue word is ~3x less likely than a fresh one "
+        "to be tried first, but stays fillable; the seed-order window "
+        "already hard-excludes nearby days, so this only spaces repeats "
+        "that are 3+ days apart. 0 disables."
     ),
 )
 @click.option(
@@ -1003,9 +1005,11 @@ def generate_pilot_batch(
     # can't see in-flight batch-mates; check-batch-answers catches the
     # residue after the run.
     used_answers = _UsedAnswerSet()
-    # A puzzle's "day" is its seed-order position within its bucket — the
-    # order a weekly set is scheduled in. Prior-manifest puzzles occupy the
-    # first days of their bucket; this run's items continue after them.
+    # A puzzle's "day" is its seed rank within its bucket across the prior
+    # manifests and this run together — the order a weekly set is scheduled
+    # in, and exactly how check-batch-answers ranks it. Ranking (rather than
+    # appending this run after the priors) lets a continuation refill a
+    # dropped middle day by reusing its seed number.
     prior_by_bucket: dict[tuple[str, int], list[tuple[int, Path]]] = {}
     for prior_manifest in prior_batch_manifests:
         prior = json.loads(Path(prior_manifest).read_text())
@@ -1019,9 +1023,22 @@ def generate_pilot_batch(
             prior_by_bucket.setdefault(bucket, []).append(
                 (int(prior_result["seed"]), prior_path)
             )
+    day_by_item: dict[tuple[str, int, int], int] = {}
+    for bucket in {(d, s) for d, s, _, _, _ in work_items} | set(prior_by_bucket):
+        run_seeds = {seed for d, s, _, _, seed in work_items if (d, s) == bucket}
+        prior_seeds = {seed for seed, _ in prior_by_bucket.get(bucket, [])}
+        clash = run_seeds & prior_seeds
+        if clash:
+            raise click.ClickException(
+                f"Seed(s) {sorted(clash)} for {bucket[0]}/{bucket[1]} already "
+                "appear in a --prior-batch-manifest; drop the old result or "
+                "pick a different --seed-start."
+            )
+        for day, seed in enumerate(sorted(run_seeds | prior_seeds)):
+            day_by_item[(bucket[0], bucket[1], seed)] = day
     prior_puzzles_seeded = 0
     for bucket, entries in prior_by_bucket.items():
-        for day, (_, prior_path) in enumerate(sorted(entries)):
+        for prior_seed, prior_path in sorted(entries):
             try:
                 prior_puzzle = json.loads(prior_path.read_text())
             except (OSError, json.JSONDecodeError) as exc:
@@ -1029,7 +1046,9 @@ def generate_pilot_batch(
                     f"Could not read prior batch puzzle {prior_path}: {exc}"
                 ) from exc
             used_answers.add(
-                extract_ipuz_answers(prior_puzzle), size=bucket[1], day=day
+                extract_ipuz_answers(prior_puzzle),
+                size=bucket[1],
+                day=day_by_item[(bucket[0], bucket[1], prior_seed)],
             )
             prior_puzzles_seeded += 1
     if prior_batch_manifests:
@@ -1037,11 +1056,6 @@ def generate_pilot_batch(
             f"Seeded intra-batch used answers from {prior_puzzles_seeded} "
             f"prior puzzle(s) in {len(prior_batch_manifests)} manifest(s)."
         )
-    day_by_item: dict[tuple[str, int, int], int] = {}
-    for difficulty, size, _, _, seed in work_items:
-        day_by_item[(difficulty, size, seed)] = len(
-            prior_by_bucket.get((difficulty, size), [])
-        ) + (seed - seed_start)
     novelty_active = unlimited_answer_novelty and not intra_batch_dedup
     # Daily runs: global per-answer schedule usage over the count window.
     # Unlike the hard recent-window exclusion this is a soft signal (CSP

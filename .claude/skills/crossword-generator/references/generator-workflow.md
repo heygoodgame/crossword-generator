@@ -768,10 +768,12 @@ batch-mate's answers with its size and day:
   - `--intra-batch-short-window` (default 2): glue used by a same-size
     batch-mate within +/-2 days (seed order) is excluded — at most ~2
     puzzles' glue per track at a time, cheap for the CSP.
-  - `--intra-batch-short-penalty` (default 8.0): every prior batch use adds
-    8 to the answer's usage count in the CSP's existing weighted value
-    ordering and best-of-N board pick, so a once-used ALL/OWE is ~9x less
+  - `--intra-batch-short-penalty` (default 2.0): every prior batch use adds
+    2 to the answer's usage count in the CSP's existing weighted value
+    ordering and best-of-N board pick, so a once-used ALL/OWE is ~3x less
     likely to be tried first anywhere in the set, but never unfillable.
+    (8.0 was tried first on 2026-09-01: with best-of-4 boards it drove CSP
+    timeouts from 0 to 23 per puzzle across an easy/9 week, 3 -> 71 min.)
   - `--intra-batch-short-cap` (default 3): backstop — a glue word used in
     that many puzzles is excluded regardless of spacing.
 
@@ -785,9 +787,11 @@ each with only pairwise, 3+-day-spaced repeats.
 
 Regenerate only the offending puzzles as a **continuation** of the batch:
 drop them from the manifest, then run the same bucket with
-`--prior-batch-manifest` so the kept puzzles seed the used-answer counts and
-the new puzzles take the next days (use a `--seed-start` above the kept
-seeds so seed rank stays consistent):
+`--prior-batch-manifest` so the kept puzzles seed the used-answer counts.
+Days are seed ranks over kept + new puzzles, so to refill a dropped middle
+day reuse its seed number (`--seed-start <dropped seed>`); to append, use a
+seed above the kept ones. Reusing a seed still present in the prior
+manifest is rejected.
 
 ```bash
 uv run crossword-generator generate-pilot-batch \

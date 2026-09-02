@@ -1013,11 +1013,131 @@ def test_generate_pilot_batch_prior_manifest_seeds_used_answers(
     # Both prior long answers are hard-excluded; the priors occupy days 1-2
     # and this puzzle is day 3, so their glue is inside the +/-2-day window.
     assert {"OCEAN", "PLANT", "ALL", "TED", "OWE"} <= kwargs["excluded_fill_words"]
-    # No server counts, but the seeded glue still drives the soft penalty.
-    assert kwargs["answer_usage_counts"]["ALL"] == 16
+    # No server counts, but the seeded glue still drives the soft penalty
+    # (2 prior uses x default penalty 2).
+    assert kwargs["answer_usage_counts"]["ALL"] == 4
 
     manifest = json.loads((tmp_path / "batch" / "manifest.json").read_text())
     assert manifest["prior_batch_manifests"]["puzzles_seeded"] == 2
+
+
+def test_generate_pilot_batch_prior_manifest_refills_middle_day(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    """Days are seed ranks over priors + this run, so reusing a dropped seed
+    refills that day and sees only its +/-2-day neighbours' glue."""
+    from crossword_generator.data_store import RecentDailyAnswers
+
+    prior_dir = tmp_path / "prior"
+    prior_dir.mkdir()
+    glue = {
+        1: ["ALL", "TED", "OWE"],
+        2: ["EGG", "RYE", "APR"],
+        3: ["GPS", "OLE", "HMM"],
+        7: ["PAL", "ILL", "TRI"],
+        8: ["CUE", "PHD", "MET"],
+        9: ["ATM", "CPR", "TNT"],
+    }
+    prior_results = []
+    for seed, rows in glue.items():
+        path = prior_dir / f"seed-{seed}.ipuz"
+        solution = [list(r) + ["#", "#"] for r in rows] + [["#"] * 5]
+        path.write_text(json.dumps({"solution": solution, "clues": {}}))
+        prior_results.append(
+            {
+                "difficulty": "easy",
+                "size": 9,
+                "seed": seed,
+                "success": True,
+                "output_path": path.name,
+            }
+        )
+    prior_manifest = prior_dir / "manifest.json"
+    prior_manifest.write_text(json.dumps({"results": prior_results}))
+
+    run_kwargs: list[dict[str, object]] = []
+
+    def fake_fetch(**kwargs):
+        return RecentDailyAnswers(
+            answers=[],
+            window_days=kwargs.get("window_days") or 7,
+            first_unscheduled_date="2026-10-01",
+            since_date="2026-09-01",
+            forward_days=13,
+        )
+
+    def fake_run_batch_item(**kwargs):
+        run_kwargs.append(kwargs)
+        output_path = (
+            kwargs["output_root"] / "easy" / "9x9" / f"seed-{kwargs['seed']:03d}.ipuz"
+        )
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text('{"solution":[["S","T","O","R","M"]]}')
+        return {
+            "difficulty": "easy",
+            "size": 9,
+            "seed": kwargs["seed"],
+            "success": True,
+            "runtime_seconds": 0.0,
+            "output_path": str(output_path),
+            "clue_score": 80.0,
+        }
+
+    import crossword_generator.data_store as data_store_module
+
+    monkeypatch.setattr(
+        data_store_module, "fetch_recent_daily_answers", fake_fetch
+    )
+    monkeypatch.setattr(cli_module, "_run_batch_item", fake_run_batch_item)
+
+    # Prior seeds 1,2,3,7,8,9 plus this run's seed 5 rank as days 1-7 —
+    # seed 5 refills day 4 and must see only days 2-6.
+    result = CliRunner().invoke(
+        main,
+        [
+            "generate-pilot-batch",
+            "--output-root", str(tmp_path / "batch"),
+            "--batch-id", "test-batch",
+            "--buckets", "easy/9",
+            "--count", "1",
+            "--seed-start", "5",
+            "--no-avoid-existing-clues",
+            "--no-refresh-dictionaries",
+            "--no-exclude-scheduled-sixty",
+            "--no-llm-log",
+            "--intra-batch-short-penalty", "0",
+            "--prior-batch-manifest", str(prior_manifest),
+        ],
+    )
+    assert result.exit_code == 0, result.output
+    (kwargs,) = run_kwargs
+    excluded = kwargs["excluded_fill_words"]
+    # Days 2, 3, 5, 6 (seeds 2, 3, 7, 8) are within +/-2 of day 4; days 1
+    # and 7 (seeds 1, 9) are not.
+    assert {"EGG", "GPS", "PAL", "CUE"} <= excluded
+    assert {"ALL", "ATM"}.isdisjoint(excluded)
+    assert "Seeded intra-batch used answers from 6 prior puzzle(s)" in result.output
+
+    # Reusing a seed that is still in the prior manifest is an error.
+    clash = CliRunner().invoke(
+        main,
+        [
+            "generate-pilot-batch",
+            "--output-root", str(tmp_path / "batch2"),
+            "--batch-id", "test-batch",
+            "--buckets", "easy/9",
+            "--count", "1",
+            "--seed-start", "7",
+            "--no-avoid-existing-clues",
+            "--no-refresh-dictionaries",
+            "--no-exclude-scheduled-sixty",
+            "--no-llm-log",
+            "--prior-batch-manifest", str(prior_manifest),
+        ],
+    )
+    assert clash.exit_code != 0
+    assert "already appear in a --prior-batch-manifest" in clash.output
 
 
 def test_generate_pilot_batch_degrades_without_server_counts(
