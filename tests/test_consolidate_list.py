@@ -126,3 +126,38 @@ def test_consolidate_list_command_iterates_all_slugs_by_default(
     assert result.exit_code == 0, result.output
     assert seen == ["list-a", "list-b"]
     assert "Dry run" in result.output
+
+
+def test_dedupe_lines_keeps_first_occurrence_and_counts() -> None:
+    body = "ALLAY\nBABES\nCDS\nALLAY\nBABES\nDREGS\n"
+    cleaned, repeated = cl.dedupe_lines(body)
+    assert cleaned == "ALLAY\nBABES\nCDS\nDREGS\n"
+    assert repeated == 2
+    # A changed score is a different row, not a repeat; blank lines pass.
+    assert cl.dedupe_lines("WORD;55\nWORD;60\n\n") == ("WORD;55\nWORD;60\n\n", 0)
+
+
+def test_consolidate_one_dedupes_repeated_download_rows(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """hey-you's chunked download repeats rows at chunk boundaries."""
+    target_rel = "dictionaries/sample.txt"
+    target = tmp_path / target_rel
+    target.parent.mkdir(parents=True, exist_ok=True)
+
+    monkeypatch.setattr(
+        cl, "fetch_list_metadata", lambda slug, **_kw: {"file_path": target_rel}
+    )
+    monkeypatch.setattr(
+        cl, "fetch_list_contents", lambda slug, **_kw: "ALLAY\nBABES\nALLAY\nCDS\n"
+    )
+    monkeypatch.setattr(cl, "mark_consolidated", lambda slug, **_kw: None)
+
+    with caplog.at_level("WARNING"):
+        summary = cl.consolidate_one("sample", tmp_path)
+
+    assert target.read_text() == "ALLAY\nBABES\nCDS\n"
+    assert summary.total_after == 3
+    assert "repeated 1 row(s)" in caplog.text

@@ -17,6 +17,7 @@ mutates those files automatically.
 from __future__ import annotations
 
 import json
+import logging
 import os
 from dataclasses import dataclass
 from pathlib import Path
@@ -24,6 +25,8 @@ from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
 from crossword_generator.data_store import resolve_admin_token
+
+logger = logging.getLogger(__name__)
 
 API_BASE = os.environ.get(
     "HEYGG_API_BASE_URL", "https://play.hey.gg/api"
@@ -157,9 +160,17 @@ def consolidate_one(
     )
     target.parent.mkdir(parents=True, exist_ok=True)
 
-    new_body = fetch_list_contents(
-        slug, api_base=api_base, token=token, timeout=timeout
+    new_body, repeated = dedupe_lines(
+        fetch_list_contents(slug, api_base=api_base, token=token, timeout=timeout)
     )
+    if repeated:
+        logger.warning(
+            "%s: download repeated %d row(s) (hey-you streams the list with "
+            "orderBy('word')->chunkById(), which overlaps at chunk boundaries); "
+            "kept the first occurrence of each.",
+            slug,
+            repeated,
+        )
     old_body = target.read_text() if target.exists() else ""
     added, removed = diff_words(old_body, new_body)
     total_after = len(_words_from(new_body))
@@ -179,6 +190,28 @@ def consolidate_one(
         total_after=total_after,
         wrote=wrote,
     )
+
+
+def dedupe_lines(body: str) -> tuple[str, int]:
+    """Drop repeated lines from a downloaded list body, keeping first occurrences.
+
+    Returns the cleaned body and how many lines were dropped. Comparison is
+    on the whole line, so a word whose score or note changed is not treated
+    as a repeat of its old row.
+    """
+    seen: set[str] = set()
+    kept: list[str] = []
+    repeated = 0
+    for line in body.splitlines():
+        if line.strip() and line in seen:
+            repeated += 1
+            continue
+        seen.add(line)
+        kept.append(line)
+    cleaned = "\n".join(kept)
+    if body.endswith("\n"):
+        cleaned += "\n"
+    return cleaned, repeated
 
 
 def _words_from(body: str) -> set[str]:
