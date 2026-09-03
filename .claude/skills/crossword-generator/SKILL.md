@@ -67,10 +67,13 @@ uploads.
     `scheduled` only when actually scheduled, via the admin `schedule-daily`
     action, which the generator does NOT do). Only call `schedule-daily` if
     explicitly told to write the live calendar.
-  - OPEN-DAY HOLES (the schedule already runs months ahead and the ask is
-    "fill the open <game> <track> days"): use `--target-game <game>
-    --target-track <track> --target-through <date>` (or `--target-dates`)
-    instead of `--buckets/--count`. One puzzle per open day, each excluding
+  - OPEN-DAY HOLES (the schedule already runs months ahead — the normal
+    state since Sept 2026 — and the ask is "a week of dailies" / "fill the
+    open days"): run `fill-open-days --through <date>` (all four game/track
+    runs, chained, gated, dry-run; add `--upload` to upload), or per track
+    `--target-game <game> --target-track <track> --target-through <date>`
+    (or `--target-dates`) instead of `--buckets/--count`. The default daily
+    path now refuses to start (open-day guard) when the holes are scattered. One puzzle per open day, each excluding
     the answers the scheduler would reject on its own date, tagged with
     `target_date`/`publish_slot` so the reviewer schedules it on that day.
     The default first-unscheduled-slot window mis-targets scattered holes

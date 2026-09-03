@@ -1027,6 +1027,30 @@ uv run crossword-generator generate-pilot-batch \
   at a TARGETED manifest (results must carry `target_day_number`).
 - Manifest records the plan under `target` (days, sizes, windows, slot count).
 
+### One command for a full week: `fill-open-days`
+
+```bash
+uv run crossword-generator fill-open-days --through 2026-11-30 --plan-only   # list holes
+uv run crossword-generator fill-open-days --through 2026-11-30               # generate + gate + dry-run
+uv run crossword-generator fill-open-days --through 2026-11-30 --upload      # also upload if every gate passed
+```
+
+Runs `generate-pilot-batch --target-*` once per game/track in order (midi
+hard, midi easy, mini hard, mini easy — `--games`/`--tracks` override),
+chaining each manifest into the next via `--prior-batch-manifest` so the
+tracks stay answer-disjoint on adjacent days (4+ letter answers within +/-6
+of a batch-mate, glue within +/-2 same size). After each run it applies
+`check-batch-answers --allow-short-window`, checks fill grading, and
+dry-runs the upload; `--max-per-run N` caps each track. Batch ids are
+`fill-open-days-<today>-<midi|mini>-<track>` under
+`output/batches/fill-open-days-<today>/`.
+
+**Guard:** a default (non-targeted) daily run now refuses to start when the
+live schedule's next open days for a selected bucket are scattered holes or
+begin after the first-unscheduled-slot window can bracket them, and prints
+the `fill-open-days` / `--target-*` command to use instead. Only pass
+`--no-open-day-guard` for offline experiments.
+
 ## Unlimited-Pool Batches (non-scheduled)
 
 Unlimited puzzles are NOT placed on dated daily slots — players pull them from
