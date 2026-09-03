@@ -1205,3 +1205,217 @@ def test_generate_pilot_batch_degrades_without_server_counts(
     assert kwargs["answer_usage_counts"] is None
     manifest = json.loads((tmp_path / "batch" / "manifest.json").read_text())
     assert manifest["daily_usage_penalty"]["applied"] is False
+
+
+def _target_slot(day: int, answers: set[str], epoch, **kw):
+    import datetime as dt
+
+    from crossword_generator.schedule_targeting import ScheduledSlot
+
+    fields = dict(game_key="midicrossword", track="easy", size=9)
+    fields.update(kw)
+    return ScheduledSlot(
+        day_number=day,
+        date=epoch + dt.timedelta(days=day - 1),
+        answers=frozenset(answers),
+        **fields,
+    )
+
+
+def test_generate_pilot_batch_targets_open_days_with_per_day_exclusions(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    """--target-* fills each open day of one game/track, excluding exactly the
+    answers the scheduler would reject on THAT day, and stamps target_date."""
+    import datetime as dt
+
+    from crossword_generator.data_store import (
+        RecentDailyAnswers,
+        records_from_manifest,
+    )
+
+    epoch = dt.date(2099, 1, 1)
+    # Easy midi scheduled on days 100, 101, 103, 106; hole at 102, 104, 105.
+    slots = [
+        _target_slot(100, {"SNORE", "DOG"}, epoch),
+        _target_slot(101, {"MARIA"}, epoch),
+        _target_slot(103, {"STEAK", "CBS"}, epoch),
+        _target_slot(106, {"OCEAN"}, epoch),
+        # Hard track and a mini also constrain (cross-track, cross-game) but
+        # do not occupy easy days.
+        _target_slot(104, {"UFOS", "ACT"}, epoch, track="hard"),
+        _target_slot(112, {"PLANT"}, epoch, game_key="minicrossword", size=5),
+    ]
+    run_kwargs: list[dict[str, object]] = []
+
+    def fake_fetch(**kwargs):
+        return RecentDailyAnswers(
+            answers=["JUNKWORD", "ZAP"],
+            window_days=kwargs.get("window_days") or 30,
+            first_unscheduled_date="2099-01-01",
+            since_date="2098-12-01",
+            forward_days=13,
+            counts={"ETA": 9},
+            count_window_days=90,
+        )
+
+    def fake_run_batch_item(**kwargs):
+        run_kwargs.append(kwargs)
+        seed = kwargs["seed"]
+        output_path = (
+            kwargs["output_root"] / "easy" / "9x9" / f"seed-{seed:03d}.ipuz"
+        )
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        rows = [list("ABC") + ["#", "#"], ["#"] * 5, list(f"WORD{seed}")]
+        output_path.write_text(
+            json.dumps({"solution": rows, "clues": {"Across": [], "Down": []}})
+        )
+        return {
+            "difficulty": "easy",
+            "size": 9,
+            "seed": seed,
+            "success": True,
+            "runtime_seconds": 0.0,
+            "output_path": str(output_path),
+            "clue_score": 80.0,
+            "fill_score": 50.0,
+        }
+
+    import crossword_generator.data_store as data_store_module
+
+    monkeypatch.setattr(
+        data_store_module, "fetch_recent_daily_answers", fake_fetch
+    )
+    monkeypatch.setattr(
+        cli_module, "_load_daily_schedule_slots", lambda **kwargs: slots
+    )
+    monkeypatch.setattr(cli_module, "_run_batch_item", fake_run_batch_item)
+
+    start = (epoch + dt.timedelta(days=99)).isoformat()  # day 100
+    through = (epoch + dt.timedelta(days=105)).isoformat()  # day 106
+    result = CliRunner().invoke(
+        main,
+        [
+            "generate-pilot-batch",
+            "--output-root", str(tmp_path / "batch"),
+            "--batch-id", "target-batch",
+            "--target-game", "midicrossword",
+            "--target-track", "easy",
+            "--target-from", start,
+            "--target-through", through,
+            "--seed-start", "1",
+            "--no-avoid-existing-clues",
+            "--no-refresh-dictionaries",
+            "--no-exclude-scheduled-sixty",
+            "--no-llm-log",
+            "--intra-batch-short-penalty", "0",
+        ],
+    )
+    assert result.exit_code == 0, result.output
+    assert "Targeting 3 open midicrossword easy day(s)" in result.output
+    assert "skipping the first-unscheduled-slot recent-answer window" in result.output
+
+    # One work item per open day, in date order, all 9x9 easy.
+    assert [kw["seed"] for kw in run_kwargs] == [1, 2, 3]
+    assert all(kw["size"] == 9 and kw["difficulty"] == "easy" for kw in run_kwargs)
+    excluded = [kw["excluded_fill_words"] for kw in run_kwargs]
+
+    # Day 102: SNORE (day 100) and MARIA (101), STEAK (103), UFOS (104),
+    # OCEAN (106) all within +/-6; DOG (100) within +/-2; CBS (103) within
+    # +/-2 — but ACT (104) is 2 days away too. PLANT (mini, 112) is out.
+    day_102 = {"SNORE", "MARIA", "STEAK", "UFOS", "OCEAN", "DOG", "CBS", "ACT"}
+    assert day_102 <= excluded[0]
+    assert "PLANT" not in excluded[0]
+    # Day 105: DOG (100) is 5 days away -> short glue stays available; CBS
+    # (103) and ACT (104) are within 2.
+    assert "DOG" not in excluded[2]
+    assert {"CBS", "ACT", "SNORE", "OCEAN"} <= excluded[2]
+    # Variants of regular-window answers are excluded (OCEANS), never glue.
+    assert "OCEANS" in excluded[0]
+    # The anchored recent-answer list is NOT applied in targeted mode...
+    assert "JUNKWORD" not in excluded[0] and "ZAP" not in excluded[0]
+    # ...but its usage counts still feed the soft penalty.
+    assert run_kwargs[0]["answer_usage_counts"] == {"ETA": 9}
+    # Intra-batch dedup: puzzle 2 sees puzzle 1's 4+ letter answer.
+    assert "WORD1" in excluded[1]
+
+    manifest = json.loads((tmp_path / "batch" / "manifest.json").read_text())
+    assert manifest["target"]["game_key"] == "midicrossword"
+    assert [d["day_number"] for d in manifest["target"]["days"]] == [102, 104, 105]
+    assert manifest["bucket_counts"] == {"easy/9": 3}
+    results = manifest["results"]
+    assert [r["target_day_number"] for r in results] == [102, 104, 105]
+    assert results[0]["target_date"] == (epoch + dt.timedelta(days=101)).isoformat()
+    assert results[0]["target_track"] == "easy"
+    assert results[0]["schedule_excluded_count"] >= 8
+
+    records = records_from_manifest(tmp_path / "batch" / "manifest.json")
+    assert records[0]["metadata"]["target_date"] == results[0]["target_date"]
+    assert records[0]["metadata"]["publish_slot"] == results[0]["target_date"]
+    assert records[0]["metadata"]["target_day_number"] == 102
+    assert records[0]["metadata"]["target_track"] == "easy"
+
+
+def test_generate_pilot_batch_target_dates_rejects_occupied_and_picks_mini_size(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    import datetime as dt
+
+    epoch = dt.date(2099, 1, 1)  # a Thursday
+    slots = [
+        _target_slot(2, {"AAAA"}, epoch, game_key="minicrossword", size=5),
+        _target_slot(5, {"BBBB"}, epoch, game_key="midicrossword"),
+    ]
+    monkeypatch.setattr(
+        cli_module, "_load_daily_schedule_slots", lambda **kwargs: slots
+    )
+    seen: list[tuple[str, int, int]] = []
+
+    def fake_run_batch_item(**kwargs):
+        seen.append((kwargs["difficulty"], kwargs["size"], kwargs["seed"]))
+        return {
+            "difficulty": kwargs["difficulty"],
+            "size": kwargs["size"],
+            "seed": kwargs["seed"],
+            "success": False,
+            "runtime_seconds": 0.0,
+            "output_path": "",
+            "error_message": "skipped",
+        }
+
+    monkeypatch.setattr(cli_module, "_run_batch_item", fake_run_batch_item)
+    common = [
+        "generate-pilot-batch",
+        "--output-root", str(tmp_path / "batch"),
+        "--batch-id", "target-batch",
+        "--target-game", "minicrossword",
+        "--target-track", "easy",
+        "--seed-start", "7",
+        "--no-avoid-existing-clues",
+        "--no-refresh-dictionaries",
+        "--no-exclude-scheduled-sixty",
+        "--no-exclude-recent-answers",
+        "--no-llm-log",
+    ]
+    # Day 2 (2099-01-02) is already scheduled for the mini easy track.
+    occupied = CliRunner().invoke(
+        main, [*common, "--target-dates", "2099-01-02,2099-01-03"]
+    )
+    assert occupied.exit_code != 0
+    assert "already scheduled for minicrossword easy: 2099-01-02" in occupied.output
+
+    # 2099-01-03 is a Saturday (7x7), 2099-01-05 a Monday (5x5).
+    ok = CliRunner().invoke(
+        main, [*common, "--target-dates", "2099-01-03,2099-01-05"]
+    )
+    assert ok.exit_code == 0, ok.output
+    assert seen == [("easy", 7, 7), ("easy", 5, 8)]
+
+    # --buckets is incompatible with targeting.
+    bad = CliRunner().invoke(
+        main, [*common, "--target-through", "2099-01-05", "--buckets", "easy/5"]
+    )
+    assert bad.exit_code != 0
+    assert "drop --buckets" in bad.output

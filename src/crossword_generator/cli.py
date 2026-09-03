@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import datetime as _dt
 import itertools
 import json
 import logging
@@ -14,6 +15,7 @@ import threading
 import time
 from collections.abc import Iterable
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from dataclasses import dataclass
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 
@@ -28,6 +30,21 @@ from crossword_generator.config import Config, find_project_root, load_config
 from crossword_generator.exporters.base import Exporter
 from crossword_generator.models import PuzzleEnvelope
 from crossword_generator.pipeline import create_pipeline
+from crossword_generator.schedule_targeting import (
+    DAILY_GAME_KEYS,
+    REGULAR_WINDOW_DAYS,
+    SHORT_WINDOW_DAYS,
+    SIXTY_WINDOW_DAYS,
+    ScheduleAnswerIndex,
+    ScheduledSlot,
+    date_for_day_number,
+    day_number_for_date,
+    infer_epoch,
+    open_day_numbers,
+    parse_date,
+    size_for_target,
+    slots_from_official_records,
+)
 from crossword_generator.steps.clue_grading_step import ClueWithGradingStep
 
 DEFAULT_EASY_EXCLUDE_SOURCES = (
@@ -644,6 +661,53 @@ def generate(
         "(bounded by API rate limits)."
     ),
 )
+@click.option(
+    "--target-game",
+    type=click.Choice(["midicrossword", "minicrossword"]),
+    default=None,
+    help=(
+        "Fill OPEN days of the live daily schedule for this game: one puzzle "
+        "per open day of --target-track between --target-from and "
+        "--target-through (or the explicit --target-dates). Each puzzle "
+        "excludes the answers the scheduler would reject on its own day "
+        "(+/-6 regular, +/-2 short glue on 9x9, +/-180 HGG-60, cross-game) "
+        "and records its target_date in the manifest and upload metadata. "
+        "Replaces the first-unscheduled-slot recent-answer window, which "
+        "assumes a contiguous block of open days and mis-targets a schedule "
+        "with scattered holes. Derives buckets/counts; incompatible with "
+        "--buckets/--bucket-counts."
+    ),
+)
+@click.option(
+    "--target-track",
+    type=click.Choice(["easy", "hard"]),
+    default=None,
+    help="Daily track whose open days to fill (with --target-game).",
+)
+@click.option(
+    "--target-from",
+    default=None,
+    help="First date (YYYY-MM-DD) to consider for open days; default today.",
+)
+@click.option(
+    "--target-through",
+    default=None,
+    help="Last date (YYYY-MM-DD, inclusive) to consider for open days.",
+)
+@click.option(
+    "--target-dates",
+    default=None,
+    help=(
+        "Comma-separated explicit dates (YYYY-MM-DD) to fill instead of a "
+        "--target-from/--target-through range. Each must be an open day."
+    ),
+)
+@click.option(
+    "--target-max",
+    type=int,
+    default=None,
+    help="Fill at most this many open days (earliest first).",
+)
 def generate_pilot_batch(
     output_root: str,
     batch_id: str,
@@ -681,6 +745,12 @@ def generate_pilot_batch(
     verbose: bool,
     no_llm_log: bool,
     max_workers: int,
+    target_game: str | None = None,
+    target_track: str | None = None,
+    target_from: str | None = None,
+    target_through: str | None = None,
+    target_dates: str | None = None,
+    target_max: int | None = None,
 ) -> None:
     """Generate the Phase 2B pilot batch and write a JSON manifest."""
     _setup_logging(verbose)
@@ -731,6 +801,51 @@ def generate_pilot_batch(
         selected_buckets,
         count,
     )
+
+    # Open-day targeting: derive the work list from the live schedule's holes
+    # for one game/track instead of --buckets/--count. See
+    # schedule_targeting.py for why the default first-unscheduled-slot window
+    # cannot target a schedule with scattered holes.
+    target_plan: _TargetPlan | None = None
+    schedule_index: ScheduleAnswerIndex | None = None
+    target_flags = (target_game, target_track, target_through, target_dates)
+    if any(value is not None for value in target_flags):
+        if not (target_game and target_track and (target_through or target_dates)):
+            raise click.BadParameter(
+                "--target-game, --target-track and --target-through (or "
+                "--target-dates) must be given together."
+            )
+        if buckets or bucket_counts:
+            raise click.BadParameter(
+                "--target-* derives buckets and counts from the open days; "
+                "drop --buckets/--bucket-counts."
+            )
+        target_plan, schedule_index = _build_target_plan(
+            project_root=project_root,
+            all_buckets=all_buckets,
+            game_key=target_game,
+            track=target_track,
+            target_from=target_from,
+            target_through=target_through,
+            target_dates=target_dates,
+            target_max=target_max,
+            api_base=api_base,
+        )
+        if not target_plan.days:
+            click.echo(
+                f"No open {target_game} {target_track} days in the requested "
+                "range; nothing to generate."
+            )
+            return
+        selected_buckets = target_plan.selected_buckets
+        count_by_bucket = target_plan.count_by_bucket
+        click.echo(
+            f"Targeting {len(target_plan.days)} open {target_game} "
+            f"{target_track} day(s) ({target_plan.days[0].date} .. "
+            f"{target_plan.days[-1].date}) against {target_plan.slot_count} "
+            "scheduled slot(s): "
+            + ", ".join(f"{d.date}({d.size}x{d.size})" for d in target_plan.days)
+        )
 
     if refresh_dictionaries and any(count > 0 for count in count_by_bucket.values()):
         try:
@@ -872,12 +987,25 @@ def generate_pilot_batch(
                 f"{short_meta.window_days}-day window ({len(short_words)} "
                 f"of them)"
             )
-        click.echo(
-            f"Excluding {len(recent_answers)} recently scheduled answer(s) "
-            f"from fill pools ({recent_meta.window_days}-day window before "
-            f"first unscheduled slot {recent_meta.first_unscheduled_date}, "
-            f"{recent_meta.forward_days} day(s) after{short_note})."
-        )
+        if target_plan is not None:
+            # The anchored window brackets the wrong days when targeting
+            # scattered holes; per-day exclusions from the schedule index
+            # replace it. Keep recent_meta for the usage counts only.
+            recent_answers = []
+            short_meta = None
+            click.echo(
+                "Open-day targeting: skipping the first-unscheduled-slot "
+                f"recent-answer window (anchor {recent_meta.first_unscheduled_date}); "
+                "each puzzle excludes the answers scheduled around its own "
+                "target day instead."
+            )
+        else:
+            click.echo(
+                f"Excluding {len(recent_answers)} recently scheduled answer(s) "
+                f"from fill pools ({recent_meta.window_days}-day window before "
+                f"first unscheduled slot {recent_meta.first_unscheduled_date}, "
+                f"{recent_meta.forward_days} day(s) after{short_note})."
+            )
         if recent_meta.counts:
             click.echo(
                 f"Loaded daily usage counts for {len(recent_meta.counts)} "
@@ -991,10 +1119,26 @@ def generate_pilot_batch(
     # concurrently. Puzzles are independent; the only shared state is the
     # thread-safe clue_history and used_answers.
     work_items: list[tuple[str, int, str, Path, int]] = []
-    for difficulty, size, puzzle_type, config_path in selected_buckets:
-        bucket_count = count_by_bucket[f"{difficulty}/{size}"]
-        for seed in range(seed_start, seed_start + bucket_count):
-            work_items.append((difficulty, size, puzzle_type, config_path, seed))
+    # Targeted runs: absolute schedule day number + date per work item.
+    target_by_item: dict[tuple[str, int, int], _TargetDay] = {}
+    if target_plan is not None:
+        for offset, target_day in enumerate(target_plan.days):
+            seed = seed_start + offset
+            work_items.append(
+                (
+                    target_day.difficulty,
+                    target_day.size,
+                    target_day.puzzle_type,
+                    target_day.config_path,
+                    seed,
+                )
+            )
+            target_by_item[(target_day.difficulty, target_day.size, seed)] = target_day
+    else:
+        for difficulty, size, puzzle_type, config_path in selected_buckets:
+            bucket_count = count_by_bucket[f"{difficulty}/{size}"]
+            for seed in range(seed_start, seed_start + bucket_count):
+                work_items.append((difficulty, size, puzzle_type, config_path, seed))
 
     # Answers used by completed batch items. Each new item starts with a
     # snapshot removed from its fill dictionary, so a batch scheduled across
@@ -1011,6 +1155,9 @@ def generate_pilot_batch(
     # appending this run after the priors) lets a continuation refill a
     # dropped middle day by reusing its seed number.
     prior_by_bucket: dict[tuple[str, int], list[tuple[int, Path]]] = {}
+    # Targeted runs use absolute schedule day numbers, so a prior manifest
+    # must carry target_day_number on every result it contributes.
+    prior_target_days: dict[tuple[str, int, int], int] = {}
     for prior_manifest in prior_batch_manifests:
         prior = json.loads(Path(prior_manifest).read_text())
         for prior_result in prior.get("results", []):
@@ -1023,6 +1170,16 @@ def generate_pilot_batch(
             prior_by_bucket.setdefault(bucket, []).append(
                 (int(prior_result["seed"]), prior_path)
             )
+            if target_plan is not None:
+                prior_day = prior_result.get("target_day_number")
+                if prior_day is None:
+                    raise click.ClickException(
+                        f"{prior_manifest}: result {bucket[0]}/{bucket[1]} "
+                        f"seed {prior_result['seed']} has no target_day_number; "
+                        "--target-* continuations need a targeted prior manifest."
+                    )
+                prior_key = (bucket[0], bucket[1], int(prior_result["seed"]))
+                prior_target_days[prior_key] = int(prior_day)
     day_by_item: dict[tuple[str, int, int], int] = {}
     for bucket in {(d, s) for d, s, _, _, _ in work_items} | set(prior_by_bucket):
         run_seeds = {seed for d, s, _, _, seed in work_items if (d, s) == bucket}
@@ -1036,6 +1193,10 @@ def generate_pilot_batch(
             )
         for day, seed in enumerate(sorted(run_seeds | prior_seeds)):
             day_by_item[(bucket[0], bucket[1], seed)] = day
+    if target_plan is not None:
+        for item_key, target_day in target_by_item.items():
+            day_by_item[item_key] = target_day.day_number
+        day_by_item.update(prior_target_days)
     prior_puzzles_seeded = 0
     for bucket, entries in prior_by_bucket.items():
         for prior_seed, prior_path in sorted(entries):
@@ -1145,6 +1306,29 @@ def generate_pilot_batch(
                     item_usage_counts[answer] = item_usage_counts.get(answer, 0) + boost
             if not item_usage_counts:
                 item_usage_counts = None
+        item_day = day_by_item[(difficulty, size, seed)]
+        item_excluded = used_answers.snapshot(
+            min_length=item_min_length,
+            short_cap=intra_batch_short_cap if intra_batch_dedup else 0,
+            short_window=intra_batch_short_window if intra_batch_dedup else 0,
+            size=size,
+            day=item_day,
+        )
+        schedule_excluded_count = 0
+        if schedule_index is not None:
+            schedule_excluded = schedule_index.excluded_for(
+                day_number=item_day, size=size
+            )
+            if exclude_answer_variants:
+                from crossword_generator.answer_variants import (
+                    expand_answer_variants,
+                )
+
+                schedule_excluded |= expand_answer_variants(
+                    schedule_index.regular_window_answers(day_number=item_day)
+                )
+            schedule_excluded_count = len(schedule_excluded)
+            item_excluded = item_excluded | schedule_excluded
         result = _run_batch_item(
             difficulty=difficulty,
             size=size,
@@ -1161,13 +1345,7 @@ def generate_pilot_batch(
             llm_logging_enabled=not no_llm_log,
             dictionary_overrides=dictionary_overrides,
             keep_sweep_context=max_workers > 1,
-            excluded_fill_words=used_answers.snapshot(
-                min_length=item_min_length,
-                short_cap=intra_batch_short_cap if intra_batch_dedup else 0,
-                short_window=intra_batch_short_window if intra_batch_dedup else 0,
-                size=size,
-                day=day_by_item[(difficulty, size, seed)],
-            ),
+            excluded_fill_words=item_excluded,
             answer_usage_counts=item_usage_counts,
             answer_novelty_candidates=(
                 answer_novelty_candidates
@@ -1184,6 +1362,13 @@ def generate_pilot_batch(
                 else None
             ),
         )
+        target_day = target_by_item.get((difficulty, size, seed))
+        if target_day is not None:
+            result["target_game_key"] = target_day.game_key
+            result["target_track"] = target_day.difficulty
+            result["target_date"] = target_day.date.isoformat()
+            result["target_day_number"] = target_day.day_number
+            result["schedule_excluded_count"] = schedule_excluded_count
         if result["success"] and intra_batch_dedup:
             try:
                 puzzle = json.loads(
@@ -1218,9 +1403,12 @@ def generate_pilot_batch(
 
     def _report(result: dict[str, object]) -> None:
         status = "ok" if result["success"] else "failed"
+        target_note = (
+            f" -> {result['target_date']}" if result.get("target_date") else ""
+        )
         click.echo(
             f"{result['difficulty']} {result['size']}x{result['size']} "
-            f"seed {result['seed']}: {status} "
+            f"seed {result['seed']}{target_note}: {status} "
             f"({result['runtime_seconds']}s)"
         )
 
@@ -1338,6 +1526,7 @@ def generate_pilot_batch(
                 )
             },
         },
+        "target": target_plan.manifest_entry() if target_plan is not None else None,
         "llm_logging_enabled": not no_llm_log,
         "max_workers": max_workers,
         "duplicate_sweep": {
@@ -1427,6 +1616,216 @@ SIXTY_FILTERED_FILENAME = "hgg-60-scheduled-filtered.txt"
 # Answers this short are "glue": the scheduler tolerates repeating them a few
 # days apart, and the fill pools cannot survive excluding a month of them.
 SHORT_ANSWER_MAX_LENGTH = 3
+
+
+@dataclass(frozen=True)
+class _TargetDay:
+    """One open schedule day a targeted batch fills."""
+
+    game_key: str
+    difficulty: str
+    size: int
+    puzzle_type: str
+    config_path: Path
+    day_number: int
+    date: _dt.date
+
+
+@dataclass(frozen=True)
+class _TargetPlan:
+    game_key: str
+    track: str
+    start_date: _dt.date
+    end_date: _dt.date
+    explicit_dates: tuple[str, ...]
+    epoch: _dt.date
+    days: tuple[_TargetDay, ...]
+    slot_count: int
+    open_day_count: int
+
+    @property
+    def selected_buckets(self) -> list[tuple[str, int, str, Path]]:
+        seen: dict[tuple[str, int], tuple[str, int, str, Path]] = {}
+        for day in self.days:
+            seen.setdefault(
+                (day.difficulty, day.size),
+                (day.difficulty, day.size, day.puzzle_type, day.config_path),
+            )
+        return list(seen.values())
+
+    @property
+    def count_by_bucket(self) -> dict[str, int]:
+        counts: dict[str, int] = {}
+        for day in self.days:
+            key = f"{day.difficulty}/{day.size}"
+            counts[key] = counts.get(key, 0) + 1
+        return counts
+
+    def manifest_entry(self) -> dict[str, object]:
+        return {
+            "game_key": self.game_key,
+            "track": self.track,
+            "from": self.start_date.isoformat(),
+            "through": self.end_date.isoformat(),
+            "explicit_dates": list(self.explicit_dates),
+            "epoch": self.epoch.isoformat(),
+            "scheduled_slots": self.slot_count,
+            "open_days_in_range": self.open_day_count,
+            "days": [
+                {
+                    "date": day.date.isoformat(),
+                    "day_number": day.day_number,
+                    "size": day.size,
+                }
+                for day in self.days
+            ],
+            "windows": {
+                "regular_days": REGULAR_WINDOW_DAYS,
+                "short_days": SHORT_WINDOW_DAYS,
+                "sixty_days": SIXTY_WINDOW_DAYS,
+            },
+        }
+
+
+def _load_daily_schedule_slots(*, api_base: str | None) -> list[ScheduledSlot]:
+    """Every scheduled daily slot across both crossword games."""
+    from crossword_generator.data_store import list_official_puzzle_records
+
+    slots: list[ScheduledSlot] = []
+    for game_key in DAILY_GAME_KEYS:
+        records = list_official_puzzle_records(
+            game_key=game_key,
+            collection="daily-schedule",
+            status="scheduled",
+            api_base=api_base,
+            timeout=300,
+        )
+        slots.extend(slots_from_official_records(records))
+    return slots
+
+
+def _build_target_plan(
+    *,
+    project_root: Path,
+    all_buckets: list[tuple[str, int, str, Path]],
+    game_key: str,
+    track: str,
+    target_from: str | None,
+    target_through: str | None,
+    target_dates: str | None,
+    target_max: int | None,
+    api_base: str | None,
+    today: _dt.date | None = None,
+) -> tuple[_TargetPlan, ScheduleAnswerIndex]:
+    try:
+        slots = _load_daily_schedule_slots(api_base=api_base)
+    except KeyError as exc:
+        raise click.ClickException(
+            f"Missing required environment variable: {exc.args[0]}. "
+            "--target-* reads the live daily schedule from the admin API."
+        ) from exc
+    except Exception as exc:  # pragma: no cover - network failure path
+        raise click.ClickException(
+            f"Failed to load the daily schedule for --target-*: {exc}"
+        ) from exc
+    if not slots:
+        raise click.ClickException(
+            "The daily schedule returned no scheduled slots; cannot target open days."
+        )
+    epoch = infer_epoch(slots)
+    today = today or _dt.date.today()
+
+    try:
+        explicit = tuple(
+            parse_date(d).isoformat()
+            for d in (target_dates or "").split(",")
+            if d.strip()
+        )
+        start_date = parse_date(target_from) if target_from else today
+        if explicit:
+            start_date = min(start_date, parse_date(explicit[0]))
+            end_date = max(parse_date(d) for d in explicit)
+        else:
+            end_date = parse_date(target_through or "")
+    except ValueError as exc:
+        raise click.BadParameter(str(exc)) from exc
+    if end_date < start_date:
+        raise click.BadParameter(
+            f"--target-through {end_date} is before --target-from {start_date}."
+        )
+    if start_date < today:
+        raise click.BadParameter(
+            f"--target-from {start_date} is in the past; dailies cannot be "
+            "scheduled before today."
+        )
+
+    open_days = open_day_numbers(
+        slots,
+        game_key=game_key,
+        track=track,
+        start_day=day_number_for_date(start_date, epoch),
+        end_day=day_number_for_date(end_date, epoch),
+    )
+    open_day_count = len(open_days)
+    if explicit:
+        wanted = {parse_date(d) for d in explicit}
+        open_dates = {date_for_day_number(d, epoch) for d in open_days}
+        occupied = sorted(d.isoformat() for d in wanted - open_dates)
+        if occupied:
+            raise click.BadParameter(
+                f"--target-dates already scheduled for {game_key} {track}: "
+                + ", ".join(occupied)
+            )
+        open_days = [d for d in open_days if date_for_day_number(d, epoch) in wanted]
+    if target_max is not None:
+        if target_max < 1:
+            raise click.BadParameter("--target-max must be >= 1")
+        open_days = open_days[:target_max]
+
+    bucket_by_key = {(d, s): (d, s, t, c) for d, s, t, c in all_buckets}
+    days: list[_TargetDay] = []
+    for day_number in open_days:
+        date = date_for_day_number(day_number, epoch)
+        size = size_for_target(game_key, date)
+        bucket = bucket_by_key.get((track, size))
+        if bucket is None:
+            raise click.ClickException(
+                f"No batch bucket configured for {track}/{size} "
+                f"(needed for {game_key} on {date})."
+            )
+        days.append(
+            _TargetDay(
+                game_key=game_key,
+                difficulty=track,
+                size=size,
+                puzzle_type=bucket[2],
+                config_path=bucket[3],
+                day_number=day_number,
+                date=date,
+            )
+        )
+
+    sixty_path = project_root / "dictionaries" / SIXTY_DICTIONARY_FILENAME
+    sixty_answers: set[str] = set()
+    if sixty_path.exists():
+        sixty_answers = {
+            line.split(";", 1)[0].strip().upper()
+            for line in sixty_path.read_text().splitlines()
+            if line.strip()
+        }
+    index = ScheduleAnswerIndex(slots, sixty_answers=sixty_answers)
+    plan = _TargetPlan(
+        game_key=game_key,
+        track=track,
+        start_date=start_date,
+        end_date=end_date,
+        explicit_dates=explicit,
+        epoch=epoch,
+        days=tuple(days),
+        slot_count=len(slots),
+        open_day_count=open_day_count,
+    )
+    return plan, index
 
 
 class _UsedAnswerSet:
@@ -1748,7 +2147,14 @@ def check_batch_answers(
             )
         ]
         bucket = (str(result["difficulty"]), int(result["size"]))
-        day = sorted(seeds_by_bucket[bucket]).index(int(result["seed"]))
+        # Targeted runs carry the absolute schedule day; otherwise a puzzle's
+        # day is its seed rank within its bucket (the order a weekly set is
+        # scheduled in).
+        if result.get("target_day_number") is not None:
+            day = int(result["target_day_number"])
+            label += f"@{result.get('target_date')}"
+        else:
+            day = sorted(seeds_by_bucket[bucket]).index(int(result["seed"]))
         puzzles.append((label, int(result["size"]), day, answers))
 
     # Dedupe within each puzzle: the fill grader already guards intra-puzzle
