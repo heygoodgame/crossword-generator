@@ -1352,7 +1352,7 @@ def test_generate_pilot_batch_targets_open_days_with_per_day_exclusions(
 
     records = records_from_manifest(tmp_path / "batch" / "manifest.json")
     assert records[0]["metadata"]["target_date"] == results[0]["target_date"]
-    assert records[0]["metadata"]["publish_slot"] == results[0]["target_date"]
+    assert "publish_slot" not in records[0]["metadata"]
     assert records[0]["metadata"]["target_day_number"] == 102
     assert records[0]["metadata"]["target_track"] == "easy"
 

@@ -101,9 +101,9 @@ def make_record(
     instead of the puzzle being silently held back from upload.
 
     ``target_date`` (with ``target_day_number``/``target_track``) records the
-    open schedule day a targeted batch filled the puzzle for. The admin UI
-    defaults the publish slot to it and the scheduler falls back to it when
-    no date is sent, so the puzzle lands on the day it was built to fit.
+    open schedule day a targeted batch filled the puzzle for. It is a review
+    aid: the scheduler's default forward walk from today reaches that day (or
+    an earlier open one the puzzle also fits) on its own.
     """
     record_key = key or (
         f"generated:{game_key}:{batch_id}:{difficulty}:{size}x{size}:seed-{seed}"
@@ -130,11 +130,10 @@ def make_record(
     if issues:
         metadata["clue_issues"] = issues
     if target_date:
+        # Informational: the open day this puzzle was filled to fit. The
+        # scheduler still walks forward from today, so it lands here or on any
+        # earlier open day it happens to fit — both are fine.
         metadata["target_date"] = target_date
-        # The admin UI reads publish_slot as the requested daily date, so a
-        # targeted candidate schedules onto its own day without the reviewer
-        # having to type it.
-        metadata["publish_slot"] = target_date
         if target_day_number is not None:
             metadata["target_day_number"] = int(target_day_number)
         if target_track:

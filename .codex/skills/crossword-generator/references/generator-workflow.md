@@ -1017,11 +1017,11 @@ uv run crossword-generator generate-pilot-batch \
   (its usage counts still feed the soft penalty); intra-batch dedup keys off
   the real day numbers.
 - Every result and uploaded record carries `target_date`,
-  `target_day_number`, `target_track`, AND `publish_slot=target_date`. The
-  admin UI shows the date as a tag and pre-fills "Requested Daily date"; the
-  server also falls back to `publish_slot`/`target_date` when a schedule
-  request omits the date. Tell the reviewer: schedule each puzzle on its
-  tagged date.
+  `target_day_number`, `target_track` as review aids (the admin UI shows the
+  date as a tag). The scheduler's default forward walk from today lands each
+  puzzle on its target day, or on an earlier open day it also fits — both
+  are fine. Schedule the batch in Triage's default (seed) order, which is
+  date order, so a later puzzle does not take an earlier puzzle's hole.
 - `check-batch-answers` uses the target day numbers for the 3-letter window
   instead of seed rank. Continuations need `--prior-batch-manifest` pointing
   at a TARGETED manifest (results must carry `target_day_number`).

@@ -72,7 +72,8 @@ uploads.
     --target-track <track> --target-through <date>` (or `--target-dates`)
     instead of `--buckets/--count`. One puzzle per open day, each excluding
     the answers the scheduler would reject on its own date, tagged with
-    `target_date`/`publish_slot` so the reviewer schedules it on that day.
+    `target_date` (review aid; the scheduler's forward walk lands it there
+    or on an earlier open day it fits — schedule in seed order).
     The default first-unscheduled-slot window mis-targets scattered holes
     (Sept 2026: 14 easy midis walked into 2027). See "Open-day targeting"
     in references/generator-workflow.md.
