@@ -708,6 +708,17 @@ def generate(
     default=None,
     help="Fill at most this many open days (earliest first).",
 )
+@click.option(
+    "--open-day-guard/--no-open-day-guard",
+    default=True,
+    help=(
+        "Daily runs (default flags): refuse to start when the live schedule's "
+        "open days for a selected bucket are scattered holes, or start "
+        "outside the first-unscheduled-slot window, since the default "
+        "recent-answer exclusion then cannot make the puzzles schedulable. "
+        "The error names the --target-* / fill-open-days command to use."
+    ),
+)
 def generate_pilot_batch(
     output_root: str,
     batch_id: str,
@@ -751,6 +762,7 @@ def generate_pilot_batch(
     target_through: str | None = None,
     target_dates: str | None = None,
     target_max: int | None = None,
+    open_day_guard: bool = True,
 ) -> None:
     """Generate the Phase 2B pilot batch and write a JSON manifest."""
     _setup_logging(verbose)
@@ -986,6 +998,16 @@ def generate_pilot_batch(
                 f"; <= {SHORT_ANSWER_MAX_LENGTH}-letter answers use a "
                 f"{short_meta.window_days}-day window ({len(short_words)} "
                 f"of them)"
+            )
+        guard_anchor = recent_meta.first_unscheduled_date
+        if target_plan is None and open_day_guard and guard_anchor:
+            _run_open_day_guard(
+                selected_buckets=selected_buckets,
+                count_by_bucket=count_by_bucket,
+                anchor_date=guard_anchor,
+                forward_days=recent_meta.forward_days or 0,
+                api_base=api_base,
+                target_through=None,
             )
         if target_plan is not None:
             # The anchored window brackets the wrong days when targeting
@@ -1313,6 +1335,7 @@ def generate_pilot_batch(
             short_window=intra_batch_short_window if intra_batch_dedup else 0,
             size=size,
             day=item_day,
+            regular_window=REGULAR_WINDOW_DAYS if target_plan is not None else 0,
         )
         schedule_excluded_count = 0
         if schedule_index is not None:
@@ -1618,6 +1641,326 @@ SIXTY_FILTERED_FILENAME = "hgg-60-scheduled-filtered.txt"
 SHORT_ANSWER_MAX_LENGTH = 3
 
 
+def _open_day_guard_problems(
+    slots: list[ScheduledSlot],
+    selected_buckets: list[tuple[str, int, str, Path]],
+    count_by_bucket: dict[str, int],
+    *,
+    anchor_date: str,
+    forward_days: int,
+    today: _dt.date,
+) -> list[str]:
+    """Buckets the default first-unscheduled-slot window cannot serve.
+
+    The default daily exclusion brackets ``anchor_date`` (the global first
+    unscheduled slot) through ``forward_days`` after it and assumes the
+    batch lands on consecutive days from there. A bucket is a problem when
+    its first ``count`` open days (from today) are not consecutive, or its
+    first open day is later than the window can bracket (anchor + forward -
+    6), which is exactly the Sept 2026 failure: midi easy holes started 10
+    days after a midi HARD anchor and were scattered.
+    """
+    epoch = infer_epoch(slots)
+    anchor_day = day_number_for_date(parse_date(anchor_date), epoch)
+    today_day = day_number_for_date(today, epoch)
+    latest_start = anchor_day + forward_days - REGULAR_WINDOW_DAYS
+    problems: list[str] = []
+    for difficulty, size, _, _ in selected_buckets:
+        count = count_by_bucket.get(f"{difficulty}/{size}", 0)
+        if count <= 0 or difficulty not in ("easy", "hard"):
+            continue
+        game_key = _game_key_for_size(size)
+        opens = open_day_numbers(
+            slots,
+            game_key=game_key,
+            track=difficulty,
+            start_day=today_day,
+            end_day=today_day + 730,
+        )[:count]
+        if not opens:
+            continue
+        consecutive = opens == list(range(opens[0], opens[0] + len(opens)))
+        bracketed = opens[0] <= latest_start
+        if consecutive and bracketed:
+            continue
+        dates = ", ".join(str(date_for_day_number(d, epoch)) for d in opens)
+        why = []
+        if not consecutive:
+            why.append("scattered holes")
+        if not bracketed:
+            why.append(
+                f"first open day is after {date_for_day_number(latest_start, epoch)}, "
+                f"the last day the window (anchor {anchor_date} + {forward_days}d) "
+                "brackets"
+            )
+        problems.append(
+            f"{game_key} {difficulty}: next {len(opens)} open day(s) {dates} "
+            f"({'; '.join(why)})"
+        )
+    return problems
+
+
+def _run_open_day_guard(
+    *,
+    selected_buckets: list[tuple[str, int, str, Path]],
+    count_by_bucket: dict[str, int],
+    anchor_date: str,
+    forward_days: int,
+    api_base: str | None,
+    target_through: str | None,
+    today: _dt.date | None = None,
+) -> None:
+    try:
+        slots = _load_daily_schedule_slots(api_base=api_base)
+    except Exception as exc:  # pragma: no cover - network failure path
+        click.echo(
+            f"Open-day guard skipped (could not load the daily schedule: {exc}).",
+            err=True,
+        )
+        return
+    if not slots:
+        return
+    problems = _open_day_guard_problems(
+        slots,
+        selected_buckets,
+        count_by_bucket,
+        anchor_date=anchor_date,
+        forward_days=forward_days,
+        today=today or _dt.date.today(),
+    )
+    if not problems:
+        return
+    through = target_through or "<YYYY-MM-DD>"
+    raise click.ClickException(
+        "The live daily schedule does not have a contiguous block of open days "
+        "where the default recent-answer window points, so this run's puzzles "
+        "would not be schedulable on the days that are actually open:\n  - "
+        + "\n  - ".join(problems)
+        + "\nUse open-day targeting instead, e.g.\n"
+        "  uv run crossword-generator fill-open-days --through "
+        f"{through}\n"
+        "or per track:\n"
+        "  uv run crossword-generator generate-pilot-batch --target-game "
+        f"<game> --target-track <track> --target-through {through} ...\n"
+        "Pass --no-open-day-guard to override for offline/experimental runs."
+    )
+
+
+@main.command(name="fill-open-days")
+@click.option(
+    "--through",
+    "target_through",
+    required=True,
+    help="Last date (YYYY-MM-DD, inclusive) whose open days to fill.",
+)
+@click.option(
+    "--from",
+    "target_from",
+    default=None,
+    help="First date to consider (default today).",
+)
+@click.option(
+    "--output-root",
+    default=None,
+    help="Parent directory for the per-track batch directories "
+    "(default output/batches/fill-open-days-<today>).",
+)
+@click.option(
+    "--batch-prefix",
+    default=None,
+    help="Batch id prefix; each run is <prefix>-<midi|mini>-<track> "
+    "(default fill-open-days-<today>).",
+)
+@click.option(
+    "--games",
+    default="midicrossword,minicrossword",
+    help="Comma-separated games, in run order (midis first: hard fill is "
+    "the most constrained and minis then exclude midi glue).",
+)
+@click.option(
+    "--tracks",
+    default="hard,easy",
+    help="Comma-separated tracks, in run order within each game.",
+)
+@click.option(
+    "--max-per-run",
+    type=int,
+    default=None,
+    help="Fill at most this many open days per game/track (earliest first).",
+)
+@click.option(
+    "--llm",
+    "llm_provider",
+    type=click.Choice(["ollama", "claude"]),
+    default="claude",
+)
+@click.option("--max-workers", type=int, default=1)
+@click.option(
+    "--plan-only",
+    is_flag=True,
+    default=False,
+    help="List the open days per game/track and exit without generating.",
+)
+@click.option(
+    "--upload",
+    is_flag=True,
+    default=False,
+    help="After every run passes its gates, upload all batches as draft "
+    "candidates (otherwise only dry-runs and prints the upload commands).",
+)
+@click.option("-v", "--verbose", is_flag=True, default=False)
+@click.pass_context
+def fill_open_days(
+    ctx: click.Context,
+    target_through: str,
+    target_from: str | None,
+    output_root: str | None,
+    batch_prefix: str | None,
+    games: str,
+    tracks: str,
+    max_per_run: int | None,
+    llm_provider: str,
+    max_workers: int,
+    plan_only: bool,
+    upload: bool,
+    verbose: bool,
+) -> None:
+    """Fill every open daily slot through a date, one targeted run per track.
+
+    Runs generate-pilot-batch --target-* once per game/track in order,
+    chaining each run's manifest into the next via --prior-batch-manifest so
+    the tracks stay answer-disjoint on adjacent days. After each run it
+    applies the duplicate-answer gate, checks every fill passed grading, and
+    dry-runs the upload. Uploads only with --upload and only if every gate
+    passed.
+    """
+    _setup_logging(verbose)
+    today = _dt.date.today()
+    stamp = today.isoformat()
+    project_root = find_project_root()
+    root = Path(output_root or f"output/batches/fill-open-days-{stamp}")
+    if not root.is_absolute():
+        root = project_root / root
+    prefix = batch_prefix or f"fill-open-days-{stamp}"
+    short_game = {"midicrossword": "midi", "minicrossword": "mini"}
+    pairs: list[tuple[str, str]] = []
+    for game in (g.strip() for g in games.split(",") if g.strip()):
+        if game not in DAILY_GAME_KEYS:
+            raise click.BadParameter(f"Unknown game {game!r}")
+        for track in (t.strip() for t in tracks.split(",") if t.strip()):
+            if track not in ("easy", "hard"):
+                raise click.BadParameter(f"Unknown track {track!r}")
+            pairs.append((game, track))
+
+    if plan_only:
+        all_buckets = _batch_bucket_configs(project_root)
+        for game, track in pairs:
+            plan, _ = _build_target_plan(
+                project_root=project_root,
+                all_buckets=all_buckets,
+                game_key=game,
+                track=track,
+                target_from=target_from,
+                target_through=target_through,
+                target_dates=None,
+                target_max=max_per_run,
+                api_base=None,
+            )
+            days = ", ".join(f"{d.date}({d.size}x{d.size})" for d in plan.days)
+            click.echo(f"{game} {track}: {len(plan.days)} open day(s): {days or '-'}")
+        return
+
+    runs: list[dict[str, object]] = []
+    prior: list[str] = []
+    for game, track in pairs:
+        batch_id = f"{prefix}-{short_game[game]}-{track}"
+        run_root = root / f"{short_game[game]}-{track}"
+        click.echo(f"=== {batch_id}: {game} {track} through {target_through}")
+        ctx.invoke(
+            generate_pilot_batch,
+            output_root=str(run_root),
+            batch_id=batch_id,
+            target_game=game,
+            target_track=track,
+            target_from=target_from,
+            target_through=target_through,
+            target_max=max_per_run,
+            prior_batch_manifests=tuple(prior),
+            llm_provider=llm_provider,
+            max_workers=max_workers,
+            verbose=verbose,
+        )
+        manifest_path = run_root / "manifest.json"
+        if not manifest_path.exists():
+            runs.append({"batch_id": batch_id, "puzzles": 0, "gate": "no open days"})
+            continue
+        prior.append(str(manifest_path))
+        manifest = json.loads(manifest_path.read_text())
+        results = manifest.get("results", [])
+        failed = [r for r in results if not r.get("success")]
+        below = [
+            r
+            for r in results
+            if "Fill quality below threshold" in str(r.get("error_message") or "")
+        ]
+        gate_ok = True
+        try:
+            ctx.invoke(
+                check_batch_answers,
+                manifest_path=str(manifest_path),
+                write_answers_file=None,
+                allow_short_window=True,
+            )
+        except SystemExit as exc:
+            gate_ok = exc.code in (0, None)
+        gate = []
+        if failed:
+            gate.append(f"{len(failed)} failed")
+        if below:
+            gate.append(f"{len(below)} below fill threshold")
+        if not gate_ok:
+            gate.append("blocking duplicates")
+        runs.append(
+            {
+                "batch_id": batch_id,
+                "manifest": str(manifest_path),
+                "puzzles": len(results),
+                "dates": [r.get("target_date") for r in results],
+                "gate": "; ".join(gate) if gate else "pass",
+                "ok": not gate,
+            }
+        )
+
+    all_ok = all(bool(r.get("ok")) for r in runs if r.get("puzzles"))
+    click.echo("=== fill-open-days summary")
+    for r in runs:
+        click.echo(
+            f"  {r['batch_id']}: {r['puzzles']} puzzle(s) "
+            f"{', '.join(str(d) for d in r.get('dates', []))} -> gate {r['gate']}"
+        )
+    for r in runs:
+        if not r.get("puzzles"):
+            continue
+        ctx.invoke(
+            save_generated_puzzles,
+            manifest_path=str(r["manifest"]),
+            dry_run=not (upload and all_ok),
+        )
+    if upload and not all_ok:
+        raise click.ClickException(
+            "Not uploading: at least one run failed a gate. Fix it, then "
+            "upload the passing manifests with save-generated-puzzles."
+        )
+    if not upload:
+        click.echo("Dry run only. To upload:")
+        for r in runs:
+            if r.get("puzzles"):
+                click.echo(
+                    "  uv run crossword-generator save-generated-puzzles "
+                    f"--manifest {r['manifest']}"
+                )
+
+
 @dataclass(frozen=True)
 class _TargetDay:
     """One open schedule day a targeted batch fills."""
@@ -1867,12 +2210,29 @@ class _UsedAnswerSet:
         short_window: int = 0,
         size: int | None = None,
         day: int | None = None,
+        regular_window: int = 0,
     ) -> set[str]:
+        """Answers to exclude from the puzzle being filled.
+
+        ``regular_window`` > 0 makes the >= ``min_length`` exclusion
+        date-aware (any size, +/- that many days of ``day``) instead of
+        "once used, excluded for the whole batch". Targeted runs use the
+        scheduler's +/-6 so a chained multi-track batch does not starve its
+        fill pools on answers scheduled weeks apart.
+        """
         with self._lock:
             excluded: set[str] = set()
             for answer, uses in self._uses.items():
                 if len(answer) >= min_length:
-                    excluded.add(answer)
+                    if (
+                        regular_window <= 0
+                        or day is None
+                        or any(
+                            abs(used_day - day) <= regular_window
+                            for _, used_day in uses
+                        )
+                    ):
+                        excluded.add(answer)
                 elif short_cap > 0 and len(uses) >= short_cap:
                     excluded.add(answer)
                 elif (
