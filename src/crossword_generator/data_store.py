@@ -89,12 +89,21 @@ def make_record(
     title_reasoning: str | None = None,
     clue_issues: list[dict[str, Any]] | None = None,
     key: str | None = None,
+    target_date: str | None = None,
+    target_day_number: int | None = None,
+    target_track: str | None = None,
+    target_game_key: str | None = None,
 ) -> dict[str, Any]:
     """Build a generated-puzzle data-store record.
 
     ``clue_issues`` carries any LEAK/DUPLICATE clue problems that survived
     repair so the admin review UI can flag the specific clues for the editor
     instead of the puzzle being silently held back from upload.
+
+    ``target_date`` (with ``target_day_number``/``target_track``) records the
+    open schedule day a targeted batch filled the puzzle for. The admin UI
+    defaults the publish slot to it and the scheduler falls back to it when
+    no date is sent, so the puzzle lands on the day it was built to fit.
     """
     record_key = key or (
         f"generated:{game_key}:{batch_id}:{difficulty}:{size}x{size}:seed-{seed}"
@@ -120,6 +129,18 @@ def make_record(
     }
     if issues:
         metadata["clue_issues"] = issues
+    if target_date:
+        metadata["target_date"] = target_date
+        # The admin UI reads publish_slot as the requested daily date, so a
+        # targeted candidate schedules onto its own day without the reviewer
+        # having to type it.
+        metadata["publish_slot"] = target_date
+        if target_day_number is not None:
+            metadata["target_day_number"] = int(target_day_number)
+        if target_track:
+            metadata["target_track"] = target_track
+        if target_game_key:
+            metadata["target_game_key"] = target_game_key
     record = {
         "namespace": NAMESPACE,
         "collection": COLLECTION,
@@ -278,6 +299,14 @@ def records_from_manifest(
                 title=_optional_str(result.get("title")),
                 title_reasoning=_optional_str(result.get("title_reasoning")),
                 clue_issues=clue_issues or None,
+                target_date=_optional_str(result.get("target_date")),
+                target_day_number=(
+                    int(result["target_day_number"])
+                    if result.get("target_day_number") is not None
+                    else None
+                ),
+                target_track=_optional_str(result.get("target_track")),
+                target_game_key=_optional_str(result.get("target_game_key")),
             )
         )
 

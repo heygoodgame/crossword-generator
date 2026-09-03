@@ -67,6 +67,15 @@ uploads.
     `scheduled` only when actually scheduled, via the admin `schedule-daily`
     action, which the generator does NOT do). Only call `schedule-daily` if
     explicitly told to write the live calendar.
+  - OPEN-DAY HOLES (the schedule already runs months ahead and the ask is
+    "fill the open <game> <track> days"): use `--target-game <game>
+    --target-track <track> --target-through <date>` (or `--target-dates`)
+    instead of `--buckets/--count`. One puzzle per open day, each excluding
+    the answers the scheduler would reject on its own date, tagged with
+    `target_date`/`publish_slot` so the reviewer schedules it on that day.
+    The default first-unscheduled-slot window mis-targets scattered holes
+    (Sept 2026: 14 easy midis walked into 2027). See "Open-day targeting"
+    in references/generator-workflow.md.
   - UNLIMITED (pool, never schedule-adjacent): pass
     `--no-intra-batch-dedup --no-exclude-recent-answers --no-exclude-scheduled-sixty`
     (`--max-workers 6`+ fine); keep default `--unlimited-answer-novelty`

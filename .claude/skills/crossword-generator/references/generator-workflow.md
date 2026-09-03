@@ -944,9 +944,57 @@ Upload paths for a daily batch:
   the LIVE daily calendar and deletes the candidate, same shape as
   `publish-unlimited`. Do not do this without explicit instruction.
 
-The generator cannot pin the recent-answer window to an arbitrary date; it
-auto-detects the first unscheduled slot server-side. If the operator says "the
-first open slot is <date>", the default detection already lands there.
+The default recent-answer window auto-detects the first unscheduled slot
+server-side and only works when the open days form a contiguous block right
+after it. If the open days are scattered holes (or belong to a different
+game/track than the global first hole), use `--target-*` (next section) so
+each puzzle is filled for, and tagged with, a specific open date.
+
+### Open-day targeting (scattered holes) — `--target-*`
+
+The default daily flags assume the schedule has a contiguous open frontier:
+the server's "first unscheduled slot" is the min over ALL four game/track
+combos, and the recent-answer window brackets 30 days back / 13 days forward
+of it. That model failed in Sept 2026: Jeff had scheduled through July 2027
+leaving scattered one-to-few-day holes, the anchor pointed at a midi HARD
+hole (Oct 18) while midi EASY's holes were Oct 28-30 and 12 days in
+November, so none of the answers around the real holes were excluded. Every
+easy candidate collided on every hole and the scheduler walked them into
+2027. The scheduler itself was verified correct (26/26 placements).
+
+When the request is "fill the open <game> <track> days", use targeting
+instead of `--buckets/--count`:
+
+```bash
+uv run crossword-generator generate-pilot-batch \
+  --output-root output/batches/target-midi-easy-<date> \
+  --batch-id target-midi-easy-<date> \
+  --target-game midicrossword --target-track easy \
+  --target-through 2026-11-30 \
+  --max-workers 1 --llm claude
+```
+
+- Reads the live daily schedule (both games), computes the open days of the
+  target game/track from `--target-from` (default today) through
+  `--target-through`, and generates ONE puzzle per open day. `--target-dates
+  d1,d2` fills explicit days (errors if any is already scheduled);
+  `--target-max N` caps the count. Minis pick 5x5/7x7 by weekday.
+- Each puzzle excludes exactly what the scheduler would reject on ITS day,
+  cross-game and cross-track: 4+ letter answers within +/-6, 3-letter glue
+  within +/-2 (9x9) or +/-6 (mini), hgg-60 within +/-180, plus inflectional
+  variants of the +/-6 answers. The anchored recent-answer window is skipped
+  (its usage counts still feed the soft penalty); intra-batch dedup keys off
+  the real day numbers.
+- Every result and uploaded record carries `target_date`,
+  `target_day_number`, `target_track`, AND `publish_slot=target_date`. The
+  admin UI shows the date as a tag and pre-fills "Requested Daily date"; the
+  server also falls back to `publish_slot`/`target_date` when a schedule
+  request omits the date. Tell the reviewer: schedule each puzzle on its
+  tagged date.
+- `check-batch-answers` uses the target day numbers for the 3-letter window
+  instead of seed rank. Continuations need `--prior-batch-manifest` pointing
+  at a TARGETED manifest (results must carry `target_day_number`).
+- Manifest records the plan under `target` (days, sizes, windows, slot count).
 
 ## Unlimited-Pool Batches (non-scheduled)
 
