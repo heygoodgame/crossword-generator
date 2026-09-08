@@ -2478,12 +2478,20 @@ def check_batch_answers(
     tracks aligned by day): a repeat whose puzzles land 3+ days apart is
     labelled short-window, one within 2 days is blocking. A set with only
     short-window repeats is schedulable as-is in seed order.
+
+    Targeted batches (every result carries ``target_day_number``) are judged
+    on their absolute days with the scheduler's real windows, matching what
+    the generator excluded while filling: a 4+ letter answer shared by
+    puzzles more than +/-6 days apart is labelled regular-window and never
+    blocks; 3-letter glue uses +/-2 between 9x9s and +/-6 when a mini is
+    involved.
     """
     from crossword_generator.clue_history import extract_ipuz_answers
 
     manifest = json.loads(Path(manifest_path).read_text())
     puzzles: list[tuple[str, int, int, list[str]]] = []
     seeds_by_bucket: dict[tuple[str, int], list[int]] = {}
+    targeted = True
     for result in manifest.get("results", []):
         if result.get("success"):
             seeds_by_bucket.setdefault(
@@ -2514,6 +2522,7 @@ def check_batch_answers(
             day = int(result["target_day_number"])
             label += f"@{result.get('target_date')}"
         else:
+            targeted = False
             day = sorted(seeds_by_bucket[bucket]).index(int(result["seed"]))
         puzzles.append((label, int(result["size"]), day, answers))
 
@@ -2548,39 +2557,70 @@ def check_batch_answers(
 
     blocking_count = 0
     short_window_count = 0
+    regular_window_count = 0
     for answer in sorted(duplicates):
         hits = duplicates[answer]
         nine_only = len(answer) <= 3 and all(size == 9 for _, size, _ in hits)
-        spaced = nine_only and all(
-            abs(a_day - b_day) > SHORT_ANSWER_WINDOW_DAYS
-            for (_, _, a_day), (_, _, b_day) in itertools.combinations(hits, 2)
-        )
-        if spaced:
-            short_window_count += 1
-            kind = "short-window (9x9-only, 3+ days apart in seed order)"
+        pairs = list(itertools.combinations(hits, 2))
+        if targeted:
+            # Absolute schedule days: apply the scheduler's own windows,
+            # the same ones the generator excluded against while filling.
+            def _window(a: tuple[str, int, int], b: tuple[str, int, int]) -> int:
+                if len(answer) <= 3 and a[1] == 9 and b[1] == 9:
+                    return SHORT_ANSWER_WINDOW_DAYS
+                return REGULAR_WINDOW_DAYS
+
+            spaced = all(abs(a[2] - b[2]) > _window(a, b) for a, b in pairs)
+            if spaced and len(answer) <= 3:
+                short_window_count += 1
+                kind = "short-window (targeted days outside the glue window)"
+            elif spaced:
+                regular_window_count += 1
+                kind = (
+                    f"regular-window (targeted days more than "
+                    f"+/-{REGULAR_WINDOW_DAYS} apart; scheduler allows)"
+                )
+            else:
+                blocking_count += 1
+                kind = "blocking (within the scheduler window on target days)"
         else:
-            blocking_count += 1
-            kind = (
-                "blocking (9x9 3-letter within +/-2 days in seed order)"
-                if nine_only
-                else "blocking"
+            spaced = nine_only and all(
+                abs(a_day - b_day) > SHORT_ANSWER_WINDOW_DAYS
+                for (_, _, a_day), (_, _, b_day) in pairs
             )
+            if spaced:
+                short_window_count += 1
+                kind = "short-window (9x9-only, 3+ days apart in seed order)"
+            else:
+                blocking_count += 1
+                kind = (
+                    "blocking (9x9 3-letter within +/-2 days in seed order)"
+                    if nine_only
+                    else "blocking"
+                )
         labels = ", ".join(f"{label} (day {day + 1})" for label, _, day in hits)
         click.echo(f"DUPLICATE [{kind}]: {answer} — {labels}")
     click.echo(
         f"{len(duplicates)} duplicate answer(s) across puzzles "
-        f"({blocking_count} blocking, {short_window_count} short-window)."
+        f"({blocking_count} blocking, {short_window_count} short-window, "
+        f"{regular_window_count} regular-window)."
     )
-    if blocking_count or not allow_short_window:
+    if blocking_count or (short_window_count and not allow_short_window):
         click.echo(
             "Regenerate the affected puzzles with --prior-batch-manifest "
             "before uploading."
         )
         sys.exit(1)
-    click.echo(
-        "Short-window duplicates allowed (--allow-short-window): schedule "
-        "each bucket in seed order (day 1 first), tracks aligned by day."
-    )
+    if targeted:
+        click.echo(
+            "Remaining duplicates fall outside the scheduler windows on the "
+            "tagged target dates: schedule each puzzle on its target_date."
+        )
+    elif short_window_count:
+        click.echo(
+            "Short-window duplicates allowed (--allow-short-window): schedule "
+            "each bucket in seed order (day 1 first), tracks aligned by day."
+        )
 
 
 @main.command(name="save-generated-puzzles")
