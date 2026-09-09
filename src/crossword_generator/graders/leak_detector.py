@@ -63,8 +63,10 @@ from __future__ import annotations
 
 import logging
 import re
+import threading
 from collections.abc import Iterable
 from dataclasses import dataclass
+from typing import Any
 
 import snowballstemmer
 
@@ -73,7 +75,20 @@ from crossword_generator.models import ClueEntry
 
 logger = logging.getLogger(__name__)
 
-_stemmer = snowballstemmer.stemmer("english")
+# snowballstemmer instances keep the word under analysis as mutable state on
+# ``self``, so one shared instance is NOT thread-safe: batch runs with
+# --max-workers > 1 hit ``IndexError: string index out of range`` inside
+# ``stemWord`` when two puzzles graded at once (2026-09-09, chunk 2 of the
+# easy-5x5 unlimited build). Give each thread its own stemmer.
+_stemmer_local = threading.local()
+
+
+def _get_stemmer() -> Any:
+    stemmer = getattr(_stemmer_local, "stemmer", None)
+    if stemmer is None:
+        stemmer = snowballstemmer.stemmer("english")
+        _stemmer_local.stemmer = stemmer
+    return stemmer
 
 # Short function words that must never count as a leak even if they happen to
 # match an answer (e.g. answer "AN", "IT"), and that are skipped as clue words.
@@ -242,7 +257,7 @@ def _raw_clue_words(clue: str) -> list[str]:
 
 
 def _stem(word: str) -> str:
-    return _stemmer.stemWord(word)
+    return _get_stemmer().stemWord(word)
 
 
 # Agent-noun suffixes Snowball leaves intact (teacher -> teacher) while it

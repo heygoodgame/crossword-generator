@@ -385,11 +385,21 @@ class _CandidateCollector:
 
 @dataclass(frozen=True)
 class _AnswerNoveltyStats:
-    """Existing-use penalty for a candidate fill."""
+    """Existing-use penalty for a candidate fill.
+
+    ``total_count`` (sum of prior uses over the board's answers) is the
+    primary selection key: picking the board that adds the fewest prior
+    uses is the greedy step that minimises the pool's sum of squared
+    answer counts, i.e. keeps the answer distribution as flat as possible.
+    The log-damped ``score`` is kept for reporting only -- as a selection
+    key it barely separates a 14-use word from a 3-use one, so hot words
+    kept growing (ARENA/ALOHA/EERIE reached 12-16 uses in the easy 5x5 pool).
+    """
 
     score: float
     overlap_count: int
     max_count: int
+    total_count: int = 0
 
 
 # ---------------------------------------------------------------------------
@@ -1334,9 +1344,9 @@ class FillWithGradingStep(PipelineStep):
         novelty, result, subset = min(
             scored,
             key=lambda item: (
-                item[0].score,
-                item[0].overlap_count,
+                item[0].total_count,
                 item[0].max_count,
+                item[0].overlap_count,
                 -(item[1].quality_score or 0),
             ),
         )
@@ -1348,6 +1358,7 @@ class FillWithGradingStep(PipelineStep):
                     answer_novelty_score=round(novelty.score, 3),
                     answer_novelty_overlap_count=novelty.overlap_count,
                     answer_novelty_max_count=novelty.max_count,
+                    answer_novelty_total_count=novelty.total_count,
                 )
             }
         )
@@ -1367,6 +1378,7 @@ class FillWithGradingStep(PipelineStep):
             score=sum(math.log2(count + 1) for count in counts),
             overlap_count=sum(1 for count in counts if count > 0),
             max_count=max(counts),
+            total_count=sum(counts),
         )
 
     def _llm_select_best(
