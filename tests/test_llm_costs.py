@@ -27,6 +27,40 @@ def test_opus_4_8_uses_current_pricing() -> None:
     assert result["estimated_cost_usd"] == 0.08375
 
 
+def test_opus_5_shares_opus_4_5_plus_tier() -> None:
+    result = estimate_llm_cost(
+        "claude",
+        "claude-opus-5",
+        {"input_tokens": 1_000_000, "output_tokens": 1_000_000},
+    )
+
+    assert result["pricing"] == "anthropic_opus_4_5_plus_usd_per_mtok"
+    assert result["estimated_cost_usd"] == 30.0
+
+
+def test_sonnet_5_uses_reduced_pricing() -> None:
+    result = estimate_llm_cost(
+        "claude",
+        "claude-sonnet-5",
+        {"input_tokens": 1_000_000, "output_tokens": 1_000_000},
+    )
+
+    assert result["pricing"] == "anthropic_sonnet_5_usd_per_mtok"
+    assert result["rates_usd_per_mtok"]["cache_read_input_tokens"] == 0.20
+    assert result["estimated_cost_usd"] == 12.0
+
+
+def test_sonnet_4_6_keeps_sonnet_4_pricing() -> None:
+    result = estimate_llm_cost(
+        "claude",
+        "claude-sonnet-4-6",
+        {"input_tokens": 1_000_000, "output_tokens": 1_000_000},
+    )
+
+    assert result["pricing"] == "anthropic_sonnet_usd_per_mtok"
+    assert result["estimated_cost_usd"] == 18.0
+
+
 def test_legacy_opus_family_keeps_legacy_pricing() -> None:
     result = estimate_llm_cost(
         "claude",

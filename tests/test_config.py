@@ -47,10 +47,10 @@ class TestConfigDefaults:
         assert cfg.llm.ollama.model == "llama3"
         assert cfg.llm.ollama.timeout == 120
         assert cfg.llm.claude.theme_model == "claude-sonnet-5"
-        assert cfg.llm.claude.clue_generation_model == "claude-opus-4-8"
-        assert cfg.llm.claude.clue_repair_model == "claude-opus-4-8"
+        assert cfg.llm.claude.clue_generation_model == "claude-opus-5"
+        assert cfg.llm.claude.clue_repair_model == "claude-opus-5"
         assert cfg.llm.claude.clue_grading_model == "claude-sonnet-5"
-        assert cfg.llm.claude.clue_fact_check_model == "claude-opus-4-8"
+        assert cfg.llm.claude.clue_fact_check_model == "claude-opus-5"
         assert (
             cfg.llm.claude.puzzle_naming_model == "claude-haiku-4-5-20251001"
         )
@@ -147,10 +147,10 @@ class TestLoadConfig:
             assert cfg.grading.clue.freshness_repair_threshold == 0
         assert cfg.theme.enabled is False
         assert cfg.llm.claude.theme_model == "claude-sonnet-5"
-        assert cfg.llm.claude.clue_generation_model == "claude-opus-4-8"
-        assert cfg.llm.claude.clue_repair_model == "claude-opus-4-8"
+        assert cfg.llm.claude.clue_generation_model == "claude-opus-5"
+        assert cfg.llm.claude.clue_repair_model == "claude-opus-5"
         assert cfg.llm.claude.clue_grading_model == "claude-sonnet-5"
-        assert cfg.llm.claude.clue_fact_check_model == "claude-opus-4-8"
+        assert cfg.llm.claude.clue_fact_check_model == "claude-opus-5"
         assert (
             cfg.llm.claude.puzzle_naming_model == "claude-haiku-4-5-20251001"
         )

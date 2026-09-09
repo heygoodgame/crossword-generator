@@ -1,11 +1,20 @@
 """Best-effort LLM cost estimation."""
 
+import re
+
 _ANTHROPIC_PRICING_USD_PER_MTOK = {
     "haiku": {
         "input_tokens": 1.00,
         "output_tokens": 5.00,
         "cache_creation_input_tokens": 1.25,
         "cache_read_input_tokens": 0.10,
+    },
+    # Sonnet 5 dropped to $2/$10 (Sonnet 4.x stays at $3/$15).
+    "sonnet_5": {
+        "input_tokens": 2.00,
+        "output_tokens": 10.00,
+        "cache_creation_input_tokens": 2.50,
+        "cache_read_input_tokens": 0.20,
     },
     "sonnet": {
         "input_tokens": 3.00,
@@ -134,12 +143,16 @@ def _openai_pricing_key(model: str) -> str | None:
 
 def _anthropic_pricing_key(model: str) -> str | None:
     normalized = model.lower()
+    # Opus 4.5 through Opus 5 share the $5/$25 tier; Opus 4.1 and earlier
+    # were $15/$75.
     if "opus" in normalized and any(
         version in normalized
-        for version in ("opus-4-5", "opus-4-6", "opus-4-7", "opus-4-8")
+        for version in ("opus-4-5", "opus-4-6", "opus-4-7", "opus-4-8", "opus-5")
     ):
         return "opus_4_5_plus"
-    for family in _ANTHROPIC_PRICING_USD_PER_MTOK:
+    if re.search(r"sonnet-5(?:\b|-)", normalized):
+        return "sonnet_5"
+    for family in ("haiku", "sonnet", "opus"):
         if family in normalized:
             return family
     return None

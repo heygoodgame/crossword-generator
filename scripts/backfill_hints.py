@@ -55,7 +55,7 @@ from crossword_generator.llm.prompts.hint_generation import (
 logger = logging.getLogger("backfill_hints")
 
 DEFAULT_API_BASE = "https://play.hey.gg/api"
-DEFAULT_MODEL = "claude-sonnet-4-6"
+DEFAULT_MODEL = "claude-sonnet-5"
 
 try:
     import anthropic
@@ -140,8 +140,12 @@ def _entries_by_key(ipuz: dict[str, Any]) -> dict[tuple[int, str], NumberedEntry
                 cc += 1
             if len(word) >= 2:
                 out[(num, "across")] = NumberedEntry(
-                    number=num, direction="across", row=r, col=c,
-                    length=len(word), answer=word.upper(),
+                    number=num,
+                    direction="across",
+                    row=r,
+                    col=c,
+                    length=len(word),
+                    answer=word.upper(),
                 )
         if filled(solution, r, c) and filled(solution, r - 1, c) is None:
             word = ""
@@ -151,8 +155,12 @@ def _entries_by_key(ipuz: dict[str, Any]) -> dict[tuple[int, str], NumberedEntry
                 rr += 1
             if len(word) >= 2:
                 out[(num, "down")] = NumberedEntry(
-                    number=num, direction="down", row=r, col=c,
-                    length=len(word), answer=word.upper(),
+                    number=num,
+                    direction="down",
+                    row=r,
+                    col=c,
+                    length=len(word),
+                    answer=word.upper(),
                 )
     return out
 
@@ -332,7 +340,7 @@ def generate_hints_sync(
     resp = client.messages.create(
         model=model,
         system=system_text,
-        max_tokens=4096,
+        max_tokens=8192,
         messages=[{"role": "user", "content": user_text}],
     )
     raw = "".join(
@@ -497,7 +505,7 @@ def _run_batch_mode(
                             "cache_control": {"type": "ephemeral"},
                         }
                     ],
-                    max_tokens=4096,
+                    max_tokens=8192,
                     messages=[{"role": "user", "content": user_text}],
                 ),
             )
