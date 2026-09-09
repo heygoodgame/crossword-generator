@@ -580,6 +580,20 @@ def generate(
     ),
 )
 @click.option(
+    "--unlimited-usage-penalty",
+    type=float,
+    default=None,
+    help=(
+        "Unlimited batches (when --unlimited-answer-novelty is active): soft "
+        "CSP usage penalty. Inside each score tier, candidates are drawn with "
+        "weight (1+uses)^-penalty, where uses counts the active unlimited-pool "
+        "puzzles for the bucket plus completed batch-mates that used the "
+        "answer, so the fill itself steers away from the pool's hot words "
+        "before the best-of-N novelty pick. Defaults to "
+        "fill.csp.answer_usage_penalty (1.0). Pass 0 to disable."
+    ),
+)
+@click.option(
     "--daily-usage-penalty",
     type=float,
     default=None,
@@ -745,6 +759,7 @@ def generate_pilot_batch(
     intra_batch_short_penalty: float,
     unlimited_answer_novelty: bool,
     answer_novelty_candidates: int,
+    unlimited_usage_penalty: float | None,
     daily_usage_penalty: float | None,
     daily_count_window_days: int,
     daily_novelty_candidates: int,
@@ -770,6 +785,8 @@ def generate_pilot_batch(
         raise click.BadParameter("--max-workers must be >= 1")
     if answer_novelty_candidates < 1:
         raise click.BadParameter("--answer-novelty-candidates must be >= 1")
+    if unlimited_usage_penalty is not None and unlimited_usage_penalty < 0:
+        raise click.BadParameter("--unlimited-usage-penalty must be >= 0")
     if daily_novelty_candidates < 1:
         raise click.BadParameter("--daily-novelty-candidates must be >= 1")
     if min(recent_window_days, recent_short_window_days, recent_forward_days) < 0:
@@ -1375,10 +1392,11 @@ def generate_pilot_batch(
                 if novelty_active
                 else daily_novelty_candidates
             ),
-            # Unlimited runs keep their existing behaviour (seed weighting +
-            # best-of-N only); the CSP ordering penalty is a daily feature.
+            # Unlimited runs weight the CSP value ordering by pool usage
+            # (None = config default) so large pools stop piling onto the
+            # same glue; daily runs use their own schedule-window penalty.
             answer_usage_penalty=(
-                0.0
+                unlimited_usage_penalty
                 if novelty_active
                 else daily_usage_penalty
                 if item_usage_counts
@@ -1542,6 +1560,7 @@ def generate_pilot_batch(
             "enabled": unlimited_answer_novelty,
             "active": novelty_active,
             "answer_novelty_candidates": answer_novelty_candidates,
+            "usage_penalty": unlimited_usage_penalty,
             "loaded": {
                 f"{difficulty}/{size}": usage.stats()
                 for (difficulty, size), usage in sorted(

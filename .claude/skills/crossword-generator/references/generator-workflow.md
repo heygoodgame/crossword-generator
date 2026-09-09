@@ -1042,11 +1042,25 @@ versus a dated weekly batch:
    `--no-intra-batch-dedup` is passed. The runner fetches active
    `crosswords/unlimited-pool` records for the requested size/difficulty,
    counts existing answers, collects multiple passing fill candidates
-   (`--answer-novelty-candidates`, default 8), and picks the board with the
-   lowest frequency-weighted answer reuse. As each puzzle in the batch
+   (`--answer-novelty-candidates`, default 8), and picks the board whose
+   answers have the fewest total prior uses (sum of counts, then max count,
+   then overlap; the greedy step that keeps the pool's answer distribution
+   flat -- the earlier log-damped score let hot words keep growing). As each puzzle in the batch
    completes, its answers increment the same in-memory weights for later
    puzzles. With parallel workers, in-flight puzzles cannot see each other;
    completed batch-mates are still counted by later workers.
+   The same counts also weight the CSP value ordering
+   (`--unlimited-usage-penalty`, default = `fill.csp.answer_usage_penalty`,
+   1.0): inside each score tier a word is drawn with weight `(1+uses)^-penalty`,
+   so the fill itself steers away from the pool's hot words (ARENA/ALOHA/EERIE
+   were at 12-14 uses in a 392-puzzle easy-5x5 pool before this existed) rather
+   than relying on the best-of-N pick alone. Pass `0` to restore the older
+   seed-weighting + best-of-N-only behaviour. Because the in-memory counter is
+   the live pool plus completed batch-mates, ONE long run already rebalances
+   after every puzzle; chunking a big pool build (e.g. 5 x 100) and promoting
+   each chunk before the next only adds checkpoints, not extra balance --
+   `--prior-batch-manifest` does NOT seed the novelty counter, so a chunk that
+   is uploaded but not yet promoted is invisible to the next chunk.
 4. **Keep `--avoid-existing-clues` on.** Clue-angle variety vs. the live corpus
    is still wanted and is unrelated to scheduling. Requires a prod admin token.
 
@@ -1063,6 +1077,7 @@ uv run crossword-generator generate-pilot-batch \
   --no-exclude-scheduled-sixty \
   --avoid-existing-clues \
   --answer-novelty-candidates 8 \
+  --unlimited-usage-penalty 1.0 \
   --max-workers 6 \
   --llm claude
 ```

@@ -1659,3 +1659,81 @@ def test_fill_open_days_chains_tracks_and_gates(tmp_path, monkeypatch) -> None:
     assert "fill-test-midi-easy: 1 puzzle(s) 2099-01-04 -> gate pass" in result.output
     assert "Dry run only" in result.output
     assert "Prepared 2 generated puzzle record(s)" in result.output
+
+
+def test_generate_pilot_batch_unlimited_passes_usage_penalty(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    """Unlimited (novelty) runs hand the pool usage counts AND a CSP usage
+    penalty to the fill step; the default is None (config value) and the
+    flag overrides it. The manifest records the setting."""
+    run_kwargs: list[dict[str, object]] = []
+
+    def fake_load(selected_buckets, count_by_bucket, *, api_base=None):
+        usage = cli_module._AnswerUsageCounter()
+        usage.add(["ARENA", "ARENA", "ALOHA"], records=2)
+        return {("easy", 5): usage}
+
+    def fake_run_batch_item(**kwargs):
+        run_kwargs.append(kwargs)
+        output_path = (
+            kwargs["output_root"] / "easy" / "5x5" / f"seed-{kwargs['seed']:03d}.ipuz"
+        )
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(
+            '{"solution":[["A","P","P","L","E"]],"clues":{"Across":[],"Down":[]}}'
+        )
+        return {
+            "difficulty": "easy",
+            "size": 5,
+            "seed": kwargs["seed"],
+            "success": True,
+            "runtime_seconds": 0.0,
+            "output_path": str(output_path),
+            "clue_score": 80.0,
+        }
+
+    monkeypatch.setattr(
+        cli_module, "_load_unlimited_answer_usage_by_bucket", fake_load
+    )
+    monkeypatch.setattr(cli_module, "_run_batch_item", fake_run_batch_item)
+
+    base_args = [
+        "generate-pilot-batch",
+        "--output-root", str(tmp_path / "batch"),
+        "--batch-id", "test-batch",
+        "--buckets", "easy/5",
+        "--count", "1",
+        "--seed-start", "1",
+        "--no-avoid-existing-clues",
+        "--no-refresh-dictionaries",
+        "--no-intra-batch-dedup",
+        "--no-exclude-recent-answers",
+        "--no-exclude-scheduled-sixty",
+        "--no-llm-log",
+    ]
+
+    result = CliRunner().invoke(main, base_args)
+    assert result.exit_code == 0, result.output
+    (kwargs,) = run_kwargs
+    assert kwargs["answer_usage_counts"] == {"ARENA": 2, "ALOHA": 1}
+    assert kwargs["answer_usage_penalty"] is None  # config default
+    manifest = json.loads((tmp_path / "batch" / "manifest.json").read_text())
+    assert manifest["unlimited_answer_novelty"]["active"] is True
+    assert manifest["unlimited_answer_novelty"]["usage_penalty"] is None
+
+    run_kwargs.clear()
+    result = CliRunner().invoke(
+        main,
+        [*base_args, "--batch-id", "test-batch-2", "--unlimited-usage-penalty", "1.5"],
+    )
+    assert result.exit_code == 0, result.output
+    (kwargs,) = run_kwargs
+    assert kwargs["answer_usage_penalty"] == 1.5
+    manifest = json.loads((tmp_path / "batch" / "manifest.json").read_text())
+    assert manifest["unlimited_answer_novelty"]["usage_penalty"] == 1.5
+
+    result = CliRunner().invoke(main, [*base_args, "--unlimited-usage-penalty", "-1"])
+    assert result.exit_code != 0
+    assert "--unlimited-usage-penalty must be >= 0" in result.output
