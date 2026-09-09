@@ -215,21 +215,22 @@ class ClaudeConfig(BaseModel):
     model: str = "claude-haiku-4-5-20251001"
     theme_model: str = "claude-sonnet-5"
     fill_selection_model: str = ""
-    # Opus 4.8 for the quality-critical generative step (Phase 3). Adaptive
-    # thinking only; the provider omits temperature for Opus 4.7/4.8.
-    clue_generation_model: str = "claude-opus-4-8"
+    # Opus 5 for the quality-critical generative step (Phase 3). Adaptive
+    # thinking only; the provider omits temperature for the Claude 5 family.
+    clue_generation_model: str = "claude-opus-5"
     # Repair rewrites the clues that already failed grading — the highest-
-    # leverage place to spend on quality. Opus 4.8 (the first-pass generator)
+    # leverage place to spend on quality. Opus 5 (the first-pass generator)
     # also writes repairs; the grading-cost cuts (subset re-grade + terser
-    # output) more than pay for the upgrade.
-    clue_repair_model: str = "claude-opus-4-8"
+    # output) more than pay for the upgrade. Opus 5 replaced Opus 4.8 at the
+    # same per-token price (2026-09-09).
+    clue_repair_model: str = "claude-opus-5"
     # Grading is the leak/accuracy gate — Sonnet 5 for a stronger judge (P5).
     clue_grading_model: str = "claude-sonnet-5"
-    # Fact-check is the accuracy gate. Opus 4.8 is stricter about word-precision
+    # Fact-check is the accuracy gate. Opus is stricter about word-precision
     # (e.g. catching "Pope born in 2025" — Leo XIV was elected, not born, in
     # 2025 — which Sonnet rationalized as "safe"). At ~3% of pipeline spend the
     # upgrade adds only ~2% to total cost. See docs/clue-quality.md.
-    clue_fact_check_model: str = "claude-opus-4-8"
+    clue_fact_check_model: str = "claude-opus-5"
     # Naming is a trivial creative task — Haiku is sufficient (P5). Empty falls
     # back to ``model`` (also Haiku); set explicitly for clarity.
     puzzle_naming_model: str = "claude-haiku-4-5-20251001"

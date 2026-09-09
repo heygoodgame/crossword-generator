@@ -53,10 +53,10 @@ llm:
   claude:
     model: claude-haiku-4-5-20251001
     theme_model: claude-sonnet-5
-    clue_generation_model: claude-opus-4-8
-    clue_repair_model: claude-opus-4-8
+    clue_generation_model: claude-opus-5
+    clue_repair_model: claude-opus-5
     clue_grading_model: claude-sonnet-5
-    clue_fact_check_model: claude-opus-4-8
+    clue_fact_check_model: claude-opus-5
     puzzle_naming_model: claude-haiku-4-5-20251001
     thinking_enabled: false
     thinking_type: adaptive

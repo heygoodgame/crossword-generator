@@ -194,7 +194,7 @@ class TestPipeline:
         clue_gen_configs = [
             config
             for config in provider_configs
-            if config.model == "claude-opus-4-8"
+            if config.model == "claude-opus-5"
             and config.thinking_enabled is True
         ]
         assert len(clue_gen_configs) == 1
