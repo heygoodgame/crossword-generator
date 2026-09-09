@@ -4466,7 +4466,30 @@ def _run_duplicate_sweep(
                 unresolved_total += len(hits)
             else:
                 before = _duplicate_error_count(envelope)
-                envelope = clue_step.repair_external_duplicates(envelope, hits)
+                try:
+                    envelope = clue_step.repair_external_duplicates(envelope, hits)
+                except Exception as exc:  # noqa: BLE001 - never lose the batch
+                    # The sweep runs after every puzzle has been generated and
+                    # exported; an LLM failure here (2026-09-09: an Anthropic
+                    # 400 "Output blocked by content filtering policy" on one
+                    # clue) must not take the whole manifest down with it.
+                    # Record the duplicates as soft errors so the upload guard
+                    # holds this puzzle back, and keep sweeping the rest.
+                    logging.getLogger(__name__).warning(
+                        "Duplicate sweep: repair failed for %s (%s); leaving "
+                        "%d duplicate clue(s) flagged",
+                        label,
+                        exc,
+                        len(hits),
+                    )
+                    envelope = envelope.model_copy(
+                        update={
+                            "errors": [
+                                *envelope.errors,
+                                *(duplicate_error_message(h) for h in hits),
+                            ]
+                        }
+                    )
                 unresolved = _duplicate_error_count(envelope) - before
                 unresolved_total += unresolved
                 repaired_total += len(hits) - unresolved

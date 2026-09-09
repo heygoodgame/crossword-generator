@@ -461,6 +461,40 @@ def _sweep_result(
     }
 
 
+def test_duplicate_sweep_survives_repair_crash(tmp_path: Path) -> None:
+    """An exception from the LLM repair (e.g. an Anthropic 400 content-filter
+    error) must not abort the sweep: the puzzle keeps DUPLICATE: soft errors
+    so the upload guard holds it back, later puzzles are still swept, and
+    the batch still gets its manifest."""
+
+    class _CrashingClueStep:
+        def repair_external_duplicates(self, envelope, hits):  # noqa: ANN001
+            raise RuntimeError("Output blocked by content filtering policy")
+
+    env_a = _sweep_envelope("Feline pet")
+    env_b = _sweep_envelope("Feline pet")
+    env_c = _sweep_envelope("Feline pet")
+    history = ClueHistoryIndex()
+    for env in (env_a, env_b, env_c):
+        history.add_clues(env.clues)
+
+    exporter = _StubExporter()
+    crashing = _CrashingClueStep()
+    healthy = _StubClueStep("Fresh feline clue")
+    results = [
+        _sweep_result(1, env_a, crashing, tmp_path / "a.ipuz"),
+        _sweep_result(2, env_b, crashing, tmp_path / "b.ipuz"),
+        _sweep_result(3, env_c, healthy, tmp_path / "c.ipuz"),
+    ]
+
+    stats = _run_duplicate_sweep(results, history, exporter=exporter)
+
+    assert stats == {"checked": 3, "repaired": 1, "unresolved": 1}
+    assert results[0]["error_message"] is None
+    assert str(results[1]["error_message"]).startswith("DUPLICATE:")
+    assert results[2]["error_message"] is None
+
+
 def test_duplicate_sweep_repairs_cross_puzzle_collision(tmp_path: Path) -> None:
     """Second puzzle with the same clue gets repaired and re-exported; the
     first keeps its clue untouched."""
