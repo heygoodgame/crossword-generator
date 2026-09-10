@@ -116,7 +116,7 @@ _RUBRIC = (
     'avoid reusing a prior clue (e.g. COS clued "Romaine lettuce variety" '
     "instead of the companies or cosine sense). For this primarily "
     "American-audience puzzle, also penalize FAIRNESS for deep-cut British "
-    'or regional slang an American solver would not know (e.g. SNIP clued '
+    "or regional slang an American solver would not know (e.g. SNIP clued "
     '"A bargain"); common Briticisms in moderation are fine, but flag clues '
     "that lean on obscure regional slang when a plain angle exists. "
     "Apply a sliding "
@@ -208,9 +208,9 @@ _OUTPUT_SECTION = (
     "Return ONLY a minified JSON array (no indentation, no spaces after "
     "colons/commas) with one object per clue. Return the four sub-scores "
     "(accuracy, freshness, craft, fairness — each 0-25), NOT a total score. "
-    "Include a SHORT \"feedback\" string (under ~10 words) ONLY for clues with "
-    "a real problem — name the issue tersely (e.g. \"leaks: navy\", \"too easy "
-    "for Hard\", \"wrong: Frank Lloyd Wright\"). OMIT the \"feedback\" field "
+    'Include a SHORT "feedback" string (under ~10 words) ONLY for clues with '
+    'a real problem — name the issue tersely (e.g. "leaks: navy", "too easy '
+    'for Hard", "wrong: Frank Lloyd Wright"). OMIT the "feedback" field '
     "entirely for clean, high-scoring clues; do not write praise. Keep the "
     "exact issue keywords the repair step looks for. "
     "No other text before or after.\n"
@@ -223,9 +223,43 @@ _OUTPUT_SECTION = (
 
 
 def _difficulty_note(puzzle_type: PuzzleType, difficulty: PuzzleDifficulty) -> str:
-    # Starter shares Easy's beginner-friendly evaluation bar (see
+    # Starter is a notch below Easy: its own first-time-solver bar (see
     # clue_generation._difficulty_guidance), never the Hard branch.
-    if difficulty in (PuzzleDifficulty.EASY, PuzzleDifficulty.STARTER):
+    if difficulty == PuzzleDifficulty.STARTER:
+        base = (
+            "This is an HGG Starter crossword — the very easiest tier, one "
+            "notch BELOW Easy, aimed at first-time solvers including kids "
+            "and non-native English speakers. Reward only the plainest "
+            "clues: simple dictionary definitions in everyday words, "
+            "dead-obvious fill-in-the-blanks on universally known phrases, "
+            "common one-word synonyms, plain opposites, and everyday "
+            "categories with an unmistakable pointer. Never penalize a clue "
+            "for being too plain, too direct, or for reusing a familiar "
+            "angle a prior clue used — for Starter, maximally easy IS the "
+            "goal. "
+            "CRITICAL — too hard for Starter: if a clue would make a "
+            "brand-new solver pause at all — any trivia beyond universally "
+            "known references (days, months, colors, animals, food, family "
+            "words), any secondary or figurative sense of the answer, any "
+            "wordplay or misdirection, or clue vocabulary rarer or harder "
+            "than the answer itself — score FRESHNESS 0-9 and state "
+            '"too hard for Easy" in the feedback so it is regenerated with '
+            "a simpler angle. A clue that would be fine in an Easy puzzle "
+            "can still be too hard here. "
+            "CRITICAL — broad underconstrained clues are still defects, even "
+            "at this tier. Given the clue and answer length, a brand-new "
+            "solver should not be able to name several equally plausible "
+            'answers. Penalize ACCURACY for category-only clues such as "An '
+            'animal" or "A color"; score ACCURACY 0-9 when many answers '
+            'fit, and include the phrase "too broad" in the feedback so the '
+            "clue is regenerated with a more specific hook. "
+            "A wordplay/tricky question-mark clue is NEVER allowed in a "
+            "Starter puzzle: flag it and score freshness low so it is "
+            'regenerated. A literal "?" inside quoted material (e.g., '
+            '"___ you okay?" for ARE) is fine — only the trick-signalling '
+            "question mark is disallowed."
+        )
+    elif difficulty == PuzzleDifficulty.EASY:
         base = (
             "This is an HGG Easy crossword that should be ridiculously "
             "beginner-friendly. Reward clues that are easier than NYT Monday: "
@@ -238,14 +272,14 @@ def _difficulty_note(puzzle_type: PuzzleType, difficulty: PuzzleDifficulty) -> s
             "CRITICAL — broad underconstrained Easy clues are defects, even "
             "when they are simple. Given the clue and answer length, a casual "
             "solver should not be able to name several equally plausible "
-            'answers. Penalize ACCURACY for category-only clues such as '
+            "answers. Penalize ACCURACY for category-only clues such as "
             '"Common girl\'s name", "Three-letter animal", or "Thing in a '
             'kitchen"; score ACCURACY 0-9 when many answers fit, and include '
             'the phrase "too broad" in the feedback so the clue is regenerated '
             "with a more specific hook. "
             "CRITICAL — too-hard Easy clue: if a clue uses a secondary, "
             "technical, or less-common sense of the answer when a plainer "
-            "everyday sense exists (e.g. DAM clued \"Foal's mother\" instead "
+            'everyday sense exists (e.g. DAM clued "Foal\'s mother" instead '
             'of "River barrier"), or otherwise requires real thought, score '
             'FRESHNESS 0-9 and state "too hard for Easy" in the feedback so '
             "it is regenerated with a simpler angle. "

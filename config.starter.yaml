@@ -5,8 +5,9 @@
 # dictionary; see the follow-up to fold Starter into
 # publish-effective-dictionaries.
 #
-# Starter clues use the Easy (beginner-friendly) clue register — the pool,
-# not the clue difficulty, is what makes Starter easier.
+# Starter clues use their own first-time-solver register (a notch below
+# Easy — see clue_generation._difficulty_guidance), and Starter grids never
+# use the all-white 5x5 pattern.
 
 puzzle:
   type: mini

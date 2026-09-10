@@ -78,7 +78,7 @@ _GUIDELINES = (
     'with "Cheesecake type". The compound hands the answer to the solver; use a '
     "plain definition instead.\n"
     "- SHARED-FRAGMENT RULE: if the answer is itself a compound (e.g. MINIFIG = "
-    'MINI + FIG), never use a clue word that shares one of those components, '
+    "MINI + FIG), never use a clue word that shares one of those components, "
     'even as a different word. Do not clue MINIFIG with "figure" or "figurine" '
     "(both start with the FIG component). Clue the whole answer through its own "
     'meaning instead (MINIFIG: "Tiny posable toy in a building-brick set").\n'
@@ -92,7 +92,7 @@ _GUIDELINES = (
     "clue; on Hard puzzles fall back to a different angle that is both solid "
     "and appropriately difficult, not to an instantly-solvable clue.\n"
     "- MULTI-REFERENCE RULE (strict): if a clue cues the answer through more "
-    "than one reference joined by \"or\"/\"and\" (e.g. two name blanks like "
+    'than one reference joined by "or"/"and" (e.g. two name blanks like '
     '"X ___ or actor ___ Wilson"), EVERY reference must independently and '
     "exactly produce the answer. Verify each blank separately. A clue is wrong "
     "if even ONE reference is false, even when the other is correct — for "
@@ -111,8 +111,8 @@ _GUIDELINES = (
     "- The only clue-reuse rule is: do not write the EXACT (word-for-word) "
     "same clue already used for an answer. Reusing the same angle, reference, "
     "meaning, or definition is completely fine — just word it differently. A "
-    "reworded clue on the same angle is NOT a repeat: if \"Comedian Margaret "
-    "___\" was used, \"Comedian Margaret's surname\" is a perfectly good, "
+    'reworded clue on the same angle is NOT a repeat: if "Comedian Margaret '
+    '___" was used, "Comedian Margaret\'s surname" is a perfectly good, '
     "non-duplicate clue. Never dig into an obscure, deep-cut, or barely-known "
     "sense just to find a different angle — a clue almost no solver knows is "
     "far worse than reusing a familiar angle. Many short answers have only one "
@@ -142,8 +142,8 @@ _GUIDELINES = (
     "reason toward.\n"
     "- BRITISH SLANG RULE: this is a primarily American-audience puzzle, so "
     "use British (or other regional) slang sparingly. Common, widely-known "
-    'Briticisms are fine in moderation, but do not lean on them and never '
-    'reach for a deep-cut British sense most American solvers would not know '
+    "Briticisms are fine in moderation, but do not lean on them and never "
+    "reach for a deep-cut British sense most American solvers would not know "
     '(e.g. SNIP clued as "A bargain"). When an answer has a plain American '
     "everyday meaning, prefer that over a British-slang angle.\n"
     "- For pop-culture, celebrity, entertainment, sports, brand, and "
@@ -335,7 +335,7 @@ _LEAK_EXAMPLES = (
     '   ANSWER: VERMONT  GOOD: "New England state known for maple syrup"\n'
     '   ANSWER: EGO  GOOD: "One\'s sense of self-importance"\n'
     '   ANSWER: NASA  GOOD: "Moon-landing org."  (acronym clued by what it '
-    "did, not by its expansion words, and the \"org.\" cue signals a short "
+    'did, not by its expansion words, and the "org." cue signals a short '
     "form)\n"
     '   ANSWER: DNA  BAD: "Genetic material" — no indicator that the answer '
     'is an initialism.  GOOD: "Genetic blueprint stuff, for short"\n'
@@ -401,9 +401,9 @@ _LEAK_EXAMPLES = (
     "repeat.\n"
     '   GOOD: "Comedian Margaret\'s surname" or "Sulu portrayer John" — same '
     "references as the prior clues, just reworded. NOT considered duplicates.\n"
-    "   ANSWER: ALI  Prior clue: \"Boxing legend Muhammad\"\n"
+    '   ANSWER: ALI  Prior clue: "Boxing legend Muhammad"\n'
     '   GOOD: "Heavyweight champ Muhammad" — reuses the boxing angle, reworded; '
-    "fine. (A different familiar angle like \"Mahershala of \\\"Green Book\\\"\" "
+    'fine. (A different familiar angle like "Mahershala of \\"Green Book\\"" '
     "is also fine, but not required.)\n"
     "   ANSWER: COS  Prior clues cover companies/businesses and cosine.\n"
     '   OK: "Trig ratio, for short" or "Businesses (abbr.)" — reuse a known '
@@ -415,7 +415,7 @@ _LEAK_EXAMPLES = (
     '   ANSWER: TNT  BAD: "Channel airing NBA playoff games" — broadcast '
     "rights change, so this clue goes stale on the shelf.\n"
     '   GOOD: "Explosive letters" or "Classic AC/DC hit"\n'
-    "   ANSWER: ARI  BAD: \"NPR's Shapiro\" — current-employer claims expire "
+    '   ANSWER: ARI  BAD: "NPR\'s Shapiro" — current-employer claims expire '
     "when people change jobs.\n"
     '   GOOD: "Director Aster of \\"Hereditary\\"" or "Gold of '
     '\\"Entourage\\""\n'
@@ -457,10 +457,41 @@ _OUTPUT_SECTION = (
 
 
 def _difficulty_guidance(puzzle_type: PuzzleType, difficulty: PuzzleDifficulty) -> str:
-    # Starter is "easier than Easy": it shares the beginner-friendly Easy
-    # guidance (never the Hard branch). The dictionary pool is what makes it
-    # easier, not a distinct clue register.
-    if difficulty in (PuzzleDifficulty.EASY, PuzzleDifficulty.STARTER):
+    # Starter is "easier than Easy": both the dictionary pool AND the clue
+    # register are easier — Starter gets its own branch below.
+    if difficulty == PuzzleDifficulty.STARTER:
+        base = (
+            "This is an HGG Starter crossword — the very easiest tier, one "
+            "notch BELOW our Easy puzzles. It is aimed at someone solving "
+            "their first-ever crossword, including kids and non-native "
+            "English speakers. Every clue must be instantly gettable with "
+            "zero crossword experience: if a ten-year-old would not get it "
+            "immediately, it is too hard. Use ONLY the plainest techniques: "
+            'a simple dictionary definition in everyday words ("Frozen '
+            'water" for ICE); a dead-obvious fill-in-the-blank on a phrase '
+            'everyone knows ("Peanut butter and ___" for JELLY); a common '
+            'one-word synonym ("Happy" for GLAD); a plain opposite '
+            '("Opposite of hot" for COLD); or an everyday category with an '
+            'unmistakable pointer ("Color of grass" for GREEN). Keep the '
+            "vocabulary IN the clue simple too — short, common, everyday "
+            "words a child knows; never use a clue word that is rarer or "
+            "harder than the answer itself. Always clue the single most "
+            "common meaning of the answer; never a secondary, technical, or "
+            "figurative sense. No trivia at all — not even easy trivia — "
+            "except universally known references (days, months, colors, "
+            "animals, food, family words). No wordplay, no misdirection, no "
+            'question-mark trick clues ever (a literal "?" inside quoted '
+            'text like "___ you okay?" for ARE is fine). '
+            "CRITICAL — Starter clues must still point to ONE answer: given "
+            "the clue and the answer length, a brand-new solver should not "
+            "be able to name several equally good answers. Never write "
+            'underconstrained clues like "An animal" or "A color"; pick the '
+            "everyday angle that singles the answer out. If prior clues are "
+            "listed for an answer, staying this easy ALWAYS wins over "
+            "avoiding a repeat: reuse the easy familiar clue rather than "
+            "reach for a harder or less common sense."
+        )
+    elif difficulty == PuzzleDifficulty.EASY:
         base = (
             "This is an HGG Easy crossword for a very broad casual audience. "
             "The goal is to be RIDICULOUSLY beginner-friendly — easier than "
@@ -479,7 +510,7 @@ def _difficulty_guidance(puzzle_type: PuzzleType, difficulty: PuzzleDifficulty) 
             "CRITICAL — Easy clues must be specific enough to point to one "
             "answer, not just a broad category. Given the clue and answer "
             "length, a casual solver should not be able to name several "
-            'equally plausible answers. Never write underconstrained clues '
+            "equally plausible answers. Never write underconstrained clues "
             'like "Common girl\'s name", "Three-letter animal", or "Thing in '
             'a kitchen." For names, initials, abbreviations, and short common '
             "words, use a familiar unique hook, exact phrase, or plain "
@@ -627,15 +658,13 @@ def build_clue_generation_messages(
                 "(or essentially word-for-word) same text as one listed below. "
                 "Reusing the same angle, reference, definition, or meaning is "
                 "completely fine — just word it differently. For example, if "
-                "\"Comedian Margaret ___\" is listed, \"Comedian Margaret's "
-                "surname\" is a perfectly good clue (same reference, different "
+                '"Comedian Margaret ___" is listed, "Comedian Margaret\'s '
+                'surname" is a perfectly good clue (same reference, different '
                 "words). Do NOT switch to an obscure or deep-cut sense to get a "
                 "different angle; a familiar reused angle, freshly worded, is "
                 "always better than a clue solvers won't recognize. For an "
                 "answer with only one or two natural angles, lightly rewording "
-                "an existing one is exactly right.\n"
-                + "\n".join(prior_lines)
-                + "\n"
+                "an existing one is exactly right.\n" + "\n".join(prior_lines) + "\n"
             )
 
     theme_context_block = ""
@@ -777,10 +806,10 @@ _REPAIR_GUIDELINES = (
     "the same sliding familiarity standard: the older or more niche the "
     "reference is, the more broadly iconic it must be.\n"
     "- MULTI-REFERENCE RULE (strict): if a replacement cues the answer through "
-    "more than one reference joined by \"or\"/\"and\" (e.g. two name blanks), "
+    'more than one reference joined by "or"/"and" (e.g. two name blanks), '
     "EVERY reference must independently and exactly produce the answer. A clue "
     "is wrong if even one reference is false, even when another is correct "
-    "(e.g. for OWEN, \"Architect Frank Lloyd ___\" is wrong — it is Wright). "
+    '(e.g. for OWEN, "Architect Frank Lloyd ___" is wrong — it is Wright). '
     "If you cannot verify every component, use a single sure reference or a "
     "plain definition.\n"
     "- TIMELESS CLUE RULE (strict): do not write a replacement whose truth "
@@ -806,8 +835,8 @@ _REPAIR_GUIDELINES = (
     "- If a clue was flagged as a duplicate of prior clues, it was a VERBATIM "
     "(word-for-word) repeat — just reword it. You do NOT need a different "
     "angle or meaning: keeping the same reference/definition and changing the "
-    "wording is fine (e.g. \"Comedian Margaret's surname\" for a prior "
-    "\"Comedian Margaret ___\"). Never switch to an obscure sense to differ.\n"
+    'wording is fine (e.g. "Comedian Margaret\'s surname" for a prior '
+    '"Comedian Margaret ___"). Never switch to an obscure sense to differ.\n'
     "- BRITISH SLANG RULE: use British (or other regional) slang sparingly "
     "for this American-audience puzzle. Do not replace a clue with a "
     'deep-cut British sense (e.g. SNIP as "A bargain"); prefer a plain '
@@ -951,15 +980,13 @@ def build_clue_repair_messages(
                 "(or essentially word-for-word) same text as one listed below. "
                 "Reusing the same angle, reference, definition, or meaning is "
                 "completely fine — just word it differently. For example, if "
-                "\"Comedian Margaret ___\" is listed, \"Comedian Margaret's "
-                "surname\" is a perfectly good clue (same reference, different "
+                '"Comedian Margaret ___" is listed, "Comedian Margaret\'s '
+                'surname" is a perfectly good clue (same reference, different '
                 "words). Do NOT switch to an obscure or deep-cut sense to get a "
                 "different angle; a familiar reused angle, freshly worded, is "
                 "always better than a clue solvers won't recognize. For an "
                 "answer with only one or two natural angles, lightly rewording "
-                "an existing one is exactly right.\n"
-                + "\n".join(prior_lines)
-                + "\n"
+                "an existing one is exactly right.\n" + "\n".join(prior_lines) + "\n"
             )
 
     theme_context_block = ""
