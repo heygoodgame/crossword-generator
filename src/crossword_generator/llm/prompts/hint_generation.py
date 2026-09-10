@@ -244,6 +244,13 @@ def parse_hint_response(
 
     hints: dict[tuple[int, str], str] = {}
     for item in parsed:
+        if not isinstance(item, dict):
+            # A bare string/number in the array (seen 2026-09-10: the repair
+            # model answered with a list of hint strings) would raise
+            # TypeError on item["number"], which callers do not catch.
+            raise ValueError(
+                f"Expected hint objects, got {type(item).__name__}: {item!r}"
+            )
         number = int(item["number"])
         direction = str(item["direction"]).lower()
         hint = str(item["hint"]).strip()
