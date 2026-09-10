@@ -332,3 +332,12 @@ def test_fact_flagged_hint_is_repaired() -> None:
     cat_clue = next(c for c in out.clues if c.answer == "CAT")
     assert cat_clue.hint == "Purring pet"
     assert llm.calls == 2
+
+
+def test_parse_hint_response_rejects_non_object_items() -> None:
+    """A bare string in the array must surface as ValueError (which the hint
+    step catches and retries), not TypeError (which crashed a batch item)."""
+    import pytest
+
+    with pytest.raises(ValueError, match="Expected hint objects"):
+        parse_hint_response('["just a hint string", "another"]', _entries())
