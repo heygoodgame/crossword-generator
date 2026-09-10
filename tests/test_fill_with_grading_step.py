@@ -489,7 +489,9 @@ class TestDictionaryAwareGridCompatibility:
         specs = [_incompatible_9x9_spec(), _compatible_9x9_spec()]
 
         def fake_get_grid_spec(
-            *_args: object, seed: int | None = None, exclude_open: bool = False
+            *_args: object,
+            seed: int | None = None,
+            **_kwargs: object,
         ) -> GridSpec:
             assert seed is not None
             return specs[seed - 1]

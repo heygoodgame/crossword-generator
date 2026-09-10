@@ -315,3 +315,29 @@ def test_shared_fragment_requires_genuine_compound_answer() -> None:
     # real word + "per", so the answer is not a genuine compound at that edge
     # and the coincidental fragment must not flag.
     assert detect_leak("WALLPAPER", "A famous person", _SHARED_FRAGMENT_DICT) is None
+
+
+def test_stem_is_thread_safe_under_concurrent_calls() -> None:
+    """Regression: a shared snowball stemmer raised IndexError when batch
+    workers stemmed concurrently. Each thread now gets its own instance."""
+    import threading
+
+    from crossword_generator.graders.leak_detector import _stem
+
+    words = ["running", "generation", "arenas", "happily", "stemmers", "a", "ies"] * 300
+    errors: list[BaseException] = []
+
+    def work() -> None:
+        try:
+            for w in words:
+                _stem(w)
+        except BaseException as exc:  # noqa: BLE001 - surface any crash
+            errors.append(exc)
+
+    threads = [threading.Thread(target=work) for _ in range(8)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+    assert not errors
+    assert _stem("running") == "run"

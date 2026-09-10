@@ -1,9 +1,11 @@
 """Tests for batch CLI helpers."""
 
+import json
 import logging
 import threading
 from pathlib import Path
 
+import pytest
 from click.testing import CliRunner
 
 from crossword_generator import cli as cli_module
@@ -180,7 +182,7 @@ def test_write_filtered_dictionary_removes_scheduled_words(
     output_root = tmp_path / "batch"
     output_root.mkdir()
 
-    path, removed = _write_filtered_dictionary(
+    path, removed, removed_variants = _write_filtered_dictionary(
         tmp_path,
         output_root,
         "hgg-60.txt",
@@ -189,9 +191,40 @@ def test_write_filtered_dictionary_removes_scheduled_words(
     )
 
     assert removed == 2
+    assert removed_variants == 0
     assert path == str(output_root / "hgg-60-scheduled-filtered.txt")
     assert (output_root / "hgg-60-scheduled-filtered.txt").read_text() == (
         "zucchini;60\n"
+    )
+
+
+def test_write_filtered_dictionary_counts_variant_rows_separately(
+    tmp_path,
+) -> None:
+    dictionaries = tmp_path / "dictionaries"
+    dictionaries.mkdir()
+    (dictionaries / "hgg-easy.txt").write_text(
+        "party;55\nparties;55\npartied;50\nart;60\narts;60\nzebra;55\n"
+    )
+    output_root = tmp_path / "batch"
+    output_root.mkdir()
+
+    path, removed, removed_variants = _write_filtered_dictionary(
+        tmp_path,
+        output_root,
+        "hgg-easy.txt",
+        ["PARTY", "ART"],
+        "hgg-easy-recent-filtered.txt",
+        # ART is a 3-letter base, so the caller would not have expanded it;
+        # ARTS is passed here only to prove the variant set is honoured and
+        # counted separately from base exclusions.
+        variant_answers=["PARTIES", "PARTIED", "ARTS", "PARTY"],
+    )
+
+    assert removed == 2
+    assert removed_variants == 3
+    assert (output_root / "hgg-easy-recent-filtered.txt").read_text() == (
+        "zebra;55\n"
     )
 
 
@@ -428,6 +461,40 @@ def _sweep_result(
     }
 
 
+def test_duplicate_sweep_survives_repair_crash(tmp_path: Path) -> None:
+    """An exception from the LLM repair (e.g. an Anthropic 400 content-filter
+    error) must not abort the sweep: the puzzle keeps DUPLICATE: soft errors
+    so the upload guard holds it back, later puzzles are still swept, and
+    the batch still gets its manifest."""
+
+    class _CrashingClueStep:
+        def repair_external_duplicates(self, envelope, hits):  # noqa: ANN001
+            raise RuntimeError("Output blocked by content filtering policy")
+
+    env_a = _sweep_envelope("Feline pet")
+    env_b = _sweep_envelope("Feline pet")
+    env_c = _sweep_envelope("Feline pet")
+    history = ClueHistoryIndex()
+    for env in (env_a, env_b, env_c):
+        history.add_clues(env.clues)
+
+    exporter = _StubExporter()
+    crashing = _CrashingClueStep()
+    healthy = _StubClueStep("Fresh feline clue")
+    results = [
+        _sweep_result(1, env_a, crashing, tmp_path / "a.ipuz"),
+        _sweep_result(2, env_b, crashing, tmp_path / "b.ipuz"),
+        _sweep_result(3, env_c, healthy, tmp_path / "c.ipuz"),
+    ]
+
+    stats = _run_duplicate_sweep(results, history, exporter=exporter)
+
+    assert stats == {"checked": 3, "repaired": 1, "unresolved": 1}
+    assert results[0]["error_message"] is None
+    assert str(results[1]["error_message"]).startswith("DUPLICATE:")
+    assert results[2]["error_message"] is None
+
+
 def test_duplicate_sweep_repairs_cross_puzzle_collision(tmp_path: Path) -> None:
     """Second puzzle with the same clue gets repaired and re-exported; the
     first keeps its clue untouched."""
@@ -525,6 +592,32 @@ def test_used_answer_set_mini_excludes_three_letter_midi_keeps() -> None:
     assert "AT" not in used.snapshot(min_length=3)
 
 
+def test_used_answer_set_short_cap_excludes_after_n_puzzles() -> None:
+    """Short glue is excluded only once it has appeared in `short_cap` puzzles."""
+    used = _UsedAnswerSet()
+    used.add(["ALL", "OWE", "OCEAN"])  # puzzle 1
+    used.add(["ALL", "ALL", "TED"])  # puzzle 2 (repeat within one puzzle counts once)
+
+    # Midi floor without a cap: 3-letter glue never excluded.
+    assert used.snapshot(min_length=4, short_cap=0) == {"OCEAN"}
+    # Cap 2: ALL has been in two puzzles, so it is now excluded; OWE/TED stay.
+    assert used.snapshot(min_length=4, short_cap=2) == {"OCEAN", "ALL"}
+    # Cap 1 behaves like a hard floor of 3.
+    assert used.snapshot(min_length=4, short_cap=1) == {"OCEAN", "ALL", "OWE", "TED"}
+    # Answers at/above the floor never depend on the cap.
+    assert "OCEAN" in used.snapshot(min_length=4, short_cap=99)
+
+
+def test_used_answer_set_short_counts_only_below_floor() -> None:
+    used = _UsedAnswerSet()
+    used.add(["ALL", "OCEAN"])
+    used.add(["ALL", "ATE"])
+
+    assert used.short_counts(min_length=4) == {"ALL": 2, "ATE": 1}
+    # With a mini floor of 3 nothing is "short" — it is all hard-excluded.
+    assert used.short_counts(min_length=3) == {}
+
+
 def test_used_answer_set_is_thread_safe() -> None:
     used = _UsedAnswerSet()
 
@@ -539,3 +632,1142 @@ def test_used_answer_set_is_thread_safe() -> None:
         t.join()
 
     assert len(used.snapshot(min_length=4)) == 8 * 100
+
+
+def test_generate_pilot_batch_daily_exclusions_merge_windows_and_pass_counts(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    """Long window for 4+ letters, short window for glue, variants expanded,
+    and the server usage counts reach the fill step with the daily defaults."""
+    from crossword_generator.data_store import RecentDailyAnswers
+
+    fetch_calls: list[dict[str, object]] = []
+    run_kwargs: list[dict[str, object]] = []
+
+    def fake_fetch(**kwargs):
+        fetch_calls.append(kwargs)
+        if kwargs.get("window_days") == 7:
+            return RecentDailyAnswers(
+                answers=["ETA", "WALK", "ART"],
+                window_days=7,
+                first_unscheduled_date="2026-08-22",
+                since_date="2026-08-15",
+                forward_days=13,
+            )
+        return RecentDailyAnswers(
+            answers=["ERA", "PARTY", "WALK"],
+            window_days=30,
+            first_unscheduled_date="2026-08-22",
+            since_date="2026-07-23",
+            forward_days=13,
+            counts={"ETA": 7, "WALK": 2},
+            count_window_days=90,
+        )
+
+    def fake_run_batch_item(**kwargs):
+        run_kwargs.append(kwargs)
+        output_path = (
+            kwargs["output_root"] / "easy" / "5x5" / f"seed-{kwargs['seed']:03d}.ipuz"
+        )
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(
+            '{"solution":[["A","P","P","L","E"]],"clues":{"Across":[],"Down":[]}}'
+        )
+        return {
+            "difficulty": "easy",
+            "size": 5,
+            "seed": kwargs["seed"],
+            "success": True,
+            "runtime_seconds": 0.0,
+            "output_path": str(output_path),
+            "clue_score": 80.0,
+        }
+
+    import crossword_generator.data_store as data_store_module
+
+    monkeypatch.setattr(
+        data_store_module, "fetch_recent_daily_answers", fake_fetch
+    )
+    monkeypatch.setattr(cli_module, "_run_batch_item", fake_run_batch_item)
+
+    result = CliRunner().invoke(
+        main,
+        [
+            "generate-pilot-batch",
+            "--output-root", str(tmp_path / "batch"),
+            "--batch-id", "test-batch",
+            "--buckets", "easy/5",
+            "--count", "1",
+            "--seed-start", "1",
+            "--no-avoid-existing-clues",
+            "--no-refresh-dictionaries",
+            "--no-exclude-scheduled-sixty",
+            "--no-llm-log",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    # Two fetches: the 30-day (with counts) and the 7-day glue window.
+    assert [call["window_days"] for call in fetch_calls] == [30, 7]
+    assert fetch_calls[0]["count_window_days"] == 90
+    assert fetch_calls[0]["forward_days"] == 13
+
+    # Filtered dictionary: 4+ letter words from the long window, 3-letter
+    # words from the short window only, plus inflectional variants.
+    filtered = tmp_path / "batch" / "hgg-easy-recent-filtered.txt"
+    words = {
+        line.split(";", 1)[0].strip().upper()
+        for line in filtered.read_text().splitlines()
+        if line.strip()
+    }
+    assert {"PARTY", "WALK", "ETA", "ART"}.isdisjoint(words)
+    # Variants come from the 7-day list only: WALK's are excluded, but
+    # PARTY (30-day list only) keeps its inflections.
+    assert {"WALKS", "WALKED", "WALKING"}.isdisjoint(words)
+    assert "PARTIES" in words
+    # ERA is a 3-letter answer that appears only in the 30-day list; glue
+    # follows the 7-day window, so it stays available.
+    assert "ERA" in words
+
+    (kwargs,) = run_kwargs
+    assert kwargs["answer_usage_counts"] == {"ETA": 7, "WALK": 2}
+    assert kwargs["answer_novelty_candidates"] == 4
+    assert kwargs["answer_usage_penalty"] is None  # config default (4.0)
+
+    manifest = json.loads((tmp_path / "batch" / "manifest.json").read_text())
+    recent = manifest["exclude_recent_answers"]
+    assert recent["window_days"] == 30
+    assert recent["short_window_days"] == 7
+    assert recent["exclude_answer_variants"] is True
+    assert recent["variant_rows_removed_by_dictionary"]["hgg-easy.txt"] >= 1
+    assert manifest["daily_usage_penalty"]["applied"] is True
+    assert manifest["daily_usage_penalty"]["novelty_candidates"] == 4
+
+
+def test_generate_pilot_batch_short_glue_soft_penalty_and_cap(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    """Midi batch-mates' 3-letter glue is penalised, then capped, not excluded
+    outright; 4+ letter answers are hard-excluded after one use."""
+    from crossword_generator.data_store import RecentDailyAnswers
+
+    run_kwargs: list[dict[str, object]] = []
+
+    def fake_fetch(**kwargs):
+        return RecentDailyAnswers(
+            answers=[],
+            window_days=kwargs.get("window_days") or 7,
+            first_unscheduled_date="2026-10-01",
+            since_date="2026-09-01",
+            forward_days=13,
+            counts={"ETA": 3} if kwargs.get("window_days") == 30 else None,
+            count_window_days=90,
+        )
+
+    # 3x3 solution: rows ALL / TED / OWE and matching columns, so every
+    # puzzle in the batch contributes the same 3-letter glue plus one
+    # distinct 4+ letter answer via a wider row.
+    def fake_run_batch_item(**kwargs):
+        run_kwargs.append(kwargs)
+        seed = kwargs["seed"]
+        output_path = (
+            kwargs["output_root"] / "easy" / "9x9" / f"seed-{seed:03d}.ipuz"
+        )
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        long_word = ["OCEAN", "PLANT", "STORM"][seed - 1]
+        solution = [
+            ["A", "L", "L", "#", "#"],
+            ["T", "E", "D", "#", "#"],
+            ["O", "W", "E", "#", "#"],
+            ["#", "#", "#", "#", "#"],
+            list(long_word),
+        ]
+        output_path.write_text(
+            json.dumps({"solution": solution, "clues": {"Across": [], "Down": []}})
+        )
+        return {
+            "difficulty": "easy",
+            "size": 9,
+            "seed": seed,
+            "success": True,
+            "runtime_seconds": 0.0,
+            "output_path": str(output_path),
+            "clue_score": 80.0,
+        }
+
+    import crossword_generator.data_store as data_store_module
+
+    monkeypatch.setattr(
+        data_store_module, "fetch_recent_daily_answers", fake_fetch
+    )
+    monkeypatch.setattr(cli_module, "_run_batch_item", fake_run_batch_item)
+
+    result = CliRunner().invoke(
+        main,
+        [
+            "generate-pilot-batch",
+            "--output-root", str(tmp_path / "batch"),
+            "--batch-id", "test-batch",
+            "--buckets", "easy/9",
+            "--count", "3",
+            "--seed-start", "1",
+            "--no-avoid-existing-clues",
+            "--no-refresh-dictionaries",
+            "--no-exclude-scheduled-sixty",
+            "--no-llm-log",
+            "--intra-batch-short-window", "0",
+            "--intra-batch-short-cap", "2",
+            "--intra-batch-short-penalty", "8",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    first, second, third = run_kwargs
+
+    # Puzzle 1: nothing used yet; only the server counts reach the CSP.
+    assert first["excluded_fill_words"] == set()
+    assert first["answer_usage_counts"] == {"ETA": 3}
+
+    # Puzzle 2: OCEAN (4+) hard-excluded; the glue is *penalised* (8 per
+    # prior use, on top of the schedule count) but still fillable.
+    assert second["excluded_fill_words"] == {"OCEAN"}
+    counts = second["answer_usage_counts"]
+    assert counts["ETA"] == 3
+    assert counts["ALL"] == 8 and counts["OWE"] == 8 and counts["ATO"] == 8
+    assert "ALL" not in second["excluded_fill_words"]
+    assert second["answer_novelty_candidates"] == 4
+
+    # Puzzle 3: the glue has now appeared in two puzzles, so the cap of 2
+    # excludes it; the penalty has doubled for anything still short.
+    assert {"OCEAN", "PLANT", "ALL", "TED", "OWE"} <= third["excluded_fill_words"]
+    assert third["answer_usage_counts"]["ALL"] == 16
+
+    manifest = json.loads((tmp_path / "batch" / "manifest.json").read_text())
+    assert manifest["intra_batch_short_policy"] == {
+        "window_days": 0,
+        "cap": 2,
+        "penalty": 8.0,
+        "penalty_applied": True,
+    }
+
+
+def test_generate_pilot_batch_short_window_follows_seed_order(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    """Glue is hard-excluded only from batch-mates within +/-2 days (seed
+    rank), so the set schedules in seed order; older glue stays available."""
+    from crossword_generator.data_store import RecentDailyAnswers
+
+    run_kwargs: list[dict[str, object]] = []
+    # Distinct 3x3 glue block per puzzle so exclusions are attributable.
+    blocks = {
+        1: ["ALL", "TED", "OWE"],
+        2: ["EGG", "RYE", "APR"],
+        3: ["GPS", "OLE", "HMM"],
+        4: ["PAL", "ILL", "TRI"],
+    }
+
+    def fake_fetch(**kwargs):
+        return RecentDailyAnswers(
+            answers=[],
+            window_days=kwargs.get("window_days") or 7,
+            first_unscheduled_date="2026-10-01",
+            since_date="2026-09-01",
+            forward_days=13,
+        )
+
+    def fake_run_batch_item(**kwargs):
+        run_kwargs.append(kwargs)
+        seed = kwargs["seed"]
+        output_path = (
+            kwargs["output_root"] / "easy" / "9x9" / f"seed-{seed:03d}.ipuz"
+        )
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        rows = [list(r) + ["#", "#"] for r in blocks[seed]]
+        rows.append(["#"] * 5)
+        rows.append(list(["OCEAN", "PLANT", "STORM", "CLOUD"][seed - 1]))
+        output_path.write_text(
+            json.dumps({"solution": rows, "clues": {"Across": [], "Down": []}})
+        )
+        return {
+            "difficulty": "easy",
+            "size": 9,
+            "seed": seed,
+            "success": True,
+            "runtime_seconds": 0.0,
+            "output_path": str(output_path),
+            "clue_score": 80.0,
+        }
+
+    import crossword_generator.data_store as data_store_module
+
+    monkeypatch.setattr(
+        data_store_module, "fetch_recent_daily_answers", fake_fetch
+    )
+    monkeypatch.setattr(cli_module, "_run_batch_item", fake_run_batch_item)
+
+    result = CliRunner().invoke(
+        main,
+        [
+            "generate-pilot-batch",
+            "--output-root", str(tmp_path / "batch"),
+            "--batch-id", "test-batch",
+            "--buckets", "easy/9",
+            "--count", "4",
+            "--seed-start", "1",
+            "--no-avoid-existing-clues",
+            "--no-refresh-dictionaries",
+            "--no-exclude-scheduled-sixty",
+            "--no-llm-log",
+            "--intra-batch-short-window", "2",
+            "--intra-batch-short-cap", "0",
+            "--intra-batch-short-penalty", "0",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    excluded = [kw["excluded_fill_words"] for kw in run_kwargs]
+
+    # Day 2 sees day 1's glue; day 3 sees days 1-2; day 4 sees days 2-3 only
+    # (day 1 is 3 days back, outside the scheduler's window).
+    assert "ALL" in excluded[1] and "ALL" in excluded[2]
+    assert "ALL" not in excluded[3]
+    assert {"EGG", "GPS"} <= excluded[3]
+    # 4+ letter answers are always excluded once used, regardless of day.
+    assert {"OCEAN", "PLANT", "STORM"} <= excluded[3]
+    # With penalty 0 no synthetic counts reach the CSP.
+    assert all(kw["answer_usage_counts"] is None for kw in run_kwargs)
+
+
+def test_generate_pilot_batch_prior_manifest_seeds_used_answers(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    """A continuation run treats a prior manifest's puzzles as batch-mates."""
+    from crossword_generator.data_store import RecentDailyAnswers
+
+    prior_dir = tmp_path / "prior"
+    prior_dir.mkdir()
+    prior_results = []
+    for seed, long_word in ((1, "OCEAN"), (2, "PLANT")):
+        path = prior_dir / f"seed-{seed}.ipuz"
+        path.write_text(
+            json.dumps(
+                {
+                    "solution": [
+                        ["A", "L", "L", "#", "#"],
+                        ["T", "E", "D", "#", "#"],
+                        ["O", "W", "E", "#", "#"],
+                        ["#", "#", "#", "#", "#"],
+                        list(long_word),
+                    ],
+                    "clues": {"Across": [], "Down": []},
+                }
+            )
+        )
+        prior_results.append(
+            {
+                "difficulty": "easy",
+                "size": 9,
+                "seed": seed,
+                "success": True,
+                "output_path": path.name,
+            }
+        )
+    # A failed prior result must be ignored even though it has no file.
+    prior_results.append(
+        {
+            "difficulty": "easy",
+            "size": 9,
+            "seed": 99,
+            "success": False,
+            "output_path": "missing.ipuz",
+        }
+    )
+    prior_manifest = prior_dir / "manifest.json"
+    prior_manifest.write_text(json.dumps({"results": prior_results}))
+
+    run_kwargs: list[dict[str, object]] = []
+
+    def fake_fetch(**kwargs):
+        return RecentDailyAnswers(
+            answers=[],
+            window_days=kwargs.get("window_days") or 7,
+            first_unscheduled_date="2026-10-01",
+            since_date="2026-09-01",
+            forward_days=13,
+        )
+
+    def fake_run_batch_item(**kwargs):
+        run_kwargs.append(kwargs)
+        output_path = (
+            kwargs["output_root"] / "easy" / "9x9" / f"seed-{kwargs['seed']:03d}.ipuz"
+        )
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text('{"solution":[["S","T","O","R","M"]]}')
+        return {
+            "difficulty": "easy",
+            "size": 9,
+            "seed": kwargs["seed"],
+            "success": True,
+            "runtime_seconds": 0.0,
+            "output_path": str(output_path),
+            "clue_score": 80.0,
+        }
+
+    import crossword_generator.data_store as data_store_module
+
+    monkeypatch.setattr(
+        data_store_module, "fetch_recent_daily_answers", fake_fetch
+    )
+    monkeypatch.setattr(cli_module, "_run_batch_item", fake_run_batch_item)
+
+    result = CliRunner().invoke(
+        main,
+        [
+            "generate-pilot-batch",
+            "--output-root", str(tmp_path / "batch"),
+            "--batch-id", "test-batch",
+            "--buckets", "easy/9",
+            "--count", "1",
+            "--seed-start", "3",
+            "--no-avoid-existing-clues",
+            "--no-refresh-dictionaries",
+            "--no-exclude-scheduled-sixty",
+            "--no-llm-log",
+            "--prior-batch-manifest", str(prior_manifest),
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert "Seeded intra-batch used answers from 2 prior puzzle(s)" in result.output
+    (kwargs,) = run_kwargs
+    # Both prior long answers are hard-excluded; the priors occupy days 1-2
+    # and this puzzle is day 3, so their glue is inside the +/-2-day window.
+    assert {"OCEAN", "PLANT", "ALL", "TED", "OWE"} <= kwargs["excluded_fill_words"]
+    # No server counts, but the seeded glue still drives the soft penalty
+    # (2 prior uses x default penalty 2).
+    assert kwargs["answer_usage_counts"]["ALL"] == 4
+
+    manifest = json.loads((tmp_path / "batch" / "manifest.json").read_text())
+    assert manifest["prior_batch_manifests"]["puzzles_seeded"] == 2
+
+
+def test_generate_pilot_batch_prior_manifest_refills_middle_day(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    """Days are seed ranks over priors + this run, so reusing a dropped seed
+    refills that day and sees only its +/-2-day neighbours' glue."""
+    from crossword_generator.data_store import RecentDailyAnswers
+
+    prior_dir = tmp_path / "prior"
+    prior_dir.mkdir()
+    glue = {
+        1: ["ALL", "TED", "OWE"],
+        2: ["EGG", "RYE", "APR"],
+        3: ["GPS", "OLE", "HMM"],
+        7: ["PAL", "ILL", "TRI"],
+        8: ["CUE", "PHD", "MET"],
+        9: ["ATM", "CPR", "TNT"],
+    }
+    prior_results = []
+    for seed, rows in glue.items():
+        path = prior_dir / f"seed-{seed}.ipuz"
+        solution = [list(r) + ["#", "#"] for r in rows] + [["#"] * 5]
+        path.write_text(json.dumps({"solution": solution, "clues": {}}))
+        prior_results.append(
+            {
+                "difficulty": "easy",
+                "size": 9,
+                "seed": seed,
+                "success": True,
+                "output_path": path.name,
+            }
+        )
+    prior_manifest = prior_dir / "manifest.json"
+    prior_manifest.write_text(json.dumps({"results": prior_results}))
+
+    run_kwargs: list[dict[str, object]] = []
+
+    def fake_fetch(**kwargs):
+        return RecentDailyAnswers(
+            answers=[],
+            window_days=kwargs.get("window_days") or 7,
+            first_unscheduled_date="2026-10-01",
+            since_date="2026-09-01",
+            forward_days=13,
+        )
+
+    def fake_run_batch_item(**kwargs):
+        run_kwargs.append(kwargs)
+        output_path = (
+            kwargs["output_root"] / "easy" / "9x9" / f"seed-{kwargs['seed']:03d}.ipuz"
+        )
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text('{"solution":[["S","T","O","R","M"]]}')
+        return {
+            "difficulty": "easy",
+            "size": 9,
+            "seed": kwargs["seed"],
+            "success": True,
+            "runtime_seconds": 0.0,
+            "output_path": str(output_path),
+            "clue_score": 80.0,
+        }
+
+    import crossword_generator.data_store as data_store_module
+
+    monkeypatch.setattr(
+        data_store_module, "fetch_recent_daily_answers", fake_fetch
+    )
+    monkeypatch.setattr(cli_module, "_run_batch_item", fake_run_batch_item)
+
+    # Prior seeds 1,2,3,7,8,9 plus this run's seed 5 rank as days 1-7 —
+    # seed 5 refills day 4 and must see only days 2-6.
+    result = CliRunner().invoke(
+        main,
+        [
+            "generate-pilot-batch",
+            "--output-root", str(tmp_path / "batch"),
+            "--batch-id", "test-batch",
+            "--buckets", "easy/9",
+            "--count", "1",
+            "--seed-start", "5",
+            "--no-avoid-existing-clues",
+            "--no-refresh-dictionaries",
+            "--no-exclude-scheduled-sixty",
+            "--no-llm-log",
+            "--intra-batch-short-penalty", "0",
+            "--prior-batch-manifest", str(prior_manifest),
+        ],
+    )
+    assert result.exit_code == 0, result.output
+    (kwargs,) = run_kwargs
+    excluded = kwargs["excluded_fill_words"]
+    # Days 2, 3, 5, 6 (seeds 2, 3, 7, 8) are within +/-2 of day 4; days 1
+    # and 7 (seeds 1, 9) are not.
+    assert {"EGG", "GPS", "PAL", "CUE"} <= excluded
+    assert {"ALL", "ATM"}.isdisjoint(excluded)
+    assert "Seeded intra-batch used answers from 6 prior puzzle(s)" in result.output
+
+    # Reusing a seed that is still in the prior manifest is an error.
+    clash = CliRunner().invoke(
+        main,
+        [
+            "generate-pilot-batch",
+            "--output-root", str(tmp_path / "batch2"),
+            "--batch-id", "test-batch",
+            "--buckets", "easy/9",
+            "--count", "1",
+            "--seed-start", "7",
+            "--no-avoid-existing-clues",
+            "--no-refresh-dictionaries",
+            "--no-exclude-scheduled-sixty",
+            "--no-llm-log",
+            "--prior-batch-manifest", str(prior_manifest),
+        ],
+    )
+    assert clash.exit_code != 0
+    assert "already appear in a --prior-batch-manifest" in clash.output
+
+
+def test_generate_pilot_batch_degrades_without_server_counts(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    from crossword_generator.data_store import RecentDailyAnswers
+
+    run_kwargs: list[dict[str, object]] = []
+
+    def fake_fetch(**kwargs):
+        return RecentDailyAnswers(
+            answers=["WALK"],
+            window_days=kwargs.get("window_days") or 7,
+            first_unscheduled_date="2026-08-22",
+            since_date="2026-07-23",
+            forward_days=13,
+        )
+
+    def fake_run_batch_item(**kwargs):
+        run_kwargs.append(kwargs)
+        output_path = (
+            kwargs["output_root"] / "easy" / "5x5" / f"seed-{kwargs['seed']:03d}.ipuz"
+        )
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(
+            '{"solution":[["A","P","P","L","E"]],"clues":{"Across":[],"Down":[]}}'
+        )
+        return {
+            "difficulty": "easy",
+            "size": 5,
+            "seed": kwargs["seed"],
+            "success": True,
+            "runtime_seconds": 0.0,
+            "output_path": str(output_path),
+            "clue_score": 80.0,
+        }
+
+    import crossword_generator.data_store as data_store_module
+
+    monkeypatch.setattr(
+        data_store_module, "fetch_recent_daily_answers", fake_fetch
+    )
+    monkeypatch.setattr(cli_module, "_run_batch_item", fake_run_batch_item)
+
+    result = CliRunner().invoke(
+        main,
+        [
+            "generate-pilot-batch",
+            "--output-root", str(tmp_path / "batch"),
+            "--batch-id", "test-batch",
+            "--buckets", "easy/5",
+            "--count", "1",
+            "--seed-start", "1",
+            "--no-avoid-existing-clues",
+            "--no-refresh-dictionaries",
+            "--no-exclude-scheduled-sixty",
+            "--no-llm-log",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert "no daily usage counts" in result.output
+    (kwargs,) = run_kwargs
+    assert kwargs["answer_usage_counts"] is None
+    manifest = json.loads((tmp_path / "batch" / "manifest.json").read_text())
+    assert manifest["daily_usage_penalty"]["applied"] is False
+
+
+def _target_slot(day: int, answers: set[str], epoch, **kw):
+    import datetime as dt
+
+    from crossword_generator.schedule_targeting import ScheduledSlot
+
+    fields = dict(game_key="midicrossword", track="easy", size=9)
+    fields.update(kw)
+    return ScheduledSlot(
+        day_number=day,
+        date=epoch + dt.timedelta(days=day - 1),
+        answers=frozenset(answers),
+        **fields,
+    )
+
+
+def test_generate_pilot_batch_targets_open_days_with_per_day_exclusions(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    """--target-* fills each open day of one game/track, excluding exactly the
+    answers the scheduler would reject on THAT day, and stamps target_date."""
+    import datetime as dt
+
+    from crossword_generator.data_store import (
+        RecentDailyAnswers,
+        records_from_manifest,
+    )
+
+    epoch = dt.date(2099, 1, 1)
+    # Easy midi scheduled on days 100, 101, 103, 106; hole at 102, 104, 105.
+    slots = [
+        _target_slot(100, {"SNORE", "DOG"}, epoch),
+        _target_slot(101, {"MARIA"}, epoch),
+        _target_slot(103, {"STEAK", "CBS"}, epoch),
+        _target_slot(106, {"OCEAN"}, epoch),
+        # Hard track and a mini also constrain (cross-track, cross-game) but
+        # do not occupy easy days.
+        _target_slot(104, {"UFOS", "ACT"}, epoch, track="hard"),
+        _target_slot(112, {"PLANT"}, epoch, game_key="minicrossword", size=5),
+    ]
+    run_kwargs: list[dict[str, object]] = []
+
+    def fake_fetch(**kwargs):
+        return RecentDailyAnswers(
+            answers=["JUNKWORD", "ZAP"],
+            window_days=kwargs.get("window_days") or 30,
+            first_unscheduled_date="2099-01-01",
+            since_date="2098-12-01",
+            forward_days=13,
+            counts={"ETA": 9},
+            count_window_days=90,
+        )
+
+    def fake_run_batch_item(**kwargs):
+        run_kwargs.append(kwargs)
+        seed = kwargs["seed"]
+        output_path = (
+            kwargs["output_root"] / "easy" / "9x9" / f"seed-{seed:03d}.ipuz"
+        )
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        rows = [list("ABC") + ["#", "#"], ["#"] * 5, list(f"WORD{seed}")]
+        output_path.write_text(
+            json.dumps({"solution": rows, "clues": {"Across": [], "Down": []}})
+        )
+        return {
+            "difficulty": "easy",
+            "size": 9,
+            "seed": seed,
+            "success": True,
+            "runtime_seconds": 0.0,
+            "output_path": str(output_path),
+            "clue_score": 80.0,
+            "fill_score": 50.0,
+        }
+
+    import crossword_generator.data_store as data_store_module
+
+    monkeypatch.setattr(
+        data_store_module, "fetch_recent_daily_answers", fake_fetch
+    )
+    monkeypatch.setattr(
+        cli_module, "_load_daily_schedule_slots", lambda **kwargs: slots
+    )
+    monkeypatch.setattr(cli_module, "_run_batch_item", fake_run_batch_item)
+
+    start = (epoch + dt.timedelta(days=99)).isoformat()  # day 100
+    through = (epoch + dt.timedelta(days=105)).isoformat()  # day 106
+    result = CliRunner().invoke(
+        main,
+        [
+            "generate-pilot-batch",
+            "--output-root", str(tmp_path / "batch"),
+            "--batch-id", "target-batch",
+            "--target-game", "midicrossword",
+            "--target-track", "easy",
+            "--target-from", start,
+            "--target-through", through,
+            "--seed-start", "1",
+            "--no-avoid-existing-clues",
+            "--no-refresh-dictionaries",
+            "--no-exclude-scheduled-sixty",
+            "--no-llm-log",
+            "--intra-batch-short-penalty", "0",
+        ],
+    )
+    assert result.exit_code == 0, result.output
+    assert "Targeting 3 open midicrossword easy day(s)" in result.output
+    assert "skipping the first-unscheduled-slot recent-answer window" in result.output
+
+    # One work item per open day, in date order, all 9x9 easy.
+    assert [kw["seed"] for kw in run_kwargs] == [1, 2, 3]
+    assert all(kw["size"] == 9 and kw["difficulty"] == "easy" for kw in run_kwargs)
+    excluded = [kw["excluded_fill_words"] for kw in run_kwargs]
+
+    # Day 102: SNORE (day 100) and MARIA (101), STEAK (103), UFOS (104),
+    # OCEAN (106) all within +/-6; DOG (100) within +/-2; CBS (103) within
+    # +/-2 — but ACT (104) is 2 days away too. PLANT (mini, 112) is out.
+    day_102 = {"SNORE", "MARIA", "STEAK", "UFOS", "OCEAN", "DOG", "CBS", "ACT"}
+    assert day_102 <= excluded[0]
+    assert "PLANT" not in excluded[0]
+    # Day 105: DOG (100) is 5 days away -> short glue stays available; CBS
+    # (103) and ACT (104) are within 2.
+    assert "DOG" not in excluded[2]
+    assert {"CBS", "ACT", "SNORE", "OCEAN"} <= excluded[2]
+    # Variants of regular-window answers are excluded (OCEANS), never glue.
+    assert "OCEANS" in excluded[0]
+    # The anchored recent-answer list is NOT applied in targeted mode...
+    assert "JUNKWORD" not in excluded[0] and "ZAP" not in excluded[0]
+    # ...but its usage counts still feed the soft penalty.
+    assert run_kwargs[0]["answer_usage_counts"] == {"ETA": 9}
+    # Intra-batch dedup: puzzle 2 sees puzzle 1's 4+ letter answer.
+    assert "WORD1" in excluded[1]
+
+    manifest = json.loads((tmp_path / "batch" / "manifest.json").read_text())
+    assert manifest["target"]["game_key"] == "midicrossword"
+    assert [d["day_number"] for d in manifest["target"]["days"]] == [102, 104, 105]
+    assert manifest["bucket_counts"] == {"easy/9": 3}
+    results = manifest["results"]
+    assert [r["target_day_number"] for r in results] == [102, 104, 105]
+    assert results[0]["target_date"] == (epoch + dt.timedelta(days=101)).isoformat()
+    assert results[0]["target_track"] == "easy"
+    assert results[0]["schedule_excluded_count"] >= 8
+
+    records = records_from_manifest(tmp_path / "batch" / "manifest.json")
+    assert records[0]["metadata"]["target_date"] == results[0]["target_date"]
+    assert records[0]["metadata"]["publish_slot"] == results[0]["target_date"]
+    assert records[0]["metadata"]["target_day_number"] == 102
+    assert records[0]["metadata"]["target_track"] == "easy"
+
+
+def test_generate_pilot_batch_target_dates_rejects_occupied_and_picks_mini_size(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    import datetime as dt
+
+    epoch = dt.date(2099, 1, 1)  # a Thursday
+    slots = [
+        _target_slot(2, {"AAAA"}, epoch, game_key="minicrossword", size=5),
+        _target_slot(5, {"BBBB"}, epoch, game_key="midicrossword"),
+    ]
+    monkeypatch.setattr(
+        cli_module, "_load_daily_schedule_slots", lambda **kwargs: slots
+    )
+    seen: list[tuple[str, int, int]] = []
+
+    def fake_run_batch_item(**kwargs):
+        seen.append((kwargs["difficulty"], kwargs["size"], kwargs["seed"]))
+        return {
+            "difficulty": kwargs["difficulty"],
+            "size": kwargs["size"],
+            "seed": kwargs["seed"],
+            "success": False,
+            "runtime_seconds": 0.0,
+            "output_path": "",
+            "error_message": "skipped",
+        }
+
+    monkeypatch.setattr(cli_module, "_run_batch_item", fake_run_batch_item)
+    common = [
+        "generate-pilot-batch",
+        "--output-root", str(tmp_path / "batch"),
+        "--batch-id", "target-batch",
+        "--target-game", "minicrossword",
+        "--target-track", "easy",
+        "--seed-start", "7",
+        "--no-avoid-existing-clues",
+        "--no-refresh-dictionaries",
+        "--no-exclude-scheduled-sixty",
+        "--no-exclude-recent-answers",
+        "--no-llm-log",
+    ]
+    # Day 2 (2099-01-02) is already scheduled for the mini easy track.
+    occupied = CliRunner().invoke(
+        main, [*common, "--target-dates", "2099-01-02,2099-01-03"]
+    )
+    assert occupied.exit_code != 0
+    assert "already scheduled for minicrossword easy: 2099-01-02" in occupied.output
+
+    # 2099-01-03 is a Saturday (7x7), 2099-01-05 a Monday (5x5).
+    ok = CliRunner().invoke(
+        main, [*common, "--target-dates", "2099-01-03,2099-01-05"]
+    )
+    assert ok.exit_code == 0, ok.output
+    assert seen == [("easy", 7, 7), ("easy", 5, 8)]
+
+    # --buckets is incompatible with targeting.
+    bad = CliRunner().invoke(
+        main, [*common, "--target-through", "2099-01-05", "--buckets", "easy/5"]
+    )
+    assert bad.exit_code != 0
+    assert "drop --buckets" in bad.output
+
+
+@pytest.fixture(autouse=True)
+def _no_live_schedule(monkeypatch):
+    """Default daily runs consult the live schedule for the open-day guard;
+    tests never hit the network. Targeted tests override this per test."""
+    monkeypatch.setattr(cli_module, "_load_daily_schedule_slots", lambda **kw: [])
+
+
+def test_used_answer_set_regular_window_is_date_aware() -> None:
+    used = cli_module._UsedAnswerSet()
+    used.add(["OCEAN", "ETA"], size=9, day=100)
+    # Default: 4+ letter answers excluded for the whole batch.
+    assert "OCEAN" in used.snapshot(min_length=4, size=9, day=140)
+    # Targeted runs: only within the scheduler's regular window, any size.
+    assert "OCEAN" in used.snapshot(min_length=4, size=5, day=106, regular_window=6)
+    assert "OCEAN" not in used.snapshot(min_length=4, size=9, day=107, regular_window=6)
+    # Glue keeps its own same-size short window.
+    assert "ETA" in used.snapshot(
+        min_length=4, size=9, day=102, short_window=2, regular_window=6
+    )
+    assert "ETA" not in used.snapshot(
+        min_length=4, size=9, day=103, short_window=2, regular_window=6
+    )
+
+
+def test_open_day_guard_refuses_scattered_holes(tmp_path, monkeypatch) -> None:
+    import datetime as dt
+
+    from crossword_generator.data_store import RecentDailyAnswers
+
+    epoch = dt.date(2099, 1, 1)
+    today = dt.date(2099, 1, 1)
+    monkeypatch.setattr(cli_module, "_dt", _FakeDate.at(today))
+    # Global anchor (first unscheduled slot) is day 5 (mini easy hole); midi
+    # easy is scheduled through day 14 except holes at 8 and 12.
+    taken = {1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 13, 14}
+    slots = [_target_slot(d, {f"W{d:03d}X"}, epoch) for d in taken]
+    slots += [
+        _target_slot(d, {f"M{d:03d}X"}, epoch, game_key="minicrossword", size=5)
+        for d in (1, 2, 3, 4)
+    ]
+    monkeypatch.setattr(cli_module, "_load_daily_schedule_slots", lambda **kw: slots)
+
+    def fake_fetch(**kwargs):
+        return RecentDailyAnswers(
+            answers=[],
+            window_days=30,
+            first_unscheduled_date="2099-01-05",
+            since_date="2098-12-06",
+            forward_days=13,
+        )
+
+    import crossword_generator.data_store as data_store_module
+
+    monkeypatch.setattr(data_store_module, "fetch_recent_daily_answers", fake_fetch)
+    monkeypatch.setattr(
+        cli_module, "_run_batch_item", lambda **kw: pytest.fail("should not fill")
+    )
+    common = [
+        "generate-pilot-batch",
+        "--output-root",
+        str(tmp_path / "batch"),
+        "--batch-id",
+        "guarded",
+        "--buckets",
+        "easy/9",
+        "--count",
+        "3",
+        "--seed-start",
+        "1",
+        "--no-avoid-existing-clues",
+        "--no-refresh-dictionaries",
+        "--no-exclude-scheduled-sixty",
+        "--no-llm-log",
+    ]
+    result = CliRunner().invoke(main, common)
+    assert result.exit_code != 0
+    assert (
+        "midicrossword easy: next 3 open day(s) 2099-01-08, 2099-01-12, 2099-01-15"
+        in result.output
+    )
+    assert "scattered holes" in result.output
+    assert "fill-open-days --through" in result.output
+
+    # Contiguous open frontier at the anchor: the guard lets the run proceed.
+    contiguous = [_target_slot(d, {f"W{d:03d}X"}, epoch) for d in (1, 2, 3, 4)]
+    monkeypatch.setattr(
+        cli_module, "_load_daily_schedule_slots", lambda **kw: contiguous
+    )
+    calls = []
+
+    def fake_run(**kw):
+        calls.append(kw["seed"])
+        return {
+            "difficulty": "easy",
+            "size": 9,
+            "seed": kw["seed"],
+            "success": False,
+            "runtime_seconds": 0.0,
+            "output_path": "",
+            "error_message": "x",
+        }
+
+    monkeypatch.setattr(cli_module, "_run_batch_item", fake_run)
+    result = CliRunner().invoke(main, common)
+    assert result.exit_code == 0, result.output
+    assert calls == [1, 2, 3]
+
+
+class _FakeDate:
+    """Stand-in for cli_module._dt so today() is pinned without patching the
+    real datetime module (which other modules share)."""
+
+    @classmethod
+    def at(cls, day):
+        import datetime as real
+        import types
+
+        class _Date(real.date):
+            @classmethod
+            def today(cls):
+                return day
+
+        return types.SimpleNamespace(date=_Date, timedelta=real.timedelta)
+
+
+def test_fill_open_days_chains_tracks_and_gates(tmp_path, monkeypatch) -> None:
+    import datetime as dt
+
+    epoch = dt.date(2099, 1, 1)
+    monkeypatch.setattr(cli_module, "_dt", _FakeDate.at(dt.date(2099, 1, 1)))
+    # midi hard open at days 3 and 9; midi easy open at day 4 only (5-day range).
+    slots = [
+        _target_slot(d, {"HARDWORD"}, epoch, track="hard")
+        for d in (1, 2, 4, 5, 6, 7, 8)
+    ]
+    slots += [
+        _target_slot(d, {"EASYWORD"}, epoch, track="easy")
+        for d in (1, 2, 3, 5, 6, 7, 8, 9)
+    ]
+    monkeypatch.setattr(cli_module, "_load_daily_schedule_slots", lambda **kw: slots)
+    runs: list[dict[str, object]] = []
+
+    def fake_run(**kw):
+        runs.append(kw)
+        d, s, seed = kw["difficulty"], kw["size"], kw["seed"]
+        out = kw["output_root"] / d / f"{s}x{s}" / f"seed-{seed:03d}.ipuz"
+        out.parent.mkdir(parents=True, exist_ok=True)
+        # Distinct 7-letter answer per puzzle; hard day 3 gets GRANITE.
+        word = {"hard": "GRANIT", "easy": "PEBBLE"}[d] + "EFGH"[len(runs) - 1]
+        rows = [list("ABC") + ["#"] * 4, ["#"] * 7, list(word)]
+        out.write_text(
+            json.dumps({"solution": rows, "clues": {"Across": [], "Down": []}})
+        )
+        return {
+            "difficulty": d,
+            "size": s,
+            "seed": seed,
+            "success": True,
+            "runtime_seconds": 0.0,
+            "output_path": str(out),
+            "clue_score": 80.0,
+            "fill_score": 50.0,
+        }
+
+    monkeypatch.setattr(cli_module, "_run_batch_item", fake_run)
+    monkeypatch.setattr(cli_module, "_load_existing_clue_history", lambda *a, **k: 0)
+    monkeypatch.setattr(
+        cli_module, "_refresh_dictionaries_for_generation", lambda **k: None
+    )
+    import crossword_generator.data_store as ds
+    from crossword_generator.data_store import RecentDailyAnswers
+
+    monkeypatch.setattr(
+        ds,
+        "fetch_recent_daily_answers",
+        lambda **kw: RecentDailyAnswers(
+            answers=[],
+            window_days=30,
+            first_unscheduled_date="2099-01-03",
+            since_date="2098-12-04",
+            forward_days=13,
+        ),
+    )
+    monkeypatch.setattr(ds, "fetch_recent_sixty_answers", lambda **kw: [])
+
+    plan = CliRunner().invoke(
+        main,
+        [
+            "fill-open-days",
+            "--through",
+            "2099-01-09",
+            "--games",
+            "midicrossword",
+            "--plan-only",
+        ],
+    )
+    assert plan.exit_code == 0, plan.output
+    assert (
+        "midicrossword hard: 2 open day(s): 2099-01-03(9x9), 2099-01-09(9x9)"
+        in plan.output
+    )
+    assert "midicrossword easy: 1 open day(s): 2099-01-04(9x9)" in plan.output
+
+    result = CliRunner().invoke(
+        main,
+        [
+            "fill-open-days",
+            "--through",
+            "2099-01-09",
+            "--games",
+            "midicrossword",
+            "--output-root",
+            str(tmp_path / "fill"),
+            "--batch-prefix",
+            "fill-test",
+        ],
+    )
+    assert result.exit_code == 0, result.output
+    # hard ran first (days 3, 9), then easy (day 4) chained on the hard manifest.
+    assert [(r["difficulty"], r["seed"]) for r in runs][:2] == [
+        ("hard", runs[0]["seed"]),
+        ("hard", runs[1]["seed"]),
+    ]
+    assert runs[2]["difficulty"] == "easy"
+    # Easy day 4 sees hard day 3's GRANITE (1 day away) but the chained
+    # exclusion is date-aware: day 9's GRANITE alone would be outside +/-6.
+    assert "GRANITE" in runs[2]["excluded_fill_words"]
+    assert "ABC" in runs[2]["excluded_fill_words"]  # glue, same size, 1 day
+    assert (tmp_path / "fill" / "midi-hard" / "manifest.json").exists()
+    assert (tmp_path / "fill" / "midi-easy" / "manifest.json").exists()
+    assert (
+        "fill-test-midi-hard: 2 puzzle(s) 2099-01-03, 2099-01-09 -> gate pass"
+        in result.output
+    )
+    assert "fill-test-midi-easy: 1 puzzle(s) 2099-01-04 -> gate pass" in result.output
+    assert "Dry run only" in result.output
+    assert "Prepared 2 generated puzzle record(s)" in result.output
+
+
+def test_generate_pilot_batch_unlimited_passes_usage_penalty(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    """Unlimited (novelty) runs hand the pool usage counts AND a CSP usage
+    penalty to the fill step; the default is None (config value) and the
+    flag overrides it. The manifest records the setting."""
+    run_kwargs: list[dict[str, object]] = []
+
+    def fake_load(selected_buckets, count_by_bucket, *, api_base=None):
+        usage = cli_module._AnswerUsageCounter()
+        usage.add(["ARENA", "ARENA", "ALOHA"], records=2)
+        return {("easy", 5): usage}
+
+    def fake_run_batch_item(**kwargs):
+        run_kwargs.append(kwargs)
+        output_path = (
+            kwargs["output_root"] / "easy" / "5x5" / f"seed-{kwargs['seed']:03d}.ipuz"
+        )
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(
+            '{"solution":[["A","P","P","L","E"]],"clues":{"Across":[],"Down":[]}}'
+        )
+        return {
+            "difficulty": "easy",
+            "size": 5,
+            "seed": kwargs["seed"],
+            "success": True,
+            "runtime_seconds": 0.0,
+            "output_path": str(output_path),
+            "clue_score": 80.0,
+        }
+
+    monkeypatch.setattr(
+        cli_module, "_load_unlimited_answer_usage_by_bucket", fake_load
+    )
+    monkeypatch.setattr(cli_module, "_run_batch_item", fake_run_batch_item)
+
+    base_args = [
+        "generate-pilot-batch",
+        "--output-root", str(tmp_path / "batch"),
+        "--batch-id", "test-batch",
+        "--buckets", "easy/5",
+        "--count", "1",
+        "--seed-start", "1",
+        "--no-avoid-existing-clues",
+        "--no-refresh-dictionaries",
+        "--no-intra-batch-dedup",
+        "--no-exclude-recent-answers",
+        "--no-exclude-scheduled-sixty",
+        "--no-llm-log",
+    ]
+
+    result = CliRunner().invoke(main, base_args)
+    assert result.exit_code == 0, result.output
+    (kwargs,) = run_kwargs
+    assert kwargs["answer_usage_counts"] == {"ARENA": 2, "ALOHA": 1}
+    assert kwargs["answer_usage_penalty"] is None  # config default
+    manifest = json.loads((tmp_path / "batch" / "manifest.json").read_text())
+    assert manifest["unlimited_answer_novelty"]["active"] is True
+    assert manifest["unlimited_answer_novelty"]["usage_penalty"] is None
+
+    run_kwargs.clear()
+    result = CliRunner().invoke(
+        main,
+        [*base_args, "--batch-id", "test-batch-2", "--unlimited-usage-penalty", "1.5"],
+    )
+    assert result.exit_code == 0, result.output
+    (kwargs,) = run_kwargs
+    assert kwargs["answer_usage_penalty"] == 1.5
+    manifest = json.loads((tmp_path / "batch" / "manifest.json").read_text())
+    assert manifest["unlimited_answer_novelty"]["usage_penalty"] == 1.5
+
+    result = CliRunner().invoke(main, [*base_args, "--unlimited-usage-penalty", "-1"])
+    assert result.exit_code != 0
+    assert "--unlimited-usage-penalty must be >= 0" in result.output

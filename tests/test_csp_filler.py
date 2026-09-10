@@ -7,7 +7,12 @@ import pytest
 from crossword_generator.config import CSPFillerConfig
 from crossword_generator.dictionary import Dictionary
 from crossword_generator.fillers.base import FilledGrid, FillError, GridSpec
-from crossword_generator.fillers.csp import CSPFiller, _extract_slots
+from crossword_generator.fillers.csp import (
+    CSPFiller,
+    _extract_slots,
+    _shuffle_within_tiers,
+    usage_weight,
+)
 
 
 @pytest.fixture
@@ -373,3 +378,166 @@ class TestCSPFiller:
         assert len(result.grid) == 5
         for word in result.words_across + result.words_down:
             assert real_dictionary.contains(word)
+
+
+class TestUsagePenaltyOrdering:
+    """Recent-schedule usage makes answers less likely to be tried first."""
+
+    def test_usage_weight_is_inverse_power_and_monotone(self) -> None:
+        assert usage_weight(0, 1.0) == 1.0
+        assert usage_weight(1, 1.0) == 0.5
+        assert usage_weight(7, 1.0) == 0.125
+        assert usage_weight(15, 1.0) == 1 / 16
+        assert usage_weight(7, 0.0) == 1.0
+        assert usage_weight(3, 2.0) == 1 / 16
+        weights = [usage_weight(n, 1.0) for n in range(0, 20)]
+        assert weights == sorted(weights, reverse=True)
+
+    def test_overused_word_is_usually_tried_after_fresh_peers(self) -> None:
+        import random
+
+        # Same tier (flat 50, like the production Easy list): idx0 used 7x,
+        # idx1 and idx2 fresh. Over many draws the used word should come
+        # first far less often than 1/3, but not never.
+        rng = random.Random(123)
+        first = [0, 0, 0]
+        trials = 3000
+        for _ in range(trials):
+            ordered = _shuffle_within_tiers(
+                [0, 1, 2],
+                [50, 50, 50],
+                rng,
+                usage_counts=[7, 0, 0],
+                usage_penalty=1.0,
+            )
+            first[ordered[0]] += 1
+        # Expected P(first) for idx0 = 0.125 / 2.125 ~ 5.9%.
+        assert 0.02 * trials < first[0] < 0.10 * trials
+        assert abs(first[1] - first[2]) < 0.1 * trials
+
+    def test_zero_penalty_is_uniform_shuffle(self) -> None:
+        import random
+
+        rng = random.Random(7)
+        first = [0, 0, 0]
+        trials = 3000
+        for _ in range(trials):
+            ordered = _shuffle_within_tiers(
+                [0, 1, 2],
+                [50, 50, 50],
+                rng,
+                usage_counts=[7, 0, 0],
+                usage_penalty=0.0,
+            )
+            first[ordered[0]] += 1
+        assert all(0.28 * trials < count < 0.39 * trials for count in first)
+
+    def test_zero_penalty_matches_legacy_ordering_for_same_seed(self) -> None:
+        import random
+
+        legacy = _shuffle_within_tiers([0, 1, 2, 3], [59, 55, 48, 41], random.Random(5))
+        same = _shuffle_within_tiers(
+            [0, 1, 2, 3],
+            [59, 55, 48, 41],
+            random.Random(5),
+            usage_counts=[9, 9, 9, 9],
+            usage_penalty=0.0,
+        )
+        assert legacy == same
+
+    def test_tiers_still_win_over_usage(self) -> None:
+        import random
+
+        # A fresh 48 never jumps ahead of a used 59: tiers are decided on the
+        # raw score, usage only reorders inside the tier.
+        for seed in range(50):
+            ordered = _shuffle_within_tiers(
+                [0, 1],
+                [59, 48],
+                random.Random(seed),
+                usage_counts=[50, 0],
+                usage_penalty=1.0,
+            )
+            assert ordered == [0, 1]
+
+    def test_filler_accepts_usage_counts(self, real_dictionary: Dictionary) -> None:
+        config = CSPFillerConfig(timeout=30)
+        filler = CSPFiller(
+            config, real_dictionary, answer_usage_counts={"era": 9, "ETA": 5}
+        )
+        assert filler._usage_counts == {"ERA": 9, "ETA": 5}
+        assert filler._usage_penalty == 1.0
+        spec = GridSpec(rows=5, cols=5, black_cells=[])
+        result = filler.fill(spec, seed=42)
+        assert isinstance(result, FilledGrid)
+
+
+class TestGridRulesInSearch:
+    """The grader's board-level hard fails are enforced during search."""
+
+    @staticmethod
+    def _words(grid: list[list[str]]) -> tuple[list[str], list[str]]:
+        across = ["".join(row) for row in grid]
+        down = ["".join(col) for col in zip(*grid, strict=True)]
+        return across, down
+
+    def test_no_two_hard_words_cross(self, real_dictionary: Dictionary) -> None:
+        # In an open 5x5 every across word crosses every down word, so the
+        # rule allows Hard-list words in at most one direction.
+        hard = frozenset(
+            w for w in real_dictionary.words_by_length(5) if w[0] in "ST"
+        )
+        assert len(hard) > 500
+        filler = CSPFiller(
+            CSPFillerConfig(timeout=30), real_dictionary, hard_word_set=hard
+        )
+        saw_hard = False
+        spec = GridSpec(rows=5, cols=5)
+        for seed in range(8):
+            across, down = self._words(filler.fill(spec, seed=seed).grid)
+            hard_across = any(w in hard for w in across)
+            hard_down = any(w in hard for w in down)
+            assert not (hard_across and hard_down), (across, down)
+            saw_hard |= hard_across or hard_down
+        # The rule limits crossings; it does not ban Hard-list words outright.
+        assert saw_hard
+
+    def test_proper_noun_cap_and_first_across(
+        self, real_dictionary: Dictionary
+    ) -> None:
+        proper = frozenset(
+            w for w in real_dictionary.words_by_length(5) if w[0] in "ASTC"
+        )
+        spec = GridSpec(rows=5, cols=5)
+
+        unconstrained = CSPFiller(CSPFillerConfig(timeout=30), real_dictionary)
+        worst = max(
+            sum(
+                w in proper
+                for words in self._words(unconstrained.fill(spec, seed=s).grid)
+                for w in words
+            )
+            for s in range(8)
+        )
+        assert worst > 2, "fixture too weak: the cap never binds"
+
+        # 10 slots -> cap = max(2, floor(10 * 0.15)) = 2, matching FillGrader.
+        filler = CSPFiller(
+            CSPFillerConfig(timeout=30), real_dictionary, proper_noun_set=proper
+        )
+        for seed in range(8):
+            across, down = self._words(filler.fill(spec, seed=seed).grid)
+            assert sum(w in proper for w in across + down) <= 2, (across, down)
+            assert across[0] not in proper, across
+
+    def test_enforce_grid_rules_off_ignores_sets(
+        self, small_dictionary: Dictionary
+    ) -> None:
+        filler = CSPFiller(
+            CSPFillerConfig(timeout=10, enforce_grid_rules=False),
+            small_dictionary,
+            hard_word_set=frozenset({"ACE"}),
+            proper_noun_set=frozenset({"ACT"}),
+        )
+        assert filler._hard_word_set is None
+        assert filler._proper_noun_set is None

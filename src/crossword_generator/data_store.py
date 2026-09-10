@@ -7,7 +7,7 @@ import logging
 import os
 import re
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 from urllib.error import HTTPError
@@ -17,6 +17,22 @@ from urllib.request import Request, urlopen
 logger = logging.getLogger(__name__)
 
 API_BASE = os.environ.get("HEYGG_API_BASE_URL", "https://play.hey.gg/api").rstrip("/")
+
+# Checked in order; the service-account token wins over personal admin JWTs.
+ADMIN_TOKEN_ENV_VARS = (
+    "HEYGG_CROSSWORD_GENERATOR_TOKEN",
+    "HEYGG_ADMIN_TOKEN",
+    "HEYGG_ADMIN_API_TOKEN",
+)
+
+
+def resolve_admin_token() -> str | None:
+    """Return the first non-empty admin token from ADMIN_TOKEN_ENV_VARS."""
+    for name in ADMIN_TOKEN_ENV_VARS:
+        value = os.environ.get(name)
+        if value:
+            return value
+    return None
 NAMESPACE = "crosswords"
 COLLECTION = "generated-puzzles"
 UNLIMITED_COLLECTION = "unlimited-pool"
@@ -73,12 +89,21 @@ def make_record(
     title_reasoning: str | None = None,
     clue_issues: list[dict[str, Any]] | None = None,
     key: str | None = None,
+    target_date: str | None = None,
+    target_day_number: int | None = None,
+    target_track: str | None = None,
+    target_game_key: str | None = None,
 ) -> dict[str, Any]:
     """Build a generated-puzzle data-store record.
 
     ``clue_issues`` carries any LEAK/DUPLICATE clue problems that survived
     repair so the admin review UI can flag the specific clues for the editor
     instead of the puzzle being silently held back from upload.
+
+    ``target_date`` (with ``target_day_number``/``target_track``) records the
+    open schedule day a targeted batch filled the puzzle for. The admin UI
+    defaults the publish slot to it and the scheduler falls back to it when
+    no date is sent, so the puzzle lands on the day it was built to fit.
     """
     record_key = key or (
         f"generated:{game_key}:{batch_id}:{difficulty}:{size}x{size}:seed-{seed}"
@@ -104,6 +129,18 @@ def make_record(
     }
     if issues:
         metadata["clue_issues"] = issues
+    if target_date:
+        metadata["target_date"] = target_date
+        # The admin UI reads publish_slot as the requested daily date, so a
+        # targeted candidate schedules onto its own day without the reviewer
+        # having to type it.
+        metadata["publish_slot"] = target_date
+        if target_day_number is not None:
+            metadata["target_day_number"] = int(target_day_number)
+        if target_track:
+            metadata["target_track"] = target_track
+        if target_game_key:
+            metadata["target_game_key"] = target_game_key
     record = {
         "namespace": NAMESPACE,
         "collection": COLLECTION,
@@ -262,6 +299,14 @@ def records_from_manifest(
                 title=_optional_str(result.get("title")),
                 title_reasoning=_optional_str(result.get("title_reasoning")),
                 clue_issues=clue_issues or None,
+                target_date=_optional_str(result.get("target_date")),
+                target_day_number=(
+                    int(result["target_day_number"])
+                    if result.get("target_day_number") is not None
+                    else None
+                ),
+                target_track=_optional_str(result.get("target_track")),
+                target_game_key=_optional_str(result.get("target_game_key")),
             )
         )
 
@@ -597,11 +642,18 @@ class RecentDailyAnswers:
     since_date: str | None
     forward_days: int | None = None
     until_date: str | None = None
+    # Per-answer count of scheduled daily slots (all games/tracks) that used
+    # the answer over ``count_window_days``. Empty when the server predates
+    # the counts extension; callers must degrade gracefully.
+    counts: dict[str, int] = field(default_factory=dict)
+    count_window_days: int | None = None
 
 
 def fetch_recent_daily_answers(
     *,
     window_days: int | None = None,
+    forward_days: int | None = None,
+    count_window_days: int | None = None,
     api_base: str | None = None,
     token: str | None = None,
     timeout: int = 60,
@@ -613,10 +665,23 @@ def fetch_recent_daily_answers(
     7) back through ``forward_days`` (server default 13) ahead. Batches
     exclude these from fill pools so new candidates don't collide with the
     +/-6-day no-repeat rule when scheduled.
+
+    When the server supports it, ``count_window_days`` (server default 90)
+    selects the lookback for the ``counts`` object — how many scheduled daily
+    slots used each answer — which the batch runner turns into a soft
+    usage penalty during fill. Older servers omit ``counts``; the returned
+    dict is then empty.
     """
     path = "/admin/crossword-puzzles/daily-answers/recent"
+    params: dict[str, int] = {}
     if window_days is not None:
-        path += f"?{urlencode({'window_days': window_days})}"
+        params["window_days"] = window_days
+    if forward_days is not None:
+        params["forward_days"] = forward_days
+    if count_window_days is not None:
+        params["count_window_days"] = count_window_days
+    if params:
+        path += f"?{urlencode(params)}"
     response = _request_json(
         "GET",
         path,
@@ -629,14 +694,32 @@ def fetch_recent_daily_answers(
         raise DataStoreError(
             f"Unexpected recent daily answers response shape: {response}"
         )
-    forward_days = response.get("forward_days")
+    forward_days_value = response.get("forward_days")
+    raw_counts = response.get("counts")
+    counts: dict[str, int] = {}
+    if isinstance(raw_counts, dict):
+        for answer, count in raw_counts.items():
+            key = str(answer).strip().upper()
+            try:
+                value = int(count)
+            except (TypeError, ValueError):
+                continue
+            if key and value > 0:
+                counts[key] = value
+    count_window_value = response.get("count_window_days")
     return RecentDailyAnswers(
         answers=[str(answer).strip().upper() for answer in answers],
         window_days=int(response.get("window_days", window_days or 0)),
         first_unscheduled_date=response.get("first_unscheduled_date"),
         since_date=response.get("since_date"),
-        forward_days=int(forward_days) if forward_days is not None else None,
+        forward_days=(
+            int(forward_days_value) if forward_days_value is not None else None
+        ),
         until_date=response.get("until_date"),
+        counts=counts,
+        count_window_days=(
+            int(count_window_value) if count_window_value is not None else None
+        ),
     )
 
 
@@ -758,11 +841,12 @@ def _request_json(
     timeout: int = 60,
 ) -> dict[str, Any]:
     resolved_api_base = (api_base or API_BASE).rstrip("/")
-    resolved_token = (
-        token
-        or os.environ.get("HEYGG_ADMIN_TOKEN")
-        or os.environ["HEYGG_ADMIN_API_TOKEN"]
-    )
+    resolved_token = token or resolve_admin_token()
+    if not resolved_token:
+        raise KeyError(
+            "HEYGG_CROSSWORD_GENERATOR_TOKEN (or HEYGG_ADMIN_TOKEN / "
+            "HEYGG_ADMIN_API_TOKEN) must be set."
+        )
     url = f"{resolved_api_base}{path}"
     headers = {
         "Authorization": f"Bearer {resolved_token}",

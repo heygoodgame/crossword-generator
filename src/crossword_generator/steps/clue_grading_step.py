@@ -1184,9 +1184,17 @@ def _parse_repair_response(
 ) -> list[ClueEntry]:
     """Parse the LLM's repair response into ClueEntry objects.
 
+    The result may be partial: entries the model added that were not asked
+    for are skipped, and asked-for entries the model omitted are simply not
+    returned, so the caller applies what came back and the next convergence
+    round re-flags the rest. Discarding the whole response for one stray
+    entry number left 16-17 verbatim-duplicate clues in place on two
+    puzzles in two days (the convergence loop sees "no change" and stops).
+
     Raises:
         json.JSONDecodeError: If the response is not valid JSON.
-        ValueError: If the response structure is unexpected.
+        ValueError: If the response structure is unexpected or contains no
+            usable entries.
     """
     text = raw_response.strip()
     start = text.find("[")
@@ -1212,14 +1220,16 @@ def _parse_repair_response(
     expected = {(c.number, c.direction): c for c, _ in entries_to_repair}
 
     repaired: list[ClueEntry] = []
+    seen: set[tuple[int, str]] = set()
+    unexpected: list[str] = []
     for item in parsed:
         number = int(item["number"])
-        direction = item["direction"].lower()
+        direction = str(item["direction"]).lower()
         key = (number, direction)
-        if key not in expected:
-            raise ValueError(
-                f"Repair response contains unexpected entry {number}-{direction}"
-            )
+        if key not in expected or key in seen:
+            unexpected.append(f"{number}-{direction}")
+            continue
+        seen.add(key)
         original = expected[key]
         repaired.append(
             ClueEntry(
@@ -1230,9 +1240,25 @@ def _parse_repair_response(
             )
         )
 
+    if unexpected:
+        logger.warning(
+            "Clue repair response contained %d unexpected/duplicate entry(ies), "
+            "skipped: %s",
+            len(unexpected),
+            ", ".join(unexpected),
+        )
+    if not repaired:
+        raise ValueError("Repair response contained no requested entries")
     if len(repaired) != len(entries_to_repair):
-        raise ValueError(
-            f"Expected {len(entries_to_repair)} repaired clues, got {len(repaired)}"
+        missing = sorted(
+            f"{n}-{d}" for (n, d) in expected if (n, d) not in seen
+        )
+        logger.warning(
+            "Clue repair response covered %d of %d requested clue(s); "
+            "missing: %s (left for the next round)",
+            len(repaired),
+            len(entries_to_repair),
+            ", ".join(missing),
         )
 
     return repaired

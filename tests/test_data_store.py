@@ -694,6 +694,54 @@ def test_fetch_recent_daily_answers_passes_window_override(
     assert calls == ["/admin/crossword-puzzles/daily-answers/recent?window_days=3"]
 
 
+def test_fetch_recent_daily_answers_passes_forward_and_count_windows(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls: list[str] = []
+
+    def fake_request(
+        method: str, path: str, *args: Any, **kwargs: Any
+    ) -> dict[str, Any]:
+        calls.append(path)
+        return {
+            "window_days": 30,
+            "forward_days": 13,
+            "count_window_days": 90,
+            "answers": ["eta"],
+            "counts": {"eta": 7, " art ": "9", "bad": "x", "zero": 0},
+        }
+
+    monkeypatch.setattr(data_store, "_request_json", fake_request)
+
+    recent = fetch_recent_daily_answers(
+        window_days=30, forward_days=13, count_window_days=90, token="token"
+    )
+
+    assert calls == [
+        "/admin/crossword-puzzles/daily-answers/recent"
+        "?window_days=30&forward_days=13&count_window_days=90"
+    ]
+    assert recent.forward_days == 13
+    assert recent.count_window_days == 90
+    assert recent.counts == {"ETA": 7, "ART": 9}
+
+
+def test_fetch_recent_daily_answers_tolerates_missing_counts(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Older servers omit ``counts``; the client must degrade gracefully."""
+    monkeypatch.setattr(
+        data_store,
+        "_request_json",
+        lambda *args, **kwargs: {"window_days": 7, "answers": ["ALPHA"]},
+    )
+
+    recent = fetch_recent_daily_answers(token="token")
+
+    assert recent.counts == {}
+    assert recent.count_window_days is None
+
+
 def test_fetch_recent_daily_answers_rejects_bad_shape(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -705,3 +753,39 @@ def test_fetch_recent_daily_answers_rejects_bad_shape(
 
     with pytest.raises(DataStoreError):
         fetch_recent_daily_answers(token="token")
+
+
+def test_resolve_admin_token_prefers_service_account(monkeypatch) -> None:
+    from crossword_generator.data_store import resolve_admin_token
+
+    for name in (
+        "HEYGG_CROSSWORD_GENERATOR_TOKEN",
+        "HEYGG_ADMIN_TOKEN",
+        "HEYGG_ADMIN_API_TOKEN",
+    ):
+        monkeypatch.delenv(name, raising=False)
+    assert resolve_admin_token() is None
+
+    monkeypatch.setenv("HEYGG_ADMIN_API_TOKEN", "api")
+    assert resolve_admin_token() == "api"
+    monkeypatch.setenv("HEYGG_ADMIN_TOKEN", "admin")
+    assert resolve_admin_token() == "admin"
+    # The service-account token wins over personal admin JWTs, and an
+    # empty value is treated as unset.
+    monkeypatch.setenv("HEYGG_CROSSWORD_GENERATOR_TOKEN", "")
+    assert resolve_admin_token() == "admin"
+    monkeypatch.setenv("HEYGG_CROSSWORD_GENERATOR_TOKEN", "svc")
+    assert resolve_admin_token() == "svc"
+
+
+def test_request_json_without_any_token_raises_key_error(monkeypatch) -> None:
+    from crossword_generator.data_store import _request_json
+
+    for name in (
+        "HEYGG_CROSSWORD_GENERATOR_TOKEN",
+        "HEYGG_ADMIN_TOKEN",
+        "HEYGG_ADMIN_API_TOKEN",
+    ):
+        monkeypatch.delenv(name, raising=False)
+    with pytest.raises(KeyError, match="HEYGG_CROSSWORD_GENERATOR_TOKEN"):
+        _request_json("GET", "/admin/anything", None)

@@ -171,6 +171,10 @@ def create_pipeline(
             the filler sees it. Batch runs pass the answers already used by
             completed batch-mates so puzzles scheduled in the same window
             cannot repeat each other's answers.
+        answer_usage_counts: Per-answer usage counts (unlimited pool or
+            recent daily schedule). Soft signal only: the CSP penalizes
+            overused answers in value ordering, seed entries are sampled
+            1/(1+count), and the best-of-N board pick minimizes total usage.
 
     Returns:
         Tuple of (Pipeline, initial PuzzleEnvelope).
@@ -308,11 +312,6 @@ def create_pipeline(
     )
     hint_llm = _with_llm_logging("hint_generation", hint_llm)
 
-    # Build filler
-    if config.fill.provider == "csp":
-        filler = CSPFiller(config.fill.csp, dictionary)
-    else:
-        raise ValueError(f"Unknown fill provider: {config.fill.provider}")
     hard_word_set = _load_hard_word_set(
         project_root, config.grading.fill.hard_cross_words_path
     )
@@ -326,6 +325,25 @@ def create_pipeline(
             len(proper_noun_set),
             config.grading.fill.proper_nouns_path,
         )
+
+    # Build filler
+    if config.fill.provider == "csp":
+        # Usage counts feed both the CSP's soft value-ordering penalty
+        # (overused answers are tried last) and the fill step's seed-entry
+        # weighting / best-of-N novelty pick. The grader's board-level word
+        # sets are shared so the search enforces the same rules it is
+        # graded against.
+        filler = CSPFiller(
+            config.fill.csp,
+            dictionary,
+            answer_usage_counts=answer_usage_counts,
+            hard_word_set=hard_word_set,
+            proper_noun_set=proper_noun_set,
+            max_proper_noun_ratio=config.grading.fill.max_proper_noun_ratio,
+            min_proper_noun_allowance=config.grading.fill.min_proper_noun_allowance,
+        )
+    else:
+        raise ValueError(f"Unknown fill provider: {config.fill.provider}")
     grader = FillGrader(
         dictionary,
         min_passing_score=config.grading.fill.min_score,
@@ -344,6 +362,8 @@ def create_pipeline(
         max_retries=config.fill.max_retries,
         max_grid_variants=config.fill.max_grid_variants,
         max_long_entries_8_9=config.fill.max_long_entries_8_9,
+        short_slot_bias=config.fill.short_slot_bias,
+        four_glut_bias=config.fill.four_glut_bias,
         retry_on_fail=config.grading.fill.retry_on_fail,
         collect_boards=config.grading.fill.collect_boards,
         llm_select=config.grading.fill.llm_select,

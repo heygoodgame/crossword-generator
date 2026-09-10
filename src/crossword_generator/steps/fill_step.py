@@ -90,6 +90,8 @@ def _prescan_grid_signatures(
     grid_size: int,
     base_seed: int | None,
     num_variants: int,
+    short_slot_bias: float = 0.0,
+    four_glut_bias: float = 0.0,
 ) -> list[SignatureGroup]:
     """Scan grid variants and group them by slot-length signature.
 
@@ -99,7 +101,13 @@ def _prescan_grid_signatures(
 
     for variant in range(num_variants):
         grid_seed = _grid_seed_for_variant(base_seed, variant)
-        spec = get_grid_spec(puzzle_type, grid_size, seed=grid_seed)
+        spec = get_grid_spec(
+            puzzle_type,
+            grid_size,
+            seed=grid_seed,
+            short_slot_bias=short_slot_bias,
+            four_glut_bias=four_glut_bias,
+        )
         black = set(spec.black_cells)
         slots = extract_slots(spec.rows, spec.cols, black)
 
@@ -369,11 +377,21 @@ class _CandidateCollector:
 
 @dataclass(frozen=True)
 class _AnswerNoveltyStats:
-    """Existing-use penalty for a candidate fill."""
+    """Existing-use penalty for a candidate fill.
+
+    ``total_count`` (sum of prior uses over the board's answers) is the
+    primary selection key: picking the board that adds the fewest prior
+    uses is the greedy step that minimises the pool's sum of squared
+    answer counts, i.e. keeps the answer distribution as flat as possible.
+    The log-damped ``score`` is kept for reporting only -- as a selection
+    key it barely separates a 14-use word from a 3-use one, so hot words
+    kept growing (ARENA/ALOHA/EERIE reached 12-16 uses in the easy 5x5 pool).
+    """
 
     score: float
     overlap_count: int
     max_count: int
+    total_count: int = 0
 
 
 # ---------------------------------------------------------------------------
@@ -486,6 +504,8 @@ class FillWithGradingStep(PipelineStep):
         max_retries: int = 5,
         max_grid_variants: int = 100,
         max_long_entries_8_9: int | None = None,
+        short_slot_bias: float = 0.0,
+        four_glut_bias: float = 0.0,
         retry_on_fail: bool = True,
         collect_boards: int = 1,
         llm_select: bool = False,
@@ -501,6 +521,8 @@ class FillWithGradingStep(PipelineStep):
         self._max_retries = max_retries
         self._max_grid_variants = max_grid_variants
         self._max_long_entries_8_9 = max_long_entries_8_9
+        self._short_slot_bias = short_slot_bias
+        self._four_glut_bias = four_glut_bias
         self._retry_on_fail = retry_on_fail
         self._collect_boards = collect_boards
         self._llm_select = llm_select
@@ -749,6 +771,8 @@ class FillWithGradingStep(PipelineStep):
             grid_size,
             base_seed,
             self._max_grid_variants,
+            self._short_slot_bias,
+            self._four_glut_bias,
         )
 
         max_seed_size = min(len(ranked_words), 4)
@@ -907,6 +931,8 @@ class FillWithGradingStep(PipelineStep):
                 envelope.grid_size,
                 seed=grid_seed,
                 exclude_open=_exclude_open_grids(envelope),
+                short_slot_bias=self._short_slot_bias,
+                four_glut_bias=self._four_glut_bias,
             )
 
             long_entry_count = _long_entry_count_8_9(spec)
@@ -1010,6 +1036,8 @@ class FillWithGradingStep(PipelineStep):
                 envelope.grid_size,
                 seed=grid_seed,
                 exclude_open=_exclude_open_grids(envelope),
+                short_slot_bias=self._short_slot_bias,
+                four_glut_bias=self._four_glut_bias,
             )
 
             long_entry_count = _long_entry_count_8_9(spec)
@@ -1287,9 +1315,9 @@ class FillWithGradingStep(PipelineStep):
         novelty, result, subset = min(
             scored,
             key=lambda item: (
-                item[0].score,
-                item[0].overlap_count,
+                item[0].total_count,
                 item[0].max_count,
+                item[0].overlap_count,
                 -(item[1].quality_score or 0),
             ),
         )
@@ -1301,6 +1329,7 @@ class FillWithGradingStep(PipelineStep):
                     answer_novelty_score=round(novelty.score, 3),
                     answer_novelty_overlap_count=novelty.overlap_count,
                     answer_novelty_max_count=novelty.max_count,
+                    answer_novelty_total_count=novelty.total_count,
                 )
             }
         )
@@ -1320,6 +1349,7 @@ class FillWithGradingStep(PipelineStep):
             score=sum(math.log2(count + 1) for count in counts),
             overlap_count=sum(1 for count in counts if count > 0),
             max_count=max(counts),
+            total_count=sum(counts),
         )
 
     def _llm_select_best(

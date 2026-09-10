@@ -468,7 +468,7 @@ that 28 puzzles produced 125 cross-puzzle duplicate answers. Never widen
 the current production batch runner.
 
 When the batch includes a `hard/7` or `hard/9` bucket, the runner fetches
-scheduled HGG 60 answers from the admin API (requires `HEYGG_ADMIN_TOKEN` or
+scheduled HGG 60 answers from the admin API (requires `HEYGG_CROSSWORD_GENERATOR_TOKEN`, `HEYGG_ADMIN_TOKEN`, or
 `HEYGG_ADMIN_API_TOKEN`) and writes `hgg-60-scheduled-filtered.txt` into the
 output root; every `hgg-60.txt` config reference is pointed at that filtered
 copy for the run. This is on by default; pass `--no-exclude-scheduled-sixty`
@@ -486,6 +486,52 @@ a fill pool, and is left untouched. This is on by default; pass
 `--no-exclude-recent-answers` for offline/experimental runs. The manifest
 records the exclusion under `exclude_recent_answers`, including the window,
 the first unscheduled date, and per-dictionary removed-row counts.
+
+### Reuse reduction (August 2026)
+
+A coworker audit of the first 62 scheduled days found 121 answers used 5+
+times (ETA x10, ART x9, RIO x9) and 274 singular/plural pairs both scheduled.
+Three generator-side changes, all ON by default for daily runs:
+
+- **Longer lookback, split by length.** `--recent-window-days` (default 30,
+  was 7) applies to answers of 4+ letters; `--recent-short-window-days`
+  (default 7) applies to 3-letter glue; `--recent-forward-days` (default 13)
+  is the forward bound. Measured against the live schedule (2026-08-21):
+  easy 3-letter pool 597 → 278 (7d) → 91 (30d) → 29 (60d); 4-letter
+  1837 → 1424 → 1064; 5-letter 2892 → 2600 → 2304. Hard: 3-letter
+  787 → 411 → 172; 4-letter 2164 → 1708 → 1313; 5-letter 3500 → 3184 → 2860.
+  A 30-day window on glue leaves easy 5x5 open-grid fills at 10/16; keeping
+  glue on 7 days keeps every 5x5 pattern filling on every seed.
+- **Inflectional variants.** `--exclude-answer-variants` expands the
+  short-window recent answers and the scheduled-60 answers with
+  +S/+ES/+ED/+ER/+ING, IES↔Y and strip -S/-ES (`answer_variants.py`). Only
+  4+ letter words are expanded and no variant shorter than 4 letters is ever
+  excluded. Variants are expanded from the 7-day list on purpose: expanding
+  the 30-day list removes ~300 five-letter plurals and makes the fully open
+  5x5 (the highest-weighted easy pattern) unfillable on every seed. The run
+  log and manifest report variant rows removed per dictionary.
+- **Usage-frequency penalty.** The `/daily-answers/recent` endpoint (hey-you
+  PR #263) returns `counts` — scheduled daily slots per answer over
+  `--daily-count-window-days` (default 90), global across games/tracks.
+  Inside each raw-score tier the CSP now draws candidates by a *weighted
+  shuffle* with weight `(1+count)^-β`, `β = fill.csp.answer_usage_penalty`
+  (1.0; override with `--daily-usage-penalty`, 0 disables): a word used once
+  is half as likely as a fresh word to be tried first, used 7× is 8× less
+  likely, 15× is 16× less likely — but never strictly last, and tier
+  *eligibility* still uses the raw score, so nothing becomes unfillable.
+  Do NOT replace this with a deterministic `score - k*log2(1+count)`
+  deduction: the production lists are flat (every Easy word is 50), so a
+  deduction degenerates into a strict sort by usage, and with ~95% of the
+  3-letter pool carrying a count the CSP tries the 15 never-used glue words
+  first and times out on the open 5x5 on every seed (measured 2026-08-21).
+  The same counts weight `seed_exact_score_entries` sampling and enable the
+  best-of-N board pick (`--daily-novelty-candidates`, default 4, bounded for
+  cost). Measured against live counts, the default stack (β=1, best-of-4)
+  versus the old behaviour: mean 90-day usage per answer easy/5 1.66 → 1.25,
+  easy/9 2.46 → 2.20, hard/9 1.86 → 1.57, all fills succeeding, fill time
+  ≈4× (seconds; clue generation dominates). Servers without `counts` degrade
+  to the hard exclusions only (logged). Unlimited runs are unchanged (seed
+  weighting + best-of-8 against the pool, no CSP penalty).
 
 Grid selection notes:
 
@@ -633,7 +679,7 @@ hgg-auth exec prod -- bash -c '
 ```
 
 `hgg-auth exec <profile>` exports `HGG_ADMIN_BASE_URL` and `HEYGG_ADMIN_TOKEN`;
-the uploader reads `HEYGG_API_BASE_URL` and `HEYGG_ADMIN_TOKEN`, so set the
+the uploader reads `HEYGG_API_BASE_URL` and `HEYGG_CROSSWORD_GENERATOR_TOKEN` (service account, checked first), then `HEYGG_ADMIN_TOKEN`, so set the
 former from the latter as shown. The uploader defaults the base URL to
 play.hey.gg (prod), so set `HEYGG_API_BASE_URL` explicitly when targeting beta.
 
@@ -688,46 +734,84 @@ uv run crossword-generator check-batch-answers \
 ```
 
 It exits non-zero when any cross-puzzle duplicate exists, and labels each as
-either **blocking** or **short-window**:
+either **blocking** or **short-window**. The labels assume the set will be
+scheduled in **seed order**: each puzzle's *day* is its seed rank within its
+bucket (day 1 = lowest seed), and the easy/hard tracks are aligned by day.
+That is also the order the generator enforced while filling (below), so a
+clean run normally gates clean.
 
-- **`short-window` (acceptable — do NOT regenerate):** 3-letter answers
-  confined to 9x9 puzzles. The scheduler spaces these out (it allows 3-letter
-  9x9 repeats 3+ days apart), so a week with only short-window dupes uploads
-  fine and schedules without manual care. This is the common case for hard 9x9
-  weeks — the weighted grids + biased CSP fill collide on short glue (ADS, IPO,
-  EAR, AND…), and intra-batch dedup deliberately ignores <=3-letter answers
-  (`--exclude-answers-min-length` default 4) because excluding them makes 9x9
-  grids unfillable. Operator decision (Jeff, June 2026): a non-zero gate exit
-  whose dupes are ALL short-window is NOT a blocker — proceed to upload. (This
-  has been re-litigated repeatedly; it is settled.)
-- **`blocking` (must fix):** any duplicate that is NOT short-window — i.e. a
-  >=4-letter answer shared by two puzzles, or any shared answer the scheduler's
-  windows would actually collide on. The gate prints a `N blocking` count;
-  if it is `0 blocking`, upload regardless of the non-zero exit.
+- **`short-window` (acceptable — do NOT regenerate):** a 3-letter answer
+  shared only by 9x9 puzzles whose days are 3+ apart. hey-you allows
+  3-letter 9x9 repeats outside a +/-2-day window, so these schedule fine as
+  long as the buckets are placed in seed order.
+- **`blocking` (must fix):** a >=4-letter answer shared by two puzzles, a
+  3-letter answer shared with a mini, or a 3-letter 9x9 repeat whose puzzles
+  are within 2 days of each other in seed order (cross-track counts: easy
+  day 3 and hard day 4 share calendar days).
 
-So: read the summary line. `0 blocking, K short-window` → upload as-is. Any
-blocking dupes → regenerate the affected puzzles (same batch id, same seeds,
-separate `-replace-*` output root, the affected `--buckets`), passing the
-batch answers file so the refill cannot reuse any answer already in the
-batch:
+Why spacing rather than "pairwise is fine" (Jeff, 2026-09-01): the easy set
+from `daily-midi-9x9-2026-08-31` had ALL in four puzzles and TED/ATE/OWE in
+three each; after editing, only 2 of 7 could be placed into 7 open October
+slots, because a word in N puzzles needs ~3(N-1) days of spread. Pairwise
+repeats are not enough either — the first `cap=2` run of 2026-09-01 had only
+pairwise repeats yet no ordering into 7 consecutive days existed. The
+scheduler's actual window, applied to a concrete order, is the constraint.
+
+### How the generator keeps a weekly set schedulable
+
+Intra-batch dedup (`--intra-batch-dedup`, default on) tracks every completed
+batch-mate's answers with its size and day:
+
+- 4+ letter answers (`--exclude-answers-min-length`, default 4) are removed
+  from every later puzzle's fill pool after one use.
+- 3-letter glue follows three softer rules instead of a hard exclusion:
+  - `--intra-batch-short-window` (default 2): glue used by a same-size
+    batch-mate within +/-2 days (seed order) is excluded — at most ~2
+    puzzles' glue per track at a time, cheap for the CSP.
+  - `--intra-batch-short-penalty` (default 2.0): every prior batch use adds
+    2 to the answer's usage count in the CSP's existing weighted value
+    ordering and best-of-N board pick, so a once-used ALL/OWE is ~3x less
+    likely to be tried first anywhere in the set, but never unfillable.
+    (8.0 was tried first on 2026-09-01: with best-of-4 boards it drove CSP
+    timeouts from 0 to 23 per puzzle across an easy/9 week, 3 -> 71 min.)
+  - `--intra-batch-short-cap` (default 3): backstop — a glue word used in
+    that many puzzles is excluded regardless of spacing.
+
+Do NOT reach for `--exclude-answers-min-length 3` on 9x9 batches to force
+zero repeats: measured 2026-09-01 on easy/9, per-puzzle fill went
+6 → 10 → 20 → 27 min and puzzle 5 spent 4h20m failing 286/400 grid variants
+before being killed. The window policy filled the same positions in 3-12 min
+each with only pairwise, 3+-day-spaced repeats.
+
+### Fixing blocking duplicates
+
+Regenerate only the offending puzzles as a **continuation** of the batch:
+drop them from the manifest, then run the same bucket with
+`--prior-batch-manifest` so the kept puzzles seed the used-answer counts.
+Days are seed ranks over kept + new puzzles, so to refill a dropped middle
+day reuse its seed number (`--seed-start <dropped seed>`); to append, use a
+seed above the kept ones. Reusing a seed still present in the prior
+manifest is rejected.
 
 ```bash
 uv run crossword-generator generate-pilot-batch \
-  --output-root output/batches/<batch-id>-replace-<bucket> \
+  --output-root output/batches/<batch-id>-cont \
   --batch-id <batch-id> \
   --buckets <difficulty>/<size> \
-  --count 1 \
-  --seed-start <original-seed> \
-  --exclude-answers-file output/batches/<batch-id>/batch-answers.txt \
+  --count <missing> \
+  --seed-start <highest-kept-seed + 1> \
+  --prior-batch-manifest output/batches/<batch-id>/manifest.json \
+  --max-workers 1 \
   --llm claude
 ```
 
-The same seed refills differently because the pool changed. Re-run
-`check-batch-answers` across the combined set (kept + replacements) until
-clean, then upload the main manifest and the replacement manifests (the
-replacement upload overwrites the deterministic keys when the originals were
-already uploaded; for a fresh batch, upload main first, then replacements
-with `--replace-existing`).
+Merge the continuation results into the main manifest (match on
+`(difficulty, seed)` — seeds repeat across buckets), re-run
+`check-batch-answers`, and upload the merged manifest. `--prior-batch-manifest`
+is also the crash-resume path: if a run dies before writing `manifest.json`,
+synthesize one from the per-seed intermediates (`fill.quality_score`,
+`clue_grade_report.overall_score`, `title`, `errors` → `error_message`; check
+`fill.grade_report.passing`) and continue from it.
 
 ## Answer Scans Before Upload
 
@@ -860,9 +944,81 @@ Upload paths for a daily batch:
   the LIVE daily calendar and deletes the candidate, same shape as
   `publish-unlimited`. Do not do this without explicit instruction.
 
-The generator cannot pin the recent-answer window to an arbitrary date; it
-auto-detects the first unscheduled slot server-side. If the operator says "the
-first open slot is <date>", the default detection already lands there.
+The default recent-answer window auto-detects the first unscheduled slot
+server-side and only works when the open days form a contiguous block right
+after it. If the open days are scattered holes (or belong to a different
+game/track than the global first hole), use `--target-*` (next section) so
+each puzzle is filled for, and tagged with, a specific open date.
+
+### Open-day targeting (scattered holes) — `--target-*`
+
+The default daily flags assume the schedule has a contiguous open frontier:
+the server's "first unscheduled slot" is the min over ALL four game/track
+combos, and the recent-answer window brackets 30 days back / 13 days forward
+of it. That model failed in Sept 2026: Jeff had scheduled through July 2027
+leaving scattered one-to-few-day holes, the anchor pointed at a midi HARD
+hole (Oct 18) while midi EASY's holes were Oct 28-30 and 12 days in
+November, so none of the answers around the real holes were excluded. Every
+easy candidate collided on every hole and the scheduler walked them into
+2027. The scheduler itself was verified correct (26/26 placements).
+
+When the request is "fill the open <game> <track> days", use targeting
+instead of `--buckets/--count`:
+
+```bash
+uv run crossword-generator generate-pilot-batch \
+  --output-root output/batches/target-midi-easy-<date> \
+  --batch-id target-midi-easy-<date> \
+  --target-game midicrossword --target-track easy \
+  --target-through 2026-11-30 \
+  --max-workers 1 --llm claude
+```
+
+- Reads the live daily schedule (both games), computes the open days of the
+  target game/track from `--target-from` (default today) through
+  `--target-through`, and generates ONE puzzle per open day. `--target-dates
+  d1,d2` fills explicit days (errors if any is already scheduled);
+  `--target-max N` caps the count. Minis pick 5x5/7x7 by weekday.
+- Each puzzle excludes exactly what the scheduler would reject on ITS day,
+  cross-game and cross-track: 4+ letter answers within +/-6, 3-letter glue
+  within +/-2 (9x9) or +/-6 (mini), hgg-60 within +/-180, plus inflectional
+  variants of the +/-6 answers. The anchored recent-answer window is skipped
+  (its usage counts still feed the soft penalty); intra-batch dedup keys off
+  the real day numbers.
+- Every result and uploaded record carries `target_date`,
+  `target_day_number`, `target_track`, AND `publish_slot=target_date`. The
+  admin UI shows the date as a tag and pre-fills "Requested Daily date"; the
+  server also falls back to `publish_slot`/`target_date` when a schedule
+  request omits the date. Tell the reviewer: schedule each puzzle on its
+  tagged date.
+- `check-batch-answers` uses the target day numbers for the 3-letter window
+  instead of seed rank. Continuations need `--prior-batch-manifest` pointing
+  at a TARGETED manifest (results must carry `target_day_number`).
+- Manifest records the plan under `target` (days, sizes, windows, slot count).
+
+### One command for a full week: `fill-open-days`
+
+```bash
+uv run crossword-generator fill-open-days --through 2026-11-30 --plan-only   # list holes
+uv run crossword-generator fill-open-days --through 2026-11-30               # generate + gate + dry-run
+uv run crossword-generator fill-open-days --through 2026-11-30 --upload      # also upload if every gate passed
+```
+
+Runs `generate-pilot-batch --target-*` once per game/track in order (midi
+hard, midi easy, mini hard, mini easy — `--games`/`--tracks` override),
+chaining each manifest into the next via `--prior-batch-manifest` so the
+tracks stay answer-disjoint on adjacent days (4+ letter answers within +/-6
+of a batch-mate, glue within +/-2 same size). After each run it applies
+`check-batch-answers --allow-short-window`, checks fill grading, and
+dry-runs the upload; `--max-per-run N` caps each track. Batch ids are
+`fill-open-days-<today>-<midi|mini>-<track>` under
+`output/batches/fill-open-days-<today>/`.
+
+**Guard:** a default (non-targeted) daily run now refuses to start when the
+live schedule's next open days for a selected bucket are scattered holes or
+begin after the first-unscheduled-slot window can bracket them, and prints
+the `fill-open-days` / `--target-*` command to use instead. Only pass
+`--no-open-day-guard` for offline experiments.
 
 ## Unlimited-Pool Batches (non-scheduled)
 
@@ -886,11 +1042,25 @@ versus a dated weekly batch:
    `--no-intra-batch-dedup` is passed. The runner fetches active
    `crosswords/unlimited-pool` records for the requested size/difficulty,
    counts existing answers, collects multiple passing fill candidates
-   (`--answer-novelty-candidates`, default 8), and picks the board with the
-   lowest frequency-weighted answer reuse. As each puzzle in the batch
+   (`--answer-novelty-candidates`, default 8), and picks the board whose
+   answers have the fewest total prior uses (sum of counts, then max count,
+   then overlap; the greedy step that keeps the pool's answer distribution
+   flat -- the earlier log-damped score let hot words keep growing). As each puzzle in the batch
    completes, its answers increment the same in-memory weights for later
    puzzles. With parallel workers, in-flight puzzles cannot see each other;
    completed batch-mates are still counted by later workers.
+   The same counts also weight the CSP value ordering
+   (`--unlimited-usage-penalty`, default = `fill.csp.answer_usage_penalty`,
+   1.0): inside each score tier a word is drawn with weight `(1+uses)^-penalty`,
+   so the fill itself steers away from the pool's hot words (ARENA/ALOHA/EERIE
+   were at 12-14 uses in a 392-puzzle easy-5x5 pool before this existed) rather
+   than relying on the best-of-N pick alone. Pass `0` to restore the older
+   seed-weighting + best-of-N-only behaviour. Because the in-memory counter is
+   the live pool plus completed batch-mates, ONE long run already rebalances
+   after every puzzle; chunking a big pool build (e.g. 5 x 100) and promoting
+   each chunk before the next only adds checkpoints, not extra balance --
+   `--prior-batch-manifest` does NOT seed the novelty counter, so a chunk that
+   is uploaded but not yet promoted is invisible to the next chunk.
 4. **Keep `--avoid-existing-clues` on.** Clue-angle variety vs. the live corpus
    is still wanted and is unrelated to scheduling. Requires a prod admin token.
 
@@ -907,6 +1077,7 @@ uv run crossword-generator generate-pilot-batch \
   --no-exclude-scheduled-sixty \
   --avoid-existing-clues \
   --answer-novelty-candidates 8 \
+  --unlimited-usage-penalty 1.0 \
   --max-workers 6 \
   --llm claude
 ```

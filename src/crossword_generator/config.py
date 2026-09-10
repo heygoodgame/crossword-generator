@@ -64,6 +64,18 @@ class CSPFillerConfig(BaseModel):
     timeout: int = 30
     timeout_by_size: dict[int, int] | None = None
     quality_tiers: list[int] = [58, 52, 45]
+    # Soft value-ordering penalty for answers recently used in the daily
+    # schedule: inside each score tier candidates are drawn with weight
+    # (1 + uses) ** -penalty, so a word used 7x is 8x less likely than a
+    # fresh word to be tried first. Only applied when usage counts are
+    # supplied (daily batches); never affects tier eligibility.
+    answer_usage_penalty: float = 1.0
+    # Enforce the grader's board-level hard fails (hard_cross,
+    # proper_noun_cap, proper_noun_first_across) inside the search instead
+    # of only rejecting finished boards. Under exclusion pressure the CSP
+    # otherwise converges on boards the grader can never accept (hard/9,
+    # 2026-09-02: 399/399 complete fills rejected on four seeds).
+    enforce_grid_rules: bool = True
 
 
 class FillConfig(BaseModel):
@@ -73,6 +85,15 @@ class FillConfig(BaseModel):
     max_retries: int = 5
     max_grid_variants: int = 100
     max_long_entries_8_9: int | None = None
+    # Down-weights grid patterns in proportion to how many 3-letter slots
+    # they contain, so a batch leans on grids with fewer 3-letter answers.
+    # 0.0 keeps the raw catalog weights. Each pattern's weight is scaled by
+    # exp(-bias * (threes - fewest_threes_in_catalog)).
+    short_slot_bias: float = 0.0
+    # Penalty on grids with more than 12 four-letter slots. Pair with
+    # short_slot_bias: penalizing 3-letter slots alone steers toward
+    # 4-letter-saturated grids, which fail Hard fill (hard_cross).
+    four_glut_bias: float = 0.0
     csp: CSPFillerConfig = CSPFillerConfig()
 
 
@@ -194,21 +215,22 @@ class ClaudeConfig(BaseModel):
     model: str = "claude-haiku-4-5-20251001"
     theme_model: str = "claude-sonnet-5"
     fill_selection_model: str = ""
-    # Opus 4.8 for the quality-critical generative step (Phase 3). Adaptive
-    # thinking only; the provider omits temperature for Opus 4.7/4.8.
-    clue_generation_model: str = "claude-opus-4-8"
+    # Opus 5 for the quality-critical generative step (Phase 3). Adaptive
+    # thinking only; the provider omits temperature for the Claude 5 family.
+    clue_generation_model: str = "claude-opus-5"
     # Repair rewrites the clues that already failed grading — the highest-
-    # leverage place to spend on quality. Opus 4.8 (the first-pass generator)
+    # leverage place to spend on quality. Opus 5 (the first-pass generator)
     # also writes repairs; the grading-cost cuts (subset re-grade + terser
-    # output) more than pay for the upgrade.
-    clue_repair_model: str = "claude-opus-4-8"
+    # output) more than pay for the upgrade. Opus 5 replaced Opus 4.8 at the
+    # same per-token price (2026-09-09).
+    clue_repair_model: str = "claude-opus-5"
     # Grading is the leak/accuracy gate — Sonnet 5 for a stronger judge (P5).
     clue_grading_model: str = "claude-sonnet-5"
-    # Fact-check is the accuracy gate. Opus 4.8 is stricter about word-precision
+    # Fact-check is the accuracy gate. Opus is stricter about word-precision
     # (e.g. catching "Pope born in 2025" — Leo XIV was elected, not born, in
     # 2025 — which Sonnet rationalized as "safe"). At ~3% of pipeline spend the
     # upgrade adds only ~2% to total cost. See docs/clue-quality.md.
-    clue_fact_check_model: str = "claude-opus-4-8"
+    clue_fact_check_model: str = "claude-opus-5"
     # Naming is a trivial creative task — Haiku is sufficient (P5). Empty falls
     # back to ``model`` (also Haiku); set explicitly for clarity.
     puzzle_naming_model: str = "claude-haiku-4-5-20251001"

@@ -350,6 +350,38 @@ class TestCollectMultipleBoards:
         assert result.fill.selection_metadata.selection_method == "answer_novelty"
         assert result.fill.selection_metadata.answer_novelty_overlap_count == 0
 
+    def test_answer_novelty_minimises_total_prior_uses(self) -> None:
+        """One 20-use answer costs more than four 3-use answers (linear sum),
+        even though the log-damped score would rank it the other way."""
+        dictionary = _make_dict(GOOD_WORDS)
+        grader = FillGrader(dictionary, min_passing_score=30)
+        filler = CyclingMockFiller([HIGH_QUALITY_GRID, ALT_GRID])
+        step = FillWithGradingStep(
+            filler,
+            grader,
+            max_retries=10,
+            collect_boards=2,
+            answer_usage_counts={
+                "STARE": 20,  # HIGH_QUALITY_GRID only
+                "CRANE": 3,  # ALT_GRID only, and the three below
+                "LINES": 3,
+                "CLARS": 3,
+                "RIREP": 3,
+            },
+        )
+
+        envelope = PuzzleEnvelope(puzzle_type=PuzzleType.MINI, grid_size=5)
+        result = step.run(envelope)
+
+        assert result.fill is not None
+        assert result.fill.grid == ALT_GRID
+        meta = result.fill.selection_metadata
+        assert meta is not None
+        assert meta.selection_method == "answer_novelty"
+        assert meta.answer_novelty_total_count == 12
+        assert meta.answer_novelty_max_count == 3
+        assert meta.answer_novelty_overlap_count == 4
+
 
 # ---------------------------------------------------------------------------
 # Integration: LLM selection

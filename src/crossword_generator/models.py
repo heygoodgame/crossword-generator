@@ -119,6 +119,7 @@ class FillSelectionMetadata(BaseModel):
     answer_novelty_score: float | None = None
     answer_novelty_overlap_count: int | None = None
     answer_novelty_max_count: int | None = None
+    answer_novelty_total_count: int | None = None
 
 
 class FillResult(BaseModel):
