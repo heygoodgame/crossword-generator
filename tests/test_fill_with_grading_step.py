@@ -18,6 +18,7 @@ from crossword_generator.steps.fill_step import (
     SlotSignature,
     _generate_subsets,
     _generate_subsets_for_signature,
+    _grid_seed_for_variant,
     _prescan_grid_signatures,
 )
 
@@ -486,7 +487,10 @@ class TestDictionaryAwareGridCompatibility:
             max_grid_variants=2,
         )
 
-        specs = [_incompatible_9x9_spec(), _compatible_9x9_spec()]
+        specs = {
+            _grid_seed_for_variant(1, 0): _incompatible_9x9_spec(),
+            _grid_seed_for_variant(1, 1): _compatible_9x9_spec(),
+        }
 
         def fake_get_grid_spec(
             *_args: object,
@@ -494,7 +498,7 @@ class TestDictionaryAwareGridCompatibility:
             **_kwargs: object,
         ) -> GridSpec:
             assert seed is not None
-            return specs[seed - 1]
+            return specs[seed]
 
         monkeypatch.setattr(
             "crossword_generator.steps.fill_step.get_grid_spec",

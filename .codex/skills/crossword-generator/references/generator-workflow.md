@@ -732,6 +732,53 @@ If `uv` hits a sandbox cache permission error under `/Users/neil/.cache/uv`,
 rerun the same `uv run ...` command with elevated permissions rather than
 changing the command.
 
+## Exact-Duplicate Grid Guard (taken boards)
+
+Answer-novelty weighting only makes reuse *less likely*. On 2026-09-25 the
+unlimited pool held 17 groups / 38 Mini puzzles with byte-identical solution
+grids (e.g. `.CART|SEWER|PLANE|ELITE|DOTS.` from Starter seeds 331641511 and
+331641512; a 5-way Easy 7x7 duplicate across `unlimited-easy7-20260918-c1..c3`).
+Three things lined up: every worker and every chunk picked its best-of-N board
+against the same usage snapshot, so the pick converged on a few "least-used"
+attractor boards; adjacent seeds walked the same black-cell pattern sequence
+(`seed + variant`); and nothing hard-rejected an identical grid — the parallel
+duplicate sweep saw the symptom as duplicate *clues* and reworded them.
+
+Every `generate-pilot-batch` run (daily and unlimited) now keeps one
+thread-safe `TakenBoards` registry (`taken_boards.py`) keyed on the
+normalized full solution (rows joined by `|`, blocks as `.`; difficulty is
+NOT part of the key, so an Easy and a Hard puzzle can't share a board):
+
+- Seeded at start with `--exclude-existing-boards` (default ON): every live
+  official record for the batch's games (daily schedule + unlimited pool, all
+  difficulties and statuses — reuses the `--avoid-existing-clues` fetch),
+  uploaded `generated-puzzles` drafts, and every
+  `<batch>/<difficulty>/<N>x<N>/seed-*.ipuz` exported under the parent of
+  `--output-root` (uploaded or not; the paths this run regenerates are
+  skipped). Always seeded, even with the flag off: `--prior-batch-manifest`
+  puzzles.
+- The fill step skips taken boards while collecting candidates and
+  RESERVES its pick atomically before the clue stage. A concurrent worker
+  that wanted the same board falls to its next-best candidate, or resumes
+  filling if it lost them all. If only taken boards come out, the fill
+  fails ("N board(s) rejected as already taken") rather than duplicating.
+  `fill_selection.boards_taken_skipped` in the manifest counts the skips.
+- Grid-variant seeds hash `(seed, variant)` (variant 0 is still `seed`), so
+  neighbouring seeds no longer try the same pattern sequence.
+- Backstops: `duplicate_grid_sweep` runs after every batch (before the clue
+  sweep) and marks any later batch-mate with an identical grid
+  `success=false`, `failure_category=duplicate_grid`, `DUPLICATE_GRID:` in
+  `error_message`; `save-generated-puzzles` uploads an identical grid from
+  one manifest at most once (for hand-merged manifests), regardless of
+  `--flag-issues` / `--allow-leaks`.
+
+The manifest records `taken_boards.seeded` per source (`official`,
+`generated_drafts`, `local_batches`, `prior_manifests`) and `taken_boards.total`
+(seeded + this run's reservations). Not covered: two separate processes
+running at the same time (each only scans the other's exports at start) — run
+chunks back-to-back or as one run with more workers. hey-you's
+`publish-unlimited` does not check grids yet.
+
 ## Intra-Batch Duplicate-Answer Gate (before upload)
 
 A weekly batch is scheduled across consecutive days, so any answer shared by
@@ -920,6 +967,7 @@ unlimited batch's fill pool.
 | `--exclude-recent-answers` | ON (default) — avoid answers already scheduled around the first open slot | `--no-exclude-recent-answers` — no schedule to collide with |
 | `--exclude-scheduled-sixty` | ON (default) — for hard 7x7/9x9, respect the 180-day HGG-60 window | `--no-exclude-scheduled-sixty` |
 | `--avoid-existing-clues` | ON (default) | ON (default) — same either way |
+| `--exclude-existing-boards` | ON (default) | ON (default) — never ship an exact-duplicate grid |
 | `check-batch-answers` gate | RUN IT — must be all-unique before upload; regenerate dups | SKIP — intra-batch overlap is expected by design |
 | `--max-workers` | 1 (guarantees intra-batch uniqueness by construction) | 6+ (no shared-answer constraint, so parallel is safe) |
 | Answer scans (nsfw / removed / terminal-S) | run both | run both |
@@ -1091,7 +1139,10 @@ versus a dated weekly batch:
    after every puzzle; chunking a big pool build (e.g. 5 x 100) and promoting
    each chunk before the next only adds checkpoints, not extra balance --
    `--prior-batch-manifest` does NOT seed the novelty counter, so a chunk that
-   is uploaded but not yet promoted is invisible to the next chunk.
+   is uploaded but not yet promoted is invisible to the next chunk's answer
+   weights. It is NOT invisible to the duplicate-grid guard (next section):
+   earlier chunks' exports under the same `output/batches/` parent and
+   uploaded drafts are both taken boards.
 4. **Keep `--avoid-existing-clues` on.** Clue-angle variety vs. the live corpus
    is still wanted and is unrelated to scheduling. Requires a prod admin token.
 

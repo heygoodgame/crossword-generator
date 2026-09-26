@@ -14,6 +14,8 @@ from urllib.error import HTTPError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
+from crossword_generator.taken_boards import ipuz_board_key
+
 logger = logging.getLogger(__name__)
 
 API_BASE = os.environ.get("HEYGG_API_BASE_URL", "https://play.hey.gg/api").rstrip("/")
@@ -247,6 +249,10 @@ def records_from_manifest(
         manifest.get("batch") or manifest_path.parent.name
     )
     records: list[dict[str, Any]] = []
+    # Boards already accepted from this manifest. The batch runner's grid
+    # sweep fails in-run duplicates, but hand-merged manifests (chunk merges,
+    # crash recovery) never went through it.
+    uploaded_boards: dict[str, str] = {}
 
     for result in manifest.get("results", []):
         if not result.get("success"):
@@ -259,6 +265,16 @@ def records_from_manifest(
             raise DataStoreError(f"Generated puzzle file not found: {output_path}")
 
         puzzle = json.loads(output_path.read_text())
+        board = ipuz_board_key(puzzle)
+        if board is not None and board in uploaded_boards:
+            # Never uploadable, whatever the clue-issue flags say: an editor
+            # cannot fix an exact duplicate grid.
+            logger.warning(
+                "Skipping %s: identical solution grid to %s in this manifest.",
+                output_path,
+                uploaded_boards[board],
+            )
+            continue
         clue_issues: list[dict[str, Any]] = []
         if not allow_leaks:
             blocking = _blocking_errors(result, puzzle)
@@ -309,6 +325,8 @@ def records_from_manifest(
                 target_game_key=_optional_str(result.get("target_game_key")),
             )
         )
+        if board is not None:
+            uploaded_boards[board] = str(output_path)
 
     return records
 

@@ -33,6 +33,7 @@ from crossword_generator.steps.fill_step import FillWithGradingStep
 from crossword_generator.steps.hint_step import HintGenerationStep
 from crossword_generator.steps.puzzle_naming_step import PuzzleNamingStep
 from crossword_generator.steps.theme_step import ThemeGenerationStep
+from crossword_generator.taken_boards import TakenBoards
 
 logger = logging.getLogger(__name__)
 
@@ -158,6 +159,7 @@ def create_pipeline(
     clue_history: ClueHistoryIndex | None = None,
     excluded_fill_words: set[str] | None = None,
     answer_usage_counts: dict[str, int] | None = None,
+    taken_boards: TakenBoards | None = None,
 ) -> tuple[Pipeline, PuzzleEnvelope]:
     """Wire up a Pipeline and initial PuzzleEnvelope from config.
 
@@ -175,6 +177,10 @@ def create_pipeline(
             recent daily schedule). Soft signal only: the CSP penalizes
             overused answers in value ordering, seed entries are sampled
             1/(1+count), and the best-of-N board pick minimizes total usage.
+        taken_boards: Solution grids already in use (live records, earlier
+            batches, batch-mates). The fill step never returns one of these
+            and reserves its own pick here before the clue stage, so batch
+            items running in parallel cannot ship the same board.
 
     Returns:
         Tuple of (Pipeline, initial PuzzleEnvelope).
@@ -384,6 +390,7 @@ def create_pipeline(
             if config.grading.fill.seed_exact_score_entries
             else None
         ),
+        taken_boards=taken_boards,
     )
 
     clue_grader = ClueGrader(

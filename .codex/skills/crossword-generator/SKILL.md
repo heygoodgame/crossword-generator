@@ -96,6 +96,15 @@ uploads.
     publish to unlimited.
   - Either way: keep `--avoid-existing-clues` ON and run the answer scans
     (nsfw / prevalent-removed / terminal-S) before upload.
+  - Either way: exact-duplicate GRIDS are refused by construction
+    (`--exclude-existing-boards`, default ON — never turn it off for a real
+    batch). Each puzzle reserves its solution grid before clues, against
+    live official records (any difficulty), uploaded drafts, every export
+    under the `--output-root` parent, `--prior-batch-manifest` puzzles and
+    batch-mates. So keep chunks of one pool build side by side under
+    `output/batches/` (Sept 2026: back-to-back easy7 chunks that could not
+    see each other shipped a 5-way duplicate grid). A `DUPLICATE_GRID:`
+    result is a failed puzzle, not a clue issue: regenerate it.
 - When asked for a generated batch across Mini Crossword and Midi Crossword
   without explicit size counts, default to a rough 5:2:7 ratio for 5x5, 7x7,
   and 9x9 puzzles. Midi Crossword always uses 9x9; Mini Crossword dailies are
@@ -137,7 +146,10 @@ uv run crossword-generator refresh-dictionaries
 
 Seeds default to a RANDOM start per run (echoed in the output and recorded
 in the manifest) so repeated batches explore different grid patterns and
-fills. Only pass `--seed-start` to reproduce a specific prior run.
+fills. Only pass `--seed-start` to reproduce a specific prior run's
+black-cell pattern sequence (the CSP fill itself is not seeded, so fills
+never replay exactly; runs from before 2026-09-25 used `seed + variant`
+pattern seeds and won't replay on current code).
 
 Generate a clean cross-site Easy batch using the default 5x5:7x7:9x9 ratio:
 

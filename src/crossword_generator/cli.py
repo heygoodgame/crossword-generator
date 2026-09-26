@@ -13,7 +13,7 @@ import sys
 import tempfile
 import threading
 import time
-from collections.abc import Iterable
+from collections.abc import Collection, Iterable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from importlib.metadata import PackageNotFoundError, version
@@ -46,6 +46,11 @@ from crossword_generator.schedule_targeting import (
     slots_from_official_records,
 )
 from crossword_generator.steps.clue_grading_step import ClueWithGradingStep
+from crossword_generator.taken_boards import (
+    TakenBoards,
+    ipuz_board_key,
+    record_board_key,
+)
 
 DEFAULT_EASY_EXCLUDE_SOURCES = (
     "dictionaries/XwiJeffChenList-NotFamilyFriendly.txt",
@@ -521,6 +526,21 @@ def generate(
     ),
 )
 @click.option(
+    "--exclude-existing-boards/--no-exclude-existing-boards",
+    default=True,
+    help=(
+        "Never produce a solution grid identical to one that already exists: "
+        "live official records (daily schedule and unlimited pool, every "
+        "difficulty), uploaded generated-puzzle drafts, and puzzles exported "
+        "by other batch runs under the parent of --output-root (so "
+        "back-to-back chunks of a pool build cannot repeat each other even "
+        "before upload). Needs the admin token, like --avoid-existing-clues. "
+        "Batch-mates and --prior-batch-manifest puzzles are always excluded; "
+        "each puzzle reserves its board before the clue stage, so parallel "
+        "workers cannot ship the same grid."
+    ),
+)
+@click.option(
     "--intra-batch-short-window",
     type=int,
     default=SHORT_ANSWER_WINDOW_DAYS,
@@ -778,6 +798,7 @@ def generate_pilot_batch(
     target_dates: str | None = None,
     target_max: int | None = None,
     open_day_guard: bool = True,
+    exclude_existing_boards: bool = True,
 ) -> None:
     """Generate the Phase 2B pilot batch and write a JSON manifest."""
     _setup_logging(verbose)
@@ -894,12 +915,17 @@ def generate_pilot_batch(
             sys.exit(1)
 
     clue_history = ClueHistoryIndex()
+    # Exact solution grids already in use; the fill step never returns one
+    # and reserves its own pick here. Counts are boards newly added per source.
+    taken_boards = TakenBoards()
+    taken_seeded: dict[str, int] = {}
     if avoid_existing_clues:
         try:
             loaded_records = _load_existing_clue_history(
                 clue_history,
                 selected_buckets,
                 api_base=api_base,
+                taken_boards=taken_boards if exclude_existing_boards else None,
             )
         except KeyError as exc:
             missing = exc.args[0]
@@ -923,6 +949,34 @@ def generate_pilot_batch(
             f"answers={clue_history.answer_count}, "
             f"clues={clue_history.clue_count}"
         )
+        if exclude_existing_boards:
+            taken_seeded["official"] = len(taken_boards)
+
+    if exclude_existing_boards:
+        try:
+            for source, added in _load_existing_boards(
+                taken_boards,
+                selected_buckets,
+                api_base=api_base,
+                include_official=not avoid_existing_clues,
+            ).items():
+                taken_seeded[source] = taken_seeded.get(source, 0) + added
+        except KeyError as exc:
+            click.echo(
+                f"Missing required environment variable: {exc.args[0]}. "
+                "Existing solution grids are excluded by default so no puzzle "
+                "duplicates a live one; pass --no-exclude-existing-boards to "
+                "skip.",
+                err=True,
+            )
+            sys.exit(1)
+        except Exception as exc:
+            click.echo(
+                f"Failed to load existing solution grids: {exc}. "
+                "Pass --no-exclude-existing-boards to skip.",
+                err=True,
+            )
+            sys.exit(1)
 
     scheduled_sixty: list[str] = []
     needs_sixty_exclusion = exclude_scheduled_sixty and any(
@@ -1250,11 +1304,35 @@ def generate_pilot_batch(
                 size=bucket[1],
                 day=day_by_item[(bucket[0], bucket[1], prior_seed)],
             )
+            if taken_boards.add(
+                ipuz_board_key(prior_puzzle),
+                holder=f"prior batch {bucket[0]} {bucket[1]}x{bucket[1]} "
+                f"seed {prior_seed}",
+            ):
+                taken_seeded["prior_manifests"] = (
+                    taken_seeded.get("prior_manifests", 0) + 1
+                )
             prior_puzzles_seeded += 1
     if prior_batch_manifests:
         click.echo(
             f"Seeded intra-batch used answers from {prior_puzzles_seeded} "
             f"prior puzzle(s) in {len(prior_batch_manifests)} manifest(s)."
+        )
+    if exclude_existing_boards:
+        # Exports this run is about to regenerate don't count against it.
+        rewritten = {
+            root / d / f"{s}x{s}" / f"seed-{seed:03d}.ipuz"
+            for d, s, _, _, seed in work_items
+        }
+        taken_seeded["local_batches"] = _load_local_batch_boards(
+            taken_boards, root.parent, skip=rewritten
+        )
+    if taken_seeded:
+        details = ", ".join(
+            f"{source} {added}" for source, added in sorted(taken_seeded.items())
+        )
+        click.echo(
+            f"Excluding {len(taken_boards)} existing solution grid(s) ({details})."
         )
     novelty_active = unlimited_answer_novelty and not intra_batch_dedup
     # Daily runs: global per-answer schedule usage over the count window.
@@ -1386,6 +1464,7 @@ def generate_pilot_batch(
             dictionary_overrides=dictionary_overrides,
             keep_sweep_context=max_workers > 1,
             excluded_fill_words=item_excluded,
+            taken_boards=taken_boards,
             answer_usage_counts=item_usage_counts,
             answer_novelty_candidates=(
                 answer_novelty_candidates
@@ -1476,6 +1555,10 @@ def generate_pilot_batch(
         key=lambda r: (str(r["difficulty"]), int(r["size"]), int(r["seed"]))
     )
 
+    # Backstop for the taken-boards reservation: a batch-mate with an identical
+    # grid is a failed puzzle, not a clue collision to reword.
+    grid_sweep_stats = _run_duplicate_grid_sweep(results)
+
     # Parallel workers can't see each other's in-flight clues, so two
     # concurrent puzzles can produce the same clue for a shared answer
     # without either noticing. Sweep completed puzzles against each other
@@ -1556,6 +1639,12 @@ def generate_pilot_batch(
             "paths": list(prior_batch_manifests),
             "puzzles_seeded": prior_puzzles_seeded,
         },
+        "taken_boards": {
+            "exclude_existing_boards": exclude_existing_boards,
+            "seeded": taken_seeded,
+            # Seeded boards plus this batch's reservations.
+            "total": len(taken_boards),
+        },
         "unlimited_answer_novelty": {
             "enabled": unlimited_answer_novelty,
             "active": novelty_active,
@@ -1571,6 +1660,7 @@ def generate_pilot_batch(
         "target": target_plan.manifest_entry() if target_plan is not None else None,
         "llm_logging_enabled": not no_llm_log,
         "max_workers": max_workers,
+        "duplicate_grid_sweep": grid_sweep_stats,
         "duplicate_sweep": {
             "enabled": max_workers > 1,
             **sweep_stats,
@@ -4210,6 +4300,7 @@ def _run_batch_item(
     dictionary_overrides: dict[str, str] | None = None,
     keep_sweep_context: bool = False,
     excluded_fill_words: set[str] | None = None,
+    taken_boards: TakenBoards | None = None,
     answer_usage_counts: dict[str, int] | None = None,
     answer_novelty_candidates: int = 1,
     answer_usage_penalty: float | None = None,
@@ -4299,6 +4390,7 @@ def _run_batch_item(
             clue_history=clue_history,
             excluded_fill_words=excluded_fill_words,
             answer_usage_counts=answer_usage_counts,
+            taken_boards=taken_boards,
         )
         completed = pipeline.run(envelope)
         if output_path.exists() and clue_history is not None:
@@ -4380,6 +4472,7 @@ def _load_existing_clue_history(
     selected_buckets: list[tuple[str, int, str, Path]],
     *,
     api_base: str | None = None,
+    taken_boards: TakenBoards | None = None,
 ) -> int:
     from crossword_generator.data_store import list_official_puzzle_records
 
@@ -4400,11 +4493,143 @@ def _load_existing_clue_history(
         loaded_records += len(records)
         for record in records:
             clue_history.add_record(record)
+            # The same records are the live board corpus; seeding here saves
+            # a second fetch of every official puzzle.
+            if taken_boards is not None:
+                taken_boards.add(
+                    record_board_key(record), holder=_record_holder(record)
+                )
     return loaded_records
+
+
+def _record_holder(record: dict[str, object]) -> str:
+    return f"{record.get('collection')} {record.get('key') or record.get('id')}"
+
+
+def _load_existing_boards(
+    taken_boards: TakenBoards,
+    selected_buckets: list[tuple[str, int, str, Path]],
+    *,
+    api_base: str | None = None,
+    include_official: bool = True,
+) -> dict[str, int]:
+    """Seed ``taken_boards`` with the live boards of the batch's games.
+
+    Uploaded generated-puzzle drafts count: a chunk that is uploaded but not
+    yet promoted is otherwise invisible to the next chunk. Official records
+    (daily schedule + unlimited pool, every difficulty and status) normally
+    come from the clue-history load; ``include_official`` fetches them here
+    when that load is off. Returns the boards newly added per source.
+    """
+    from crossword_generator.data_store import (
+        list_generated_puzzle_records,
+        list_official_puzzle_records,
+    )
+
+    added = {"generated_drafts": 0}
+    if include_official:
+        added["official"] = 0
+    game_keys = sorted({_game_key_for_size(size) for _, size, _, _ in selected_buckets})
+    for game_key in game_keys:
+        if include_official:
+            for record in list_official_puzzle_records(
+                game_key=game_key, api_base=api_base
+            ):
+                if taken_boards.add(
+                    record_board_key(record), holder=_record_holder(record)
+                ):
+                    added["official"] += 1
+        for record in list_generated_puzzle_records(
+            game_key=game_key, api_base=api_base
+        ):
+            if taken_boards.add(
+                record_board_key(record),
+                holder=f"generated-puzzles {record.get('key')}",
+            ):
+                added["generated_drafts"] += 1
+    return added
+
+
+def _load_local_batch_boards(
+    taken_boards: TakenBoards,
+    batches_dir: Path,
+    *,
+    skip: Collection[Path] = (),
+) -> int:
+    """Seed ``taken_boards`` with puzzles other batch runs exported locally.
+
+    Chunked pool builds ran back-to-back without uploading or chaining in
+    between (unlimited-easy7-20260918-c1..c3 each loaded the same 189 pool
+    records), so each chunk was blind to its predecessors and repeated their
+    boards. Every ``<batch>/<difficulty>/<N>x<N>/seed-*.ipuz`` export under
+    ``batches_dir`` counts, uploaded or not, except the ``skip`` paths this
+    run is about to regenerate. Returns the boards newly added.
+    """
+    added = 0
+    for path in sorted(batches_dir.glob("*/*/*x*/seed-*.ipuz")):
+        if path in skip:
+            continue
+        try:
+            puzzle = json.loads(path.read_text())
+        except (OSError, json.JSONDecodeError):
+            continue
+        if taken_boards.add(
+            ipuz_board_key(puzzle),
+            holder=f"local batch export {path.relative_to(batches_dir)}",
+        ):
+            added += 1
+    return added
 
 
 def _game_key_for_size(size: int) -> str:
     return "minicrossword" if size in (5, 7) else "midicrossword"
+
+
+DUPLICATE_GRID_PREFIX = "DUPLICATE_GRID:"
+
+
+def _run_duplicate_grid_sweep(results: list[dict[str, object]]) -> dict[str, int]:
+    """Fail any batch puzzle whose solution grid repeats an earlier one's.
+
+    The fill step reserves every board in the run's ``TakenBoards``, so this
+    should never fire; it is the backstop that keeps an identical grid from
+    reaching the clue sweep, which used to "repair" it as duplicate clues
+    (Starter c2's sweep reported 3 repairs that were really 3 duplicate
+    grids). Runs in manifest order, so the lowest seed keeps the board.
+    """
+    first_by_board: dict[str, str] = {}
+    checked = 0
+    failed = 0
+    for result in results:
+        if not result.get("success"):
+            continue
+        try:
+            puzzle = json.loads(Path(str(result["output_path"])).read_text())
+        except (OSError, json.JSONDecodeError):
+            continue
+        key = ipuz_board_key(puzzle)
+        if key is None:
+            continue
+        checked += 1
+        label = (
+            f"{result['difficulty']} {result['size']}x{result['size']} "
+            f"seed {result['seed']}"
+        )
+        first = first_by_board.setdefault(key, label)
+        if first == label:
+            continue
+        click.echo(f"Duplicate grid: {label} repeats {first}; marking it failed.")
+        result.pop("_sweep", None)
+        result["success"] = False
+        result["error_message"] = "; ".join(
+            [
+                f"{DUPLICATE_GRID_PREFIX} identical solution grid to {first}",
+                *filter(None, [result.get("error_message")]),
+            ]
+        )
+        result["failure_category"] = _failure_category(result)
+        failed += 1
+    return {"checked": checked, "failed": failed}
 
 
 def _run_duplicate_sweep(
@@ -4602,6 +4827,8 @@ def _failure_category(result: dict[str, object]) -> str | None:
     if result.get("success"):
         return None
     error = str(result.get("error_message") or "").lower()
+    if DUPLICATE_GRID_PREFIX.lower() in error:
+        return "duplicate_grid"
     if int(result.get("skipped_incompatible_variants") or 0) > 0 and int(
         result.get("fill_attempts") or 0
     ) == 0:
