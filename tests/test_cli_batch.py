@@ -17,6 +17,7 @@ from crossword_generator.cli import (
     _failure_category,
     _parse_batch_count_overrides,
     _referenced_dictionary_filenames,
+    _run_duplicate_grid_sweep,
     _run_duplicate_sweep,
     _summarize_batch_results,
     _ThreadFilter,
@@ -319,6 +320,7 @@ def test_generate_pilot_batch_refreshes_dictionaries_by_default(
             "--buckets", "easy/5",
             "--count", "1",
             "--no-avoid-existing-clues",
+            "--no-exclude-existing-boards",
             "--no-exclude-recent-answers",
             "--no-exclude-scheduled-sixty",
             "--no-llm-log",
@@ -375,6 +377,7 @@ def test_generate_pilot_batch_allows_dictionary_refresh_opt_out(
             "--count", "1",
             "--no-refresh-dictionaries",
             "--no-avoid-existing-clues",
+            "--no-exclude-existing-boards",
             "--no-exclude-recent-answers",
             "--no-exclude-scheduled-sixty",
             "--no-llm-log",
@@ -701,6 +704,7 @@ def test_generate_pilot_batch_daily_exclusions_merge_windows_and_pass_counts(
             "--count", "1",
             "--seed-start", "1",
             "--no-avoid-existing-clues",
+            "--no-exclude-existing-boards",
             "--no-refresh-dictionaries",
             "--no-exclude-scheduled-sixty",
             "--no-llm-log",
@@ -814,6 +818,7 @@ def test_generate_pilot_batch_short_glue_soft_penalty_and_cap(
             "--count", "3",
             "--seed-start", "1",
             "--no-avoid-existing-clues",
+            "--no-exclude-existing-boards",
             "--no-refresh-dictionaries",
             "--no-exclude-scheduled-sixty",
             "--no-llm-log",
@@ -919,6 +924,7 @@ def test_generate_pilot_batch_short_window_follows_seed_order(
             "--count", "4",
             "--seed-start", "1",
             "--no-avoid-existing-clues",
+            "--no-exclude-existing-boards",
             "--no-refresh-dictionaries",
             "--no-exclude-scheduled-sixty",
             "--no-llm-log",
@@ -1035,6 +1041,7 @@ def test_generate_pilot_batch_prior_manifest_seeds_used_answers(
             "--count", "1",
             "--seed-start", "3",
             "--no-avoid-existing-clues",
+            "--no-exclude-existing-boards",
             "--no-refresh-dictionaries",
             "--no-exclude-scheduled-sixty",
             "--no-llm-log",
@@ -1138,6 +1145,7 @@ def test_generate_pilot_batch_prior_manifest_refills_middle_day(
             "--count", "1",
             "--seed-start", "5",
             "--no-avoid-existing-clues",
+            "--no-exclude-existing-boards",
             "--no-refresh-dictionaries",
             "--no-exclude-scheduled-sixty",
             "--no-llm-log",
@@ -1165,6 +1173,7 @@ def test_generate_pilot_batch_prior_manifest_refills_middle_day(
             "--count", "1",
             "--seed-start", "7",
             "--no-avoid-existing-clues",
+            "--no-exclude-existing-boards",
             "--no-refresh-dictionaries",
             "--no-exclude-scheduled-sixty",
             "--no-llm-log",
@@ -1228,6 +1237,7 @@ def test_generate_pilot_batch_degrades_without_server_counts(
             "--count", "1",
             "--seed-start", "1",
             "--no-avoid-existing-clues",
+            "--no-exclude-existing-boards",
             "--no-refresh-dictionaries",
             "--no-exclude-scheduled-sixty",
             "--no-llm-log",
@@ -1341,6 +1351,7 @@ def test_generate_pilot_batch_targets_open_days_with_per_day_exclusions(
             "--target-through", through,
             "--seed-start", "1",
             "--no-avoid-existing-clues",
+            "--no-exclude-existing-boards",
             "--no-refresh-dictionaries",
             "--no-exclude-scheduled-sixty",
             "--no-llm-log",
@@ -1429,6 +1440,7 @@ def test_generate_pilot_batch_target_dates_rejects_occupied_and_picks_mini_size(
         "--target-track", "easy",
         "--seed-start", "7",
         "--no-avoid-existing-clues",
+        "--no-exclude-existing-boards",
         "--no-refresh-dictionaries",
         "--no-exclude-scheduled-sixty",
         "--no-exclude-recent-answers",
@@ -1526,6 +1538,7 @@ def test_open_day_guard_refuses_scattered_holes(tmp_path, monkeypatch) -> None:
         "--seed-start",
         "1",
         "--no-avoid-existing-clues",
+        "--no-exclude-existing-boards",
         "--no-refresh-dictionaries",
         "--no-exclude-scheduled-sixty",
         "--no-llm-log",
@@ -1622,6 +1635,7 @@ def test_fill_open_days_chains_tracks_and_gates(tmp_path, monkeypatch) -> None:
 
     monkeypatch.setattr(cli_module, "_run_batch_item", fake_run)
     monkeypatch.setattr(cli_module, "_load_existing_clue_history", lambda *a, **k: 0)
+    monkeypatch.setattr(cli_module, "_load_existing_boards", lambda *a, **k: {})
     monkeypatch.setattr(
         cli_module, "_refresh_dictionaries_for_generation", lambda **k: None
     )
@@ -1741,6 +1755,7 @@ def test_generate_pilot_batch_unlimited_passes_usage_penalty(
         "--count", "1",
         "--seed-start", "1",
         "--no-avoid-existing-clues",
+        "--no-exclude-existing-boards",
         "--no-refresh-dictionaries",
         "--no-intra-batch-dedup",
         "--no-exclude-recent-answers",
@@ -1771,3 +1786,248 @@ def test_generate_pilot_batch_unlimited_passes_usage_penalty(
     result = CliRunner().invoke(main, [*base_args, "--unlimited-usage-penalty", "-1"])
     assert result.exit_code != 0
     assert "--unlimited-usage-penalty must be >= 0" in result.output
+
+
+# ---------------------------------------------------------------------------
+# Exact-duplicate grids (taken boards)
+# ---------------------------------------------------------------------------
+
+
+def _mini_ipuz(first_row: str) -> dict[str, object]:
+    """A 5x5 IPUZ payload whose board is identified by its first row."""
+    rows = [list(first_row), *(list("#ABC#") for _ in range(4))]
+    return {"solution": rows, "clues": {"Across": [], "Down": []}}
+
+
+def _mini_key(first_row: str) -> str:
+    return "|".join([first_row, *["." + "ABC" + "."] * 4])
+
+
+def test_generate_pilot_batch_seeds_taken_boards_from_every_source(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    """Live official records, uploaded drafts, sibling batch exports and
+    --prior-batch-manifest puzzles all land in the taken-boards registry the
+    fill step reserves against; the run's own stale exports do not."""
+    import crossword_generator.data_store as data_store_module
+
+    batches = tmp_path / "batches"
+    # A back-to-back chunk that was never uploaded or chained.
+    older_chunk = batches / "unlimited-easy5-c1" / "easy" / "5x5" / "seed-007.ipuz"
+    older_chunk.parent.mkdir(parents=True)
+    older_chunk.write_text(json.dumps(_mini_ipuz("LOCAL")))
+    # A stale export this run regenerates (same seed) must not block itself.
+    root = batches / "unlimited-easy5-c2"
+    stale = root / "easy" / "5x5" / "seed-003.ipuz"
+    stale.parent.mkdir(parents=True)
+    stale.write_text(json.dumps(_mini_ipuz("STALE")))
+
+    prior_dir = tmp_path / "prior"
+    prior_dir.mkdir()
+    (prior_dir / "seed-1.ipuz").write_text(json.dumps(_mini_ipuz("PRIOR")))
+    prior_manifest = prior_dir / "manifest.json"
+    prior_manifest.write_text(
+        json.dumps(
+            {
+                "results": [
+                    {
+                        "difficulty": "easy",
+                        "size": 5,
+                        "seed": 1,
+                        "success": True,
+                        "output_path": "seed-1.ipuz",
+                    }
+                ]
+            }
+        )
+    )
+
+    def fake_official(*, game_key, api_base=None, **_kwargs):
+        assert game_key == "minicrossword"
+        return [
+            {
+                "collection": "unlimited-pool",
+                "key": "unlimited:5x5:12",
+                # A HARD pool puzzle still blocks an EASY run's board.
+                "metadata": {"difficulty": "hard"},
+                "data": {"puzzle": _mini_ipuz("POOLS")},
+            }
+        ]
+
+    def fake_generated(*, game_key, api_base=None, **_kwargs):
+        return [
+            {
+                "key": "generated:minicrossword:c0:easy:5x5:seed-4",
+                "data": _mini_ipuz("DRAFT"),
+            }
+        ]
+
+    run_kwargs: list[dict[str, object]] = []
+
+    def fake_run_batch_item(**kwargs):
+        run_kwargs.append(kwargs)
+        output_path = (
+            kwargs["output_root"] / "easy" / "5x5" / f"seed-{kwargs['seed']:03d}.ipuz"
+        )
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(json.dumps(_mini_ipuz("FRESH")))
+        return {
+            "difficulty": "easy",
+            "size": 5,
+            "seed": kwargs["seed"],
+            "success": True,
+            "runtime_seconds": 0.0,
+            "output_path": str(output_path),
+            "clue_score": 80.0,
+        }
+
+    monkeypatch.setattr(
+        data_store_module, "list_official_puzzle_records", fake_official
+    )
+    monkeypatch.setattr(
+        data_store_module, "list_generated_puzzle_records", fake_generated
+    )
+    monkeypatch.setattr(cli_module, "_run_batch_item", fake_run_batch_item)
+
+    result = CliRunner().invoke(
+        main,
+        [
+            "generate-pilot-batch",
+            "--output-root", str(root),
+            "--batch-id", "unlimited-easy5-c2",
+            "--buckets", "easy/5",
+            "--count", "1",
+            "--seed-start", "3",
+            "--no-refresh-dictionaries",
+            "--no-exclude-recent-answers",
+            "--no-exclude-scheduled-sixty",
+            "--no-llm-log",
+            "--prior-batch-manifest", str(prior_manifest),
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    (kwargs,) = run_kwargs
+    taken = kwargs["taken_boards"]
+    assert taken.holder(_mini_key("POOLS")) == "unlimited-pool unlimited:5x5:12"
+    assert taken.holder(_mini_key("DRAFT")) == (
+        "generated-puzzles generated:minicrossword:c0:easy:5x5:seed-4"
+    )
+    assert taken.holder(_mini_key("LOCAL")) == (
+        "local batch export unlimited-easy5-c1/easy/5x5/seed-007.ipuz"
+    )
+    assert taken.holder(_mini_key("PRIOR")) == "prior batch easy 5x5 seed 1"
+    assert taken.holder(_mini_key("STALE")) is None
+    assert "Excluding 4 existing solution grid(s)" in result.output
+
+    manifest = json.loads((root / "manifest.json").read_text())
+    assert manifest["taken_boards"]["exclude_existing_boards"] is True
+    assert manifest["taken_boards"]["seeded"] == {
+        "official": 1,
+        "generated_drafts": 1,
+        "local_batches": 1,
+        "prior_manifests": 1,
+    }
+
+
+def test_generate_pilot_batch_no_exclude_existing_boards_keeps_batch_guard(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    """Opting out of live/local boards skips the API and disk scans, but
+    batch-mates still share one registry."""
+    run_kwargs: list[dict[str, object]] = []
+
+    def fake_run_batch_item(**kwargs):
+        run_kwargs.append(kwargs)
+        output_path = (
+            kwargs["output_root"] / "easy" / "5x5" / f"seed-{kwargs['seed']:03d}.ipuz"
+        )
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(json.dumps(_mini_ipuz(f"SEED{kwargs['seed']}")))
+        return {
+            "difficulty": "easy",
+            "size": 5,
+            "seed": kwargs["seed"],
+            "success": True,
+            "runtime_seconds": 0.0,
+            "output_path": str(output_path),
+            "clue_score": 80.0,
+        }
+
+    def no_api(**_kwargs):
+        raise AssertionError("no API call expected")
+
+    import crossword_generator.data_store as data_store_module
+
+    monkeypatch.setattr(data_store_module, "list_generated_puzzle_records", no_api)
+    monkeypatch.setattr(cli_module, "_run_batch_item", fake_run_batch_item)
+
+    result = CliRunner().invoke(
+        main,
+        [
+            "generate-pilot-batch",
+            "--output-root", str(tmp_path / "batch"),
+            "--batch-id", "test-batch",
+            "--buckets", "easy/5",
+            "--count", "2",
+            "--seed-start", "1",
+            "--max-workers", "2",
+            "--no-avoid-existing-clues",
+            "--no-exclude-existing-boards",
+            "--no-refresh-dictionaries",
+            "--no-exclude-recent-answers",
+            "--no-exclude-scheduled-sixty",
+            "--no-llm-log",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    first, second = run_kwargs
+    assert first["taken_boards"] is second["taken_boards"]
+    manifest = json.loads((tmp_path / "batch" / "manifest.json").read_text())
+    assert manifest["taken_boards"]["seeded"] == {}
+    assert manifest["duplicate_grid_sweep"] == {"checked": 2, "failed": 0}
+
+
+def test_duplicate_grid_sweep_fails_later_batch_mate(tmp_path: Path) -> None:
+    """An identical grid is a failed puzzle: it leaves the clue sweep (no
+    rewording it into a "repair") and the upload skips it."""
+    paths = []
+    for seed, row in ((1, "CRANE"), (2, "CRANE"), (3, "SLATE")):
+        path = tmp_path / f"seed-{seed}.ipuz"
+        # The second copy uses null blocks, as the daily-schedule store does.
+        payload = _mini_ipuz(row)
+        if seed == 2:
+            payload["solution"] = [
+                [None if cell == "#" else cell for cell in r]
+                for r in payload["solution"]
+            ]
+        path.write_text(json.dumps(payload))
+        paths.append(path)
+    results = [
+        {
+            "difficulty": "easy",
+            "size": 5,
+            "seed": seed,
+            "success": True,
+            "output_path": str(path),
+            "error_message": None,
+            "_sweep": {"envelope": object()},
+        }
+        for seed, path in zip((1, 2, 3), paths, strict=True)
+    ]
+
+    stats = _run_duplicate_grid_sweep(results)
+
+    assert stats == {"checked": 3, "failed": 1}
+    assert results[0]["success"] is True and "_sweep" in results[0]
+    assert results[2]["success"] is True
+    dup = results[1]
+    assert dup["success"] is False
+    assert "_sweep" not in dup
+    assert str(dup["error_message"]).startswith(
+        "DUPLICATE_GRID: identical solution grid to easy 5x5 seed 1"
+    )
+    assert dup["failure_category"] == "duplicate_grid"

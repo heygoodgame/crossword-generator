@@ -120,6 +120,9 @@ class FillSelectionMetadata(BaseModel):
     answer_novelty_overlap_count: int | None = None
     answer_novelty_max_count: int | None = None
     answer_novelty_total_count: int | None = None
+    # Candidate boards passed over because their exact grid was already taken
+    # (live records, earlier batches, or a concurrent batch-mate's pick).
+    boards_taken_skipped: int = 0
 
 
 class FillResult(BaseModel):

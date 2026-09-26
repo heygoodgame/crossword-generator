@@ -144,12 +144,17 @@ def normalize_clue(clue: str) -> str:
     return text.strip()
 
 
-def extract_ipuz_answers(puzzle: dict[str, Any]) -> list[str]:
-    """Return every entry answer from an IPUZ crossword payload."""
+def ipuz_solution_grid(puzzle: dict[str, Any]) -> list[list[str]]:
+    """Return an IPUZ payload's solution as uppercase letters with ``.`` blocks."""
     solution = puzzle.get("solution")
     if not isinstance(solution, list):
         return []
-    grid = _solution_to_grid(solution)
+    return _solution_to_grid(solution)
+
+
+def extract_ipuz_answers(puzzle: dict[str, Any]) -> list[str]:
+    """Return every entry answer from an IPUZ crossword payload."""
+    grid = ipuz_solution_grid(puzzle)
     if not grid:
         return []
     return [entry.answer for entry in compute_numbering(grid)]

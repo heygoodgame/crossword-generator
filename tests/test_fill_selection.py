@@ -3,11 +3,17 @@
 from __future__ import annotations
 
 import json
+import threading
 
 import pytest
 
 from crossword_generator.dictionary import Dictionary
-from crossword_generator.fillers.base import FilledGrid, GridFiller, GridSpec
+from crossword_generator.fillers.base import (
+    FilledGrid,
+    FillError,
+    GridFiller,
+    GridSpec,
+)
 from crossword_generator.graders.fill_grader import FillGrader
 from crossword_generator.llm.base import LLMProvider
 from crossword_generator.llm.prompts.fill_selection import (
@@ -23,8 +29,10 @@ from crossword_generator.models import (
 from crossword_generator.steps.fill_step import (
     FillWithGradingStep,
     _CandidateCollector,
+    _grid_seed_for_variant,
     _parse_selection_response,
 )
+from crossword_generator.taken_boards import TakenBoards, board_key
 
 # ---------------------------------------------------------------------------
 # Test fixtures
@@ -457,3 +465,224 @@ class TestLLMSelection:
         assert result.fill.selection_metadata is not None
         assert result.fill.selection_metadata.selection_method == "single"
         assert llm.call_count == 0
+
+
+# ---------------------------------------------------------------------------
+# Exact-duplicate grid guard (taken boards)
+# ---------------------------------------------------------------------------
+
+# ALT_GRID's answers are "used" by the pool, so every novelty pick prefers
+# HIGH_QUALITY_GRID: the worst case, where every batch item wants one board.
+_ALT_USED = {"CRANE": 5, "LINES": 5}
+
+
+def _seeded_envelope(seed: int) -> PuzzleEnvelope:
+    return PuzzleEnvelope(
+        puzzle_type=PuzzleType.MINI, grid_size=5, metadata={"seed": seed}
+    )
+
+
+class RivalReservingFiller(CyclingMockFiller):
+    """After ``after_calls`` fills, a concurrent batch-mate reserves a board.
+
+    Simulates another worker picking the same board between this item's
+    collection and its pick.
+    """
+
+    def __init__(
+        self,
+        grids: list[list[list[str]]],
+        taken: TakenBoards,
+        rival_grid: list[list[str]],
+        *,
+        after_calls: int,
+    ) -> None:
+        super().__init__(grids)
+        self._taken = taken
+        self._rival_grid = rival_grid
+        self._after_calls = after_calls
+
+    def fill(self, spec: GridSpec) -> FilledGrid:
+        filled = super().fill(spec)
+        if self._call_count == self._after_calls:
+            self._taken.reserve(board_key(self._rival_grid), owner="easy 5x5 seed 99")
+        return filled
+
+
+class BarrierFiller(CyclingMockFiller):
+    """Waits for every worker to finish collecting before letting any pick."""
+
+    def __init__(
+        self,
+        grids: list[list[list[str]]],
+        barrier: threading.Barrier,
+    ) -> None:
+        super().__init__(grids)
+        self._barrier = barrier
+
+    def fill(self, spec: GridSpec) -> FilledGrid:
+        filled = super().fill(spec)
+        if self._call_count == len(self._grids):
+            self._barrier.wait(timeout=10)
+        return filled
+
+
+class TestTakenBoards:
+    def test_pool_board_is_never_picked(self) -> None:
+        """A board already in the pool is skipped even if it is the only
+        one the novelty pick would want."""
+        dictionary = _make_dict(GOOD_WORDS)
+        grader = FillGrader(dictionary, min_passing_score=30)
+        taken = TakenBoards()
+        taken.add(board_key(HIGH_QUALITY_GRID), holder="unlimited-pool pool-1")
+        step = FillWithGradingStep(
+            CyclingMockFiller([HIGH_QUALITY_GRID, ALT_GRID]),
+            grader,
+            max_retries=5,
+            collect_boards=1,
+            answer_usage_counts=_ALT_USED,
+            taken_boards=taken,
+        )
+
+        result = step.run(_seeded_envelope(1))
+
+        assert result.fill is not None
+        assert result.fill.grid == ALT_GRID
+        assert result.fill.selection_metadata is not None
+        assert result.fill.selection_metadata.boards_taken_skipped == 1
+        assert taken.holder(board_key(ALT_GRID)) == "easy 5x5 seed 1"
+        assert taken.holder(board_key(HIGH_QUALITY_GRID)) == "unlimited-pool pool-1"
+
+    def test_prior_batch_board_is_never_picked(self) -> None:
+        dictionary = _make_dict(GOOD_WORDS)
+        grader = FillGrader(dictionary, min_passing_score=30)
+        taken = TakenBoards()
+        taken.add(board_key(ALT_GRID), holder="prior batch easy 5x5 seed 7")
+        step = FillWithGradingStep(
+            CyclingMockFiller([ALT_GRID, HIGH_QUALITY_GRID]),
+            grader,
+            max_retries=5,
+            collect_boards=2,
+            taken_boards=taken,
+        )
+
+        result = step.run(_seeded_envelope(8))
+
+        assert result.fill is not None
+        assert result.fill.grid == HIGH_QUALITY_GRID
+
+    def test_board_reserved_after_collection_falls_to_next_candidate(
+        self,
+    ) -> None:
+        dictionary = _make_dict(GOOD_WORDS)
+        grader = FillGrader(dictionary, min_passing_score=30)
+        taken = TakenBoards()
+        filler = RivalReservingFiller(
+            [HIGH_QUALITY_GRID, ALT_GRID],
+            taken,
+            HIGH_QUALITY_GRID,
+            after_calls=2,
+        )
+        step = FillWithGradingStep(
+            filler,
+            grader,
+            max_retries=5,
+            collect_boards=2,
+            answer_usage_counts=_ALT_USED,
+            taken_boards=taken,
+        )
+
+        result = step.run(_seeded_envelope(1))
+
+        assert result.fill is not None
+        assert result.fill.grid == ALT_GRID
+        meta = result.fill.selection_metadata
+        assert meta is not None
+        assert meta.selection_method == "answer_novelty"
+        assert meta.boards_taken_skipped == 1
+        assert filler._call_count == 2
+
+    def test_every_candidate_lost_resumes_the_search(self) -> None:
+        """With one candidate and a rival taking it, the step keeps filling
+        (next attempt of the same variant) instead of shipping the dupe."""
+        dictionary = _make_dict(GOOD_WORDS)
+        grader = FillGrader(dictionary, min_passing_score=30)
+        taken = TakenBoards()
+        filler = RivalReservingFiller(
+            [HIGH_QUALITY_GRID, ALT_GRID],
+            taken,
+            HIGH_QUALITY_GRID,
+            after_calls=1,
+        )
+        step = FillWithGradingStep(
+            filler, grader, max_retries=5, collect_boards=1, taken_boards=taken
+        )
+
+        result = step.run(_seeded_envelope(1))
+
+        assert result.fill is not None
+        assert result.fill.grid == ALT_GRID
+        assert filler._call_count == 2
+        assert taken.holder(board_key(ALT_GRID)) == "easy 5x5 seed 1"
+
+    def test_only_taken_boards_fails_instead_of_duplicating(self) -> None:
+        dictionary = _make_dict(GOOD_WORDS)
+        grader = FillGrader(dictionary, min_passing_score=30)
+        taken = TakenBoards()
+        taken.add(board_key(HIGH_QUALITY_GRID), holder="unlimited-pool pool-1")
+        step = FillWithGradingStep(
+            CyclingMockFiller([HIGH_QUALITY_GRID]),
+            grader,
+            max_retries=3,
+            collect_boards=1,
+            taken_boards=taken,
+        )
+
+        with pytest.raises(FillError, match="3 board\\(s\\) rejected as already taken"):
+            step.run(_seeded_envelope(1))
+
+    def test_concurrent_items_sharing_a_snapshot_pick_distinct_boards(
+        self,
+    ) -> None:
+        """The 2026-09 failure mode: parallel workers with one usage snapshot
+        collect the same candidates and all want the same least-used board.
+        Reservation makes exactly one of them get it."""
+        dictionary = _make_dict(GOOD_WORDS)
+        grader = FillGrader(dictionary, min_passing_score=30)
+        taken = TakenBoards()
+        barrier = threading.Barrier(2)
+        picks: dict[int, list[list[str]]] = {}
+
+        def run(seed: int) -> None:
+            step = FillWithGradingStep(
+                BarrierFiller([HIGH_QUALITY_GRID, ALT_GRID], barrier),
+                grader,
+                max_retries=5,
+                collect_boards=2,
+                answer_usage_counts=_ALT_USED,
+                taken_boards=taken,
+            )
+            result = step.run(_seeded_envelope(seed))
+            assert result.fill is not None
+            picks[seed] = result.fill.grid
+
+        threads = [threading.Thread(target=run, args=(seed,)) for seed in (1, 2)]
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+
+        assert sorted(map(board_key, picks.values())) == sorted(
+            [board_key(HIGH_QUALITY_GRID), board_key(ALT_GRID)]
+        )
+
+
+def test_adjacent_seeds_walk_disjoint_grid_variant_sequences() -> None:
+    """base_seed + variant made seed 512's variants seed 511's shifted by one;
+    hashed variant seeds share nothing but stay reproducible."""
+    first = [_grid_seed_for_variant(511, v) for v in range(200)]
+    second = [_grid_seed_for_variant(512, v) for v in range(200)]
+    assert not set(first) & set(second)
+    assert first == [_grid_seed_for_variant(511, v) for v in range(200)]
+    assert first[0] == 511
+    assert _grid_seed_for_variant(None, 0) is None

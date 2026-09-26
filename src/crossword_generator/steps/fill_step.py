@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+import hashlib
 import itertools
 import json
 import logging
 import math
 import random
 from collections import Counter
+from collections.abc import Iterator
 from dataclasses import dataclass, field
 
 from crossword_generator.dictionary import Dictionary
@@ -33,6 +35,7 @@ from crossword_generator.models import (
 from crossword_generator.steps.base import PipelineStep
 from crossword_generator.steps.crossing_scorer import rank_candidates
 from crossword_generator.steps.theme_slot_assigner import assign_seed_entries_to_slots
+from crossword_generator.taken_boards import TakenBoards, board_key
 
 logger = logging.getLogger(__name__)
 
@@ -310,10 +313,33 @@ def _grid_seed_for_variant(
     base_seed: int | None,
     grid_variant: int,
 ) -> int | None:
-    """Resolve a grid variant seed while preserving the default first variant."""
-    if base_seed is not None:
-        return base_seed + grid_variant
-    return None if grid_variant == 0 else grid_variant
+    """Resolve a grid variant seed while preserving the default first variant.
+
+    Later variants hash ``(base_seed, variant)`` rather than adding them.
+    With ``base_seed + variant``, batch items with adjacent seeds walked the
+    same black-cell pattern sequence one step apart (seed 511 tried 511..523,
+    seed 512 tried 512..524), so concurrent items sharing a usage snapshot
+    converged on the same boards: every intra-batch duplicate grid in the
+    2026-09 unlimited pool was <= 6 seeds apart. Hashing keeps each seed's
+    sequence reproducible while decorrelating it from its neighbours'.
+    """
+    if base_seed is None:
+        return None if grid_variant == 0 else grid_variant
+    if grid_variant == 0:
+        return base_seed
+    digest = hashlib.blake2b(
+        f"{base_seed}:{grid_variant}".encode(), digest_size=8
+    ).digest()
+    return int.from_bytes(digest, "big") >> 1
+
+
+def _board_owner(envelope: PuzzleEnvelope) -> str:
+    """Label a batch item holds its reserved board under."""
+    size = envelope.grid_size
+    return (
+        f"{envelope.difficulty.value} {size}x{size} "
+        f"seed {envelope.metadata.get('seed')}"
+    )
 
 
 def _format_exhausted_error(
@@ -322,13 +348,17 @@ def _format_exhausted_error(
     incompatible_skips: int,
     filler_failures: int,
     total_attempts: int,
+    taken_skips: int = 0,
 ) -> str:
+    taken_note = (
+        f"; {taken_skips} board(s) rejected as already taken" if taken_skips else ""
+    )
     return (
         f"All grid variants exhausted: could not fill grid after trying "
         f"{max_grid_variants} pattern(s); "
         f"{incompatible_skips} incompatible pattern(s) skipped; "
         f"{filler_failures} filler attempt(s) failed; "
-        f"{total_attempts} total filler attempt(s)"
+        f"{total_attempts} total filler attempt(s){taken_note}"
     )
 
 
@@ -339,20 +369,41 @@ def _format_exhausted_error(
 
 @dataclass
 class _CandidateCollector:
-    """Collects unique passing fill results up to a target count."""
+    """Collects unique passing fill results up to a target count.
+
+    With ``taken_boards``, a board someone else already holds is never
+    collected (not even as the best non-passing fallback).
+    """
 
     target: int
+    taken_boards: TakenBoards | None = None
     passing_results: list[tuple[FillResult, list[str]]] = field(default_factory=list)
     best_result: FillResult | None = None
     best_subset: list[str] = field(default_factory=list)
     total_attempts: int = 0
+    incompatible_skips: int = 0
+    filler_failures: int = 0
+    taken_skips: int = 0
     _seen_grids: set[str] = field(default_factory=set)
 
-    def _grid_key(self, grid: list[list[str]]) -> str:
-        return "|".join("".join(row) for row in grid)
+    def _is_taken(self, grid: list[list[str]]) -> bool:
+        return (
+            self.taken_boards is not None
+            and self.taken_boards.holder(board_key(grid)) is not None
+        )
 
     def add(self, result: FillResult, subset: list[str]) -> None:
         """Add a result. Tracks best overall; adds to passing if unique."""
+        holder = (
+            self.taken_boards.holder(board_key(result.grid))
+            if self.taken_boards is not None
+            else None
+        )
+        if holder is not None:
+            self.taken_skips += 1
+            logger.info("Fill rejected: identical board already taken by %s", holder)
+            return
+
         if self.best_result is None or (result.quality_score or 0) > (
             self.best_result.quality_score or 0
         ):
@@ -360,7 +411,7 @@ class _CandidateCollector:
             self.best_subset = list(subset)
 
         if result.grade_report and result.grade_report.passing:
-            key = self._grid_key(result.grid)
+            key = board_key(result.grid) or ""
             if key not in self._seen_grids:
                 self._seen_grids.add(key)
                 self.passing_results.append((result, list(subset)))
@@ -373,6 +424,26 @@ class _CandidateCollector:
 
     def is_full(self) -> bool:
         return len(self.passing_results) >= self.target
+
+    def discard_taken(self) -> None:
+        """Drop candidates a concurrent batch-mate reserved since collection.
+
+        Their grids stay in ``_seen_grids``, so a refill landing on the same
+        board is not collected again.
+        """
+        self.passing_results = [
+            (result, subset)
+            for result, subset in self.passing_results
+            if not self._is_taken(result.grid)
+        ]
+        if self.best_result is not None and self._is_taken(self.best_result.grid):
+            self.best_result, self.best_subset = None, []
+            if self.passing_results:
+                result, subset = max(
+                    self.passing_results,
+                    key=lambda item: item[0].quality_score or 0,
+                )
+                self.best_result, self.best_subset = result, list(subset)
 
 
 @dataclass(frozen=True)
@@ -481,6 +552,11 @@ class FillWithGradingStep(PipelineStep):
     by slot-length signature, then tries subsets that are compatible with
     each signature. This avoids wasting attempts on incompatible pairings.
 
+    With ``taken_boards``, the step never returns a board someone else
+    holds: taken boards are skipped during collection, and the pick is
+    reserved atomically, so a concurrent batch-mate that wanted the same
+    board falls back to its next candidate or keeps searching.
+
     The pipeline sees this as a single step.
     """
 
@@ -514,8 +590,10 @@ class FillWithGradingStep(PipelineStep):
         seed_entry_length: int | None = None,
         seed_entry_min_score: int | None = None,
         seed_entry_count: int | None = None,
+        taken_boards: TakenBoards | None = None,
     ) -> None:
         self._filler = filler
+        self._taken_boards = taken_boards
         self._grader = grader
         self._dictionary = dictionary
         self._max_retries = max_retries
@@ -595,7 +673,9 @@ class FillWithGradingStep(PipelineStep):
             [(w, f"{s:.2f}") for w, s in ranked],
         )
 
-        collector = _CandidateCollector(target=self._collect_boards)
+        collector = _CandidateCollector(
+            target=self._collect_boards, taken_boards=self._taken_boards
+        )
 
         # Phase 1: Theme-first construction (primary strategy)
         self._try_theme_first_fill(envelope, ranked_words, revealer, collector)
@@ -636,8 +716,16 @@ class FillWithGradingStep(PipelineStep):
                 f"{collector.total_attempts} total attempt(s)"
             )
 
-        # Select the best board from collected candidates
-        best_result, best_subset = self._select_best(collector)
+        # Select the best board from collected candidates. The themed search
+        # phases are not resumable, so losing every candidate to concurrent
+        # batch-mates fails the fill rather than searching again.
+        picked = self._select_best(collector, owner=_board_owner(envelope))
+        if picked is None:
+            raise FillError(
+                "Every candidate board was reserved by a concurrent batch-mate "
+                f"({len(collector.passing_results)} candidate(s))"
+            )
+        best_result, best_subset = picked
 
         return self._finalize(
             envelope, best_result, best_subset, collector.total_attempts
@@ -1012,24 +1100,87 @@ class FillWithGradingStep(PipelineStep):
             and self._dictionary is not None
         )
 
+    def _max_direct_variants(self, envelope: PuzzleEnvelope) -> int:
+        if _has_theme(envelope) or self._dictionary is not None:
+            return self._max_grid_variants
+        return 1
+
     def _run_direct(self, envelope: PuzzleEnvelope) -> PuzzleEnvelope:
         """Original fill path: use seed_entries directly."""
+        collector = _CandidateCollector(
+            target=self._collect_boards, taken_boards=self._taken_boards
+        )
+        fills = self._direct_fills(envelope, collector)
+        owner = _board_owner(envelope)
+
+        while True:
+            for result in fills:
+                collector.add(result, [])
+                if collector.is_full():
+                    break
+
+            if collector.best_result is None:
+                raise FillError(
+                    _format_exhausted_error(
+                        max_grid_variants=self._max_direct_variants(envelope),
+                        incompatible_skips=collector.incompatible_skips,
+                        filler_failures=collector.filler_failures,
+                        total_attempts=collector.total_attempts,
+                        taken_skips=collector.taken_skips,
+                    )
+                )
+
+            # Select the best board from collected candidates
+            picked = self._select_best(collector, owner=owner)
+            if picked is not None:
+                break
+            # A concurrent batch-mate reserved every candidate between
+            # collection and pick: drop them and resume the search where it
+            # stopped (same variant, next attempt).
+            logger.info(
+                "All %d collected board(s) were reserved by concurrent "
+                "batch-mates; collecting more",
+                len(collector.passing_results),
+            )
+            collector.discard_taken()
+
+        best_result, _ = picked
+
+        new_errors = list(envelope.errors)
+        if not best_result.grade_report or not best_result.grade_report.passing:
+            new_errors.append(
+                f"Fill quality below threshold after "
+                f"{collector.total_attempts} "
+                f"attempt(s): best score {best_result.quality_score:.1f}"
+            )
+
+        return envelope.model_copy(
+            update={
+                "fill": best_result,
+                "step_history": [*envelope.step_history, self.name],
+                "errors": new_errors,
+            }
+        )
+
+    def _direct_fills(
+        self,
+        envelope: PuzzleEnvelope,
+        collector: _CandidateCollector,
+    ) -> Iterator[FillResult]:
+        """Yield graded fills across grid variants, lazily.
+
+        A generator so ``_run_direct`` can stop once the collector is full
+        and resume exactly where it left off if a concurrent batch-mate then
+        reserves every collected board. Attempt and skip counts accumulate
+        on ``collector``.
+        """
         base_seed = envelope.metadata.get("seed")
         has_theme = _has_theme(envelope)
         seed_required = self._seeds_required_entry and not has_theme
-        max_grid_variants = (
-            self._max_grid_variants if has_theme or self._dictionary is not None else 1
-        )
+        max_grid_variants = self._max_direct_variants(envelope)
         max_fill_attempts = self._max_retries if self._retry_on_fail else 1
 
-        collector = _CandidateCollector(target=self._collect_boards)
-        incompatible_skips = 0
-        filler_failures = 0
-
         for grid_variant in range(max_grid_variants):
-            if collector.is_full():
-                break
-
             grid_seed = _grid_seed_for_variant(base_seed, grid_variant)
             spec = get_grid_spec(
                 envelope.puzzle_type,
@@ -1045,7 +1196,7 @@ class FillWithGradingStep(PipelineStep):
                 self._max_long_entries_8_9 is not None
                 and long_entry_count > self._max_long_entries_8_9
             ):
-                incompatible_skips += 1
+                collector.incompatible_skips += 1
                 logger.info(
                     "Grid variant %d skipped: %d slots of length 8-9 exceeds "
                     "configured cap of %d",
@@ -1061,7 +1212,7 @@ class FillWithGradingStep(PipelineStep):
                 else []
             )
             if unsupported:
-                incompatible_skips += 1
+                collector.incompatible_skips += 1
                 logger.info(
                     "Grid variant %d skipped: slot lengths %s unsupported "
                     "by dictionary",
@@ -1093,7 +1244,7 @@ class FillWithGradingStep(PipelineStep):
                 assert self._seed_entry_min_score is not None
                 slots = extract_slots(spec.rows, spec.cols, set(spec.black_cells))
                 if not any(slot.length == self._seed_entry_length for slot in slots):
-                    incompatible_skips += 1
+                    collector.incompatible_skips += 1
                     logger.info(
                         "Grid variant %d skipped: no slot of length %d for the "
                         "required seed entry",
@@ -1126,9 +1277,6 @@ class FillWithGradingStep(PipelineStep):
                 )
 
             for attempt in range(1, max_fill_attempts + 1):
-                if collector.is_full():
-                    break
-
                 collector.total_attempts += 1
 
                 # Each attempt places a different drawn candidate, so a pick
@@ -1169,7 +1317,7 @@ class FillWithGradingStep(PipelineStep):
                 try:
                     filled = self._filler.fill(spec)
                 except FillError as exc:
-                    filler_failures += 1
+                    collector.filler_failures += 1
                     if seed_candidates:
                         logger.info(
                             "Grid variant %d: seed entry %r infeasible (%s), "
@@ -1210,59 +1358,47 @@ class FillWithGradingStep(PipelineStep):
                     attempt_number=collector.total_attempts,
                 )
 
-                collector.add(result, [])
-
-                if not report.passing:
-                    continue
-                # Passing result — check if collector is full
-                if collector.is_full():
-                    break
-            else:
-                # All fill attempts exhausted for this grid variant;
-                # continue to next variant if available
-                continue
-
-            # If we broke out of the fill loop, check collector
-            if collector.is_full():
-                break
-
-        if collector.best_result is None:
-            raise FillError(
-                _format_exhausted_error(
-                    max_grid_variants=max_grid_variants,
-                    incompatible_skips=incompatible_skips,
-                    filler_failures=filler_failures,
-                    total_attempts=collector.total_attempts,
-                )
-            )
-
-        # Select the best board from collected candidates
-        best_result, _ = self._select_best(collector)
-
-        new_errors = list(envelope.errors)
-        if not best_result.grade_report or not best_result.grade_report.passing:
-            new_errors.append(
-                f"Fill quality below threshold after "
-                f"{collector.total_attempts} "
-                f"attempt(s): best score {best_result.quality_score:.1f}"
-            )
-
-        return envelope.model_copy(
-            update={
-                "fill": best_result,
-                "step_history": [*envelope.step_history, self.name],
-                "errors": new_errors,
-            }
-        )
+                yield result
 
     def _select_best(
+        self, collector: _CandidateCollector, *, owner: str
+    ) -> tuple[FillResult, list[str]] | None:
+        """Select the best available board and reserve it for ``owner``.
+
+        Candidates are tried in preference order; one that a concurrent
+        batch-mate reserved after it was collected is skipped. Returns None
+        when every candidate was lost that way, so the caller can search on.
+        """
+        for result, subset in self._ranked_candidates(collector):
+            key = board_key(result.grid)
+            taken = self._taken_boards
+            if taken is not None and not taken.reserve(key, owner=owner):
+                collector.taken_skips += 1
+                logger.info(
+                    "Candidate board was reserved by %s; trying the next one",
+                    taken.holder(key),
+                )
+                continue
+            meta = result.selection_metadata
+            if meta is not None and collector.taken_skips:
+                result = result.model_copy(
+                    update={
+                        "selection_metadata": meta.model_copy(
+                            update={"boards_taken_skipped": collector.taken_skips}
+                        )
+                    }
+                )
+            return result, subset
+        return None
+
+    def _ranked_candidates(
         self, collector: _CandidateCollector
-    ) -> tuple[FillResult, list[str]]:
-        """Select the best board from collected candidates."""
+    ) -> list[tuple[FillResult, list[str]]]:
+        """Collected boards in preference order, each with selection metadata."""
         if not collector.passing_results:
-            # No passing boards — return best non-passing
+            # No passing boards — fall back to the best non-passing one
             assert collector.best_result is not None
-            return collector.best_result, collector.best_subset
+            return [(collector.best_result, collector.best_subset)]
 
         if len(collector.passing_results) == 1:
             result, subset = collector.passing_results[0]
@@ -1278,42 +1414,52 @@ class FillWithGradingStep(PipelineStep):
                     )
                 }
             )
-            return result, subset
+            return [(result, subset)]
 
         # Multiple passing boards
         if self._answer_usage_counts:
-            return self._answer_novelty_select_best(collector.passing_results)
+            return self._answer_novelty_ranked(collector.passing_results)
 
         if self._llm_select and self._llm_provider is not None:
-            return self._llm_select_best(collector.passing_results)
+            return self._llm_ranked(collector.passing_results)
 
-        # Numeric best: pick highest score
-        best_idx = max(
-            range(len(collector.passing_results)),
-            key=lambda i: collector.passing_results[i][0].quality_score or 0,
-        )
-        result, subset = collector.passing_results[best_idx]
-        result = result.model_copy(
-            update={
-                "selection_metadata": FillSelectionMetadata(
-                    candidates_collected=len(collector.passing_results),
-                    selection_method="numeric_best",
-                )
-            }
-        )
-        return result, subset
+        return self._numeric_ranked(collector.passing_results)
 
-    def _answer_novelty_select_best(
+    def _numeric_ranked(
         self,
         candidates: list[tuple[FillResult, list[str]]],
-    ) -> tuple[FillResult, list[str]]:
-        """Select the passing board with the least previously used fill."""
+    ) -> list[tuple[FillResult, list[str]]]:
+        """Highest fill score first (stable, so ties keep collection order)."""
+        ranked = sorted(
+            candidates,
+            key=lambda item: item[0].quality_score or 0,
+            reverse=True,
+        )
+        return [
+            (
+                result.model_copy(
+                    update={
+                        "selection_metadata": FillSelectionMetadata(
+                            candidates_collected=len(candidates),
+                            selection_method="numeric_best",
+                        )
+                    }
+                ),
+                subset,
+            )
+            for result, subset in ranked
+        ]
+
+    def _answer_novelty_ranked(
+        self,
+        candidates: list[tuple[FillResult, list[str]]],
+    ) -> list[tuple[FillResult, list[str]]]:
+        """Passing boards ordered from least to most previously used fill."""
         scored = [
             (self._answer_novelty_stats(result.grid), result, subset)
             for result, subset in candidates
         ]
-        novelty, result, subset = min(
-            scored,
+        scored.sort(
             key=lambda item: (
                 item[0].total_count,
                 item[0].max_count,
@@ -1321,19 +1467,24 @@ class FillWithGradingStep(PipelineStep):
                 -(item[1].quality_score or 0),
             ),
         )
-        result = result.model_copy(
-            update={
-                "selection_metadata": FillSelectionMetadata(
-                    candidates_collected=len(candidates),
-                    selection_method="answer_novelty",
-                    answer_novelty_score=round(novelty.score, 3),
-                    answer_novelty_overlap_count=novelty.overlap_count,
-                    answer_novelty_max_count=novelty.max_count,
-                    answer_novelty_total_count=novelty.total_count,
-                )
-            }
-        )
-        return result, subset
+        return [
+            (
+                result.model_copy(
+                    update={
+                        "selection_metadata": FillSelectionMetadata(
+                            candidates_collected=len(candidates),
+                            selection_method="answer_novelty",
+                            answer_novelty_score=round(novelty.score, 3),
+                            answer_novelty_overlap_count=novelty.overlap_count,
+                            answer_novelty_max_count=novelty.max_count,
+                            answer_novelty_total_count=novelty.total_count,
+                        )
+                    }
+                ),
+                subset,
+            )
+            for novelty, result, subset in scored
+        ]
 
     def _answer_novelty_stats(
         self,
@@ -1352,11 +1503,11 @@ class FillWithGradingStep(PipelineStep):
             total_count=sum(counts),
         )
 
-    def _llm_select_best(
+    def _llm_ranked(
         self,
         candidates: list[tuple[FillResult, list[str]]],
-    ) -> tuple[FillResult, list[str]]:
-        """Use LLM to select the best board from candidates."""
+    ) -> list[tuple[FillResult, list[str]]]:
+        """LLM's pick first, then the rest by fill score."""
         assert self._llm_provider is not None
 
         grids = [r.grid for r, _ in candidates]
@@ -1385,7 +1536,8 @@ class FillWithGradingStep(PipelineStep):
                     len(candidates),
                     rationale,
                 )
-                return result, subset
+                rest = [c for i, c in enumerate(candidates) if i != idx]
+                return [(result, subset), *self._numeric_ranked(rest)]
             except (ValueError, KeyError, json.JSONDecodeError) as exc:
                 logger.warning(
                     "LLM selection parse attempt %d/%d failed: %s",
@@ -1399,20 +1551,7 @@ class FillWithGradingStep(PipelineStep):
             "LLM selection failed after %d attempts, falling back to numeric best",
             max_retries,
         )
-        best_idx = max(
-            range(len(candidates)),
-            key=lambda i: candidates[i][0].quality_score or 0,
-        )
-        result, subset = candidates[best_idx]
-        result = result.model_copy(
-            update={
-                "selection_metadata": FillSelectionMetadata(
-                    candidates_collected=len(candidates),
-                    selection_method="numeric_best",
-                )
-            }
-        )
-        return result, subset
+        return self._numeric_ranked(candidates)
 
     def validate_input(self, envelope: PuzzleEnvelope) -> list[str]:
         """Validate that the envelope is ready for filling."""

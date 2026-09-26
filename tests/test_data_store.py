@@ -240,6 +240,45 @@ def test_records_from_manifest_uploads_only_clean_puzzles(tmp_path: Path) -> Non
     assert "seed-1" in records[0]["key"]
 
 
+def _board_payload(first_row: str) -> dict[str, object]:
+    rows = [list(first_row), *(list("#ABC#") for _ in range(4))]
+    return {"version": "http://ipuz.org/v2", "solution": rows}
+
+
+def test_records_from_manifest_skips_identical_grids(tmp_path: Path) -> None:
+    """A hand-merged manifest (chunk merge, crash recovery) never went through
+    the batch grid sweep: an identical board uploads once, whatever the
+    flags. A copy held back for a clue leak does not count as uploaded."""
+    results = []
+    for seed, row, error in (
+        (1, "LEAKY", 'LEAK: CAT (1-across) [exact] in clue "A pet cat"'),
+        (2, "LEAKY", None),
+        (3, "CRANE", None),
+        (4, "CRANE", None),
+        (5, "SLATE", None),
+    ):
+        path = tmp_path / f"seed-{seed:03d}.ipuz"
+        path.write_text(json.dumps(_board_payload(row)))
+        results.append(
+            {
+                "success": True,
+                "output_path": str(path),
+                "difficulty": "easy",
+                "size": 5,
+                "seed": seed,
+                "error_message": error,
+            }
+        )
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text(json.dumps({"batch": "merged", "results": results}))
+
+    records = records_from_manifest(manifest_path)
+    assert [r["metadata"]["seed"] for r in records] == ["2", "3", "5"]
+
+    flagged = records_from_manifest(manifest_path, flag_issues=True)
+    assert [r["metadata"]["seed"] for r in flagged] == ["1", "3", "5"]
+
+
 def test_records_from_manifest_ignores_non_leak_error_message(
     tmp_path: Path,
 ) -> None:
