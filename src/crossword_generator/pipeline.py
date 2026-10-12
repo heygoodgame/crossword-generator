@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import time
+from collections.abc import Iterable
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -38,6 +39,15 @@ from crossword_generator.taken_boards import TakenBoards
 logger = logging.getLogger(__name__)
 
 
+def close_providers(providers: Iterable[LLMProvider]) -> None:
+    """Close each distinct provider once; a failed cleanup never fails a run."""
+    for provider in {id(p): p for p in providers}.values():
+        try:
+            provider.close()
+        except Exception as exc:
+            logger.warning("Provider cleanup failed: %s", type(exc).__name__)
+
+
 class Pipeline:
     """Runs a sequence of pipeline steps and exports the result."""
 
@@ -47,11 +57,13 @@ class Pipeline:
         exporters: list[Exporter],
         output_dir: Path,
         output_file: Path | None = None,
+        providers: list[LLMProvider] | None = None,
     ) -> None:
         self._steps = steps
         self._exporters = exporters
         self._output_dir = output_dir
         self._output_file = output_file
+        self.providers = providers or []
 
     @property
     def steps(self) -> list[PipelineStep]:
@@ -59,6 +71,14 @@ class Pipeline:
 
     def run(self, envelope: PuzzleEnvelope) -> PuzzleEnvelope:
         """Execute all steps sequentially, saving intermediates and exporting."""
+        try:
+            return self._run(envelope)
+        finally:
+            # A batch retains finished pipelines for its duplicate sweep; idle
+            # clients would otherwise hold their sockets until the batch ends.
+            close_providers(self.providers)
+
+    def _run(self, envelope: PuzzleEnvelope) -> PuzzleEnvelope:
         self._output_dir.mkdir(parents=True, exist_ok=True)
 
         for step in self._steps:
@@ -287,6 +307,16 @@ def create_pipeline(
             f"Unknown clue_fact_check_provider: {config.llm.clue_fact_check_provider!r}"
         )
 
+    providers = [
+        theme_llm,
+        fill_select_llm,
+        clue_gen_llm,
+        clue_repair_llm,
+        clue_grade_llm,
+        clue_fact_check_llm,
+        puzzle_naming_provider,
+        hint_llm,
+    ]
     llm_logging_enabled, llm_log_path = resolve_llm_logging(
         config.llm.logging,
         project_root=project_root,
@@ -489,7 +519,11 @@ def create_pipeline(
     output_dir = Path(config.output.directory)
 
     pipeline = Pipeline(
-        steps=steps, exporters=exporters, output_dir=output_dir, output_file=output_file
+        steps=steps,
+        exporters=exporters,
+        output_dir=output_dir,
+        output_file=output_file,
+        providers=providers,
     )
 
     envelope = PuzzleEnvelope(

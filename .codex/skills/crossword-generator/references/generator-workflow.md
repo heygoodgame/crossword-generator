@@ -886,8 +886,13 @@ uv run crossword-generator generate-pilot-batch \
 Merge the continuation results into the main manifest (match on
 `(difficulty, seed)` — seeds repeat across buckets), re-run
 `check-batch-answers`, and upload the merged manifest. `--prior-batch-manifest`
-is also the crash-resume path: if a run dies before writing `manifest.json`,
-synthesize one from the per-seed intermediates (`fill.quality_score`,
+is also the crash-resume path: the run rewrites `progress.json` beside the
+manifest after every puzzle, with the manifest's `results`, so if it dies
+before writing `manifest.json`, pass `progress.json` as the prior manifest.
+Its `phase` stays `generating; duplicate sweep pending` until the manifest is
+written, so on a parallel run those puzzles have not been through the
+cross-puzzle duplicate-clue sweep. For a batch that predates `progress.json`,
+synthesize a manifest from the per-seed intermediates (`fill.quality_score`,
 `clue_grade_report.overall_score`, `title`, `errors` → `error_message`; check
 `fill.grade_report.passing`) and continue from it.
 
@@ -1137,12 +1142,15 @@ versus a dated weekly batch:
    seed-weighting + best-of-N-only behaviour. Because the in-memory counter is
    the live pool plus completed batch-mates, ONE long run already rebalances
    after every puzzle; chunking a big pool build (e.g. 5 x 100) and promoting
-   each chunk before the next only adds checkpoints, not extra balance --
-   `--prior-batch-manifest` does NOT seed the novelty counter, so a chunk that
-   is uploaded but not yet promoted is invisible to the next chunk's answer
-   weights. It is NOT invisible to the duplicate-grid guard (next section):
-   earlier chunks' exports under the same `output/batches/` parent and
-   uploaded drafts are both taken boards.
+   each chunk before the next only adds checkpoints, not extra balance. A
+   chunk that is uploaded but not yet promoted is invisible to the live
+   counts, so chain it into the next chunk with `--prior-batch-manifest`: on
+   an unlimited run that adds its answers to the novelty counter (weighted,
+   not removed from the fill pool) and its clues to the clue history. Pass
+   only unpromoted chunks -- a promoted one is already in the live pool and
+   would be counted twice. Unpromoted chunks are also visible to the
+   duplicate-grid guard (next section): earlier chunks' exports under the
+   same `output/batches/` parent and uploaded drafts are both taken boards.
 4. **Keep `--avoid-existing-clues` on.** Clue-angle variety vs. the live corpus
    is still wanted and is unrelated to scheduling. Requires a prod admin token.
 

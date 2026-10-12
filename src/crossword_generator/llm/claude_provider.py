@@ -6,6 +6,7 @@ import logging
 import os
 import re
 import time
+from typing import Any
 
 from crossword_generator.config import ClaudeConfig
 from crossword_generator.llm.base import LLMCallResponse, LLMProvider
@@ -25,18 +26,24 @@ class ClaudeProvider(LLMProvider):
 
     def __init__(self, config: ClaudeConfig) -> None:
         self._config = config
+        self._client = self._make_client()
+
+    def _make_client(self) -> Any:
         try:
             import anthropic
 
             api_key = _resolve_api_key()
-            self._client = anthropic.Anthropic(
-                api_key=api_key, timeout=config.timeout
-            )
+            return anthropic.Anthropic(api_key=api_key, timeout=self._config.timeout)
         except ImportError as exc:
             raise ImportError(
                 "The 'anthropic' package is required for the Claude provider. "
                 "Install it with: uv pip install crossword-generator[claude]"
             ) from exc
+
+    def close(self) -> None:
+        client, self._client = self._client, None
+        if client is not None:
+            client.close()
 
     @property
     def name(self) -> str:
@@ -58,6 +65,8 @@ class ClaudeProvider(LLMProvider):
         system: str | None = None,
         **kwargs: object,
     ) -> LLMCallResponse:
+        if self._client is None:
+            self._client = self._make_client()
         model = str(kwargs.get("model", self._config.model))
         requested_temperature = float(kwargs.get("temperature", 0.7))
         temperature = 1.0 if self._config.thinking_enabled else requested_temperature
