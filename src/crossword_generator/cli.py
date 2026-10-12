@@ -29,7 +29,7 @@ from crossword_generator.clue_history import (
 from crossword_generator.config import Config, find_project_root, load_config
 from crossword_generator.exporters.base import Exporter
 from crossword_generator.models import PuzzleEnvelope
-from crossword_generator.pipeline import create_pipeline
+from crossword_generator.pipeline import close_providers, create_pipeline
 from crossword_generator.schedule_targeting import (
     DAILY_GAME_KEYS,
     REGULAR_WINDOW_DAYS,
@@ -522,7 +522,10 @@ def generate(
         "Seed the intra-batch used-answer counts from the successful puzzles "
         "in a prior run's manifest, so a continuation or crash-resume run "
         "treats those puzzles as batch-mates (4+ letter answers excluded, "
-        "short glue capped/penalised by exact multiplicity). Repeatable."
+        "short glue capped/penalised by exact multiplicity). Unlimited runs "
+        "restore novelty counts instead of hard exclusions. Prior clues also "
+        "seed clue history when avoidance is enabled. Repeatable; use only "
+        "unpublished prior batches to avoid counting the live pool twice."
     ),
 )
 @click.option(
@@ -1291,19 +1294,32 @@ def generate_pilot_batch(
             day_by_item[item_key] = target_day.day_number
         day_by_item.update(prior_target_days)
     prior_puzzles_seeded = 0
+    prior_puzzles_by_bucket: dict[tuple[str, int], list[dict]] = {}
+    seen_prior_paths: set[Path] = set()
     for bucket, entries in prior_by_bucket.items():
         for prior_seed, prior_path in sorted(entries):
+            # Overlapping manifests (a merged manifest plus one of its parts)
+            # must not count the same exported puzzle twice.
+            if prior_path.resolve() in seen_prior_paths:
+                continue
+            seen_prior_paths.add(prior_path.resolve())
             try:
                 prior_puzzle = json.loads(prior_path.read_text())
             except (OSError, json.JSONDecodeError) as exc:
                 raise click.ClickException(
                     f"Could not read prior batch puzzle {prior_path}: {exc}"
                 ) from exc
-            used_answers.add(
-                extract_ipuz_answers(prior_puzzle),
-                size=bucket[1],
-                day=day_by_item[(bucket[0], bucket[1], prior_seed)],
-            )
+            prior_puzzles_by_bucket.setdefault(bucket, []).append(prior_puzzle)
+            if avoid_existing_clues:
+                clue_history.add_record({"data": {"puzzle": prior_puzzle}})
+            # Unlimited runs (no intra-batch dedup) weight prior answers through
+            # the novelty counter below instead of removing them from the pool.
+            if intra_batch_dedup:
+                used_answers.add(
+                    extract_ipuz_answers(prior_puzzle),
+                    size=bucket[1],
+                    day=day_by_item[(bucket[0], bucket[1], prior_seed)],
+                )
             if taken_boards.add(
                 ipuz_board_key(prior_puzzle),
                 holder=f"prior batch {bucket[0]} {bucket[1]}x{bucket[1]} "
@@ -1314,8 +1330,11 @@ def generate_pilot_batch(
                 )
             prior_puzzles_seeded += 1
     if prior_batch_manifests:
+        action = (
+            "Seeded intra-batch used answers from" if intra_batch_dedup else "Loaded"
+        )
         click.echo(
-            f"Seeded intra-batch used answers from {prior_puzzles_seeded} "
+            f"{action} {prior_puzzles_seeded} "
             f"prior puzzle(s) in {len(prior_batch_manifests)} manifest(s)."
         )
     if exclude_existing_boards:
@@ -1392,6 +1411,9 @@ def generate_pilot_batch(
             )
             sys.exit(1)
         for (difficulty, size), usage in sorted(answer_usage_by_bucket.items()):
+            # Unpublished prior puzzles are pool-mates the live counts can't see.
+            for puzzle in prior_puzzles_by_bucket.get((difficulty, size), []):
+                usage.add(extract_ipuz_answers(puzzle), records=1)
             stats = usage.stats()
             click.echo(
                 f"Loaded unlimited answer usage for {difficulty}/{size}x{size}: "
@@ -1538,6 +1560,7 @@ def generate_pilot_batch(
             result = _run_item(item)
             results.append(result)
             _report(result)
+            _checkpoint_batch_progress(root, batch_id, results, len(work_items))
     else:
         workers = min(max_workers, len(work_items))
         click.echo(
@@ -1549,6 +1572,7 @@ def generate_pilot_batch(
                 result = future.result()
                 results.append(result)
                 _report(result)
+                _checkpoint_batch_progress(root, batch_id, results, len(work_items))
 
     # Deterministic manifest order regardless of completion order.
     results.sort(
@@ -1675,7 +1699,39 @@ def generate_pilot_batch(
     }
     manifest_path = root / "manifest.json"
     manifest_path.write_text(json.dumps(manifest, indent=2) + "\n")
+    _checkpoint_batch_progress(
+        root, batch_id, results, len(work_items), phase="complete"
+    )
     click.echo(f"Manifest: {manifest_path}")
+
+
+def _checkpoint_batch_progress(
+    root: Path,
+    batch_id: str,
+    results: list[dict[str, object]],
+    planned: int,
+    *,
+    phase: str = "generating; duplicate sweep pending",
+) -> None:
+    """Persist completed results before the manifest exists.
+
+    ``manifest.json`` is only written after the end-of-batch sweeps, so a run
+    that died earlier used to leave nothing but per-seed intermediates. The
+    checkpoint carries the manifest's ``results`` and can be passed to
+    ``--prior-batch-manifest`` as-is; ``phase`` says whether the sweeps ran.
+    """
+    checkpoint = {
+        "batch": batch_id,
+        "phase": phase,
+        "planned": planned,
+        "completed": len(results),
+        "results": [
+            {k: v for k, v in result.items() if k != "_sweep"} for result in results
+        ],
+    }
+    temporary = root / "progress.json.tmp"
+    temporary.write_text(json.dumps(checkpoint, indent=2) + "\n")
+    temporary.replace(root / "progress.json")
 
 
 def _parse_batch_count_overrides(
@@ -4413,6 +4469,7 @@ def _run_batch_item(
                     "envelope": completed,
                     "clue_step": clue_step,
                     "output_path": output_path,
+                    "providers": pipeline.providers,
                 }
         result.update(
             {
@@ -4715,6 +4772,9 @@ def _run_duplicate_sweep(
                             ]
                         }
                     )
+                finally:
+                    # The repair reopened this puzzle's clients; release them.
+                    close_providers(ctx.get("providers", []))
                 unresolved = _duplicate_error_count(envelope) - before
                 unresolved_total += unresolved
                 repaired_total += len(hits) - unresolved

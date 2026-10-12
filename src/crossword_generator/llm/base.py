@@ -22,6 +22,9 @@ class LLMCallResponse:
 class LLMProvider(ABC):
     """Abstract interface for LLM backends."""
 
+    def close(self) -> None:
+        """Release idle resources; reusable providers reconnect on their next call."""
+
     @property
     @abstractmethod
     def name(self) -> str:

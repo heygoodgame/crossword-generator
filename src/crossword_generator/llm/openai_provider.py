@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 import os
 import time
+from typing import Any
 
 from crossword_generator.config import OpenAIConfig
 from crossword_generator.llm.base import LLMCallResponse, LLMProvider
@@ -29,16 +30,24 @@ class OpenAIProvider(LLMProvider):
 
     def __init__(self, config: OpenAIConfig) -> None:
         self._config = config
+        self._client = self._make_client()
+
+    def _make_client(self) -> Any:
         try:
             import openai
 
             api_key = _resolve_api_key()
-            self._client = openai.OpenAI(api_key=api_key, timeout=config.timeout)
+            return openai.OpenAI(api_key=api_key, timeout=self._config.timeout)
         except ImportError as exc:
             raise ImportError(
                 "The 'openai' package is required for the OpenAI provider. "
                 "Install it with: uv pip install crossword-generator[openai]"
             ) from exc
+
+    def close(self) -> None:
+        client, self._client = self._client, None
+        if client is not None:
+            client.close()
 
     @property
     def name(self) -> str:
@@ -60,6 +69,8 @@ class OpenAIProvider(LLMProvider):
         system: str | None = None,
         **kwargs: object,
     ) -> LLMCallResponse:
+        if self._client is None:
+            self._client = self._make_client()
         model = str(kwargs.get("model", self._config.model))
         max_rate_limit_retries = int(
             os.environ.get("CROSSWORD_OPENAI_RATELIMIT_RETRIES", "6")
