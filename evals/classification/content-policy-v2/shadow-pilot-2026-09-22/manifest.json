@@ -1,0 +1,234 @@
+{
+  "batch": "jev-shadow-pilot-2026-09-22",
+  "started_at": "2026-09-22T17:46:11.417341+00:00",
+  "finished_at": "2026-09-22T17:49:11.879569+00:00",
+  "output_root": "output/classification-evals/shadow-pilot-2026-09-22",
+  "logs_dir": "output/classification-evals/shadow-pilot-2026-09-22/logs",
+  "count_per_bucket": 2,
+  "bucket_counts": {
+    "easy/5": 2,
+    "hard/5": 2
+  },
+  "seed_start": 461288725,
+  "llm_provider": "claude",
+  "refresh_dictionaries": false,
+  "avoid_existing_clues": false,
+  "exclude_scheduled_sixty": {
+    "enabled": false,
+    "applied": false,
+    "excluded_count": 0,
+    "dictionary_path": null
+  },
+  "exclude_recent_answers": {
+    "enabled": false,
+    "applied": false,
+    "answer_count": 0,
+    "window_days": null,
+    "short_window_days": null,
+    "short_answer_max_length": 3,
+    "forward_days": null,
+    "until_date": null,
+    "first_unscheduled_date": null,
+    "removed_by_dictionary": {},
+    "dictionary_paths": {},
+    "exclude_answer_variants": true,
+    "variant_count": 0,
+    "variant_rows_removed_by_dictionary": {}
+  },
+  "daily_usage_penalty": {
+    "applied": false,
+    "count_window_days": null,
+    "answers_with_counts": 0,
+    "penalty": null,
+    "novelty_candidates": 4
+  },
+  "exclude_answers_files": {
+    "paths": [],
+    "answer_count": 0,
+    "min_length": 4
+  },
+  "intra_batch_dedup": false,
+  "intra_batch_short_policy": {
+    "window_days": 2,
+    "cap": 3,
+    "penalty": 2.0,
+    "penalty_applied": false
+  },
+  "prior_batch_manifests": {
+    "paths": [],
+    "puzzles_seeded": 0
+  },
+  "unlimited_answer_novelty": {
+    "enabled": false,
+    "active": false,
+    "answer_novelty_candidates": 8,
+    "usage_penalty": null,
+    "loaded": {}
+  },
+  "target": null,
+  "llm_logging_enabled": true,
+  "max_workers": 2,
+  "duplicate_sweep": {
+    "enabled": true,
+    "checked": 4,
+    "repaired": 0,
+    "unresolved": 0
+  },
+  "batch_fill": {
+    "per_pattern_attempts": 1,
+    "max_grid_variants": 200,
+    "timeout_by_size": {
+      "5": 15,
+      "7": 30,
+      "9": 120
+    }
+  },
+  "results": [
+    {
+      "difficulty": "easy",
+      "size": 5,
+      "seed": 461288725,
+      "output_path": "output/classification-evals/shadow-pilot-2026-09-22/easy/5x5/seed-461288725.ipuz",
+      "log_path": "output/classification-evals/shadow-pilot-2026-09-22/logs/easy-5x5-seed-461288725.log",
+      "llm_log_path": "output/classification-evals/shadow-pilot-2026-09-22/logs/easy-5x5-seed-461288725.llm.jsonl",
+      "content_shadow_path": "output/classification-evals/shadow-pilot-2026-09-22/easy/5x5/intermediates/seed-461288725/content-shadow.json",
+      "success": true,
+      "fill_score": 50.0,
+      "fill_selection": {
+        "candidates_collected": 1,
+        "selection_method": "single",
+        "llm_rationale": "",
+        "answer_novelty_score": 0.0,
+        "answer_novelty_overlap_count": 0,
+        "answer_novelty_max_count": 0,
+        "answer_novelty_total_count": null
+      },
+      "clue_score": 90.3,
+      "title": "Stat",
+      "title_reasoning": "1-Across (ASAP) captures urgency and immediacy\u2014the vibe of 'right now' texting culture. 'Stat' is a medical/urgent term meaning 'immediately,' and 'Stats' echoes the ABS fill (stomach muscles), creating a playful double meaning: the puzzle moves fast, and it's got muscle. The title nods to the modern, rapid-fire tone of 1-Across without using the answer itself.",
+      "runtime_seconds": 61.23,
+      "fill_seconds": 0.093,
+      "clue_seconds": 27.122,
+      "total_seconds": 61.23,
+      "grid_variants": 1,
+      "fill_attempts": 1,
+      "skipped_incompatible_variants": 0,
+      "failure_category": null,
+      "error_message": null
+    },
+    {
+      "difficulty": "easy",
+      "size": 5,
+      "seed": 461288726,
+      "output_path": "output/classification-evals/shadow-pilot-2026-09-22/easy/5x5/seed-461288726.ipuz",
+      "log_path": "output/classification-evals/shadow-pilot-2026-09-22/logs/easy-5x5-seed-461288726.log",
+      "llm_log_path": "output/classification-evals/shadow-pilot-2026-09-22/logs/easy-5x5-seed-461288726.llm.jsonl",
+      "content_shadow_path": "output/classification-evals/shadow-pilot-2026-09-22/easy/5x5/intermediates/seed-461288726/content-shadow.json",
+      "success": true,
+      "fill_score": 50.0,
+      "fill_selection": {
+        "candidates_collected": 1,
+        "selection_method": "single",
+        "llm_rationale": "",
+        "answer_novelty_score": 0.0,
+        "answer_novelty_overlap_count": 0,
+        "answer_novelty_max_count": 0,
+        "answer_novelty_total_count": null
+      },
+      "clue_score": 92.3,
+      "title": "Field Day",
+      "title_reasoning": "SOW evokes pastoral imagery and growth\u2014seeds, farmland, beginnings. The fill includes SILO, LARRY (Three Stooges), and OLDIE, painting a nostalgic, rustic Americana picture. 'Field Day' captures both the agricultural setting and the idiom meaning to have fun or make the most of something\u2014a playful double meaning that resonates with the homespun, vintage vibe without naming SOW directly.",
+      "runtime_seconds": 40.889,
+      "fill_seconds": 0.025,
+      "clue_seconds": 21.606,
+      "total_seconds": 40.889,
+      "grid_variants": 1,
+      "fill_attempts": 1,
+      "skipped_incompatible_variants": 0,
+      "failure_category": null,
+      "error_message": null
+    },
+    {
+      "difficulty": "hard",
+      "size": 5,
+      "seed": 461288725,
+      "output_path": "output/classification-evals/shadow-pilot-2026-09-22/hard/5x5/seed-461288725.ipuz",
+      "log_path": "output/classification-evals/shadow-pilot-2026-09-22/logs/hard-5x5-seed-461288725.log",
+      "llm_log_path": "output/classification-evals/shadow-pilot-2026-09-22/logs/hard-5x5-seed-461288725.llm.jsonl",
+      "content_shadow_path": "output/classification-evals/shadow-pilot-2026-09-22/hard/5x5/intermediates/seed-461288725/content-shadow.json",
+      "success": true,
+      "fill_score": 50.0,
+      "fill_selection": {
+        "candidates_collected": 1,
+        "selection_method": "single",
+        "llm_rationale": "",
+        "answer_novelty_score": 0.0,
+        "answer_novelty_overlap_count": 0,
+        "answer_novelty_max_count": 0,
+        "answer_novelty_total_count": null
+      },
+      "clue_score": 81.8,
+      "title": "Catch You Later",
+      "title_reasoning": "TATA is a breezy, informal farewell with a light, airy vibe. 'Catch You Later' plays on that same casual goodbye energy while evoking the sense of movement and departure that TATA embodies\u2014perfect for a mini puzzle with snappy, upbeat fill like TRAIL and LAM (both suggesting motion).",
+      "runtime_seconds": 137.972,
+      "fill_seconds": 0.028,
+      "clue_seconds": 111.714,
+      "total_seconds": 137.972,
+      "grid_variants": 1,
+      "fill_attempts": 1,
+      "skipped_incompatible_variants": 0,
+      "failure_category": null,
+      "error_message": null
+    },
+    {
+      "difficulty": "hard",
+      "size": 5,
+      "seed": 461288726,
+      "output_path": "output/classification-evals/shadow-pilot-2026-09-22/hard/5x5/seed-461288726.ipuz",
+      "log_path": "output/classification-evals/shadow-pilot-2026-09-22/logs/hard-5x5-seed-461288726.log",
+      "llm_log_path": "output/classification-evals/shadow-pilot-2026-09-22/logs/hard-5x5-seed-461288726.llm.jsonl",
+      "content_shadow_path": "output/classification-evals/shadow-pilot-2026-09-22/hard/5x5/intermediates/seed-461288726/content-shadow.json",
+      "success": true,
+      "fill_score": 50.0,
+      "fill_selection": {
+        "candidates_collected": 1,
+        "selection_method": "single",
+        "llm_rationale": "",
+        "answer_novelty_score": 0.0,
+        "answer_novelty_overlap_count": 0,
+        "answer_novelty_max_count": 0,
+        "answer_novelty_total_count": null
+      },
+      "clue_score": 82.7,
+      "title": "Fortune's Fool",
+      "title_reasoning": "1-Across is NOT ('Word before \"so fast!\"'), which frames the puzzle around negation and contradiction. The fill includes mystical/whimsical entries (TAROT, OPAL, CAROL, ELOPE) alongside modern tech (IPADS) and pop culture (TED, SLED). 'Fortune's Fool' plays on the TAROT card reference while evoking the puzzle's playful, slightly offbeat tone\u2014a nod to chance and whimsy without naming any answer.",
+      "runtime_seconds": 83.431,
+      "fill_seconds": 0.072,
+      "clue_seconds": 64.212,
+      "total_seconds": 83.431,
+      "grid_variants": 1,
+      "fill_attempts": 1,
+      "skipped_incompatible_variants": 0,
+      "failure_category": null,
+      "error_message": null
+    }
+  ],
+  "summary": {
+    "easy-5x5": {
+      "total": 2,
+      "successes": 2,
+      "failures": 0,
+      "success_rate": 1.0,
+      "average_runtime_seconds": 51.059,
+      "average_clue_score": 91.3
+    },
+    "hard-5x5": {
+      "total": 2,
+      "successes": 2,
+      "failures": 0,
+      "success_rate": 1.0,
+      "average_runtime_seconds": 110.702,
+      "average_clue_score": 82.25
+    }
+  }
+}

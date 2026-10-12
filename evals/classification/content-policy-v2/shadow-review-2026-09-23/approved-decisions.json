@@ -1,0 +1,386 @@
+{
+  "approved_by": "Neil",
+  "recorded_at": "2026-09-23T16:17:39.160578+00:00",
+  "approval_text": "Those proposals make sense to me",
+  "review_method": "User approved agent-proposed labels and actions; not independent blind labels",
+  "experiment_decision": "pending; collection remains paused",
+  "decisions": [
+    {
+      "case_id": "200d79b13dcd0da37678790779a51259f5cec19f25ac3117bf91a1c052b17e39",
+      "answer": "VODKA",
+      "clue": "Clear Russian spirit",
+      "editor_verdict": "violation",
+      "category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": true,
+        "drug_use_angle": false
+      },
+      "action": "hold_for_refill_or_replacement",
+      "outside_content_scope": null
+    },
+    {
+      "case_id": "5647a9cf8608a294e082dfc891e26ecc5413b0d17b5f14e9a413ac8a4af5946a",
+      "answer": "NORM",
+      "clue": "Barstool regular on \"Cheers\"",
+      "editor_verdict": "ambiguous",
+      "category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": null,
+        "drug_use_angle": false
+      },
+      "action": "rewrite",
+      "outside_content_scope": null
+    },
+    {
+      "case_id": "a8064cff61784a3874ee88b0ef30e0c7fa9495016f7936f9f4f2542cd635db77",
+      "answer": "DRE",
+      "clue": "Rapper and producer Dr. ___",
+      "editor_verdict": "acceptable",
+      "category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "action": "no_content_change",
+      "outside_content_scope": null
+    },
+    {
+      "case_id": "016671019debb706a553c94f137b7bee2c932bb7ed7fec7bff870e51be28b082",
+      "answer": "TAT",
+      "clue": "Bit of skin ink, for short",
+      "editor_verdict": "acceptable",
+      "category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "action": "no_content_change",
+      "outside_content_scope": null
+    },
+    {
+      "case_id": "13c537717f580aac2898e376a27c6da622017675e48bc2fdf121453bab650962",
+      "answer": "SITS",
+      "clue": "Takes a seat",
+      "editor_verdict": "acceptable",
+      "category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "action": "no_content_change",
+      "outside_content_scope": null
+    },
+    {
+      "case_id": "1ac21dbba9fa88461c4a5e0d78df3b0b4e138b62cb177869c8c05f9749ef4934",
+      "answer": "SHE",
+      "clue": "Pronoun used for an aunt",
+      "editor_verdict": "acceptable",
+      "category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "action": "no_content_change",
+      "outside_content_scope": null
+    },
+    {
+      "case_id": "1b9a9409137f783bd5f02820b4f30c40345e2d9fd2d9ec491ea8ef45a138219d",
+      "answer": "ALLOW",
+      "clue": "Permit to happen",
+      "editor_verdict": "acceptable",
+      "category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "action": "no_content_change",
+      "outside_content_scope": null
+    },
+    {
+      "case_id": "1d54ad1666c4d070b3a5c4514f18fada79e61a34800e2e6857e83686710ad619",
+      "answer": "WARDS",
+      "clue": "Hospital rooms for patients",
+      "editor_verdict": "acceptable",
+      "category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "action": "no_content_change",
+      "outside_content_scope": null
+    },
+    {
+      "case_id": "1fa951bdba5838f0487c5e76f41ef9d560d897811fa03070dc0340c8772a5190",
+      "answer": "DYE",
+      "clue": "Change the color of a shirt",
+      "editor_verdict": "acceptable",
+      "category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "action": "no_content_change",
+      "outside_content_scope": null
+    },
+    {
+      "case_id": "211fb20b3dc8ead54af902c50b98845c0a6d54ba334d6ea5accd14479fe62fd7",
+      "answer": "SON",
+      "clue": "Boy in a family",
+      "editor_verdict": "acceptable",
+      "category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "action": "no_content_change",
+      "outside_content_scope": null
+    },
+    {
+      "case_id": "2d8b8201f4a22fc3df9be941af84195e87ca9526c1f729c3161a3f23e18196d7",
+      "answer": "EBB",
+      "clue": "When the tide goes out",
+      "editor_verdict": "acceptable",
+      "category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "action": "no_content_change",
+      "outside_content_scope": null
+    },
+    {
+      "case_id": "374885f8aee8b2a7ff002a88ce1565f0c94ae00540266b45643d31b2f20d2f90",
+      "answer": "ETHAN",
+      "clue": "Actor Hawke of \"Training Day\"",
+      "editor_verdict": "acceptable",
+      "category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "action": "no_content_change",
+      "outside_content_scope": null
+    },
+    {
+      "case_id": "4306824c79bc3c7aefa778f1011b2732109eaeb9c68581ed96b677f54d395818",
+      "answer": "ANKLE",
+      "clue": "Joint just above the foot",
+      "editor_verdict": "acceptable",
+      "category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "action": "no_content_change",
+      "outside_content_scope": null
+    },
+    {
+      "case_id": "50f46b30fc6be3ee9e5c93408c17de8748e2505605daf3815f3be10143ba6ab0",
+      "answer": "MISS",
+      "clue": "Long for someone who's far away",
+      "editor_verdict": "acceptable",
+      "category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "action": "no_content_change",
+      "outside_content_scope": null
+    },
+    {
+      "case_id": "5240794e761d33ec224f6eef1a2cfeb7633f6ab562188c1e1938200400806f60",
+      "answer": "DRE",
+      "clue": "Music mogul Dr. ___",
+      "editor_verdict": "acceptable",
+      "category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "action": "no_content_change",
+      "outside_content_scope": null
+    },
+    {
+      "case_id": "568f674aaac2fdfa75e244f521e3bf783d6cb058ef2a7e8616e6d15d032834dd",
+      "answer": "SLEEP",
+      "clue": "What you do all night in bed",
+      "editor_verdict": "acceptable",
+      "category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "action": "no_content_change",
+      "outside_content_scope": null
+    },
+    {
+      "case_id": "5f01ad3318ae03ab51ce4467f877057ed8fef7ed946d91e5310caaee0dbaff9c",
+      "answer": "ETA",
+      "clue": "Greek letter between zeta and theta",
+      "editor_verdict": "acceptable",
+      "category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "action": "rewrite",
+      "outside_content_scope": "literal_answer_leak"
+    },
+    {
+      "case_id": "6e1ce6258313ce1832dfb765169c8b11e535ffc0f12d6bd4354d8cd2ac333f8e",
+      "answer": "NASTY",
+      "clue": "Cruel and hurtful",
+      "editor_verdict": "acceptable",
+      "category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "action": "no_content_change",
+      "outside_content_scope": null
+    },
+    {
+      "case_id": "714df2f49d0b4a8eb28dcbdad0c7f94772f0fecb4eb97c204a775b5613391304",
+      "answer": "MRS",
+      "clue": "Title for a married woman, briefly",
+      "editor_verdict": "acceptable",
+      "category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "action": "no_content_change",
+      "outside_content_scope": null
+    },
+    {
+      "case_id": "76b66540069940056995bb496df3c2a7b29d36e95842d8a37038858e85a5bc1b",
+      "answer": "LAPSE",
+      "clue": "Momentary slip of memory",
+      "editor_verdict": "acceptable",
+      "category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "action": "no_content_change",
+      "outside_content_scope": null
+    },
+    {
+      "case_id": "7afcf4b2a2c93aa29f453775ae68cb34872ced5a2fb1005cb115b3d72e983641",
+      "answer": "SCENT",
+      "clue": "Rose's sweet smell",
+      "editor_verdict": "acceptable",
+      "category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "action": "no_content_change",
+      "outside_content_scope": null
+    },
+    {
+      "case_id": "92bf1752ae8c58b8854f76efcd66480e651d29bbdc781b618293c3d91123806d",
+      "answer": "DUEL",
+      "clue": "One-on-one showdown at dawn",
+      "editor_verdict": "ambiguous",
+      "category_labels": {
+        "firearms_angle": null,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "action": "rewrite",
+      "outside_content_scope": null
+    },
+    {
+      "case_id": "c3380c80b15ec7f659253848242c8361b8c9fc77ac5cbaed2c3a1d0c2aac8ceb",
+      "answer": "HULL",
+      "clue": "Main body of a ship",
+      "editor_verdict": "acceptable",
+      "category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "action": "no_content_change",
+      "outside_content_scope": null
+    },
+    {
+      "case_id": "d39c78dbdecfcc4d95d2edb83ad2902dd19abebf2e1789564955bd881d2853f6",
+      "answer": "NICE",
+      "clue": "Kind of guy who finishes last, per the saying",
+      "editor_verdict": "acceptable",
+      "category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "action": "no_content_change",
+      "outside_content_scope": null
+    },
+    {
+      "case_id": "db30673ccecd6b3fd919aae1e7da25b368bc5d0385a8337514d8bc49773d7507",
+      "answer": "WOE",
+      "clue": "Misery or sorrow",
+      "editor_verdict": "acceptable",
+      "category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "action": "no_content_change",
+      "outside_content_scope": null
+    },
+    {
+      "case_id": "e917fdbe9f87de6be4d9601f81bb7b2923c607001eb4c6a942101bce408af7f4",
+      "answer": "OLDIE",
+      "clue": "Song from way back when",
+      "editor_verdict": "acceptable",
+      "category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "action": "no_content_change",
+      "outside_content_scope": null
+    },
+    {
+      "case_id": "f65da9fb208026523c50198bce0119d12c6d55568d1a2ff01967d8dbb739840d",
+      "answer": "LES",
+      "clue": "\"___ Mis\u00e9rables\" (hit musical)",
+      "editor_verdict": "acceptable",
+      "category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "action": "rewrite",
+      "outside_content_scope": "literal_answer_leak"
+    },
+    {
+      "case_id": "f67b98bed09cce7337f4170155c22749d6e7fbf1c713c26129a65bd6167bdf99",
+      "answer": "AUDIO",
+      "clue": "Sound part of a recording",
+      "editor_verdict": "acceptable",
+      "category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "action": "no_content_change",
+      "outside_content_scope": null
+    },
+    {
+      "case_id": "f6aef0168b55a75f9f6a40b46c8695cf51ca87bf59b25eb2ee35122a6718a4fd",
+      "answer": "HOW",
+      "clue": "\"___ do you spell that?\"",
+      "editor_verdict": "acceptable",
+      "category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "action": "no_content_change",
+      "outside_content_scope": null
+    }
+  ]
+}

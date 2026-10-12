@@ -1,0 +1,4253 @@
+{
+  "schema_version": 1,
+  "mode": "shadow",
+  "started_at": "2026-09-22T17:46:52.505389+00:00",
+  "protocol": {
+    "id": "content-policy-v2",
+    "mode": "shadow",
+    "selection": {
+      "protocol": "Maximize dev recall at FPR <= limit; break ties by lower FPR then higher threshold. Exact ties keep the first variant.",
+      "max_development_fpr": 0.02,
+      "development_corpus_sha256": "10a63fb72761a27857771c2bdd242e9c667a692551970c1513b74665236485df",
+      "development_groups": [
+        "ACID",
+        "AIM",
+        "APRON",
+        "BAKED",
+        "BOTTLE",
+        "CALEB",
+        "CLIP",
+        "CORK",
+        "CRACK",
+        "DEALER",
+        "DJ",
+        "DRY",
+        "FIRE",
+        "FIX",
+        "GAUGE",
+        "GUN",
+        "HAMMER",
+        "HASH",
+        "HEMP",
+        "HIGH",
+        "HIT",
+        "LOADED",
+        "MAX",
+        "MORPHINE",
+        "MUSHROOM",
+        "NSA",
+        "PHARMACY",
+        "POT",
+        "ROLL",
+        "ROUND",
+        "SAFETY",
+        "SHOT",
+        "SOAR",
+        "SPEED",
+        "TOAST",
+        "VP",
+        "WINE"
+      ],
+      "candidates": {
+        "context": {
+          "run_hash": "d887afc6f30fd0aa21c88b69af98579b7589dab24c8b75b23ea27b9a02f8b7f0",
+          "suite_sha256": "01ab15156436ab2c44edbc2c3d57fd23a751a463dbce8211bf7d4df46cc3fb52",
+          "model_sha256": "c8a055a394c14d1de5a25e81e7fa4395f044accadd0056a827b1d5c3fb6aa138"
+        },
+        "clue-only": {
+          "run_hash": "b5e14fba0aa256d82069fec127220eb016bbc6097446da167374dde17d9deae9",
+          "suite_sha256": "3ee0888f58b8a3810de51714528c3e0bcaa3acf4124f6f4a421ad6de3d34dde4",
+          "model_sha256": "c8a055a394c14d1de5a25e81e7fa4395f044accadd0056a827b1d5c3fb6aa138"
+        }
+      },
+      "questions": {
+        "firearms_angle": {
+          "variant": "context",
+          "threshold": 0.78,
+          "disabled": false,
+          "development_metrics": {
+            "n": 68,
+            "positive": 10,
+            "negative": 58,
+            "tp": 10,
+            "fp": 0,
+            "fn": 0,
+            "tn": 58,
+            "accuracy": 1.0,
+            "recall": 1.0,
+            "fpr": 0.0,
+            "precision": 1.0,
+            "auc": 1.0,
+            "brier": 0.007129411764705882
+          },
+          "selection_rank": [
+            1.0,
+            -0.0,
+            0.78
+          ]
+        },
+        "alcohol_angle": {
+          "variant": "clue-only",
+          "threshold": 0.82,
+          "disabled": false,
+          "development_metrics": {
+            "n": 68,
+            "positive": 7,
+            "negative": 61,
+            "tp": 7,
+            "fp": 0,
+            "fn": 0,
+            "tn": 61,
+            "accuracy": 1.0,
+            "recall": 1.0,
+            "fpr": 0.0,
+            "precision": 1.0,
+            "auc": 1.0,
+            "brier": 0.006320588235294118
+          },
+          "selection_rank": [
+            1.0,
+            -0.0,
+            0.82
+          ]
+        },
+        "drug_use_angle": {
+          "variant": "context",
+          "threshold": 0.95,
+          "disabled": false,
+          "development_metrics": {
+            "n": 68,
+            "positive": 12,
+            "negative": 56,
+            "tp": 12,
+            "fp": 0,
+            "fn": 0,
+            "tn": 56,
+            "accuracy": 1.0,
+            "recall": 1.0,
+            "fpr": 0.0,
+            "precision": 1.0,
+            "auc": 1.0,
+            "brier": 0.015483823529411763
+          },
+          "selection_rank": [
+            1.0,
+            -0.0,
+            0.95
+          ]
+        }
+      }
+    },
+    "suites": {
+      "context": {
+        "id": "content-policy-v2-context",
+        "state_fields": [
+          "answer",
+          "clue"
+        ],
+        "questions": {
+          "firearms_angle": {
+            "required_fields": [
+              "answer",
+              "clue"
+            ],
+            "question": {
+              "type": "noul",
+              "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to firearms, their ammunition or parts, gun use, or a recognizable gun idiom? Count figurative gun references. Unrelated photography, sports, astronomy, tools, and body-part senses do not count. This question concerns firearms, not every kind of weapon or violence."
+            }
+          },
+          "alcohol_angle": {
+            "required_fields": [
+              "answer",
+              "clue"
+            ],
+            "question": {
+              "type": "noul",
+              "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to alcoholic beverages, drinking alcohol, intoxication, hangovers, or recovery from drinking? Count figurative references. Nonalcoholic beverages, food, and unrelated alternate meanings do not count."
+            }
+          },
+          "drug_use_angle": {
+            "required_fields": [
+              "answer",
+              "clue"
+            ],
+            "question": {
+              "type": "noul",
+              "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to recreational or illicit drugs, their use, production, sale, effects, or recovery? Count figurative references. Ordinary medical treatment, pharmacy shopping, food, gardening, and unrelated alternate meanings do not count."
+            }
+          }
+        }
+      },
+      "clue-only": {
+        "id": "content-policy-v2-clue-only",
+        "state_fields": [
+          "clue"
+        ],
+        "questions": {
+          "firearms_angle": {
+            "required_fields": [
+              "clue"
+            ],
+            "question": {
+              "type": "noul",
+              "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to firearms, their ammunition or parts, gun use, or a recognizable gun idiom? Count figurative gun references. Unrelated photography, sports, astronomy, tools, and body-part senses do not count. This question concerns firearms, not every kind of weapon or violence."
+            }
+          },
+          "alcohol_angle": {
+            "required_fields": [
+              "clue"
+            ],
+            "question": {
+              "type": "noul",
+              "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to alcoholic beverages, drinking alcohol, intoxication, hangovers, or recovery from drinking? Count figurative references. Nonalcoholic beverages, food, and unrelated alternate meanings do not count."
+            }
+          },
+          "drug_use_angle": {
+            "required_fields": [
+              "clue"
+            ],
+            "question": {
+              "type": "noul",
+              "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to recreational or illicit drugs, their use, production, sale, effects, or recovery? Count figurative references. Ordinary medical treatment, pharmacy shopping, food, gardening, and unrelated alternate meanings do not count."
+            }
+          }
+        }
+      }
+    },
+    "model": {
+      "provider": "typesafe",
+      "model": "jev-1.13.0",
+      "api_key_env": "TYPESAFE_API_KEY",
+      "timeout": 60,
+      "prices_usd_per_million": {
+        "input_tokens": 0.042,
+        "output_tokens": 0
+      },
+      "pricing_note": "TypeSafe published input/output rates verified 2026-09-18; estimates only."
+    }
+  },
+  "protocol_sha256": "051f21ac606a5aac854b6edb0afdcb16a4e8ec7bde26c160e99881e00f3a662e",
+  "requests": {
+    "1cfa2eb7bc35cd26877731376b072ad1846919cee43b1a90a32a0a321cbcdafe": {
+      "variant": "context",
+      "state": {
+        "answer": "TATA",
+        "clue": "Breezy farewell"
+      },
+      "questions": {
+        "firearms_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to firearms, their ammunition or parts, gun use, or a recognizable gun idiom? Count figurative gun references. Unrelated photography, sports, astronomy, tools, and body-part senses do not count. This question concerns firearms, not every kind of weapon or violence."
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to alcoholic beverages, drinking alcohol, intoxication, hangovers, or recovery from drinking? Count figurative references. Nonalcoholic beverages, food, and unrelated alternate meanings do not count."
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to recreational or illicit drugs, their use, production, sale, effects, or recovery? Count figurative references. Ordinary medical treatment, pharmacy shopping, food, gardening, and unrelated alternate meanings do not count."
+        }
+      },
+      "started_at": "2026-09-22T17:47:32.385980+00:00",
+      "probabilities": {
+        "firearms_angle": 0.05,
+        "alcohol_angle": 0.05,
+        "drug_use_angle": 0.04
+      },
+      "raw": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "firearms_angle": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "alcohol_angle": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "drug_use_angle": {
+            "type": "noul",
+            "noul": 0.04
+          }
+        },
+        "usage": {
+          "input_tokens": 584,
+          "output_tokens": 59
+        }
+      },
+      "resolved_model": "jev-1.13.0",
+      "usage": {
+        "input_tokens": 584,
+        "output_tokens": 59
+      },
+      "error": null,
+      "latency_s": 0.3656
+    },
+    "ac1ec37a9f15c18625edef429733b57283ef2360ae477772fcc434e343b6f5ea": {
+      "variant": "clue-only",
+      "state": {
+        "clue": "Breezy farewell"
+      },
+      "questions": {
+        "firearms_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to firearms, their ammunition or parts, gun use, or a recognizable gun idiom? Count figurative gun references. Unrelated photography, sports, astronomy, tools, and body-part senses do not count. This question concerns firearms, not every kind of weapon or violence."
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to alcoholic beverages, drinking alcohol, intoxication, hangovers, or recovery from drinking? Count figurative references. Nonalcoholic beverages, food, and unrelated alternate meanings do not count."
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to recreational or illicit drugs, their use, production, sale, effects, or recovery? Count figurative references. Ordinary medical treatment, pharmacy shopping, food, gardening, and unrelated alternate meanings do not count."
+        }
+      },
+      "started_at": "2026-09-22T17:47:32.391654+00:00",
+      "probabilities": {
+        "firearms_angle": 0.09,
+        "alcohol_angle": 0.06,
+        "drug_use_angle": 0.04
+      },
+      "raw": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "firearms_angle": {
+            "type": "noul",
+            "noul": 0.09
+          },
+          "alcohol_angle": {
+            "type": "noul",
+            "noul": 0.06
+          },
+          "drug_use_angle": {
+            "type": "noul",
+            "noul": 0.04
+          }
+        },
+        "usage": {
+          "input_tokens": 575,
+          "output_tokens": 59
+        }
+      },
+      "resolved_model": "jev-1.13.0",
+      "usage": {
+        "input_tokens": 575,
+        "output_tokens": 59
+      },
+      "error": null,
+      "latency_s": 0.3453
+    },
+    "80b9e54eb1afdc1876bcf02ba8ab805f6dbf52f160631e188dd267e9509c0f2f": {
+      "variant": "context",
+      "state": {
+        "answer": "TNT",
+        "clue": "Hard-rocking AC/DC classic"
+      },
+      "questions": {
+        "firearms_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to firearms, their ammunition or parts, gun use, or a recognizable gun idiom? Count figurative gun references. Unrelated photography, sports, astronomy, tools, and body-part senses do not count. This question concerns firearms, not every kind of weapon or violence."
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to alcoholic beverages, drinking alcohol, intoxication, hangovers, or recovery from drinking? Count figurative references. Nonalcoholic beverages, food, and unrelated alternate meanings do not count."
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to recreational or illicit drugs, their use, production, sale, effects, or recovery? Count figurative references. Ordinary medical treatment, pharmacy shopping, food, gardening, and unrelated alternate meanings do not count."
+        }
+      },
+      "started_at": "2026-09-22T17:47:32.395371+00:00",
+      "probabilities": {
+        "firearms_angle": 0.12,
+        "alcohol_angle": 0.12,
+        "drug_use_angle": 0.08
+      },
+      "raw": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "firearms_angle": {
+            "type": "noul",
+            "noul": 0.12
+          },
+          "alcohol_angle": {
+            "type": "noul",
+            "noul": 0.12
+          },
+          "drug_use_angle": {
+            "type": "noul",
+            "noul": 0.08
+          }
+        },
+        "usage": {
+          "input_tokens": 587,
+          "output_tokens": 59
+        }
+      },
+      "resolved_model": "jev-1.13.0",
+      "usage": {
+        "input_tokens": 587,
+        "output_tokens": 59
+      },
+      "error": null,
+      "latency_s": 0.3732
+    },
+    "1864a5ea2ff689c9569c2508208f77f95a3c53e724144f6dde9ad20847b55538": {
+      "variant": "clue-only",
+      "state": {
+        "clue": "Hard-rocking AC/DC classic"
+      },
+      "questions": {
+        "firearms_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to firearms, their ammunition or parts, gun use, or a recognizable gun idiom? Count figurative gun references. Unrelated photography, sports, astronomy, tools, and body-part senses do not count. This question concerns firearms, not every kind of weapon or violence."
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to alcoholic beverages, drinking alcohol, intoxication, hangovers, or recovery from drinking? Count figurative references. Nonalcoholic beverages, food, and unrelated alternate meanings do not count."
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to recreational or illicit drugs, their use, production, sale, effects, or recovery? Count figurative references. Ordinary medical treatment, pharmacy shopping, food, gardening, and unrelated alternate meanings do not count."
+        }
+      },
+      "started_at": "2026-09-22T17:47:32.395546+00:00",
+      "probabilities": {
+        "firearms_angle": 0.25,
+        "alcohol_angle": 0.16,
+        "drug_use_angle": 0.1
+      },
+      "raw": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "firearms_angle": {
+            "type": "noul",
+            "noul": 0.25
+          },
+          "alcohol_angle": {
+            "type": "noul",
+            "noul": 0.16
+          },
+          "drug_use_angle": {
+            "type": "noul",
+            "noul": 0.1
+          }
+        },
+        "usage": {
+          "input_tokens": 578,
+          "output_tokens": 59
+        }
+      },
+      "resolved_model": "jev-1.13.0",
+      "usage": {
+        "input_tokens": 578,
+        "output_tokens": 59
+      },
+      "error": null,
+      "latency_s": 0.3502
+    },
+    "b77e65c1c05c3fb8e8800555d92543fcfabada1281b9923bab4ac1a728736365": {
+      "variant": "context",
+      "state": {
+        "answer": "AORTA",
+        "clue": "Body's largest blood vessel"
+      },
+      "questions": {
+        "firearms_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to firearms, their ammunition or parts, gun use, or a recognizable gun idiom? Count figurative gun references. Unrelated photography, sports, astronomy, tools, and body-part senses do not count. This question concerns firearms, not every kind of weapon or violence."
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to alcoholic beverages, drinking alcohol, intoxication, hangovers, or recovery from drinking? Count figurative references. Nonalcoholic beverages, food, and unrelated alternate meanings do not count."
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to recreational or illicit drugs, their use, production, sale, effects, or recovery? Count figurative references. Ordinary medical treatment, pharmacy shopping, food, gardening, and unrelated alternate meanings do not count."
+        }
+      },
+      "started_at": "2026-09-22T17:47:32.736957+00:00",
+      "probabilities": {
+        "firearms_angle": 0.01,
+        "alcohol_angle": 0.01,
+        "drug_use_angle": 0.01
+      },
+      "raw": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "firearms_angle": {
+            "type": "noul",
+            "noul": 0.01
+          },
+          "alcohol_angle": {
+            "type": "noul",
+            "noul": 0.01
+          },
+          "drug_use_angle": {
+            "type": "noul",
+            "noul": 0.01
+          }
+        },
+        "usage": {
+          "input_tokens": 586,
+          "output_tokens": 59
+        }
+      },
+      "resolved_model": "jev-1.13.0",
+      "usage": {
+        "input_tokens": 586,
+        "output_tokens": 59
+      },
+      "error": null,
+      "latency_s": 0.4269
+    },
+    "5ca884d86d77a3d1f9e6c75044e717c65cf0f7b6358c1022d123d703af2884ca": {
+      "variant": "clue-only",
+      "state": {
+        "clue": "Body's largest blood vessel"
+      },
+      "questions": {
+        "firearms_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to firearms, their ammunition or parts, gun use, or a recognizable gun idiom? Count figurative gun references. Unrelated photography, sports, astronomy, tools, and body-part senses do not count. This question concerns firearms, not every kind of weapon or violence."
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to alcoholic beverages, drinking alcohol, intoxication, hangovers, or recovery from drinking? Count figurative references. Nonalcoholic beverages, food, and unrelated alternate meanings do not count."
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to recreational or illicit drugs, their use, production, sale, effects, or recovery? Count figurative references. Ordinary medical treatment, pharmacy shopping, food, gardening, and unrelated alternate meanings do not count."
+        }
+      },
+      "started_at": "2026-09-22T17:47:32.745801+00:00",
+      "probabilities": {
+        "firearms_angle": 0.03,
+        "alcohol_angle": 0.02,
+        "drug_use_angle": 0.01
+      },
+      "raw": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "firearms_angle": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "alcohol_angle": {
+            "type": "noul",
+            "noul": 0.02
+          },
+          "drug_use_angle": {
+            "type": "noul",
+            "noul": 0.01
+          }
+        },
+        "usage": {
+          "input_tokens": 576,
+          "output_tokens": 59
+        }
+      },
+      "resolved_model": "jev-1.13.0",
+      "usage": {
+        "input_tokens": 576,
+        "output_tokens": 59
+      },
+      "error": null,
+      "latency_s": 0.3653
+    },
+    "44809f09db6df875bae30276d4c3369f5e7308b493ae35c0ac6afc4b56546aeb": {
+      "variant": "context",
+      "state": {
+        "answer": "TRAIT",
+        "clue": "Eye color or curly hair, genetically"
+      },
+      "questions": {
+        "firearms_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to firearms, their ammunition or parts, gun use, or a recognizable gun idiom? Count figurative gun references. Unrelated photography, sports, astronomy, tools, and body-part senses do not count. This question concerns firearms, not every kind of weapon or violence."
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to alcoholic beverages, drinking alcohol, intoxication, hangovers, or recovery from drinking? Count figurative references. Nonalcoholic beverages, food, and unrelated alternate meanings do not count."
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to recreational or illicit drugs, their use, production, sale, effects, or recovery? Count figurative references. Ordinary medical treatment, pharmacy shopping, food, gardening, and unrelated alternate meanings do not count."
+        }
+      },
+      "started_at": "2026-09-22T17:47:32.751464+00:00",
+      "probabilities": {
+        "firearms_angle": 0.01,
+        "alcohol_angle": 0.01,
+        "drug_use_angle": 0.01
+      },
+      "raw": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "firearms_angle": {
+            "type": "noul",
+            "noul": 0.01
+          },
+          "alcohol_angle": {
+            "type": "noul",
+            "noul": 0.01
+          },
+          "drug_use_angle": {
+            "type": "noul",
+            "noul": 0.01
+          }
+        },
+        "usage": {
+          "input_tokens": 587,
+          "output_tokens": 59
+        }
+      },
+      "resolved_model": "jev-1.13.0",
+      "usage": {
+        "input_tokens": 587,
+        "output_tokens": 59
+      },
+      "error": null,
+      "latency_s": 0.4129
+    },
+    "da68b8db624f753602cc2eb0ab2a0bfb77187ba8585b43ce284d8a1ed9980146": {
+      "variant": "clue-only",
+      "state": {
+        "clue": "Eye color or curly hair, genetically"
+      },
+      "questions": {
+        "firearms_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to firearms, their ammunition or parts, gun use, or a recognizable gun idiom? Count figurative gun references. Unrelated photography, sports, astronomy, tools, and body-part senses do not count. This question concerns firearms, not every kind of weapon or violence."
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to alcoholic beverages, drinking alcohol, intoxication, hangovers, or recovery from drinking? Count figurative references. Nonalcoholic beverages, food, and unrelated alternate meanings do not count."
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to recreational or illicit drugs, their use, production, sale, effects, or recovery? Count figurative references. Ordinary medical treatment, pharmacy shopping, food, gardening, and unrelated alternate meanings do not count."
+        }
+      },
+      "started_at": "2026-09-22T17:47:32.768620+00:00",
+      "probabilities": {
+        "firearms_angle": 0.04,
+        "alcohol_angle": 0.03,
+        "drug_use_angle": 0.04
+      },
+      "raw": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "firearms_angle": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "alcohol_angle": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "drug_use_angle": {
+            "type": "noul",
+            "noul": 0.04
+          }
+        },
+        "usage": {
+          "input_tokens": 578,
+          "output_tokens": 59
+        }
+      },
+      "resolved_model": "jev-1.13.0",
+      "usage": {
+        "input_tokens": 578,
+        "output_tokens": 59
+      },
+      "error": null,
+      "latency_s": 0.4017
+    },
+    "9a051ac1d53ab09928d26c009dc6e7f6d5afd8d93d3e2ee1ec8d5256e065de66": {
+      "variant": "context",
+      "state": {
+        "answer": "AMINO",
+        "clue": "Kind of acid found in proteins"
+      },
+      "questions": {
+        "firearms_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to firearms, their ammunition or parts, gun use, or a recognizable gun idiom? Count figurative gun references. Unrelated photography, sports, astronomy, tools, and body-part senses do not count. This question concerns firearms, not every kind of weapon or violence."
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to alcoholic beverages, drinking alcohol, intoxication, hangovers, or recovery from drinking? Count figurative references. Nonalcoholic beverages, food, and unrelated alternate meanings do not count."
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to recreational or illicit drugs, their use, production, sale, effects, or recovery? Count figurative references. Ordinary medical treatment, pharmacy shopping, food, gardening, and unrelated alternate meanings do not count."
+        }
+      },
+      "started_at": "2026-09-22T17:47:33.111111+00:00",
+      "probabilities": {
+        "firearms_angle": 0.01,
+        "alcohol_angle": 0.02,
+        "drug_use_angle": 0.02
+      },
+      "raw": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "firearms_angle": {
+            "type": "noul",
+            "noul": 0.01
+          },
+          "alcohol_angle": {
+            "type": "noul",
+            "noul": 0.02
+          },
+          "drug_use_angle": {
+            "type": "noul",
+            "noul": 0.02
+          }
+        },
+        "usage": {
+          "input_tokens": 586,
+          "output_tokens": 59
+        }
+      },
+      "resolved_model": "jev-1.13.0",
+      "usage": {
+        "input_tokens": 586,
+        "output_tokens": 59
+      },
+      "error": null,
+      "latency_s": 0.3672
+    },
+    "d457f706c531535eb12c339eb0352f9889f8714157d536fa4d18f16cd4c79e57": {
+      "variant": "clue-only",
+      "state": {
+        "clue": "Kind of acid found in proteins"
+      },
+      "questions": {
+        "firearms_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to firearms, their ammunition or parts, gun use, or a recognizable gun idiom? Count figurative gun references. Unrelated photography, sports, astronomy, tools, and body-part senses do not count. This question concerns firearms, not every kind of weapon or violence."
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to alcoholic beverages, drinking alcohol, intoxication, hangovers, or recovery from drinking? Count figurative references. Nonalcoholic beverages, food, and unrelated alternate meanings do not count."
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to recreational or illicit drugs, their use, production, sale, effects, or recovery? Count figurative references. Ordinary medical treatment, pharmacy shopping, food, gardening, and unrelated alternate meanings do not count."
+        }
+      },
+      "started_at": "2026-09-22T17:47:33.163855+00:00",
+      "probabilities": {
+        "firearms_angle": 0.01,
+        "alcohol_angle": 0.02,
+        "drug_use_angle": 0.02
+      },
+      "raw": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "firearms_angle": {
+            "type": "noul",
+            "noul": 0.01
+          },
+          "alcohol_angle": {
+            "type": "noul",
+            "noul": 0.02
+          },
+          "drug_use_angle": {
+            "type": "noul",
+            "noul": 0.02
+          }
+        },
+        "usage": {
+          "input_tokens": 577,
+          "output_tokens": 59
+        }
+      },
+      "resolved_model": "jev-1.13.0",
+      "usage": {
+        "input_tokens": 577,
+        "output_tokens": 59
+      },
+      "error": null,
+      "latency_s": 0.3082
+    },
+    "de9fa10a83dada02bef30550b58a17c1d8e5a27c72df7675a97f5618cef483de": {
+      "variant": "context",
+      "state": {
+        "answer": "NORM",
+        "clue": "Barstool regular on \"Cheers\""
+      },
+      "questions": {
+        "firearms_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to firearms, their ammunition or parts, gun use, or a recognizable gun idiom? Count figurative gun references. Unrelated photography, sports, astronomy, tools, and body-part senses do not count. This question concerns firearms, not every kind of weapon or violence."
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to alcoholic beverages, drinking alcohol, intoxication, hangovers, or recovery from drinking? Count figurative references. Nonalcoholic beverages, food, and unrelated alternate meanings do not count."
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to recreational or illicit drugs, their use, production, sale, effects, or recovery? Count figurative references. Ordinary medical treatment, pharmacy shopping, food, gardening, and unrelated alternate meanings do not count."
+        }
+      },
+      "started_at": "2026-09-22T17:47:33.164359+00:00",
+      "probabilities": {
+        "firearms_angle": 0.07,
+        "alcohol_angle": 0.29,
+        "drug_use_angle": 0.07
+      },
+      "raw": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "firearms_angle": {
+            "type": "noul",
+            "noul": 0.07
+          },
+          "alcohol_angle": {
+            "type": "noul",
+            "noul": 0.29
+          },
+          "drug_use_angle": {
+            "type": "noul",
+            "noul": 0.07
+          }
+        },
+        "usage": {
+          "input_tokens": 588,
+          "output_tokens": 59
+        }
+      },
+      "resolved_model": "jev-1.13.0",
+      "usage": {
+        "input_tokens": 588,
+        "output_tokens": 59
+      },
+      "error": null,
+      "latency_s": 0.3269
+    },
+    "fe2d519cc4df5c25402dff5b8937fd7f39e156cc12b532f65bb9d97fdf4d51ba": {
+      "variant": "clue-only",
+      "state": {
+        "clue": "Barstool regular on \"Cheers\""
+      },
+      "questions": {
+        "firearms_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to firearms, their ammunition or parts, gun use, or a recognizable gun idiom? Count figurative gun references. Unrelated photography, sports, astronomy, tools, and body-part senses do not count. This question concerns firearms, not every kind of weapon or violence."
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to alcoholic beverages, drinking alcohol, intoxication, hangovers, or recovery from drinking? Count figurative references. Nonalcoholic beverages, food, and unrelated alternate meanings do not count."
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to recreational or illicit drugs, their use, production, sale, effects, or recovery? Count figurative references. Ordinary medical treatment, pharmacy shopping, food, gardening, and unrelated alternate meanings do not count."
+        }
+      },
+      "started_at": "2026-09-22T17:47:33.170384+00:00",
+      "probabilities": {
+        "firearms_angle": 0.08,
+        "alcohol_angle": 0.56,
+        "drug_use_angle": 0.12
+      },
+      "raw": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "firearms_angle": {
+            "type": "noul",
+            "noul": 0.08
+          },
+          "alcohol_angle": {
+            "type": "noul",
+            "noul": 0.56
+          },
+          "drug_use_angle": {
+            "type": "noul",
+            "noul": 0.12
+          }
+        },
+        "usage": {
+          "input_tokens": 579,
+          "output_tokens": 59
+        }
+      },
+      "resolved_model": "jev-1.13.0",
+      "usage": {
+        "input_tokens": 579,
+        "output_tokens": 59
+      },
+      "error": null,
+      "latency_s": 0.3022
+    },
+    "af90fda8f575a34e1a528fbe53fb96bf38adc4cb0696cfb7c02842df7554d0ed": {
+      "variant": "context",
+      "state": {
+        "answer": "TRAIL",
+        "clue": "Fall behind in a race"
+      },
+      "questions": {
+        "firearms_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to firearms, their ammunition or parts, gun use, or a recognizable gun idiom? Count figurative gun references. Unrelated photography, sports, astronomy, tools, and body-part senses do not count. This question concerns firearms, not every kind of weapon or violence."
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to alcoholic beverages, drinking alcohol, intoxication, hangovers, or recovery from drinking? Count figurative references. Nonalcoholic beverages, food, and unrelated alternate meanings do not count."
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to recreational or illicit drugs, their use, production, sale, effects, or recovery? Count figurative references. Ordinary medical treatment, pharmacy shopping, food, gardening, and unrelated alternate meanings do not count."
+        }
+      },
+      "started_at": "2026-09-22T17:47:33.472101+00:00",
+      "probabilities": {
+        "firearms_angle": 0.04,
+        "alcohol_angle": 0.03,
+        "drug_use_angle": 0.04
+      },
+      "raw": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "firearms_angle": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "alcohol_angle": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "drug_use_angle": {
+            "type": "noul",
+            "noul": 0.04
+          }
+        },
+        "usage": {
+          "input_tokens": 585,
+          "output_tokens": 59
+        }
+      },
+      "resolved_model": "jev-1.13.0",
+      "usage": {
+        "input_tokens": 585,
+        "output_tokens": 59
+      },
+      "error": null,
+      "latency_s": 0.3455
+    },
+    "212597a48e4f69340b40f134145e2d2e5850dd6bd77b38d3899805266f7fc99d": {
+      "variant": "clue-only",
+      "state": {
+        "clue": "Fall behind in a race"
+      },
+      "questions": {
+        "firearms_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to firearms, their ammunition or parts, gun use, or a recognizable gun idiom? Count figurative gun references. Unrelated photography, sports, astronomy, tools, and body-part senses do not count. This question concerns firearms, not every kind of weapon or violence."
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to alcoholic beverages, drinking alcohol, intoxication, hangovers, or recovery from drinking? Count figurative references. Nonalcoholic beverages, food, and unrelated alternate meanings do not count."
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to recreational or illicit drugs, their use, production, sale, effects, or recovery? Count figurative references. Ordinary medical treatment, pharmacy shopping, food, gardening, and unrelated alternate meanings do not count."
+        }
+      },
+      "started_at": "2026-09-22T17:47:33.472560+00:00",
+      "probabilities": {
+        "firearms_angle": 0.06,
+        "alcohol_angle": 0.05,
+        "drug_use_angle": 0.03
+      },
+      "raw": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "firearms_angle": {
+            "type": "noul",
+            "noul": 0.06
+          },
+          "alcohol_angle": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "drug_use_angle": {
+            "type": "noul",
+            "noul": 0.03
+          }
+        },
+        "usage": {
+          "input_tokens": 576,
+          "output_tokens": 59
+        }
+      },
+      "resolved_model": "jev-1.13.0",
+      "usage": {
+        "input_tokens": 576,
+        "output_tokens": 59
+      },
+      "error": null,
+      "latency_s": 0.3163
+    },
+    "250170a662d5c0711fbd28e35b1c091533ea38160547c0522f3da2b38f8608a5": {
+      "variant": "context",
+      "state": {
+        "answer": "LAM",
+        "clue": "On the ___ (fleeing)"
+      },
+      "questions": {
+        "firearms_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to firearms, their ammunition or parts, gun use, or a recognizable gun idiom? Count figurative gun references. Unrelated photography, sports, astronomy, tools, and body-part senses do not count. This question concerns firearms, not every kind of weapon or violence."
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to alcoholic beverages, drinking alcohol, intoxication, hangovers, or recovery from drinking? Count figurative references. Nonalcoholic beverages, food, and unrelated alternate meanings do not count."
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to recreational or illicit drugs, their use, production, sale, effects, or recovery? Count figurative references. Ordinary medical treatment, pharmacy shopping, food, gardening, and unrelated alternate meanings do not count."
+        }
+      },
+      "started_at": "2026-09-22T17:47:33.478349+00:00",
+      "probabilities": {
+        "firearms_angle": 0.22,
+        "alcohol_angle": 0.15,
+        "drug_use_angle": 0.18
+      },
+      "raw": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "firearms_angle": {
+            "type": "noul",
+            "noul": 0.22
+          },
+          "alcohol_angle": {
+            "type": "noul",
+            "noul": 0.15
+          },
+          "drug_use_angle": {
+            "type": "noul",
+            "noul": 0.18
+          }
+        },
+        "usage": {
+          "input_tokens": 587,
+          "output_tokens": 59
+        }
+      },
+      "resolved_model": "jev-1.13.0",
+      "usage": {
+        "input_tokens": 587,
+        "output_tokens": 59
+      },
+      "error": null,
+      "latency_s": 0.2993
+    },
+    "cdf0976d186bd45bb9c3f14b81c9245740e71ea3b4650327bb348caaf3b581c5": {
+      "variant": "clue-only",
+      "state": {
+        "clue": "On the ___ (fleeing)"
+      },
+      "questions": {
+        "firearms_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to firearms, their ammunition or parts, gun use, or a recognizable gun idiom? Count figurative gun references. Unrelated photography, sports, astronomy, tools, and body-part senses do not count. This question concerns firearms, not every kind of weapon or violence."
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to alcoholic beverages, drinking alcohol, intoxication, hangovers, or recovery from drinking? Count figurative references. Nonalcoholic beverages, food, and unrelated alternate meanings do not count."
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to recreational or illicit drugs, their use, production, sale, effects, or recovery? Count figurative references. Ordinary medical treatment, pharmacy shopping, food, gardening, and unrelated alternate meanings do not count."
+        }
+      },
+      "started_at": "2026-09-22T17:47:33.491329+00:00",
+      "probabilities": {
+        "firearms_angle": 0.2,
+        "alcohol_angle": 0.14,
+        "drug_use_angle": 0.13
+      },
+      "raw": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "firearms_angle": {
+            "type": "noul",
+            "noul": 0.2
+          },
+          "alcohol_angle": {
+            "type": "noul",
+            "noul": 0.14
+          },
+          "drug_use_angle": {
+            "type": "noul",
+            "noul": 0.13
+          }
+        },
+        "usage": {
+          "input_tokens": 579,
+          "output_tokens": 59
+        }
+      },
+      "resolved_model": "jev-1.13.0",
+      "usage": {
+        "input_tokens": 579,
+        "output_tokens": 59
+      },
+      "error": null,
+      "latency_s": 0.3203
+    },
+    "76d47cace664b6054a5c4bd80744df9351ea098f0770037f0f680b6aa2e06430": {
+      "variant": "context",
+      "state": {
+        "answer": "TINA",
+        "clue": "Turner who sang \"Proud Mary\""
+      },
+      "questions": {
+        "firearms_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to firearms, their ammunition or parts, gun use, or a recognizable gun idiom? Count figurative gun references. Unrelated photography, sports, astronomy, tools, and body-part senses do not count. This question concerns firearms, not every kind of weapon or violence."
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to alcoholic beverages, drinking alcohol, intoxication, hangovers, or recovery from drinking? Count figurative references. Nonalcoholic beverages, food, and unrelated alternate meanings do not count."
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to recreational or illicit drugs, their use, production, sale, effects, or recovery? Count figurative references. Ordinary medical treatment, pharmacy shopping, food, gardening, and unrelated alternate meanings do not count."
+        }
+      },
+      "started_at": "2026-09-22T17:47:33.777718+00:00",
+      "probabilities": {
+        "firearms_angle": 0.06,
+        "alcohol_angle": 0.07,
+        "drug_use_angle": 0.07
+      },
+      "raw": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "firearms_angle": {
+            "type": "noul",
+            "noul": 0.06
+          },
+          "alcohol_angle": {
+            "type": "noul",
+            "noul": 0.07
+          },
+          "drug_use_angle": {
+            "type": "noul",
+            "noul": 0.07
+          }
+        },
+        "usage": {
+          "input_tokens": 589,
+          "output_tokens": 59
+        }
+      },
+      "resolved_model": "jev-1.13.0",
+      "usage": {
+        "input_tokens": 589,
+        "output_tokens": 59
+      },
+      "error": null,
+      "latency_s": 0.3973
+    },
+    "fbe06b0a9a8fbd4811686b40d5d76904b5dd2a2dbdecaf534cf011c57cb960e8": {
+      "variant": "clue-only",
+      "state": {
+        "clue": "Turner who sang \"Proud Mary\""
+      },
+      "questions": {
+        "firearms_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to firearms, their ammunition or parts, gun use, or a recognizable gun idiom? Count figurative gun references. Unrelated photography, sports, astronomy, tools, and body-part senses do not count. This question concerns firearms, not every kind of weapon or violence."
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to alcoholic beverages, drinking alcohol, intoxication, hangovers, or recovery from drinking? Count figurative references. Nonalcoholic beverages, food, and unrelated alternate meanings do not count."
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to recreational or illicit drugs, their use, production, sale, effects, or recovery? Count figurative references. Ordinary medical treatment, pharmacy shopping, food, gardening, and unrelated alternate meanings do not count."
+        }
+      },
+      "started_at": "2026-09-22T17:47:33.788900+00:00",
+      "probabilities": {
+        "firearms_angle": 0.05,
+        "alcohol_angle": 0.08,
+        "drug_use_angle": 0.07
+      },
+      "raw": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "firearms_angle": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "alcohol_angle": {
+            "type": "noul",
+            "noul": 0.08
+          },
+          "drug_use_angle": {
+            "type": "noul",
+            "noul": 0.07
+          }
+        },
+        "usage": {
+          "input_tokens": 580,
+          "output_tokens": 59
+        }
+      },
+      "resolved_model": "jev-1.13.0",
+      "usage": {
+        "input_tokens": 580,
+        "output_tokens": 59
+      },
+      "error": null,
+      "latency_s": 0.3785
+    },
+    "ea139cb2f235bdcc8be7280e6286761843f0fdb4a81ba859bde5f35a78d09c8e": {
+      "variant": "context",
+      "state": {
+        "answer": "ATOM",
+        "clue": "It has a nucleus but isn't a cell"
+      },
+      "questions": {
+        "firearms_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to firearms, their ammunition or parts, gun use, or a recognizable gun idiom? Count figurative gun references. Unrelated photography, sports, astronomy, tools, and body-part senses do not count. This question concerns firearms, not every kind of weapon or violence."
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to alcoholic beverages, drinking alcohol, intoxication, hangovers, or recovery from drinking? Count figurative references. Nonalcoholic beverages, food, and unrelated alternate meanings do not count."
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to recreational or illicit drugs, their use, production, sale, effects, or recovery? Count figurative references. Ordinary medical treatment, pharmacy shopping, food, gardening, and unrelated alternate meanings do not count."
+        }
+      },
+      "started_at": "2026-09-22T17:47:33.811624+00:00",
+      "probabilities": {
+        "firearms_angle": 0.04,
+        "alcohol_angle": 0.02,
+        "drug_use_angle": 0.03
+      },
+      "raw": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "firearms_angle": {
+            "type": "noul",
+            "noul": 0.04
+          },
+          "alcohol_angle": {
+            "type": "noul",
+            "noul": 0.02
+          },
+          "drug_use_angle": {
+            "type": "noul",
+            "noul": 0.03
+          }
+        },
+        "usage": {
+          "input_tokens": 588,
+          "output_tokens": 59
+        }
+      },
+      "resolved_model": "jev-1.13.0",
+      "usage": {
+        "input_tokens": 588,
+        "output_tokens": 59
+      },
+      "error": null,
+      "latency_s": 0.3824
+    },
+    "8709434377e1c7e6f795c5c5b8f38beb805106471f4fb81a9ac0e36bab536272": {
+      "variant": "clue-only",
+      "state": {
+        "clue": "It has a nucleus but isn't a cell"
+      },
+      "questions": {
+        "firearms_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to firearms, their ammunition or parts, gun use, or a recognizable gun idiom? Count figurative gun references. Unrelated photography, sports, astronomy, tools, and body-part senses do not count. This question concerns firearms, not every kind of weapon or violence."
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to alcoholic beverages, drinking alcohol, intoxication, hangovers, or recovery from drinking? Count figurative references. Nonalcoholic beverages, food, and unrelated alternate meanings do not count."
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to recreational or illicit drugs, their use, production, sale, effects, or recovery? Count figurative references. Ordinary medical treatment, pharmacy shopping, food, gardening, and unrelated alternate meanings do not count."
+        }
+      },
+      "started_at": "2026-09-22T17:47:33.817592+00:00",
+      "probabilities": {
+        "firearms_angle": 0.12,
+        "alcohol_angle": 0.05,
+        "drug_use_angle": 0.07
+      },
+      "raw": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "firearms_angle": {
+            "type": "noul",
+            "noul": 0.12
+          },
+          "alcohol_angle": {
+            "type": "noul",
+            "noul": 0.05
+          },
+          "drug_use_angle": {
+            "type": "noul",
+            "noul": 0.07
+          }
+        },
+        "usage": {
+          "input_tokens": 580,
+          "output_tokens": 59
+        }
+      },
+      "resolved_model": "jev-1.13.0",
+      "usage": {
+        "input_tokens": 580,
+        "output_tokens": 59
+      },
+      "error": null,
+      "latency_s": 0.354
+    },
+    "787bcd732eccdf66be93831605cfc024d9e8fd96a4364cad8c690863a627239b": {
+      "variant": "context",
+      "state": {
+        "answer": "TNT",
+        "clue": "AC/DC hit whose chorus spells out its title"
+      },
+      "questions": {
+        "firearms_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to firearms, their ammunition or parts, gun use, or a recognizable gun idiom? Count figurative gun references. Unrelated photography, sports, astronomy, tools, and body-part senses do not count. This question concerns firearms, not every kind of weapon or violence."
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to alcoholic beverages, drinking alcohol, intoxication, hangovers, or recovery from drinking? Count figurative references. Nonalcoholic beverages, food, and unrelated alternate meanings do not count."
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to recreational or illicit drugs, their use, production, sale, effects, or recovery? Count figurative references. Ordinary medical treatment, pharmacy shopping, food, gardening, and unrelated alternate meanings do not count."
+        }
+      },
+      "started_at": "2026-09-22T17:48:05.854337+00:00",
+      "probabilities": {
+        "firearms_angle": 0.14,
+        "alcohol_angle": 0.06,
+        "drug_use_angle": 0.08
+      },
+      "raw": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "firearms_angle": {
+            "type": "noul",
+            "noul": 0.14
+          },
+          "alcohol_angle": {
+            "type": "noul",
+            "noul": 0.06
+          },
+          "drug_use_angle": {
+            "type": "noul",
+            "noul": 0.08
+          }
+        },
+        "usage": {
+          "input_tokens": 589,
+          "output_tokens": 59
+        }
+      },
+      "resolved_model": "jev-1.13.0",
+      "usage": {
+        "input_tokens": 589,
+        "output_tokens": 59
+      },
+      "error": null,
+      "latency_s": 0.3168
+    },
+    "8b1748a7de1ba3b235693dfbf3d17ba9157e961ac0fe92b7cb58c7241389bd1b": {
+      "variant": "clue-only",
+      "state": {
+        "clue": "AC/DC hit whose chorus spells out its title"
+      },
+      "questions": {
+        "firearms_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to firearms, their ammunition or parts, gun use, or a recognizable gun idiom? Count figurative gun references. Unrelated photography, sports, astronomy, tools, and body-part senses do not count. This question concerns firearms, not every kind of weapon or violence."
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to alcoholic beverages, drinking alcohol, intoxication, hangovers, or recovery from drinking? Count figurative references. Nonalcoholic beverages, food, and unrelated alternate meanings do not count."
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to recreational or illicit drugs, their use, production, sale, effects, or recovery? Count figurative references. Ordinary medical treatment, pharmacy shopping, food, gardening, and unrelated alternate meanings do not count."
+        }
+      },
+      "started_at": "2026-09-22T17:48:05.855982+00:00",
+      "probabilities": {
+        "firearms_angle": 0.29,
+        "alcohol_angle": 0.32,
+        "drug_use_angle": 0.09
+      },
+      "raw": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "firearms_angle": {
+            "type": "noul",
+            "noul": 0.29
+          },
+          "alcohol_angle": {
+            "type": "noul",
+            "noul": 0.32
+          },
+          "drug_use_angle": {
+            "type": "noul",
+            "noul": 0.09
+          }
+        },
+        "usage": {
+          "input_tokens": 580,
+          "output_tokens": 59
+        }
+      },
+      "resolved_model": "jev-1.13.0",
+      "usage": {
+        "input_tokens": 580,
+        "output_tokens": 59
+      },
+      "error": null,
+      "latency_s": 0.3207
+    },
+    "ee28aabbc6ea5459f9b2082aa3083933ccc4af08759169f2c6aaccb8d8975fcf": {
+      "variant": "context",
+      "state": {
+        "answer": "AORTA",
+        "clue": "Vessel carrying blood out of the left ventricle"
+      },
+      "questions": {
+        "firearms_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to firearms, their ammunition or parts, gun use, or a recognizable gun idiom? Count figurative gun references. Unrelated photography, sports, astronomy, tools, and body-part senses do not count. This question concerns firearms, not every kind of weapon or violence."
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to alcoholic beverages, drinking alcohol, intoxication, hangovers, or recovery from drinking? Count figurative references. Nonalcoholic beverages, food, and unrelated alternate meanings do not count."
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to recreational or illicit drugs, their use, production, sale, effects, or recovery? Count figurative references. Ordinary medical treatment, pharmacy shopping, food, gardening, and unrelated alternate meanings do not count."
+        }
+      },
+      "started_at": "2026-09-22T17:48:05.856404+00:00",
+      "probabilities": {
+        "firearms_angle": 0.01,
+        "alcohol_angle": 0.01,
+        "drug_use_angle": 0.01
+      },
+      "raw": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "firearms_angle": {
+            "type": "noul",
+            "noul": 0.01
+          },
+          "alcohol_angle": {
+            "type": "noul",
+            "noul": 0.01
+          },
+          "drug_use_angle": {
+            "type": "noul",
+            "noul": 0.01
+          }
+        },
+        "usage": {
+          "input_tokens": 592,
+          "output_tokens": 59
+        }
+      },
+      "resolved_model": "jev-1.13.0",
+      "usage": {
+        "input_tokens": 592,
+        "output_tokens": 59
+      },
+      "error": null,
+      "latency_s": 0.347
+    },
+    "ab0725e2871033bee9b5b205cf776d1ed9d9ffc6a121f779584350f13e042bfa": {
+      "variant": "clue-only",
+      "state": {
+        "clue": "Vessel carrying blood out of the left ventricle"
+      },
+      "questions": {
+        "firearms_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to firearms, their ammunition or parts, gun use, or a recognizable gun idiom? Count figurative gun references. Unrelated photography, sports, astronomy, tools, and body-part senses do not count. This question concerns firearms, not every kind of weapon or violence."
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to alcoholic beverages, drinking alcohol, intoxication, hangovers, or recovery from drinking? Count figurative references. Nonalcoholic beverages, food, and unrelated alternate meanings do not count."
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to recreational or illicit drugs, their use, production, sale, effects, or recovery? Count figurative references. Ordinary medical treatment, pharmacy shopping, food, gardening, and unrelated alternate meanings do not count."
+        }
+      },
+      "started_at": "2026-09-22T17:48:05.856634+00:00",
+      "probabilities": {
+        "firearms_angle": 0.02,
+        "alcohol_angle": 0.02,
+        "drug_use_angle": 0.01
+      },
+      "raw": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "firearms_angle": {
+            "type": "noul",
+            "noul": 0.02
+          },
+          "alcohol_angle": {
+            "type": "noul",
+            "noul": 0.02
+          },
+          "drug_use_angle": {
+            "type": "noul",
+            "noul": 0.01
+          }
+        },
+        "usage": {
+          "input_tokens": 582,
+          "output_tokens": 59
+        }
+      },
+      "resolved_model": "jev-1.13.0",
+      "usage": {
+        "input_tokens": 582,
+        "output_tokens": 59
+      },
+      "error": null,
+      "latency_s": 0.3185
+    },
+    "295a0475cc5b09bd6b5df2de8464e2b7758101d4e1dd45d7418c2b3e154abfef": {
+      "variant": "context",
+      "state": {
+        "answer": "AMINO",
+        "clue": "Lysine, e.g.: ___ acid"
+      },
+      "questions": {
+        "firearms_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to firearms, their ammunition or parts, gun use, or a recognizable gun idiom? Count figurative gun references. Unrelated photography, sports, astronomy, tools, and body-part senses do not count. This question concerns firearms, not every kind of weapon or violence."
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to alcoholic beverages, drinking alcohol, intoxication, hangovers, or recovery from drinking? Count figurative references. Nonalcoholic beverages, food, and unrelated alternate meanings do not count."
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to recreational or illicit drugs, their use, production, sale, effects, or recovery? Count figurative references. Ordinary medical treatment, pharmacy shopping, food, gardening, and unrelated alternate meanings do not count."
+        }
+      },
+      "started_at": "2026-09-22T17:48:06.171081+00:00",
+      "probabilities": {
+        "firearms_angle": 0.02,
+        "alcohol_angle": 0.02,
+        "drug_use_angle": 0.03
+      },
+      "raw": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "firearms_angle": {
+            "type": "noul",
+            "noul": 0.02
+          },
+          "alcohol_angle": {
+            "type": "noul",
+            "noul": 0.02
+          },
+          "drug_use_angle": {
+            "type": "noul",
+            "noul": 0.03
+          }
+        },
+        "usage": {
+          "input_tokens": 589,
+          "output_tokens": 59
+        }
+      },
+      "resolved_model": "jev-1.13.0",
+      "usage": {
+        "input_tokens": 589,
+        "output_tokens": 59
+      },
+      "error": null,
+      "latency_s": 0.3369
+    },
+    "b04efb4e7f600b8e84967da426bf8014731f0dff5342acc633525b5a66868272": {
+      "variant": "clue-only",
+      "state": {
+        "clue": "Lysine, e.g.: ___ acid"
+      },
+      "questions": {
+        "firearms_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to firearms, their ammunition or parts, gun use, or a recognizable gun idiom? Count figurative gun references. Unrelated photography, sports, astronomy, tools, and body-part senses do not count. This question concerns firearms, not every kind of weapon or violence."
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to alcoholic beverages, drinking alcohol, intoxication, hangovers, or recovery from drinking? Count figurative references. Nonalcoholic beverages, food, and unrelated alternate meanings do not count."
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to recreational or illicit drugs, their use, production, sale, effects, or recovery? Count figurative references. Ordinary medical treatment, pharmacy shopping, food, gardening, and unrelated alternate meanings do not count."
+        }
+      },
+      "started_at": "2026-09-22T17:48:06.175167+00:00",
+      "probabilities": {
+        "firearms_angle": 0.03,
+        "alcohol_angle": 0.03,
+        "drug_use_angle": 0.03
+      },
+      "raw": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "firearms_angle": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "alcohol_angle": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "drug_use_angle": {
+            "type": "noul",
+            "noul": 0.03
+          }
+        },
+        "usage": {
+          "input_tokens": 580,
+          "output_tokens": 59
+        }
+      },
+      "resolved_model": "jev-1.13.0",
+      "usage": {
+        "input_tokens": 580,
+        "output_tokens": 59
+      },
+      "error": null,
+      "latency_s": 0.3664
+    },
+    "29ecd291731bd540663c527bd5205286157e13e46082eb204777b7c558109fac": {
+      "variant": "context",
+      "state": {
+        "answer": "TNT",
+        "clue": "Demolition crew's supply, briefly"
+      },
+      "questions": {
+        "firearms_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to firearms, their ammunition or parts, gun use, or a recognizable gun idiom? Count figurative gun references. Unrelated photography, sports, astronomy, tools, and body-part senses do not count. This question concerns firearms, not every kind of weapon or violence."
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to alcoholic beverages, drinking alcohol, intoxication, hangovers, or recovery from drinking? Count figurative references. Nonalcoholic beverages, food, and unrelated alternate meanings do not count."
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to recreational or illicit drugs, their use, production, sale, effects, or recovery? Count figurative references. Ordinary medical treatment, pharmacy shopping, food, gardening, and unrelated alternate meanings do not count."
+        }
+      },
+      "started_at": "2026-09-22T17:48:37.445523+00:00",
+      "probabilities": {
+        "firearms_angle": 0.06,
+        "alcohol_angle": 0.03,
+        "drug_use_angle": 0.04
+      },
+      "raw": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "firearms_angle": {
+            "type": "noul",
+            "noul": 0.06
+          },
+          "alcohol_angle": {
+            "type": "noul",
+            "noul": 0.03
+          },
+          "drug_use_angle": {
+            "type": "noul",
+            "noul": 0.04
+          }
+        },
+        "usage": {
+          "input_tokens": 588,
+          "output_tokens": 59
+        }
+      },
+      "resolved_model": "jev-1.13.0",
+      "usage": {
+        "input_tokens": 588,
+        "output_tokens": 59
+      },
+      "error": null,
+      "latency_s": 0.348
+    },
+    "abb22414af14baf55042ca0409987b63aace3d9117867d3465b24961440ad425": {
+      "variant": "clue-only",
+      "state": {
+        "clue": "Demolition crew's supply, briefly"
+      },
+      "questions": {
+        "firearms_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to firearms, their ammunition or parts, gun use, or a recognizable gun idiom? Count figurative gun references. Unrelated photography, sports, astronomy, tools, and body-part senses do not count. This question concerns firearms, not every kind of weapon or violence."
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to alcoholic beverages, drinking alcohol, intoxication, hangovers, or recovery from drinking? Count figurative references. Nonalcoholic beverages, food, and unrelated alternate meanings do not count."
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to recreational or illicit drugs, their use, production, sale, effects, or recovery? Count figurative references. Ordinary medical treatment, pharmacy shopping, food, gardening, and unrelated alternate meanings do not count."
+        }
+      },
+      "started_at": "2026-09-22T17:48:37.451911+00:00",
+      "probabilities": {
+        "firearms_angle": 0.18,
+        "alcohol_angle": 0.14,
+        "drug_use_angle": 0.11
+      },
+      "raw": {
+        "model": "jev-1.13.0",
+        "answers": {
+          "firearms_angle": {
+            "type": "noul",
+            "noul": 0.18
+          },
+          "alcohol_angle": {
+            "type": "noul",
+            "noul": 0.14
+          },
+          "drug_use_angle": {
+            "type": "noul",
+            "noul": 0.11
+          }
+        },
+        "usage": {
+          "input_tokens": 579,
+          "output_tokens": 59
+        }
+      },
+      "resolved_model": "jev-1.13.0",
+      "usage": {
+        "input_tokens": 579,
+        "output_tokens": 59
+      },
+      "error": null,
+      "latency_s": 0.357
+    }
+  },
+  "observations": [
+    {
+      "phase": "generated",
+      "observed_at": "2026-09-22T17:47:34.200186+00:00",
+      "puzzle": {
+        "seed": 461288725,
+        "difficulty": "hard",
+        "grid_size": 5
+      },
+      "entries": [
+        {
+          "id": "d2d72bc55ba3990a00d51e07",
+          "number": 1,
+          "direction": "across",
+          "state": {
+            "answer": "TATA",
+            "clue": "Breezy farewell"
+          },
+          "probabilities": {
+            "firearms_angle": 0.05,
+            "alcohol_angle": 0.06,
+            "drug_use_angle": 0.04
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 1,
+            "direction": "across",
+            "answer": "",
+            "score": 83.0,
+            "feedback": "",
+            "accuracy": 23.0,
+            "freshness": 18.0,
+            "craft": 20.0,
+            "fairness": 22.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": null,
+          "request_ids": {
+            "context": "1cfa2eb7bc35cd26877731376b072ad1846919cee43b1a90a32a0a321cbcdafe",
+            "clue-only": "ac1ec37a9f15c18625edef429733b57283ef2360ae477772fcc434e343b6f5ea"
+          }
+        },
+        {
+          "id": "6823d67823a6af83c65fb32e",
+          "number": 1,
+          "direction": "down",
+          "state": {
+            "answer": "TNT",
+            "clue": "Hard-rocking AC/DC classic"
+          },
+          "probabilities": {
+            "firearms_angle": 0.12,
+            "alcohol_angle": 0.16,
+            "drug_use_angle": 0.08
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 1,
+            "direction": "down",
+            "answer": "",
+            "score": 80.0,
+            "feedback": "",
+            "accuracy": 22.0,
+            "freshness": 16.0,
+            "craft": 20.0,
+            "fairness": 22.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": null,
+          "request_ids": {
+            "context": "80b9e54eb1afdc1876bcf02ba8ab805f6dbf52f160631e188dd267e9509c0f2f",
+            "clue-only": "1864a5ea2ff689c9569c2508208f77f95a3c53e724144f6dde9ad20847b55538"
+          }
+        },
+        {
+          "id": "2339c7dc292f586a7b830a39",
+          "number": 2,
+          "direction": "down",
+          "state": {
+            "answer": "AORTA",
+            "clue": "Body's largest blood vessel"
+          },
+          "probabilities": {
+            "firearms_angle": 0.01,
+            "alcohol_angle": 0.02,
+            "drug_use_angle": 0.01
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 2,
+            "direction": "down",
+            "answer": "",
+            "score": 72.0,
+            "feedback": "too easy for Hard",
+            "accuracy": 24.0,
+            "freshness": 8.0,
+            "craft": 18.0,
+            "fairness": 22.0
+          },
+          "grader_would_repair": true,
+          "existing_findings": null,
+          "request_ids": {
+            "context": "b77e65c1c05c3fb8e8800555d92543fcfabada1281b9923bab4ac1a728736365",
+            "clue-only": "5ca884d86d77a3d1f9e6c75044e717c65cf0f7b6358c1022d123d703af2884ca"
+          }
+        },
+        {
+          "id": "324cad5f15116ffde1d63dab",
+          "number": 3,
+          "direction": "down",
+          "state": {
+            "answer": "TRAIT",
+            "clue": "Eye color or curly hair, genetically"
+          },
+          "probabilities": {
+            "firearms_angle": 0.01,
+            "alcohol_angle": 0.03,
+            "drug_use_angle": 0.01
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 3,
+            "direction": "down",
+            "answer": "",
+            "score": 82.0,
+            "feedback": "",
+            "accuracy": 22.0,
+            "freshness": 18.0,
+            "craft": 20.0,
+            "fairness": 22.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": null,
+          "request_ids": {
+            "context": "44809f09db6df875bae30276d4c3369f5e7308b493ae35c0ac6afc4b56546aeb",
+            "clue-only": "da68b8db624f753602cc2eb0ab2a0bfb77187ba8585b43ce284d8a1ed9980146"
+          }
+        },
+        {
+          "id": "97a1fd90bb9dff2961720ec7",
+          "number": 4,
+          "direction": "down",
+          "state": {
+            "answer": "AMINO",
+            "clue": "Kind of acid found in proteins"
+          },
+          "probabilities": {
+            "firearms_angle": 0.01,
+            "alcohol_angle": 0.02,
+            "drug_use_angle": 0.02
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 4,
+            "direction": "down",
+            "answer": "",
+            "score": 70.0,
+            "feedback": "too easy for Hard",
+            "accuracy": 23.0,
+            "freshness": 8.0,
+            "craft": 18.0,
+            "fairness": 21.0
+          },
+          "grader_would_repair": true,
+          "existing_findings": null,
+          "request_ids": {
+            "context": "9a051ac1d53ab09928d26c009dc6e7f6d5afd8d93d3e2ee1ec8d5256e065de66",
+            "clue-only": "d457f706c531535eb12c339eb0352f9889f8714157d536fa4d18f16cd4c79e57"
+          }
+        },
+        {
+          "id": "ccc117d07831d439a51d9a4b",
+          "number": 5,
+          "direction": "across",
+          "state": {
+            "answer": "NORM",
+            "clue": "Barstool regular on \"Cheers\""
+          },
+          "probabilities": {
+            "firearms_angle": 0.07,
+            "alcohol_angle": 0.56,
+            "drug_use_angle": 0.07
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 5,
+            "direction": "across",
+            "answer": "",
+            "score": 85.0,
+            "feedback": "",
+            "accuracy": 23.0,
+            "freshness": 20.0,
+            "craft": 21.0,
+            "fairness": 21.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": null,
+          "request_ids": {
+            "context": "de9fa10a83dada02bef30550b58a17c1d8e5a27c72df7675a97f5618cef483de",
+            "clue-only": "fe2d519cc4df5c25402dff5b8937fd7f39e156cc12b532f65bb9d97fdf4d51ba"
+          }
+        },
+        {
+          "id": "2f56705994bc1e3abe9a4418",
+          "number": 6,
+          "direction": "across",
+          "state": {
+            "answer": "TRAIL",
+            "clue": "Fall behind in a race"
+          },
+          "probabilities": {
+            "firearms_angle": 0.04,
+            "alcohol_angle": 0.05,
+            "drug_use_angle": 0.04
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 6,
+            "direction": "across",
+            "answer": "",
+            "score": 80.0,
+            "feedback": "",
+            "accuracy": 22.0,
+            "freshness": 17.0,
+            "craft": 20.0,
+            "fairness": 21.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": null,
+          "request_ids": {
+            "context": "af90fda8f575a34e1a528fbe53fb96bf38adc4cb0696cfb7c02842df7554d0ed",
+            "clue-only": "212597a48e4f69340b40f134145e2d2e5850dd6bd77b38d3899805266f7fc99d"
+          }
+        },
+        {
+          "id": "f99c3da98bf309b09350610e",
+          "number": 7,
+          "direction": "down",
+          "state": {
+            "answer": "LAM",
+            "clue": "On the ___ (fleeing)"
+          },
+          "probabilities": {
+            "firearms_angle": 0.22,
+            "alcohol_angle": 0.14,
+            "drug_use_angle": 0.18
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 7,
+            "direction": "down",
+            "answer": "",
+            "score": 73.0,
+            "feedback": "",
+            "accuracy": 22.0,
+            "freshness": 15.0,
+            "craft": 18.0,
+            "fairness": 18.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": null,
+          "request_ids": {
+            "context": "250170a662d5c0711fbd28e35b1c091533ea38160547c0522f3da2b38f8608a5",
+            "clue-only": "cdf0976d186bd45bb9c3f14b81c9245740e71ea3b4650327bb348caaf3b581c5"
+          }
+        },
+        {
+          "id": "de72f999a63eb6e2be1d4680",
+          "number": 8,
+          "direction": "across",
+          "state": {
+            "answer": "TINA",
+            "clue": "Turner who sang \"Proud Mary\""
+          },
+          "probabilities": {
+            "firearms_angle": 0.06,
+            "alcohol_angle": 0.08,
+            "drug_use_angle": 0.07
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 8,
+            "direction": "across",
+            "answer": "",
+            "score": 82.0,
+            "feedback": "",
+            "accuracy": 23.0,
+            "freshness": 18.0,
+            "craft": 20.0,
+            "fairness": 21.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": null,
+          "request_ids": {
+            "context": "76d47cace664b6054a5c4bd80744df9351ea098f0770037f0f680b6aa2e06430",
+            "clue-only": "fbe06b0a9a8fbd4811686b40d5d76904b5dd2a2dbdecaf534cf011c57cb960e8"
+          }
+        },
+        {
+          "id": "dea517a3afa0ed49bdea4329",
+          "number": 9,
+          "direction": "across",
+          "state": {
+            "answer": "ATOM",
+            "clue": "It has a nucleus but isn't a cell"
+          },
+          "probabilities": {
+            "firearms_angle": 0.04,
+            "alcohol_angle": 0.05,
+            "drug_use_angle": 0.03
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 9,
+            "direction": "across",
+            "answer": "",
+            "score": 89.0,
+            "feedback": "",
+            "accuracy": 23.0,
+            "freshness": 22.0,
+            "craft": 22.0,
+            "fairness": 22.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": null,
+          "request_ids": {
+            "context": "ea139cb2f235bdcc8be7280e6286761843f0fdb4a81ba859bde5f35a78d09c8e",
+            "clue-only": "8709434377e1c7e6f795c5c5b8f38beb805106471f4fb81a9ac0e36bab536272"
+          }
+        }
+      ]
+    },
+    {
+      "phase": "detector-sweep",
+      "observed_at": "2026-09-22T17:47:43.602659+00:00",
+      "puzzle": {
+        "seed": 461288725,
+        "difficulty": "hard",
+        "grid_size": 5
+      },
+      "entries": [
+        {
+          "id": "d2d72bc55ba3990a00d51e07",
+          "number": 1,
+          "direction": "across",
+          "state": {
+            "answer": "TATA",
+            "clue": "Breezy farewell"
+          },
+          "probabilities": {
+            "firearms_angle": 0.05,
+            "alcohol_angle": 0.06,
+            "drug_use_angle": 0.04
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 1,
+            "direction": "across",
+            "answer": "",
+            "score": 83.0,
+            "feedback": "",
+            "accuracy": 23.0,
+            "freshness": 18.0,
+            "craft": 20.0,
+            "fairness": 22.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": [],
+          "request_ids": {
+            "context": "1cfa2eb7bc35cd26877731376b072ad1846919cee43b1a90a32a0a321cbcdafe",
+            "clue-only": "ac1ec37a9f15c18625edef429733b57283ef2360ae477772fcc434e343b6f5ea"
+          }
+        },
+        {
+          "id": "6823d67823a6af83c65fb32e",
+          "number": 1,
+          "direction": "down",
+          "state": {
+            "answer": "TNT",
+            "clue": "Hard-rocking AC/DC classic"
+          },
+          "probabilities": {
+            "firearms_angle": 0.12,
+            "alcohol_angle": 0.16,
+            "drug_use_angle": 0.08
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 1,
+            "direction": "down",
+            "answer": "",
+            "score": 80.0,
+            "feedback": "",
+            "accuracy": 22.0,
+            "freshness": 16.0,
+            "craft": 20.0,
+            "fairness": 22.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": [
+            {
+              "detector": "hyphen",
+              "feedback": "This clue hyphenates an open compound: \"Hard-rocking\". Noun phrases like this are two separate words — write it as \"Hard rocking\". Only keep a hyphen where standard dictionary (Merriam-Webster) style requires it (compound modifiers before a noun like \"well-known author\", or genuinely hyphenated words like \"self-esteem\" and \"X-ray\")."
+            }
+          ],
+          "request_ids": {
+            "context": "80b9e54eb1afdc1876bcf02ba8ab805f6dbf52f160631e188dd267e9509c0f2f",
+            "clue-only": "1864a5ea2ff689c9569c2508208f77f95a3c53e724144f6dde9ad20847b55538"
+          }
+        },
+        {
+          "id": "2339c7dc292f586a7b830a39",
+          "number": 2,
+          "direction": "down",
+          "state": {
+            "answer": "AORTA",
+            "clue": "Body's largest blood vessel"
+          },
+          "probabilities": {
+            "firearms_angle": 0.01,
+            "alcohol_angle": 0.02,
+            "drug_use_angle": 0.01
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 2,
+            "direction": "down",
+            "answer": "",
+            "score": 72.0,
+            "feedback": "too easy for Hard",
+            "accuracy": 24.0,
+            "freshness": 8.0,
+            "craft": 18.0,
+            "fairness": 22.0
+          },
+          "grader_would_repair": true,
+          "existing_findings": [
+            {
+              "detector": "quality",
+              "feedback": "too easy for Hard"
+            },
+            {
+              "detector": "fact",
+              "feedback": "Fact check uncertain: The aorta is unambiguously the largest artery, but 'largest blood vessel' is debatable since the inferior vena cava is comparable or larger in diameter. Safer: 'Largest artery in the human body'. (risk: superlative factual claim). Rewrite as a plain, factually safe clue unless the factual angle is airtight."
+            }
+          ],
+          "request_ids": {
+            "context": "b77e65c1c05c3fb8e8800555d92543fcfabada1281b9923bab4ac1a728736365",
+            "clue-only": "5ca884d86d77a3d1f9e6c75044e717c65cf0f7b6358c1022d123d703af2884ca"
+          }
+        },
+        {
+          "id": "324cad5f15116ffde1d63dab",
+          "number": 3,
+          "direction": "down",
+          "state": {
+            "answer": "TRAIT",
+            "clue": "Eye color or curly hair, genetically"
+          },
+          "probabilities": {
+            "firearms_angle": 0.01,
+            "alcohol_angle": 0.03,
+            "drug_use_angle": 0.01
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 3,
+            "direction": "down",
+            "answer": "",
+            "score": 82.0,
+            "feedback": "",
+            "accuracy": 22.0,
+            "freshness": 18.0,
+            "craft": 20.0,
+            "fairness": 22.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": [],
+          "request_ids": {
+            "context": "44809f09db6df875bae30276d4c3369f5e7308b493ae35c0ac6afc4b56546aeb",
+            "clue-only": "da68b8db624f753602cc2eb0ab2a0bfb77187ba8585b43ce284d8a1ed9980146"
+          }
+        },
+        {
+          "id": "97a1fd90bb9dff2961720ec7",
+          "number": 4,
+          "direction": "down",
+          "state": {
+            "answer": "AMINO",
+            "clue": "Kind of acid found in proteins"
+          },
+          "probabilities": {
+            "firearms_angle": 0.01,
+            "alcohol_angle": 0.02,
+            "drug_use_angle": 0.02
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 4,
+            "direction": "down",
+            "answer": "",
+            "score": 70.0,
+            "feedback": "too easy for Hard",
+            "accuracy": 23.0,
+            "freshness": 8.0,
+            "craft": 18.0,
+            "fairness": 21.0
+          },
+          "grader_would_repair": true,
+          "existing_findings": [
+            {
+              "detector": "quality",
+              "feedback": "too easy for Hard"
+            }
+          ],
+          "request_ids": {
+            "context": "9a051ac1d53ab09928d26c009dc6e7f6d5afd8d93d3e2ee1ec8d5256e065de66",
+            "clue-only": "d457f706c531535eb12c339eb0352f9889f8714157d536fa4d18f16cd4c79e57"
+          }
+        },
+        {
+          "id": "ccc117d07831d439a51d9a4b",
+          "number": 5,
+          "direction": "across",
+          "state": {
+            "answer": "NORM",
+            "clue": "Barstool regular on \"Cheers\""
+          },
+          "probabilities": {
+            "firearms_angle": 0.07,
+            "alcohol_angle": 0.56,
+            "drug_use_angle": 0.07
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 5,
+            "direction": "across",
+            "answer": "",
+            "score": 85.0,
+            "feedback": "",
+            "accuracy": 23.0,
+            "freshness": 20.0,
+            "craft": 21.0,
+            "fairness": 21.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": [],
+          "request_ids": {
+            "context": "de9fa10a83dada02bef30550b58a17c1d8e5a27c72df7675a97f5618cef483de",
+            "clue-only": "fe2d519cc4df5c25402dff5b8937fd7f39e156cc12b532f65bb9d97fdf4d51ba"
+          }
+        },
+        {
+          "id": "2f56705994bc1e3abe9a4418",
+          "number": 6,
+          "direction": "across",
+          "state": {
+            "answer": "TRAIL",
+            "clue": "Fall behind in a race"
+          },
+          "probabilities": {
+            "firearms_angle": 0.04,
+            "alcohol_angle": 0.05,
+            "drug_use_angle": 0.04
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 6,
+            "direction": "across",
+            "answer": "",
+            "score": 80.0,
+            "feedback": "",
+            "accuracy": 22.0,
+            "freshness": 17.0,
+            "craft": 20.0,
+            "fairness": 21.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": [],
+          "request_ids": {
+            "context": "af90fda8f575a34e1a528fbe53fb96bf38adc4cb0696cfb7c02842df7554d0ed",
+            "clue-only": "212597a48e4f69340b40f134145e2d2e5850dd6bd77b38d3899805266f7fc99d"
+          }
+        },
+        {
+          "id": "f99c3da98bf309b09350610e",
+          "number": 7,
+          "direction": "down",
+          "state": {
+            "answer": "LAM",
+            "clue": "On the ___ (fleeing)"
+          },
+          "probabilities": {
+            "firearms_angle": 0.22,
+            "alcohol_angle": 0.14,
+            "drug_use_angle": 0.18
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 7,
+            "direction": "down",
+            "answer": "",
+            "score": 73.0,
+            "feedback": "",
+            "accuracy": 22.0,
+            "freshness": 15.0,
+            "craft": 18.0,
+            "fairness": 18.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": [],
+          "request_ids": {
+            "context": "250170a662d5c0711fbd28e35b1c091533ea38160547c0522f3da2b38f8608a5",
+            "clue-only": "cdf0976d186bd45bb9c3f14b81c9245740e71ea3b4650327bb348caaf3b581c5"
+          }
+        },
+        {
+          "id": "de72f999a63eb6e2be1d4680",
+          "number": 8,
+          "direction": "across",
+          "state": {
+            "answer": "TINA",
+            "clue": "Turner who sang \"Proud Mary\""
+          },
+          "probabilities": {
+            "firearms_angle": 0.06,
+            "alcohol_angle": 0.08,
+            "drug_use_angle": 0.07
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 8,
+            "direction": "across",
+            "answer": "",
+            "score": 82.0,
+            "feedback": "",
+            "accuracy": 23.0,
+            "freshness": 18.0,
+            "craft": 20.0,
+            "fairness": 21.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": [],
+          "request_ids": {
+            "context": "76d47cace664b6054a5c4bd80744df9351ea098f0770037f0f680b6aa2e06430",
+            "clue-only": "fbe06b0a9a8fbd4811686b40d5d76904b5dd2a2dbdecaf534cf011c57cb960e8"
+          }
+        },
+        {
+          "id": "dea517a3afa0ed49bdea4329",
+          "number": 9,
+          "direction": "across",
+          "state": {
+            "answer": "ATOM",
+            "clue": "It has a nucleus but isn't a cell"
+          },
+          "probabilities": {
+            "firearms_angle": 0.04,
+            "alcohol_angle": 0.05,
+            "drug_use_angle": 0.03
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 9,
+            "direction": "across",
+            "answer": "",
+            "score": 89.0,
+            "feedback": "",
+            "accuracy": 23.0,
+            "freshness": 22.0,
+            "craft": 22.0,
+            "fairness": 22.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": [],
+          "request_ids": {
+            "context": "ea139cb2f235bdcc8be7280e6286761843f0fdb4a81ba859bde5f35a78d09c8e",
+            "clue-only": "8709434377e1c7e6f795c5c5b8f38beb805106471f4fb81a9ac0e36bab536272"
+          }
+        }
+      ]
+    },
+    {
+      "phase": "regraded",
+      "observed_at": "2026-09-22T17:48:06.541960+00:00",
+      "puzzle": {
+        "seed": 461288725,
+        "difficulty": "hard",
+        "grid_size": 5
+      },
+      "entries": [
+        {
+          "id": "d2d72bc55ba3990a00d51e07",
+          "number": 1,
+          "direction": "across",
+          "state": {
+            "answer": "TATA",
+            "clue": "Breezy farewell"
+          },
+          "probabilities": {
+            "firearms_angle": 0.05,
+            "alcohol_angle": 0.06,
+            "drug_use_angle": 0.04
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 1,
+            "direction": "across",
+            "answer": "",
+            "score": 83.0,
+            "feedback": "",
+            "accuracy": 23.0,
+            "freshness": 18.0,
+            "craft": 20.0,
+            "fairness": 22.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": null,
+          "request_ids": {
+            "context": "1cfa2eb7bc35cd26877731376b072ad1846919cee43b1a90a32a0a321cbcdafe",
+            "clue-only": "ac1ec37a9f15c18625edef429733b57283ef2360ae477772fcc434e343b6f5ea"
+          }
+        },
+        {
+          "id": "a3d6fa468a92ce306e72369b",
+          "number": 1,
+          "direction": "down",
+          "state": {
+            "answer": "TNT",
+            "clue": "AC/DC hit whose chorus spells out its title"
+          },
+          "probabilities": {
+            "firearms_angle": 0.14,
+            "alcohol_angle": 0.32,
+            "drug_use_angle": 0.08
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 1,
+            "direction": "down",
+            "answer": "",
+            "score": 90.0,
+            "feedback": "",
+            "accuracy": 24.0,
+            "freshness": 22.0,
+            "craft": 22.0,
+            "fairness": 22.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": null,
+          "request_ids": {
+            "context": "787bcd732eccdf66be93831605cfc024d9e8fd96a4364cad8c690863a627239b",
+            "clue-only": "8b1748a7de1ba3b235693dfbf3d17ba9157e961ac0fe92b7cb58c7241389bd1b"
+          }
+        },
+        {
+          "id": "1f26b44cad6cf981c243d32f",
+          "number": 2,
+          "direction": "down",
+          "state": {
+            "answer": "AORTA",
+            "clue": "Vessel carrying blood out of the left ventricle"
+          },
+          "probabilities": {
+            "firearms_angle": 0.01,
+            "alcohol_angle": 0.02,
+            "drug_use_angle": 0.01
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 2,
+            "direction": "down",
+            "answer": "",
+            "score": 79.0,
+            "feedback": "straightforward definition, low misdirection",
+            "accuracy": 23.0,
+            "freshness": 15.0,
+            "craft": 20.0,
+            "fairness": 21.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": null,
+          "request_ids": {
+            "context": "ee28aabbc6ea5459f9b2082aa3083933ccc4af08759169f2c6aaccb8d8975fcf",
+            "clue-only": "ab0725e2871033bee9b5b205cf776d1ed9d9ffc6a121f779584350f13e042bfa"
+          }
+        },
+        {
+          "id": "324cad5f15116ffde1d63dab",
+          "number": 3,
+          "direction": "down",
+          "state": {
+            "answer": "TRAIT",
+            "clue": "Eye color or curly hair, genetically"
+          },
+          "probabilities": {
+            "firearms_angle": 0.01,
+            "alcohol_angle": 0.03,
+            "drug_use_angle": 0.01
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 3,
+            "direction": "down",
+            "answer": "",
+            "score": 82.0,
+            "feedback": "",
+            "accuracy": 22.0,
+            "freshness": 18.0,
+            "craft": 20.0,
+            "fairness": 22.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": null,
+          "request_ids": {
+            "context": "44809f09db6df875bae30276d4c3369f5e7308b493ae35c0ac6afc4b56546aeb",
+            "clue-only": "da68b8db624f753602cc2eb0ab2a0bfb77187ba8585b43ce284d8a1ed9980146"
+          }
+        },
+        {
+          "id": "339e68ede0d9861218b82f5e",
+          "number": 4,
+          "direction": "down",
+          "state": {
+            "answer": "AMINO",
+            "clue": "Lysine, e.g.: ___ acid"
+          },
+          "probabilities": {
+            "firearms_angle": 0.02,
+            "alcohol_angle": 0.03,
+            "drug_use_angle": 0.03
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 4,
+            "direction": "down",
+            "answer": "",
+            "score": 78.0,
+            "feedback": "",
+            "accuracy": 22.0,
+            "freshness": 17.0,
+            "craft": 19.0,
+            "fairness": 20.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": null,
+          "request_ids": {
+            "context": "295a0475cc5b09bd6b5df2de8464e2b7758101d4e1dd45d7418c2b3e154abfef",
+            "clue-only": "b04efb4e7f600b8e84967da426bf8014731f0dff5342acc633525b5a66868272"
+          }
+        },
+        {
+          "id": "ccc117d07831d439a51d9a4b",
+          "number": 5,
+          "direction": "across",
+          "state": {
+            "answer": "NORM",
+            "clue": "Barstool regular on \"Cheers\""
+          },
+          "probabilities": {
+            "firearms_angle": 0.07,
+            "alcohol_angle": 0.56,
+            "drug_use_angle": 0.07
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 5,
+            "direction": "across",
+            "answer": "",
+            "score": 85.0,
+            "feedback": "",
+            "accuracy": 23.0,
+            "freshness": 20.0,
+            "craft": 21.0,
+            "fairness": 21.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": null,
+          "request_ids": {
+            "context": "de9fa10a83dada02bef30550b58a17c1d8e5a27c72df7675a97f5618cef483de",
+            "clue-only": "fe2d519cc4df5c25402dff5b8937fd7f39e156cc12b532f65bb9d97fdf4d51ba"
+          }
+        },
+        {
+          "id": "2f56705994bc1e3abe9a4418",
+          "number": 6,
+          "direction": "across",
+          "state": {
+            "answer": "TRAIL",
+            "clue": "Fall behind in a race"
+          },
+          "probabilities": {
+            "firearms_angle": 0.04,
+            "alcohol_angle": 0.05,
+            "drug_use_angle": 0.04
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 6,
+            "direction": "across",
+            "answer": "",
+            "score": 80.0,
+            "feedback": "",
+            "accuracy": 22.0,
+            "freshness": 17.0,
+            "craft": 20.0,
+            "fairness": 21.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": null,
+          "request_ids": {
+            "context": "af90fda8f575a34e1a528fbe53fb96bf38adc4cb0696cfb7c02842df7554d0ed",
+            "clue-only": "212597a48e4f69340b40f134145e2d2e5850dd6bd77b38d3899805266f7fc99d"
+          }
+        },
+        {
+          "id": "f99c3da98bf309b09350610e",
+          "number": 7,
+          "direction": "down",
+          "state": {
+            "answer": "LAM",
+            "clue": "On the ___ (fleeing)"
+          },
+          "probabilities": {
+            "firearms_angle": 0.22,
+            "alcohol_angle": 0.14,
+            "drug_use_angle": 0.18
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 7,
+            "direction": "down",
+            "answer": "",
+            "score": 73.0,
+            "feedback": "",
+            "accuracy": 22.0,
+            "freshness": 15.0,
+            "craft": 18.0,
+            "fairness": 18.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": null,
+          "request_ids": {
+            "context": "250170a662d5c0711fbd28e35b1c091533ea38160547c0522f3da2b38f8608a5",
+            "clue-only": "cdf0976d186bd45bb9c3f14b81c9245740e71ea3b4650327bb348caaf3b581c5"
+          }
+        },
+        {
+          "id": "de72f999a63eb6e2be1d4680",
+          "number": 8,
+          "direction": "across",
+          "state": {
+            "answer": "TINA",
+            "clue": "Turner who sang \"Proud Mary\""
+          },
+          "probabilities": {
+            "firearms_angle": 0.06,
+            "alcohol_angle": 0.08,
+            "drug_use_angle": 0.07
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 8,
+            "direction": "across",
+            "answer": "",
+            "score": 82.0,
+            "feedback": "",
+            "accuracy": 23.0,
+            "freshness": 18.0,
+            "craft": 20.0,
+            "fairness": 21.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": null,
+          "request_ids": {
+            "context": "76d47cace664b6054a5c4bd80744df9351ea098f0770037f0f680b6aa2e06430",
+            "clue-only": "fbe06b0a9a8fbd4811686b40d5d76904b5dd2a2dbdecaf534cf011c57cb960e8"
+          }
+        },
+        {
+          "id": "dea517a3afa0ed49bdea4329",
+          "number": 9,
+          "direction": "across",
+          "state": {
+            "answer": "ATOM",
+            "clue": "It has a nucleus but isn't a cell"
+          },
+          "probabilities": {
+            "firearms_angle": 0.04,
+            "alcohol_angle": 0.05,
+            "drug_use_angle": 0.03
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 9,
+            "direction": "across",
+            "answer": "",
+            "score": 89.0,
+            "feedback": "",
+            "accuracy": 23.0,
+            "freshness": 22.0,
+            "craft": 22.0,
+            "fairness": 22.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": null,
+          "request_ids": {
+            "context": "ea139cb2f235bdcc8be7280e6286761843f0fdb4a81ba859bde5f35a78d09c8e",
+            "clue-only": "8709434377e1c7e6f795c5c5b8f38beb805106471f4fb81a9ac0e36bab536272"
+          }
+        }
+      ]
+    },
+    {
+      "phase": "detector-sweep",
+      "observed_at": "2026-09-22T17:48:19.338871+00:00",
+      "puzzle": {
+        "seed": 461288725,
+        "difficulty": "hard",
+        "grid_size": 5
+      },
+      "entries": [
+        {
+          "id": "d2d72bc55ba3990a00d51e07",
+          "number": 1,
+          "direction": "across",
+          "state": {
+            "answer": "TATA",
+            "clue": "Breezy farewell"
+          },
+          "probabilities": {
+            "firearms_angle": 0.05,
+            "alcohol_angle": 0.06,
+            "drug_use_angle": 0.04
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 1,
+            "direction": "across",
+            "answer": "",
+            "score": 83.0,
+            "feedback": "",
+            "accuracy": 23.0,
+            "freshness": 18.0,
+            "craft": 20.0,
+            "fairness": 22.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": [],
+          "request_ids": {
+            "context": "1cfa2eb7bc35cd26877731376b072ad1846919cee43b1a90a32a0a321cbcdafe",
+            "clue-only": "ac1ec37a9f15c18625edef429733b57283ef2360ae477772fcc434e343b6f5ea"
+          }
+        },
+        {
+          "id": "a3d6fa468a92ce306e72369b",
+          "number": 1,
+          "direction": "down",
+          "state": {
+            "answer": "TNT",
+            "clue": "AC/DC hit whose chorus spells out its title"
+          },
+          "probabilities": {
+            "firearms_angle": 0.14,
+            "alcohol_angle": 0.32,
+            "drug_use_angle": 0.08
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 1,
+            "direction": "down",
+            "answer": "",
+            "score": 90.0,
+            "feedback": "",
+            "accuracy": 24.0,
+            "freshness": 22.0,
+            "craft": 22.0,
+            "fairness": 22.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": [
+            {
+              "detector": "fact",
+              "feedback": "Fact check uncertain: TNT is indeed an AC/DC song, but the claim that the chorus 'spells out its title' is debatable: the lyric 'I'm T.N.T.' is an initialism sung as letters rather than a spelled-out chant like 'Y-M-C-A'. Safer: 'AC/DC hit named for an explosive' or simply 'Dynamite stuff, briefly'. (risk: title or pop-culture claim). Rewrite as a plain, factually safe clue unless the factual angle is airtight."
+            }
+          ],
+          "request_ids": {
+            "context": "787bcd732eccdf66be93831605cfc024d9e8fd96a4364cad8c690863a627239b",
+            "clue-only": "8b1748a7de1ba3b235693dfbf3d17ba9157e961ac0fe92b7cb58c7241389bd1b"
+          }
+        },
+        {
+          "id": "1f26b44cad6cf981c243d32f",
+          "number": 2,
+          "direction": "down",
+          "state": {
+            "answer": "AORTA",
+            "clue": "Vessel carrying blood out of the left ventricle"
+          },
+          "probabilities": {
+            "firearms_angle": 0.01,
+            "alcohol_angle": 0.02,
+            "drug_use_angle": 0.01
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 2,
+            "direction": "down",
+            "answer": "",
+            "score": 79.0,
+            "feedback": "straightforward definition, low misdirection",
+            "accuracy": 23.0,
+            "freshness": 15.0,
+            "craft": 20.0,
+            "fairness": 21.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": [],
+          "request_ids": {
+            "context": "ee28aabbc6ea5459f9b2082aa3083933ccc4af08759169f2c6aaccb8d8975fcf",
+            "clue-only": "ab0725e2871033bee9b5b205cf776d1ed9d9ffc6a121f779584350f13e042bfa"
+          }
+        },
+        {
+          "id": "324cad5f15116ffde1d63dab",
+          "number": 3,
+          "direction": "down",
+          "state": {
+            "answer": "TRAIT",
+            "clue": "Eye color or curly hair, genetically"
+          },
+          "probabilities": {
+            "firearms_angle": 0.01,
+            "alcohol_angle": 0.03,
+            "drug_use_angle": 0.01
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 3,
+            "direction": "down",
+            "answer": "",
+            "score": 82.0,
+            "feedback": "",
+            "accuracy": 22.0,
+            "freshness": 18.0,
+            "craft": 20.0,
+            "fairness": 22.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": [],
+          "request_ids": {
+            "context": "44809f09db6df875bae30276d4c3369f5e7308b493ae35c0ac6afc4b56546aeb",
+            "clue-only": "da68b8db624f753602cc2eb0ab2a0bfb77187ba8585b43ce284d8a1ed9980146"
+          }
+        },
+        {
+          "id": "339e68ede0d9861218b82f5e",
+          "number": 4,
+          "direction": "down",
+          "state": {
+            "answer": "AMINO",
+            "clue": "Lysine, e.g.: ___ acid"
+          },
+          "probabilities": {
+            "firearms_angle": 0.02,
+            "alcohol_angle": 0.03,
+            "drug_use_angle": 0.03
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 4,
+            "direction": "down",
+            "answer": "",
+            "score": 78.0,
+            "feedback": "",
+            "accuracy": 22.0,
+            "freshness": 17.0,
+            "craft": 19.0,
+            "fairness": 20.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": [],
+          "request_ids": {
+            "context": "295a0475cc5b09bd6b5df2de8464e2b7758101d4e1dd45d7418c2b3e154abfef",
+            "clue-only": "b04efb4e7f600b8e84967da426bf8014731f0dff5342acc633525b5a66868272"
+          }
+        },
+        {
+          "id": "ccc117d07831d439a51d9a4b",
+          "number": 5,
+          "direction": "across",
+          "state": {
+            "answer": "NORM",
+            "clue": "Barstool regular on \"Cheers\""
+          },
+          "probabilities": {
+            "firearms_angle": 0.07,
+            "alcohol_angle": 0.56,
+            "drug_use_angle": 0.07
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 5,
+            "direction": "across",
+            "answer": "",
+            "score": 85.0,
+            "feedback": "",
+            "accuracy": 23.0,
+            "freshness": 20.0,
+            "craft": 21.0,
+            "fairness": 21.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": [],
+          "request_ids": {
+            "context": "de9fa10a83dada02bef30550b58a17c1d8e5a27c72df7675a97f5618cef483de",
+            "clue-only": "fe2d519cc4df5c25402dff5b8937fd7f39e156cc12b532f65bb9d97fdf4d51ba"
+          }
+        },
+        {
+          "id": "2f56705994bc1e3abe9a4418",
+          "number": 6,
+          "direction": "across",
+          "state": {
+            "answer": "TRAIL",
+            "clue": "Fall behind in a race"
+          },
+          "probabilities": {
+            "firearms_angle": 0.04,
+            "alcohol_angle": 0.05,
+            "drug_use_angle": 0.04
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 6,
+            "direction": "across",
+            "answer": "",
+            "score": 80.0,
+            "feedback": "",
+            "accuracy": 22.0,
+            "freshness": 17.0,
+            "craft": 20.0,
+            "fairness": 21.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": [],
+          "request_ids": {
+            "context": "af90fda8f575a34e1a528fbe53fb96bf38adc4cb0696cfb7c02842df7554d0ed",
+            "clue-only": "212597a48e4f69340b40f134145e2d2e5850dd6bd77b38d3899805266f7fc99d"
+          }
+        },
+        {
+          "id": "f99c3da98bf309b09350610e",
+          "number": 7,
+          "direction": "down",
+          "state": {
+            "answer": "LAM",
+            "clue": "On the ___ (fleeing)"
+          },
+          "probabilities": {
+            "firearms_angle": 0.22,
+            "alcohol_angle": 0.14,
+            "drug_use_angle": 0.18
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 7,
+            "direction": "down",
+            "answer": "",
+            "score": 73.0,
+            "feedback": "",
+            "accuracy": 22.0,
+            "freshness": 15.0,
+            "craft": 18.0,
+            "fairness": 18.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": [],
+          "request_ids": {
+            "context": "250170a662d5c0711fbd28e35b1c091533ea38160547c0522f3da2b38f8608a5",
+            "clue-only": "cdf0976d186bd45bb9c3f14b81c9245740e71ea3b4650327bb348caaf3b581c5"
+          }
+        },
+        {
+          "id": "de72f999a63eb6e2be1d4680",
+          "number": 8,
+          "direction": "across",
+          "state": {
+            "answer": "TINA",
+            "clue": "Turner who sang \"Proud Mary\""
+          },
+          "probabilities": {
+            "firearms_angle": 0.06,
+            "alcohol_angle": 0.08,
+            "drug_use_angle": 0.07
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 8,
+            "direction": "across",
+            "answer": "",
+            "score": 82.0,
+            "feedback": "",
+            "accuracy": 23.0,
+            "freshness": 18.0,
+            "craft": 20.0,
+            "fairness": 21.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": [],
+          "request_ids": {
+            "context": "76d47cace664b6054a5c4bd80744df9351ea098f0770037f0f680b6aa2e06430",
+            "clue-only": "fbe06b0a9a8fbd4811686b40d5d76904b5dd2a2dbdecaf534cf011c57cb960e8"
+          }
+        },
+        {
+          "id": "dea517a3afa0ed49bdea4329",
+          "number": 9,
+          "direction": "across",
+          "state": {
+            "answer": "ATOM",
+            "clue": "It has a nucleus but isn't a cell"
+          },
+          "probabilities": {
+            "firearms_angle": 0.04,
+            "alcohol_angle": 0.05,
+            "drug_use_angle": 0.03
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 9,
+            "direction": "across",
+            "answer": "",
+            "score": 89.0,
+            "feedback": "",
+            "accuracy": 23.0,
+            "freshness": 22.0,
+            "craft": 22.0,
+            "fairness": 22.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": [],
+          "request_ids": {
+            "context": "ea139cb2f235bdcc8be7280e6286761843f0fdb4a81ba859bde5f35a78d09c8e",
+            "clue-only": "8709434377e1c7e6f795c5c5b8f38beb805106471f4fb81a9ac0e36bab536272"
+          }
+        }
+      ]
+    },
+    {
+      "phase": "regraded",
+      "observed_at": "2026-09-22T17:48:37.809479+00:00",
+      "puzzle": {
+        "seed": 461288725,
+        "difficulty": "hard",
+        "grid_size": 5
+      },
+      "entries": [
+        {
+          "id": "d2d72bc55ba3990a00d51e07",
+          "number": 1,
+          "direction": "across",
+          "state": {
+            "answer": "TATA",
+            "clue": "Breezy farewell"
+          },
+          "probabilities": {
+            "firearms_angle": 0.05,
+            "alcohol_angle": 0.06,
+            "drug_use_angle": 0.04
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 1,
+            "direction": "across",
+            "answer": "",
+            "score": 83.0,
+            "feedback": "",
+            "accuracy": 23.0,
+            "freshness": 18.0,
+            "craft": 20.0,
+            "fairness": 22.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": null,
+          "request_ids": {
+            "context": "1cfa2eb7bc35cd26877731376b072ad1846919cee43b1a90a32a0a321cbcdafe",
+            "clue-only": "ac1ec37a9f15c18625edef429733b57283ef2360ae477772fcc434e343b6f5ea"
+          }
+        },
+        {
+          "id": "8dd0046f03afda79af7be62b",
+          "number": 1,
+          "direction": "down",
+          "state": {
+            "answer": "TNT",
+            "clue": "Demolition crew's supply, briefly"
+          },
+          "probabilities": {
+            "firearms_angle": 0.06,
+            "alcohol_angle": 0.14,
+            "drug_use_angle": 0.04
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 1,
+            "direction": "down",
+            "answer": "",
+            "score": 87.0,
+            "feedback": "",
+            "accuracy": 24.0,
+            "freshness": 19.0,
+            "craft": 22.0,
+            "fairness": 22.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": null,
+          "request_ids": {
+            "context": "29ecd291731bd540663c527bd5205286157e13e46082eb204777b7c558109fac",
+            "clue-only": "abb22414af14baf55042ca0409987b63aace3d9117867d3465b24961440ad425"
+          }
+        },
+        {
+          "id": "1f26b44cad6cf981c243d32f",
+          "number": 2,
+          "direction": "down",
+          "state": {
+            "answer": "AORTA",
+            "clue": "Vessel carrying blood out of the left ventricle"
+          },
+          "probabilities": {
+            "firearms_angle": 0.01,
+            "alcohol_angle": 0.02,
+            "drug_use_angle": 0.01
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 2,
+            "direction": "down",
+            "answer": "",
+            "score": 79.0,
+            "feedback": "straightforward definition, low misdirection",
+            "accuracy": 23.0,
+            "freshness": 15.0,
+            "craft": 20.0,
+            "fairness": 21.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": null,
+          "request_ids": {
+            "context": "ee28aabbc6ea5459f9b2082aa3083933ccc4af08759169f2c6aaccb8d8975fcf",
+            "clue-only": "ab0725e2871033bee9b5b205cf776d1ed9d9ffc6a121f779584350f13e042bfa"
+          }
+        },
+        {
+          "id": "324cad5f15116ffde1d63dab",
+          "number": 3,
+          "direction": "down",
+          "state": {
+            "answer": "TRAIT",
+            "clue": "Eye color or curly hair, genetically"
+          },
+          "probabilities": {
+            "firearms_angle": 0.01,
+            "alcohol_angle": 0.03,
+            "drug_use_angle": 0.01
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 3,
+            "direction": "down",
+            "answer": "",
+            "score": 82.0,
+            "feedback": "",
+            "accuracy": 22.0,
+            "freshness": 18.0,
+            "craft": 20.0,
+            "fairness": 22.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": null,
+          "request_ids": {
+            "context": "44809f09db6df875bae30276d4c3369f5e7308b493ae35c0ac6afc4b56546aeb",
+            "clue-only": "da68b8db624f753602cc2eb0ab2a0bfb77187ba8585b43ce284d8a1ed9980146"
+          }
+        },
+        {
+          "id": "339e68ede0d9861218b82f5e",
+          "number": 4,
+          "direction": "down",
+          "state": {
+            "answer": "AMINO",
+            "clue": "Lysine, e.g.: ___ acid"
+          },
+          "probabilities": {
+            "firearms_angle": 0.02,
+            "alcohol_angle": 0.03,
+            "drug_use_angle": 0.03
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 4,
+            "direction": "down",
+            "answer": "",
+            "score": 78.0,
+            "feedback": "",
+            "accuracy": 22.0,
+            "freshness": 17.0,
+            "craft": 19.0,
+            "fairness": 20.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": null,
+          "request_ids": {
+            "context": "295a0475cc5b09bd6b5df2de8464e2b7758101d4e1dd45d7418c2b3e154abfef",
+            "clue-only": "b04efb4e7f600b8e84967da426bf8014731f0dff5342acc633525b5a66868272"
+          }
+        },
+        {
+          "id": "ccc117d07831d439a51d9a4b",
+          "number": 5,
+          "direction": "across",
+          "state": {
+            "answer": "NORM",
+            "clue": "Barstool regular on \"Cheers\""
+          },
+          "probabilities": {
+            "firearms_angle": 0.07,
+            "alcohol_angle": 0.56,
+            "drug_use_angle": 0.07
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 5,
+            "direction": "across",
+            "answer": "",
+            "score": 85.0,
+            "feedback": "",
+            "accuracy": 23.0,
+            "freshness": 20.0,
+            "craft": 21.0,
+            "fairness": 21.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": null,
+          "request_ids": {
+            "context": "de9fa10a83dada02bef30550b58a17c1d8e5a27c72df7675a97f5618cef483de",
+            "clue-only": "fe2d519cc4df5c25402dff5b8937fd7f39e156cc12b532f65bb9d97fdf4d51ba"
+          }
+        },
+        {
+          "id": "2f56705994bc1e3abe9a4418",
+          "number": 6,
+          "direction": "across",
+          "state": {
+            "answer": "TRAIL",
+            "clue": "Fall behind in a race"
+          },
+          "probabilities": {
+            "firearms_angle": 0.04,
+            "alcohol_angle": 0.05,
+            "drug_use_angle": 0.04
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 6,
+            "direction": "across",
+            "answer": "",
+            "score": 80.0,
+            "feedback": "",
+            "accuracy": 22.0,
+            "freshness": 17.0,
+            "craft": 20.0,
+            "fairness": 21.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": null,
+          "request_ids": {
+            "context": "af90fda8f575a34e1a528fbe53fb96bf38adc4cb0696cfb7c02842df7554d0ed",
+            "clue-only": "212597a48e4f69340b40f134145e2d2e5850dd6bd77b38d3899805266f7fc99d"
+          }
+        },
+        {
+          "id": "f99c3da98bf309b09350610e",
+          "number": 7,
+          "direction": "down",
+          "state": {
+            "answer": "LAM",
+            "clue": "On the ___ (fleeing)"
+          },
+          "probabilities": {
+            "firearms_angle": 0.22,
+            "alcohol_angle": 0.14,
+            "drug_use_angle": 0.18
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 7,
+            "direction": "down",
+            "answer": "",
+            "score": 73.0,
+            "feedback": "",
+            "accuracy": 22.0,
+            "freshness": 15.0,
+            "craft": 18.0,
+            "fairness": 18.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": null,
+          "request_ids": {
+            "context": "250170a662d5c0711fbd28e35b1c091533ea38160547c0522f3da2b38f8608a5",
+            "clue-only": "cdf0976d186bd45bb9c3f14b81c9245740e71ea3b4650327bb348caaf3b581c5"
+          }
+        },
+        {
+          "id": "de72f999a63eb6e2be1d4680",
+          "number": 8,
+          "direction": "across",
+          "state": {
+            "answer": "TINA",
+            "clue": "Turner who sang \"Proud Mary\""
+          },
+          "probabilities": {
+            "firearms_angle": 0.06,
+            "alcohol_angle": 0.08,
+            "drug_use_angle": 0.07
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 8,
+            "direction": "across",
+            "answer": "",
+            "score": 82.0,
+            "feedback": "",
+            "accuracy": 23.0,
+            "freshness": 18.0,
+            "craft": 20.0,
+            "fairness": 21.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": null,
+          "request_ids": {
+            "context": "76d47cace664b6054a5c4bd80744df9351ea098f0770037f0f680b6aa2e06430",
+            "clue-only": "fbe06b0a9a8fbd4811686b40d5d76904b5dd2a2dbdecaf534cf011c57cb960e8"
+          }
+        },
+        {
+          "id": "dea517a3afa0ed49bdea4329",
+          "number": 9,
+          "direction": "across",
+          "state": {
+            "answer": "ATOM",
+            "clue": "It has a nucleus but isn't a cell"
+          },
+          "probabilities": {
+            "firearms_angle": 0.04,
+            "alcohol_angle": 0.05,
+            "drug_use_angle": 0.03
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 9,
+            "direction": "across",
+            "answer": "",
+            "score": 89.0,
+            "feedback": "",
+            "accuracy": 23.0,
+            "freshness": 22.0,
+            "craft": 22.0,
+            "fairness": 22.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": null,
+          "request_ids": {
+            "context": "ea139cb2f235bdcc8be7280e6286761843f0fdb4a81ba859bde5f35a78d09c8e",
+            "clue-only": "8709434377e1c7e6f795c5c5b8f38beb805106471f4fb81a9ac0e36bab536272"
+          }
+        }
+      ]
+    },
+    {
+      "phase": "detector-sweep",
+      "observed_at": "2026-09-22T17:48:44.236737+00:00",
+      "puzzle": {
+        "seed": 461288725,
+        "difficulty": "hard",
+        "grid_size": 5
+      },
+      "entries": [
+        {
+          "id": "d2d72bc55ba3990a00d51e07",
+          "number": 1,
+          "direction": "across",
+          "state": {
+            "answer": "TATA",
+            "clue": "Breezy farewell"
+          },
+          "probabilities": {
+            "firearms_angle": 0.05,
+            "alcohol_angle": 0.06,
+            "drug_use_angle": 0.04
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 1,
+            "direction": "across",
+            "answer": "",
+            "score": 83.0,
+            "feedback": "",
+            "accuracy": 23.0,
+            "freshness": 18.0,
+            "craft": 20.0,
+            "fairness": 22.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": [],
+          "request_ids": {
+            "context": "1cfa2eb7bc35cd26877731376b072ad1846919cee43b1a90a32a0a321cbcdafe",
+            "clue-only": "ac1ec37a9f15c18625edef429733b57283ef2360ae477772fcc434e343b6f5ea"
+          }
+        },
+        {
+          "id": "8dd0046f03afda79af7be62b",
+          "number": 1,
+          "direction": "down",
+          "state": {
+            "answer": "TNT",
+            "clue": "Demolition crew's supply, briefly"
+          },
+          "probabilities": {
+            "firearms_angle": 0.06,
+            "alcohol_angle": 0.14,
+            "drug_use_angle": 0.04
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 1,
+            "direction": "down",
+            "answer": "",
+            "score": 87.0,
+            "feedback": "",
+            "accuracy": 24.0,
+            "freshness": 19.0,
+            "craft": 22.0,
+            "fairness": 22.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": [],
+          "request_ids": {
+            "context": "29ecd291731bd540663c527bd5205286157e13e46082eb204777b7c558109fac",
+            "clue-only": "abb22414af14baf55042ca0409987b63aace3d9117867d3465b24961440ad425"
+          }
+        },
+        {
+          "id": "1f26b44cad6cf981c243d32f",
+          "number": 2,
+          "direction": "down",
+          "state": {
+            "answer": "AORTA",
+            "clue": "Vessel carrying blood out of the left ventricle"
+          },
+          "probabilities": {
+            "firearms_angle": 0.01,
+            "alcohol_angle": 0.02,
+            "drug_use_angle": 0.01
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 2,
+            "direction": "down",
+            "answer": "",
+            "score": 79.0,
+            "feedback": "straightforward definition, low misdirection",
+            "accuracy": 23.0,
+            "freshness": 15.0,
+            "craft": 20.0,
+            "fairness": 21.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": [],
+          "request_ids": {
+            "context": "ee28aabbc6ea5459f9b2082aa3083933ccc4af08759169f2c6aaccb8d8975fcf",
+            "clue-only": "ab0725e2871033bee9b5b205cf776d1ed9d9ffc6a121f779584350f13e042bfa"
+          }
+        },
+        {
+          "id": "324cad5f15116ffde1d63dab",
+          "number": 3,
+          "direction": "down",
+          "state": {
+            "answer": "TRAIT",
+            "clue": "Eye color or curly hair, genetically"
+          },
+          "probabilities": {
+            "firearms_angle": 0.01,
+            "alcohol_angle": 0.03,
+            "drug_use_angle": 0.01
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 3,
+            "direction": "down",
+            "answer": "",
+            "score": 82.0,
+            "feedback": "",
+            "accuracy": 22.0,
+            "freshness": 18.0,
+            "craft": 20.0,
+            "fairness": 22.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": [],
+          "request_ids": {
+            "context": "44809f09db6df875bae30276d4c3369f5e7308b493ae35c0ac6afc4b56546aeb",
+            "clue-only": "da68b8db624f753602cc2eb0ab2a0bfb77187ba8585b43ce284d8a1ed9980146"
+          }
+        },
+        {
+          "id": "339e68ede0d9861218b82f5e",
+          "number": 4,
+          "direction": "down",
+          "state": {
+            "answer": "AMINO",
+            "clue": "Lysine, e.g.: ___ acid"
+          },
+          "probabilities": {
+            "firearms_angle": 0.02,
+            "alcohol_angle": 0.03,
+            "drug_use_angle": 0.03
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 4,
+            "direction": "down",
+            "answer": "",
+            "score": 78.0,
+            "feedback": "",
+            "accuracy": 22.0,
+            "freshness": 17.0,
+            "craft": 19.0,
+            "fairness": 20.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": [],
+          "request_ids": {
+            "context": "295a0475cc5b09bd6b5df2de8464e2b7758101d4e1dd45d7418c2b3e154abfef",
+            "clue-only": "b04efb4e7f600b8e84967da426bf8014731f0dff5342acc633525b5a66868272"
+          }
+        },
+        {
+          "id": "ccc117d07831d439a51d9a4b",
+          "number": 5,
+          "direction": "across",
+          "state": {
+            "answer": "NORM",
+            "clue": "Barstool regular on \"Cheers\""
+          },
+          "probabilities": {
+            "firearms_angle": 0.07,
+            "alcohol_angle": 0.56,
+            "drug_use_angle": 0.07
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 5,
+            "direction": "across",
+            "answer": "",
+            "score": 85.0,
+            "feedback": "",
+            "accuracy": 23.0,
+            "freshness": 20.0,
+            "craft": 21.0,
+            "fairness": 21.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": [],
+          "request_ids": {
+            "context": "de9fa10a83dada02bef30550b58a17c1d8e5a27c72df7675a97f5618cef483de",
+            "clue-only": "fe2d519cc4df5c25402dff5b8937fd7f39e156cc12b532f65bb9d97fdf4d51ba"
+          }
+        },
+        {
+          "id": "2f56705994bc1e3abe9a4418",
+          "number": 6,
+          "direction": "across",
+          "state": {
+            "answer": "TRAIL",
+            "clue": "Fall behind in a race"
+          },
+          "probabilities": {
+            "firearms_angle": 0.04,
+            "alcohol_angle": 0.05,
+            "drug_use_angle": 0.04
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 6,
+            "direction": "across",
+            "answer": "",
+            "score": 80.0,
+            "feedback": "",
+            "accuracy": 22.0,
+            "freshness": 17.0,
+            "craft": 20.0,
+            "fairness": 21.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": [],
+          "request_ids": {
+            "context": "af90fda8f575a34e1a528fbe53fb96bf38adc4cb0696cfb7c02842df7554d0ed",
+            "clue-only": "212597a48e4f69340b40f134145e2d2e5850dd6bd77b38d3899805266f7fc99d"
+          }
+        },
+        {
+          "id": "f99c3da98bf309b09350610e",
+          "number": 7,
+          "direction": "down",
+          "state": {
+            "answer": "LAM",
+            "clue": "On the ___ (fleeing)"
+          },
+          "probabilities": {
+            "firearms_angle": 0.22,
+            "alcohol_angle": 0.14,
+            "drug_use_angle": 0.18
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 7,
+            "direction": "down",
+            "answer": "",
+            "score": 73.0,
+            "feedback": "",
+            "accuracy": 22.0,
+            "freshness": 15.0,
+            "craft": 18.0,
+            "fairness": 18.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": [],
+          "request_ids": {
+            "context": "250170a662d5c0711fbd28e35b1c091533ea38160547c0522f3da2b38f8608a5",
+            "clue-only": "cdf0976d186bd45bb9c3f14b81c9245740e71ea3b4650327bb348caaf3b581c5"
+          }
+        },
+        {
+          "id": "de72f999a63eb6e2be1d4680",
+          "number": 8,
+          "direction": "across",
+          "state": {
+            "answer": "TINA",
+            "clue": "Turner who sang \"Proud Mary\""
+          },
+          "probabilities": {
+            "firearms_angle": 0.06,
+            "alcohol_angle": 0.08,
+            "drug_use_angle": 0.07
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 8,
+            "direction": "across",
+            "answer": "",
+            "score": 82.0,
+            "feedback": "",
+            "accuracy": 23.0,
+            "freshness": 18.0,
+            "craft": 20.0,
+            "fairness": 21.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": [],
+          "request_ids": {
+            "context": "76d47cace664b6054a5c4bd80744df9351ea098f0770037f0f680b6aa2e06430",
+            "clue-only": "fbe06b0a9a8fbd4811686b40d5d76904b5dd2a2dbdecaf534cf011c57cb960e8"
+          }
+        },
+        {
+          "id": "dea517a3afa0ed49bdea4329",
+          "number": 9,
+          "direction": "across",
+          "state": {
+            "answer": "ATOM",
+            "clue": "It has a nucleus but isn't a cell"
+          },
+          "probabilities": {
+            "firearms_angle": 0.04,
+            "alcohol_angle": 0.05,
+            "drug_use_angle": 0.03
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 9,
+            "direction": "across",
+            "answer": "",
+            "score": 89.0,
+            "feedback": "",
+            "accuracy": 23.0,
+            "freshness": 22.0,
+            "craft": 22.0,
+            "fairness": 22.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": [],
+          "request_ids": {
+            "context": "ea139cb2f235bdcc8be7280e6286761843f0fdb4a81ba859bde5f35a78d09c8e",
+            "clue-only": "8709434377e1c7e6f795c5c5b8f38beb805106471f4fb81a9ac0e36bab536272"
+          }
+        }
+      ]
+    },
+    {
+      "phase": "final",
+      "observed_at": "2026-09-22T17:48:44.248927+00:00",
+      "puzzle": {
+        "seed": 461288725,
+        "difficulty": "hard",
+        "grid_size": 5
+      },
+      "entries": [
+        {
+          "id": "d2d72bc55ba3990a00d51e07",
+          "number": 1,
+          "direction": "across",
+          "state": {
+            "answer": "TATA",
+            "clue": "Breezy farewell"
+          },
+          "probabilities": {
+            "firearms_angle": 0.05,
+            "alcohol_angle": 0.06,
+            "drug_use_angle": 0.04
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 1,
+            "direction": "across",
+            "answer": "",
+            "score": 83.0,
+            "feedback": "",
+            "accuracy": 23.0,
+            "freshness": 18.0,
+            "craft": 20.0,
+            "fairness": 22.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": null,
+          "request_ids": {
+            "context": "1cfa2eb7bc35cd26877731376b072ad1846919cee43b1a90a32a0a321cbcdafe",
+            "clue-only": "ac1ec37a9f15c18625edef429733b57283ef2360ae477772fcc434e343b6f5ea"
+          }
+        },
+        {
+          "id": "8dd0046f03afda79af7be62b",
+          "number": 1,
+          "direction": "down",
+          "state": {
+            "answer": "TNT",
+            "clue": "Demolition crew's supply, briefly"
+          },
+          "probabilities": {
+            "firearms_angle": 0.06,
+            "alcohol_angle": 0.14,
+            "drug_use_angle": 0.04
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 1,
+            "direction": "down",
+            "answer": "",
+            "score": 87.0,
+            "feedback": "",
+            "accuracy": 24.0,
+            "freshness": 19.0,
+            "craft": 22.0,
+            "fairness": 22.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": null,
+          "request_ids": {
+            "context": "29ecd291731bd540663c527bd5205286157e13e46082eb204777b7c558109fac",
+            "clue-only": "abb22414af14baf55042ca0409987b63aace3d9117867d3465b24961440ad425"
+          }
+        },
+        {
+          "id": "1f26b44cad6cf981c243d32f",
+          "number": 2,
+          "direction": "down",
+          "state": {
+            "answer": "AORTA",
+            "clue": "Vessel carrying blood out of the left ventricle"
+          },
+          "probabilities": {
+            "firearms_angle": 0.01,
+            "alcohol_angle": 0.02,
+            "drug_use_angle": 0.01
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 2,
+            "direction": "down",
+            "answer": "",
+            "score": 79.0,
+            "feedback": "straightforward definition, low misdirection",
+            "accuracy": 23.0,
+            "freshness": 15.0,
+            "craft": 20.0,
+            "fairness": 21.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": null,
+          "request_ids": {
+            "context": "ee28aabbc6ea5459f9b2082aa3083933ccc4af08759169f2c6aaccb8d8975fcf",
+            "clue-only": "ab0725e2871033bee9b5b205cf776d1ed9d9ffc6a121f779584350f13e042bfa"
+          }
+        },
+        {
+          "id": "324cad5f15116ffde1d63dab",
+          "number": 3,
+          "direction": "down",
+          "state": {
+            "answer": "TRAIT",
+            "clue": "Eye color or curly hair, genetically"
+          },
+          "probabilities": {
+            "firearms_angle": 0.01,
+            "alcohol_angle": 0.03,
+            "drug_use_angle": 0.01
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 3,
+            "direction": "down",
+            "answer": "",
+            "score": 82.0,
+            "feedback": "",
+            "accuracy": 22.0,
+            "freshness": 18.0,
+            "craft": 20.0,
+            "fairness": 22.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": null,
+          "request_ids": {
+            "context": "44809f09db6df875bae30276d4c3369f5e7308b493ae35c0ac6afc4b56546aeb",
+            "clue-only": "da68b8db624f753602cc2eb0ab2a0bfb77187ba8585b43ce284d8a1ed9980146"
+          }
+        },
+        {
+          "id": "339e68ede0d9861218b82f5e",
+          "number": 4,
+          "direction": "down",
+          "state": {
+            "answer": "AMINO",
+            "clue": "Lysine, e.g.: ___ acid"
+          },
+          "probabilities": {
+            "firearms_angle": 0.02,
+            "alcohol_angle": 0.03,
+            "drug_use_angle": 0.03
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 4,
+            "direction": "down",
+            "answer": "",
+            "score": 78.0,
+            "feedback": "",
+            "accuracy": 22.0,
+            "freshness": 17.0,
+            "craft": 19.0,
+            "fairness": 20.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": null,
+          "request_ids": {
+            "context": "295a0475cc5b09bd6b5df2de8464e2b7758101d4e1dd45d7418c2b3e154abfef",
+            "clue-only": "b04efb4e7f600b8e84967da426bf8014731f0dff5342acc633525b5a66868272"
+          }
+        },
+        {
+          "id": "ccc117d07831d439a51d9a4b",
+          "number": 5,
+          "direction": "across",
+          "state": {
+            "answer": "NORM",
+            "clue": "Barstool regular on \"Cheers\""
+          },
+          "probabilities": {
+            "firearms_angle": 0.07,
+            "alcohol_angle": 0.56,
+            "drug_use_angle": 0.07
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 5,
+            "direction": "across",
+            "answer": "",
+            "score": 85.0,
+            "feedback": "",
+            "accuracy": 23.0,
+            "freshness": 20.0,
+            "craft": 21.0,
+            "fairness": 21.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": null,
+          "request_ids": {
+            "context": "de9fa10a83dada02bef30550b58a17c1d8e5a27c72df7675a97f5618cef483de",
+            "clue-only": "fe2d519cc4df5c25402dff5b8937fd7f39e156cc12b532f65bb9d97fdf4d51ba"
+          }
+        },
+        {
+          "id": "2f56705994bc1e3abe9a4418",
+          "number": 6,
+          "direction": "across",
+          "state": {
+            "answer": "TRAIL",
+            "clue": "Fall behind in a race"
+          },
+          "probabilities": {
+            "firearms_angle": 0.04,
+            "alcohol_angle": 0.05,
+            "drug_use_angle": 0.04
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 6,
+            "direction": "across",
+            "answer": "",
+            "score": 80.0,
+            "feedback": "",
+            "accuracy": 22.0,
+            "freshness": 17.0,
+            "craft": 20.0,
+            "fairness": 21.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": null,
+          "request_ids": {
+            "context": "af90fda8f575a34e1a528fbe53fb96bf38adc4cb0696cfb7c02842df7554d0ed",
+            "clue-only": "212597a48e4f69340b40f134145e2d2e5850dd6bd77b38d3899805266f7fc99d"
+          }
+        },
+        {
+          "id": "f99c3da98bf309b09350610e",
+          "number": 7,
+          "direction": "down",
+          "state": {
+            "answer": "LAM",
+            "clue": "On the ___ (fleeing)"
+          },
+          "probabilities": {
+            "firearms_angle": 0.22,
+            "alcohol_angle": 0.14,
+            "drug_use_angle": 0.18
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 7,
+            "direction": "down",
+            "answer": "",
+            "score": 73.0,
+            "feedback": "",
+            "accuracy": 22.0,
+            "freshness": 15.0,
+            "craft": 18.0,
+            "fairness": 18.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": null,
+          "request_ids": {
+            "context": "250170a662d5c0711fbd28e35b1c091533ea38160547c0522f3da2b38f8608a5",
+            "clue-only": "cdf0976d186bd45bb9c3f14b81c9245740e71ea3b4650327bb348caaf3b581c5"
+          }
+        },
+        {
+          "id": "de72f999a63eb6e2be1d4680",
+          "number": 8,
+          "direction": "across",
+          "state": {
+            "answer": "TINA",
+            "clue": "Turner who sang \"Proud Mary\""
+          },
+          "probabilities": {
+            "firearms_angle": 0.06,
+            "alcohol_angle": 0.08,
+            "drug_use_angle": 0.07
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 8,
+            "direction": "across",
+            "answer": "",
+            "score": 82.0,
+            "feedback": "",
+            "accuracy": 23.0,
+            "freshness": 18.0,
+            "craft": 20.0,
+            "fairness": 21.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": null,
+          "request_ids": {
+            "context": "76d47cace664b6054a5c4bd80744df9351ea098f0770037f0f680b6aa2e06430",
+            "clue-only": "fbe06b0a9a8fbd4811686b40d5d76904b5dd2a2dbdecaf534cf011c57cb960e8"
+          }
+        },
+        {
+          "id": "dea517a3afa0ed49bdea4329",
+          "number": 9,
+          "direction": "across",
+          "state": {
+            "answer": "ATOM",
+            "clue": "It has a nucleus but isn't a cell"
+          },
+          "probabilities": {
+            "firearms_angle": 0.04,
+            "alcohol_angle": 0.05,
+            "drug_use_angle": 0.03
+          },
+          "complete": true,
+          "flagged_questions": [],
+          "flagged": false,
+          "grader_grade": {
+            "number": 9,
+            "direction": "across",
+            "answer": "",
+            "score": 89.0,
+            "feedback": "",
+            "accuracy": 23.0,
+            "freshness": 22.0,
+            "craft": 22.0,
+            "fairness": 22.0
+          },
+          "grader_would_repair": false,
+          "existing_findings": null,
+          "request_ids": {
+            "context": "ea139cb2f235bdcc8be7280e6286761843f0fdb4a81ba859bde5f35a78d09c8e",
+            "clue-only": "8709434377e1c7e6f795c5c5b8f38beb805106471f4fb81a9ac0e36bab536272"
+          }
+        }
+      ]
+    }
+  ],
+  "final_entry_ids": [
+    "d2d72bc55ba3990a00d51e07",
+    "8dd0046f03afda79af7be62b",
+    "1f26b44cad6cf981c243d32f",
+    "324cad5f15116ffde1d63dab",
+    "339e68ede0d9861218b82f5e",
+    "ccc117d07831d439a51d9a4b",
+    "2f56705994bc1e3abe9a4418",
+    "f99c3da98bf309b09350610e",
+    "de72f999a63eb6e2be1d4680",
+    "dea517a3afa0ed49bdea4329"
+  ]
+}

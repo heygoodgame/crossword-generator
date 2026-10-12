@@ -1,0 +1,39 @@
+{
+  "id": "content-policy-v2-context",
+  "state_fields": [
+    "answer",
+    "clue"
+  ],
+  "questions": {
+    "firearms_angle": {
+      "required_fields": [
+        "answer",
+        "clue"
+      ],
+      "question": {
+        "type": "noul",
+        "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to firearms, their ammunition or parts, gun use, or a recognizable gun idiom? Count figurative gun references. Unrelated photography, sports, astronomy, tools, and body-part senses do not count. This question concerns firearms, not every kind of weapon or violence."
+      }
+    },
+    "alcohol_angle": {
+      "required_fields": [
+        "answer",
+        "clue"
+      ],
+      "question": {
+        "type": "noul",
+        "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to alcoholic beverages, drinking alcohol, intoxication, hangovers, or recovery from drinking? Count figurative references. Nonalcoholic beverages, food, and unrelated alternate meanings do not count."
+      }
+    },
+    "drug_use_angle": {
+      "required_fields": [
+        "answer",
+        "clue"
+      ],
+      "question": {
+        "type": "noul",
+        "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to recreational or illicit drugs, their use, production, sale, effects, or recovery? Count figurative references. Ordinary medical treatment, pharmacy shopping, food, gardening, and unrelated alternate meanings do not count."
+      }
+    }
+  }
+}

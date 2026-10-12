@@ -1,0 +1,97 @@
+{
+  "recorded_at": "2026-09-23T16:18:42.442357+00:00",
+  "approved_by": "Neil",
+  "edits": [
+    {
+      "answer": "NORM",
+      "seed": 461288725,
+      "direction": "Across",
+      "number": 5,
+      "old_clue": "Barstool regular on \"Cheers\"",
+      "new_clue": "The usual standard",
+      "removed_hints": [],
+      "output_path": "output/classification-evals/shadow-pilot-2026-09-22/hard/5x5/seed-461288725.ipuz",
+      "original_sha256": "044ee6017a066cd12cddd6e6e4357061d7a89eab90e696dd76822118d3f1b63f",
+      "updated_sha256": "1786b64f59fd467818ee46c8e7a383a6854bb4575dc27e2a25b0e8d80ebbc127",
+      "approved_by": "Neil",
+      "checks": [
+        "answer/grid unchanged",
+        "deterministic leak check passed",
+        "no contiguous answer substring",
+        "no duplicate found in live and current batch clue history"
+      ],
+      "llm_regraded": false
+    },
+    {
+      "answer": "ETA",
+      "seed": 939031385,
+      "direction": "Down",
+      "number": 6,
+      "old_clue": "Greek letter between zeta and theta",
+      "new_clue": "Seventh Greek letter",
+      "removed_hints": [],
+      "output_path": "output/batches/unlimited-5x5-2026-09-23/recovered/easy/5x5/seed-939031385.ipuz",
+      "original_sha256": "97626ab32126644d28c915ed10f553f68ed47daa47d108bdad0a598d99990251",
+      "updated_sha256": "f82e5a8e2af8939197fb398140fe6c9a8257dd16d46e1e9226ea1bc8eb9d602a",
+      "approved_by": "Neil",
+      "checks": [
+        "answer/grid unchanged",
+        "deterministic leak check passed",
+        "no contiguous answer substring",
+        "no duplicate found in live and current batch clue history"
+      ],
+      "llm_regraded": false
+    },
+    {
+      "answer": "DUEL",
+      "seed": 939031350,
+      "direction": "Across",
+      "number": 5,
+      "old_clue": "One-on-one showdown at dawn",
+      "new_clue": "One-on-one contest",
+      "removed_hints": [
+        "Sword fight between two rivals"
+      ],
+      "output_path": "output/batches/unlimited-5x5-2026-09-23/recovered/easy/5x5/seed-939031350.ipuz",
+      "original_sha256": "520ab0c5ba978dba4dc14bb3ea4554e2663207ccabaa7a9d4b83a25ad98f9e6a",
+      "updated_sha256": "ef9c27cbc45c0bb46ef128a6688b05acfe8e2259adb4e674506f32c44416b4b9",
+      "approved_by": "Neil",
+      "checks": [
+        "answer/grid unchanged",
+        "deterministic leak check passed",
+        "no contiguous answer substring",
+        "no duplicate found in live and current batch clue history"
+      ],
+      "llm_regraded": false
+    },
+    {
+      "answer": "LES",
+      "seed": 939031386,
+      "direction": "Down",
+      "number": 5,
+      "old_clue": "\"___ Mis\u00e9rables\" (hit musical)",
+      "new_clue": "The, in French (plural)",
+      "removed_hints": [],
+      "output_path": "output/batches/unlimited-5x5-2026-09-23/recovered/easy/5x5/seed-939031386.ipuz",
+      "original_sha256": "a5d47918d2e1b38fcd1966165f98c31f734b8eaa496831702ec46c49b3217b9e",
+      "updated_sha256": "2cefdb9c11aa3bc43dd1cc995ebf0704ebe8459e73a479f8893549c3564d6e47",
+      "approved_by": "Neil",
+      "checks": [
+        "answer/grid unchanged",
+        "deterministic leak check passed",
+        "no contiguous answer substring",
+        "no duplicate found in live and current batch clue history"
+      ],
+      "llm_regraded": false
+    }
+  ],
+  "held_candidate": {
+    "approved_by": "Neil",
+    "reason": "VODKA / Clear Russian spirit: confirmed alcohol violation",
+    "action": "refill or replace before upload",
+    "seed": 939031360,
+    "output_path": "output/batches/unlimited-5x5-2026-09-23/recovered/easy/5x5/seed-939031360.ipuz",
+    "manifest": "output/batches/unlimited-5x5-2026-09-23/recovered/manifest.json"
+  },
+  "originals_preserved": "Raw observation sidecars and checked-in pilot archive unchanged; edited IPUZ originals backed up locally."
+}

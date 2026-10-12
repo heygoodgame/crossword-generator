@@ -1,0 +1,5 @@
+{
+  "source": "output/classification-evals/content-v2-jev-clue-test",
+  "original_records_sha256": "06e72e0cd6c61dbfd645416c90c2c1d812308badd705609f1c87dca26cabc587",
+  "note": "All attempts retained; repeated request objects omitted. Reconstruct each with core.prepare(corpus row, manifest suite)."
+}

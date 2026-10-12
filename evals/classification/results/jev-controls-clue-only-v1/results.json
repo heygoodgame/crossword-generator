@@ -1,0 +1,2926 @@
+[
+  {
+    "case_id": "control-009",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:22.503115+00:00",
+    "probabilities": {
+      "current_state": 0.51,
+      "firearms_angle": 0.01,
+      "alcohol_angle": 0.03,
+      "drug_use_angle": 0.02
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.51
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.01
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.03
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.02
+        }
+      },
+      "usage": {
+        "input_tokens": 493,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 493,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.3182
+  },
+  {
+    "case_id": "control-035",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:22.502862+00:00",
+    "probabilities": {
+      "current_state": 0.29,
+      "firearms_angle": 0.01,
+      "alcohol_angle": 0.88,
+      "drug_use_angle": 0.38
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.29
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.01
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.88
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.38
+        }
+      },
+      "usage": {
+        "input_tokens": 494,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 494,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.3474
+  },
+  {
+    "case_id": "control-017",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:22.503317+00:00",
+    "probabilities": {
+      "current_state": 0.12,
+      "firearms_angle": 0.01,
+      "alcohol_angle": 0.02,
+      "drug_use_angle": 0.02
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.12
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.01
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.02
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.02
+        }
+      },
+      "usage": {
+        "input_tokens": 491,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 491,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.3564
+  },
+  {
+    "case_id": "control-028",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:22.503234+00:00",
+    "probabilities": {
+      "current_state": 0.15,
+      "firearms_angle": 0.99,
+      "alcohol_angle": 0.02,
+      "drug_use_angle": 0.01
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.15
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.99
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.02
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.01
+        }
+      },
+      "usage": {
+        "input_tokens": 493,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 493,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.3933
+  },
+  {
+    "case_id": "control-006",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:22.822114+00:00",
+    "probabilities": {
+      "current_state": 0.1,
+      "firearms_angle": 0.02,
+      "alcohol_angle": 0.02,
+      "drug_use_angle": 0.01
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.1
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.02
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.02
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.01
+        }
+      },
+      "usage": {
+        "input_tokens": 499,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 499,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.3397
+  },
+  {
+    "case_id": "control-023",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:22.896661+00:00",
+    "probabilities": {
+      "current_state": 0.17,
+      "firearms_angle": 0.04,
+      "alcohol_angle": 0.03,
+      "drug_use_angle": 0.04
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.17
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.04
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.03
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.04
+        }
+      },
+      "usage": {
+        "input_tokens": 491,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 491,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.429
+  },
+  {
+    "case_id": "control-049",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:22.850623+00:00",
+    "probabilities": {
+      "current_state": 0.06,
+      "firearms_angle": 0.02,
+      "alcohol_angle": 0.03,
+      "drug_use_angle": 0.02
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.06
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.02
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.03
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.02
+        }
+      },
+      "usage": {
+        "input_tokens": 492,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 492,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.4759
+  },
+  {
+    "case_id": "control-016",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:22.859802+00:00",
+    "probabilities": {
+      "current_state": 0.43,
+      "firearms_angle": 0.11,
+      "alcohol_angle": 0.1,
+      "drug_use_angle": 0.22
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.43
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.11
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.1
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.22
+        }
+      },
+      "usage": {
+        "input_tokens": 491,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 491,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.6667
+  },
+  {
+    "case_id": "control-004",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:23.162051+00:00",
+    "probabilities": {
+      "current_state": 0.18,
+      "firearms_angle": 0.05,
+      "alcohol_angle": 0.07,
+      "drug_use_angle": 0.03
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.18
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.05
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.07
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.03
+        }
+      },
+      "usage": {
+        "input_tokens": 499,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 499,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.4883
+  },
+  {
+    "case_id": "control-034",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:23.326682+00:00",
+    "probabilities": {
+      "current_state": 0.17,
+      "firearms_angle": 0.02,
+      "alcohol_angle": 0.02,
+      "drug_use_angle": 0.02
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.17
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.02
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.02
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.02
+        }
+      },
+      "usage": {
+        "input_tokens": 492,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 492,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.3687
+  },
+  {
+    "case_id": "control-047",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:23.325780+00:00",
+    "probabilities": {
+      "current_state": 0.21,
+      "firearms_angle": 0.02,
+      "alcohol_angle": 0.04,
+      "drug_use_angle": 0.03
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.21
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.02
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.04
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.03
+        }
+      },
+      "usage": {
+        "input_tokens": 490,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 490,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.4167
+  },
+  {
+    "case_id": "control-013",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:23.526591+00:00",
+    "probabilities": {
+      "current_state": 0.29,
+      "firearms_angle": 0.01,
+      "alcohol_angle": 0.02,
+      "drug_use_angle": 0.02
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.29
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.01
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.02
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.02
+        }
+      },
+      "usage": {
+        "input_tokens": 491,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 491,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.3001
+  },
+  {
+    "case_id": "control-056",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:23.650527+00:00",
+    "probabilities": {
+      "current_state": 0.56,
+      "firearms_angle": 0.01,
+      "alcohol_angle": 0.03,
+      "drug_use_angle": 0.03
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.56
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.01
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.03
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.03
+        }
+      },
+      "usage": {
+        "input_tokens": 491,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 491,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.3098
+  },
+  {
+    "case_id": "control-055",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:23.695557+00:00",
+    "probabilities": {
+      "current_state": 0.12,
+      "firearms_angle": 0.03,
+      "alcohol_angle": 0.06,
+      "drug_use_angle": 0.05
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.12
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.03
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.06
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.05
+        }
+      },
+      "usage": {
+        "input_tokens": 494,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 494,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.3635
+  },
+  {
+    "case_id": "control-063",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:23.742568+00:00",
+    "probabilities": {
+      "current_state": 0.2,
+      "firearms_angle": 0.1,
+      "alcohol_angle": 0.05,
+      "drug_use_angle": 0.05
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.2
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.1
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.05
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.05
+        }
+      },
+      "usage": {
+        "input_tokens": 494,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 494,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.381
+  },
+  {
+    "case_id": "control-030",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:23.826810+00:00",
+    "probabilities": {
+      "current_state": 0.21,
+      "firearms_angle": 0.02,
+      "alcohol_angle": 0.02,
+      "drug_use_angle": 0.01
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.21
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.02
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.02
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.01
+        }
+      },
+      "usage": {
+        "input_tokens": 493,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 493,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.3382
+  },
+  {
+    "case_id": "control-051",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:23.960576+00:00",
+    "probabilities": {
+      "current_state": 0.04,
+      "firearms_angle": 0.0,
+      "alcohol_angle": 0.01,
+      "drug_use_angle": 0.01
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.04
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.0
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.01
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.01
+        }
+      },
+      "usage": {
+        "input_tokens": 493,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 493,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.3622
+  },
+  {
+    "case_id": "control-010",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:24.059161+00:00",
+    "probabilities": {
+      "current_state": 0.52,
+      "firearms_angle": 0.01,
+      "alcohol_angle": 0.02,
+      "drug_use_angle": 0.02
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.52
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.01
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.02
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.02
+        }
+      },
+      "usage": {
+        "input_tokens": 491,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 491,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.35
+  },
+  {
+    "case_id": "control-029",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:24.123662+00:00",
+    "probabilities": {
+      "current_state": 0.21,
+      "firearms_angle": 0.03,
+      "alcohol_angle": 0.02,
+      "drug_use_angle": 0.01
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.21
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.03
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.02
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.01
+        }
+      },
+      "usage": {
+        "input_tokens": 490,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 490,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.4114
+  },
+  {
+    "case_id": "control-040",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:24.409238+00:00",
+    "probabilities": {
+      "current_state": 0.23,
+      "firearms_angle": 0.03,
+      "alcohol_angle": 0.16,
+      "drug_use_angle": 0.13
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.23
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.03
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.16
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.13
+        }
+      },
+      "usage": {
+        "input_tokens": 492,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 492,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.2587
+  },
+  {
+    "case_id": "control-012",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:24.535113+00:00",
+    "probabilities": {
+      "current_state": 0.1,
+      "firearms_angle": 0.04,
+      "alcohol_angle": 0.02,
+      "drug_use_angle": 0.02
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.1
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.04
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.02
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.02
+        }
+      },
+      "usage": {
+        "input_tokens": 490,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 490,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.31
+  },
+  {
+    "case_id": "control-015",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:24.322879+00:00",
+    "probabilities": {
+      "current_state": 0.58,
+      "firearms_angle": 0.04,
+      "alcohol_angle": 0.04,
+      "drug_use_angle": 0.05
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.58
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.04
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.04
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.05
+        }
+      },
+      "usage": {
+        "input_tokens": 489,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 489,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.6186
+  },
+  {
+    "case_id": "control-027",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:24.165162+00:00",
+    "probabilities": {
+      "current_state": 0.27,
+      "firearms_angle": 0.96,
+      "alcohol_angle": 0.03,
+      "drug_use_angle": 0.07
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.27
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.96
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.03
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.07
+        }
+      },
+      "usage": {
+        "input_tokens": 491,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 491,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.8148
+  },
+  {
+    "case_id": "control-043",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:24.668146+00:00",
+    "probabilities": {
+      "current_state": 0.08,
+      "firearms_angle": 0.01,
+      "alcohol_angle": 0.03,
+      "drug_use_angle": 0.96
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.08
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.01
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.03
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.96
+        }
+      },
+      "usage": {
+        "input_tokens": 495,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 495,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.3273
+  },
+  {
+    "case_id": "control-018",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:24.845316+00:00",
+    "probabilities": {
+      "current_state": 0.17,
+      "firearms_angle": 0.01,
+      "alcohol_angle": 0.01,
+      "drug_use_angle": 0.02
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.17
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.01
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.01
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.02
+        }
+      },
+      "usage": {
+        "input_tokens": 491,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 491,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.3069
+  },
+  {
+    "case_id": "control-001",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:24.941697+00:00",
+    "probabilities": {
+      "current_state": 0.81,
+      "firearms_angle": 0.07,
+      "alcohol_angle": 0.08,
+      "drug_use_angle": 0.06
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.81
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.07
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.08
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.06
+        }
+      },
+      "usage": {
+        "input_tokens": 494,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 494,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.2986
+  },
+  {
+    "case_id": "control-039",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:24.980188+00:00",
+    "probabilities": {
+      "current_state": 0.12,
+      "firearms_angle": 0.04,
+      "alcohol_angle": 0.14,
+      "drug_use_angle": 0.95
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.12
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.04
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.14
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.95
+        }
+      },
+      "usage": {
+        "input_tokens": 494,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 494,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.3857
+  },
+  {
+    "case_id": "control-050",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:24.995684+00:00",
+    "probabilities": {
+      "current_state": 0.03,
+      "firearms_angle": 0.01,
+      "alcohol_angle": 0.02,
+      "drug_use_angle": 0.02
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.03
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.01
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.02
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.02
+        }
+      },
+      "usage": {
+        "input_tokens": 495,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 495,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.3733
+  },
+  {
+    "case_id": "control-033",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:25.152422+00:00",
+    "probabilities": {
+      "current_state": 0.55,
+      "firearms_angle": 0.23,
+      "alcohol_angle": 0.83,
+      "drug_use_angle": 0.52
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.55
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.23
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.83
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.52
+        }
+      },
+      "usage": {
+        "input_tokens": 493,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 493,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.4296
+  },
+  {
+    "case_id": "control-020",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:25.240411+00:00",
+    "probabilities": {
+      "current_state": 0.6,
+      "firearms_angle": 0.04,
+      "alcohol_angle": 0.04,
+      "drug_use_angle": 0.04
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.6
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.04
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.04
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.04
+        }
+      },
+      "usage": {
+        "input_tokens": 489,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 489,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.4245
+  },
+  {
+    "case_id": "control-062",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:25.366215+00:00",
+    "probabilities": {
+      "current_state": 0.21,
+      "firearms_angle": 0.11,
+      "alcohol_angle": 0.1,
+      "drug_use_angle": 0.3
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.21
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.11
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.1
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.3
+        }
+      },
+      "usage": {
+        "input_tokens": 496,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 496,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.3065
+  },
+  {
+    "case_id": "control-021",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:25.369062+00:00",
+    "probabilities": {
+      "current_state": 0.25,
+      "firearms_angle": 0.01,
+      "alcohol_angle": 0.05,
+      "drug_use_angle": 0.09
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.25
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.01
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.05
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.09
+        }
+      },
+      "usage": {
+        "input_tokens": 490,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 490,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.3045
+  },
+  {
+    "case_id": "control-038",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:25.582143+00:00",
+    "probabilities": {
+      "current_state": 0.03,
+      "firearms_angle": 0.01,
+      "alcohol_angle": 0.96,
+      "drug_use_angle": 0.65
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.03
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.01
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.96
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.65
+        }
+      },
+      "usage": {
+        "input_tokens": 495,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 495,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.2863
+  },
+  {
+    "case_id": "control-011",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:25.672785+00:00",
+    "probabilities": {
+      "current_state": 0.07,
+      "firearms_angle": 0.01,
+      "alcohol_angle": 0.02,
+      "drug_use_angle": 0.02
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.07
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.01
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.02
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.02
+        }
+      },
+      "usage": {
+        "input_tokens": 492,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 492,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.2797
+  },
+  {
+    "case_id": "control-058",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:25.673943+00:00",
+    "probabilities": {
+      "current_state": 0.15,
+      "firearms_angle": 0.04,
+      "alcohol_angle": 0.06,
+      "drug_use_angle": 0.05
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.15
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.04
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.06
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.05
+        }
+      },
+      "usage": {
+        "input_tokens": 491,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 491,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.2833
+  },
+  {
+    "case_id": "control-065",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:25.664954+00:00",
+    "probabilities": {
+      "current_state": 0.06,
+      "firearms_angle": 0.02,
+      "alcohol_angle": 0.04,
+      "drug_use_angle": 0.02
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.06
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.02
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.04
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.02
+        }
+      },
+      "usage": {
+        "input_tokens": 490,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 490,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.3391
+  },
+  {
+    "case_id": "control-005",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:25.868615+00:00",
+    "probabilities": {
+      "current_state": 0.9,
+      "firearms_angle": 0.1,
+      "alcohol_angle": 0.03,
+      "drug_use_angle": 0.01
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.1
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.03
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.01
+        }
+      },
+      "usage": {
+        "input_tokens": 492,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 492,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.3066
+  },
+  {
+    "case_id": "control-025",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:25.957334+00:00",
+    "probabilities": {
+      "current_state": 0.17,
+      "firearms_angle": 0.01,
+      "alcohol_angle": 0.02,
+      "drug_use_angle": 0.07
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.17
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.01
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.02
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.07
+        }
+      },
+      "usage": {
+        "input_tokens": 492,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 492,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.4528
+  },
+  {
+    "case_id": "control-041",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:26.004160+00:00",
+    "probabilities": {
+      "current_state": 0.19,
+      "firearms_angle": 0.01,
+      "alcohol_angle": 0.02,
+      "drug_use_angle": 0.05
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.19
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.01
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.02
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.05
+        }
+      },
+      "usage": {
+        "input_tokens": 492,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 492,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.4203
+  },
+  {
+    "case_id": "control-061",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:25.952630+00:00",
+    "probabilities": {
+      "current_state": 0.05,
+      "firearms_angle": 0.02,
+      "alcohol_angle": 0.04,
+      "drug_use_angle": 0.02
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.05
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.02
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.04
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.02
+        }
+      },
+      "usage": {
+        "input_tokens": 490,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 490,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.5071
+  },
+  {
+    "case_id": "control-067",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:26.175626+00:00",
+    "probabilities": {
+      "current_state": 0.14,
+      "firearms_angle": 0.01,
+      "alcohol_angle": 0.01,
+      "drug_use_angle": 0.01
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.14
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.01
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.01
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.01
+        }
+      },
+      "usage": {
+        "input_tokens": 492,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 492,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.3594
+  },
+  {
+    "case_id": "control-068",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:26.410229+00:00",
+    "probabilities": {
+      "current_state": 0.21,
+      "firearms_angle": 0.03,
+      "alcohol_angle": 0.06,
+      "drug_use_angle": 0.12
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.21
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.03
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.06
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.12
+        }
+      },
+      "usage": {
+        "input_tokens": 492,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 492,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.2967
+  },
+  {
+    "case_id": "control-046",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:26.424508+00:00",
+    "probabilities": {
+      "current_state": 0.07,
+      "firearms_angle": 0.01,
+      "alcohol_angle": 0.02,
+      "drug_use_angle": 0.01
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.07
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.01
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.02
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.01
+        }
+      },
+      "usage": {
+        "input_tokens": 494,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 494,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.3202
+  },
+  {
+    "case_id": "control-036",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:26.459808+00:00",
+    "probabilities": {
+      "current_state": 0.16,
+      "firearms_angle": 0.01,
+      "alcohol_angle": 0.05,
+      "drug_use_angle": 0.03
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.16
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.01
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.05
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.03
+        }
+      },
+      "usage": {
+        "input_tokens": 493,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 493,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.3282
+  },
+  {
+    "case_id": "control-059",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:26.535084+00:00",
+    "probabilities": {
+      "current_state": 0.15,
+      "firearms_angle": 0.01,
+      "alcohol_angle": 0.01,
+      "drug_use_angle": 0.02
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.15
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.01
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.01
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.02
+        }
+      },
+      "usage": {
+        "input_tokens": 496,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 496,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.3267
+  },
+  {
+    "case_id": "control-048",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:26.745305+00:00",
+    "probabilities": {
+      "current_state": 0.2,
+      "firearms_angle": 0.07,
+      "alcohol_angle": 0.05,
+      "drug_use_angle": 0.05
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.2
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.07
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.05
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.05
+        }
+      },
+      "usage": {
+        "input_tokens": 494,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 494,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.2761
+  },
+  {
+    "case_id": "control-007",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:26.707105+00:00",
+    "probabilities": {
+      "current_state": 0.49,
+      "firearms_angle": 0.01,
+      "alcohol_angle": 0.02,
+      "drug_use_angle": 0.02
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.49
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.01
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.02
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.02
+        }
+      },
+      "usage": {
+        "input_tokens": 492,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 492,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.3443
+  },
+  {
+    "case_id": "control-037",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:26.788214+00:00",
+    "probabilities": {
+      "current_state": 0.68,
+      "firearms_angle": 0.02,
+      "alcohol_angle": 0.03,
+      "drug_use_angle": 0.02
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.68
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.02
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.03
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.02
+        }
+      },
+      "usage": {
+        "input_tokens": 490,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 490,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.3456
+  },
+  {
+    "case_id": "control-002",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:26.861845+00:00",
+    "probabilities": {
+      "current_state": 0.26,
+      "firearms_angle": 0.06,
+      "alcohol_angle": 0.08,
+      "drug_use_angle": 0.07
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.26
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.06
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.08
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.07
+        }
+      },
+      "usage": {
+        "input_tokens": 494,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 494,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.2829
+  },
+  {
+    "case_id": "control-053",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:27.021519+00:00",
+    "probabilities": {
+      "current_state": 0.05,
+      "firearms_angle": 0.01,
+      "alcohol_angle": 0.01,
+      "drug_use_angle": 0.01
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.05
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.01
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.01
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.01
+        }
+      },
+      "usage": {
+        "input_tokens": 498,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 498,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.2845
+  },
+  {
+    "case_id": "control-031",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:27.051513+00:00",
+    "probabilities": {
+      "current_state": 0.51,
+      "firearms_angle": 0.57,
+      "alcohol_angle": 0.17,
+      "drug_use_angle": 0.36
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.51
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.57
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.17
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.36
+        }
+      },
+      "usage": {
+        "input_tokens": 491,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 491,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.2922
+  },
+  {
+    "case_id": "control-026",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:27.133930+00:00",
+    "probabilities": {
+      "current_state": 0.37,
+      "firearms_angle": 0.05,
+      "alcohol_angle": 0.08,
+      "drug_use_angle": 0.13
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.37
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.05
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.08
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.13
+        }
+      },
+      "usage": {
+        "input_tokens": 490,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 490,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.3236
+  },
+  {
+    "case_id": "control-042",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:27.144860+00:00",
+    "probabilities": {
+      "current_state": 0.6,
+      "firearms_angle": 0.01,
+      "alcohol_angle": 0.03,
+      "drug_use_angle": 0.04
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.6
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.01
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.03
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.04
+        }
+      },
+      "usage": {
+        "input_tokens": 492,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 492,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.338
+  },
+  {
+    "case_id": "control-064",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:27.344035+00:00",
+    "probabilities": {
+      "current_state": 0.06,
+      "firearms_angle": 0.02,
+      "alcohol_angle": 0.04,
+      "drug_use_angle": 0.02
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.06
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.02
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.04
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.02
+        }
+      },
+      "usage": {
+        "input_tokens": 490,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 490,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.3213
+  },
+  {
+    "case_id": "control-057",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:27.306268+00:00",
+    "probabilities": {
+      "current_state": 0.21,
+      "firearms_angle": 0.04,
+      "alcohol_angle": 0.08,
+      "drug_use_angle": 0.05
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.21
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.04
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.08
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.05
+        }
+      },
+      "usage": {
+        "input_tokens": 492,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 492,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.3673
+  },
+  {
+    "case_id": "control-060",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:27.457721+00:00",
+    "probabilities": {
+      "current_state": 0.17,
+      "firearms_angle": 0.01,
+      "alcohol_angle": 0.01,
+      "drug_use_angle": 0.01
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.17
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.01
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.01
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.01
+        }
+      },
+      "usage": {
+        "input_tokens": 492,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 492,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.3232
+  },
+  {
+    "case_id": "control-032",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:27.483012+00:00",
+    "probabilities": {
+      "current_state": 0.11,
+      "firearms_angle": 0.98,
+      "alcohol_angle": 0.01,
+      "drug_use_angle": 0.01
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.11
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.98
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.01
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.01
+        }
+      },
+      "usage": {
+        "input_tokens": 494,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 494,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.3112
+  },
+  {
+    "case_id": "control-022",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:27.673793+00:00",
+    "probabilities": {
+      "current_state": 0.27,
+      "firearms_angle": 0.01,
+      "alcohol_angle": 0.05,
+      "drug_use_angle": 0.08
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.27
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.01
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.05
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.08
+        }
+      },
+      "usage": {
+        "input_tokens": 490,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 490,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.281
+  },
+  {
+    "case_id": "control-003",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:27.665441+00:00",
+    "probabilities": {
+      "current_state": 0.42,
+      "firearms_angle": 0.06,
+      "alcohol_angle": 0.06,
+      "drug_use_angle": 0.06
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.42
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.06
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.06
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.06
+        }
+      },
+      "usage": {
+        "input_tokens": 495,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 495,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.3262
+  },
+  {
+    "case_id": "control-014",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:27.794371+00:00",
+    "probabilities": {
+      "current_state": 0.07,
+      "firearms_angle": 0.01,
+      "alcohol_angle": 0.03,
+      "drug_use_angle": 0.02
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.07
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.01
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.03
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.02
+        }
+      },
+      "usage": {
+        "input_tokens": 492,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 492,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.2586
+  },
+  {
+    "case_id": "control-054",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:27.781123+00:00",
+    "probabilities": {
+      "current_state": 0.09,
+      "firearms_angle": 0.01,
+      "alcohol_angle": 0.01,
+      "drug_use_angle": 0.01
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.09
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.01
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.01
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.01
+        }
+      },
+      "usage": {
+        "input_tokens": 492,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 492,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.4344
+  },
+  {
+    "case_id": "control-052",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:27.954933+00:00",
+    "probabilities": {
+      "current_state": 0.05,
+      "firearms_angle": 0.01,
+      "alcohol_angle": 0.01,
+      "drug_use_angle": 0.01
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.05
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.01
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.01
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.01
+        }
+      },
+      "usage": {
+        "input_tokens": 492,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 492,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.2857
+  },
+  {
+    "case_id": "control-045",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:28.053033+00:00",
+    "probabilities": {
+      "current_state": 0.05,
+      "firearms_angle": 0.02,
+      "alcohol_angle": 0.03,
+      "drug_use_angle": 0.02
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.05
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.02
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.03
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.02
+        }
+      },
+      "usage": {
+        "input_tokens": 490,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 490,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.2714
+  },
+  {
+    "case_id": "control-019",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:27.991750+00:00",
+    "probabilities": {
+      "current_state": 0.47,
+      "firearms_angle": 0.1,
+      "alcohol_angle": 0.12,
+      "drug_use_angle": 0.24
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.47
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.1
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.12
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.24
+        }
+      },
+      "usage": {
+        "input_tokens": 491,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 491,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.5161
+  },
+  {
+    "case_id": "control-024",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:28.215651+00:00",
+    "probabilities": {
+      "current_state": 0.16,
+      "firearms_angle": 0.04,
+      "alcohol_angle": 0.03,
+      "drug_use_angle": 0.04
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.16
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.04
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.03
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.04
+        }
+      },
+      "usage": {
+        "input_tokens": 491,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 491,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.2926
+  },
+  {
+    "case_id": "control-066",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:28.240750+00:00",
+    "probabilities": {
+      "current_state": 0.23,
+      "firearms_angle": 0.02,
+      "alcohol_angle": 0.04,
+      "drug_use_angle": 0.03
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.23
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.02
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.04
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.03
+        }
+      },
+      "usage": {
+        "input_tokens": 490,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 490,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.3227
+  },
+  {
+    "case_id": "control-008",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:28.324554+00:00",
+    "probabilities": {
+      "current_state": 0.4,
+      "firearms_angle": 0.01,
+      "alcohol_angle": 0.02,
+      "drug_use_angle": 0.03
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.4
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.01
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.02
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.03
+        }
+      },
+      "usage": {
+        "input_tokens": 493,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 493,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.3428
+  },
+  {
+    "case_id": "control-044",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:47:28.507912+00:00",
+    "probabilities": {
+      "current_state": 0.09,
+      "firearms_angle": 0.01,
+      "alcohol_angle": 0.02,
+      "drug_use_angle": 0.01
+    },
+    "raw": {
+      "model": "jev-1.13.0",
+      "answers": {
+        "current_state": {
+          "type": "noul",
+          "noul": 0.09
+        },
+        "firearms_angle": {
+          "type": "noul",
+          "noul": 0.01
+        },
+        "alcohol_angle": {
+          "type": "noul",
+          "noul": 0.02
+        },
+        "drug_use_angle": {
+          "type": "noul",
+          "noul": 0.01
+        }
+      },
+      "usage": {
+        "input_tokens": 490,
+        "output_tokens": 76
+      }
+    },
+    "resolved_model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 490,
+      "output_tokens": 76
+    },
+    "error": null,
+    "latency_s": 0.4129
+  }
+]

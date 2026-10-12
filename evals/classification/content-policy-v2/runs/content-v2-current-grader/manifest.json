@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "corpus_sha256": "57d17ed92da9e8a93af0b5f170e43041be9cdfb08378cd1cce573515bef50da8",
+  "suite": {
+    "id": "content-policy-v2-current-grader",
+    "state_fields": [
+      "answer",
+      "clue"
+    ],
+    "questions": {
+      "fairness_repair": {
+        "required_fields": [
+          "answer",
+          "clue"
+        ],
+        "question": {
+          "type": "noul",
+          "instructions": "Raw production clue-grader fairness score is below 15. Binary observed action, not a probability estimate. Includes all fairness issues, not only content."
+        }
+      }
+    }
+  },
+  "model": {
+    "provider": "plugin",
+    "model": "claude-sonnet-5",
+    "options": {
+      "thinking_enabled": false,
+      "max_tokens": 2048
+    },
+    "generation_kwargs": {
+      "temperature": 0
+    },
+    "factory": "evals.classification.content_policy_grader:factory",
+    "adapter_sha256": "07f2a9dc2292753191328d70dd6a9a02fa6738e402e85fecf2fd556c0f7a1278",
+    "rubric_sha256": "afbec6f571c24bc9512e7c7471e0165e3d59da4f5d06fd4ba0928fdd0b52cceb"
+  },
+  "repeats": 1,
+  "implementation": {
+    "__init__.py": "20e48998693c33cc745d819b2a7ed8e289f5b65a5ab3ff0fef40824cd154b8cd",
+    "__main__.py": "f97e61725c85e6961fdd9be4fcb0577814e4b45c6419eeab43af6a9e27642c19",
+    "calibration.py": "4d20056ad27b1594923bb899f5ab2302e421649b26fa4e8197c10beea982f169",
+    "core.py": "b5f57ea36697820508e2ed8a739a820e48bd80577e41e44544aa88fd8d45f2d9",
+    "import_logs.py": "b94457f67a1f870bbe0aa0ec9e914dc3c3fdf48f2466a531467e29ac20043fc7",
+    "providers.py": "f2981f90c99034c084e3f0203405c48a38ac407bb40fb23bb921f87975b278dc",
+    "report.py": "2fc86b416e9c9139729919a615219b3d468d119b03e70fc6167cf91f61fe2afb"
+  },
+  "run_hash": "935363b848d42d96af686648e12ddac06928c29034476c209033cdd394065880",
+  "created_at": "2026-09-22T17:11:36.421524+00:00"
+}

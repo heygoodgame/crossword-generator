@@ -1,0 +1,171 @@
+{
+  "schema_version": 1,
+  "corpus_sha256": "cc13912ce5fc7b5bc12e0eb3777aaa25132403eb10996538551ea41ee167d8e7",
+  "suite": {
+    "id": "editorial-v1",
+    "description": "Atomic editorial judgments. Style signals are not automatic repair decisions. Hint and duplicate judgments require additional state.",
+    "state_fields": [
+      "answer",
+      "clue",
+      "hint",
+      "previous_clue"
+    ],
+    "questions": {
+      "current_state": {
+        "required_fields": [
+          "answer",
+          "clue"
+        ],
+        "question": {
+          "type": "noul",
+          "instructions": "Would `clue` potentially stop being correct because a person or organization changes a present job, affiliation, roster, ownership, broadcast arrangement, or held title? Count implied present relationships even when the clue does not say current. Completed historical facts, credited works, and explicitly past roles do not count."
+        }
+      },
+      "number_mismatch": {
+        "required_fields": [
+          "answer",
+          "clue"
+        ],
+        "question": {
+          "type": "noul",
+          "instructions": "Does the grammatical number required by `clue` conflict with `answer`? Flag a singular clue for a plural answer or a plural clue for a singular answer. Judge the answer's intended sense in this clue. Collective and mass nouns may correctly describe groups."
+        }
+      },
+      "tense_mismatch": {
+        "required_fields": [
+          "answer",
+          "clue"
+        ],
+        "question": {
+          "type": "noul",
+          "instructions": "Does the verb tense required by `clue` conflict with the tense of `answer`? If the clue does not require a verb tense, answer no."
+        }
+      },
+      "part_of_speech_mismatch": {
+        "required_fields": [
+          "answer",
+          "clue"
+        ],
+        "question": {
+          "type": "noul",
+          "instructions": "Does `clue` require a different grammatical part of speech from the sense of `answer` it is defining? Judge crossword definition equivalence, not whether the clue and answer have the same number of words. A noun phrase can define a noun; an infinitive phrase can define a verb."
+        }
+      },
+      "firearms_angle": {
+        "required_fields": [
+          "answer",
+          "clue"
+        ],
+        "question": {
+          "type": "noul",
+          "instructions": "Does `clue` invoke firearms, ammunition, gun culture, or shooting a weapon, including figurative expressions? Judge the clue's meaning. Camera shots, basketball shots, and shooting stars do not count just because they use the word shot or shooting."
+        }
+      },
+      "alcohol_angle": {
+        "required_fields": [
+          "answer",
+          "clue"
+        ],
+        "question": {
+          "type": "noul",
+          "instructions": "Does `clue` invoke alcoholic drinks, drinking alcohol, drunkenness, hangovers, or recovery from drinking? Include figurative references. Nonalcoholic drinks and unrelated uses of words like spirit do not count."
+        }
+      },
+      "drug_use_angle": {
+        "required_fields": [
+          "answer",
+          "clue"
+        ],
+        "question": {
+          "type": "noul",
+          "instructions": "Does `clue` invoke recreational drug use or intoxication from drugs? Ordinary pharmacy shopping, prescribed medical treatment, and unrelated uses of high do not count."
+        }
+      },
+      "plain_definition": {
+        "required_fields": [
+          "answer",
+          "clue"
+        ],
+        "question": {
+          "type": "noul",
+          "instructions": "Does `clue` directly define the most common everyday meaning of `answer`, without wordplay, misdirection, or specialist trivia? Judge clue style, not whether its difficulty is acceptable. Fill-in-the-blank phrases are not direct definitions."
+        }
+      },
+      "specialist_knowledge": {
+        "required_fields": [
+          "answer",
+          "clue"
+        ],
+        "question": {
+          "type": "noul",
+          "instructions": "Does solving `clue` require specialist knowledge, obscure vocabulary, regional slang unfamiliar to most Americans, or knowledge limited to a particular fandom or generation? Use a broad casual American adult audience. Widely known cultural references and everyday knowledge do not count."
+        }
+      },
+      "unnatural_wording": {
+        "required_fields": [
+          "answer",
+          "clue"
+        ],
+        "question": {
+          "type": "noul",
+          "instructions": "Does `clue` have awkward or unidiomatic English wording that makes its intended meaning hard to understand? Normal concise crossword fragments and intentional question-mark wordplay are acceptable."
+        }
+      },
+      "hint_easier": {
+        "required_fields": [
+          "answer",
+          "clue",
+          "hint"
+        ],
+        "question": {
+          "type": "noul",
+          "instructions": "Would `hint` make `answer` meaningfully easier for a stuck beginner to identify than `clue` does? A synonymous rewording of an already obvious clue is not meaningfully easier."
+        }
+      },
+      "hint_new_angle": {
+        "required_fields": [
+          "answer",
+          "clue",
+          "hint"
+        ],
+        "question": {
+          "type": "noul",
+          "instructions": "Does `hint` lead to `answer` through a different meaning, example, or association from `clue`? Merely paraphrasing the same definition does not count."
+        }
+      },
+      "same_clue_angle": {
+        "required_fields": [
+          "answer",
+          "clue",
+          "previous_clue"
+        ],
+        "question": {
+          "type": "noul",
+          "instructions": "Do `clue` and `previous_clue` lead to `answer` through the same specific meaning, fact, example, or phrase completion? Rewording that preserves the same solving route counts. Different senses or distinct facts about the same answer do not count."
+        }
+      }
+    }
+  },
+  "model": {
+    "provider": "claude",
+    "model": "claude-sonnet-5",
+    "options": {
+      "thinking_enabled": false,
+      "max_tokens": 2048
+    },
+    "generation_kwargs": {
+      "temperature": 0
+    }
+  },
+  "repeats": 1,
+  "implementation": {
+    "__init__.py": "20e48998693c33cc745d819b2a7ed8e289f5b65a5ab3ff0fef40824cd154b8cd",
+    "__main__.py": "ae6e53f6172d771bf9229684c340634f1243d7cab0820107cddbc23f1a7845cf",
+    "core.py": "335153a48f2f777f028dcb747fc27b8f2a531cb7dee038a2465f9f42ff52ba9f",
+    "import_logs.py": "b94457f67a1f870bbe0aa0ec9e914dc3c3fdf48f2466a531467e29ac20043fc7",
+    "providers.py": "218094213d35d116c1605234eb237ce3f060aa403558797e7b5f4347363086c8",
+    "report.py": "a38f87e4ac3a3f2fdf0cf58d600973b204139fa211b05d2b582a3e46a9d510ae"
+  },
+  "run_hash": "103dbe603d501aa072d24949352e42302425edece39dcc846a1fc44d4fb330ce",
+  "created_at": "2026-09-18T19:41:59.401424+00:00"
+}

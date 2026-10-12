@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
+from typing import Literal
 
 import yaml
 from pydantic import BaseModel, Field
@@ -128,10 +129,24 @@ class FillGradingConfig(BaseModel):
     min_proper_noun_allowance: int = 2
 
 
+class ContentShadowConfig(BaseModel):
+    """Optional observation only; never a repair or upload gate.
+
+    Off unless a run opts in: observing sends every answer and clue to
+    TypeSafe. ``True`` and ``"auto"`` both observe while ``TYPESAFE_API_KEY``
+    is set and the study is still collecting.
+    """
+
+    enabled: bool | Literal["auto"] = False
+    max_workers: int = Field(default=4, ge=1, le=8)
+    timeout_seconds: float = Field(default=10, gt=0, le=60)
+
+
 class ClueGradingConfig(BaseModel):
     """Clue quality grading thresholds."""
 
     min_score: int = 70
+    content_shadow: ContentShadowConfig = Field(default_factory=ContentShadowConfig)
     regenerate_on_fail: bool = True
     accuracy_repair_threshold: int = 12  # repair clues below this accuracy sub-score
     fairness_repair_threshold: int = 15  # repair clues below this fairness sub-score

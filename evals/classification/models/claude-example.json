@@ -1,0 +1,11 @@
+{
+  "provider": "claude",
+  "model": "claude-sonnet-5",
+  "options": {
+    "thinking_enabled": false,
+    "max_tokens": 2048
+  },
+  "generation_kwargs": {
+    "temperature": 0
+  }
+}

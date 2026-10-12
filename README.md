@@ -79,6 +79,8 @@ See [docs/roadmap.md](docs/roadmap.md) for the phased development plan.
 
 ## Design Documents
 
+- [Historical classification model evaluations](evals/classification/README.md)
+- [Jev content-policy shadow checks](docs/jev-content-shadow.md)
 - [Construction Design Principles](docs/construction-design-principles.md)
 - [Fill Quality](docs/fill-quality.md)
 - [Clue Quality](docs/clue-quality.md)
