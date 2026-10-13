@@ -1,0 +1,14 @@
+{
+  "provider": "plugin",
+  "model": "claude-sonnet-5",
+  "options": {
+    "thinking_enabled": false,
+    "max_tokens": 2048
+  },
+  "generation_kwargs": {
+    "temperature": 0
+  },
+  "factory": "evals.classification.content_policy_grader:factory",
+  "adapter_sha256": "07f2a9dc2292753191328d70dd6a9a02fa6738e402e85fecf2fd556c0f7a1278",
+  "rubric_sha256": "afbec6f571c24bc9512e7c7471e0165e3d59da4f5d06fd4ba0928fdd0b52cceb"
+}

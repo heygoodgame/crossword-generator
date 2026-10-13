@@ -1,0 +1,111 @@
+{
+  "id": "legacy-shadow-v2",
+  "description": "Unmodified questions recovered from the previous scratch experiment. Contains known flawed examples; retained only for reproducibility, not recommended policy.",
+  "state_fields": [
+    "answer",
+    "clue",
+    "crossing_answers",
+    "puzzle_difficulty",
+    "puzzle_type"
+  ],
+  "questions": {
+    "leaks_answer": {
+      "question": {
+        "type": "noul",
+        "instructions": "Does any word in the clue share a root, stem, or morphological family with the ANSWER, or is the answer embedded inside a clue word? Judge the literal letters of the clue against the answer.",
+        "criteria": {
+          "true": "EDGY clued 'Cutting-edge and daring' (edge/edgy share a root); RENEW clued 'Keep a subscription going' is fine but RENEW clued 'Make new again' leaks NEW; ETA clued 'Arrival guess' leaks 'arrival'; TRI clued 'Prefix for angle' (TRI inside tRIangle).",
+          "false": "No clue word shares a root with the answer and the answer is not embedded."
+        }
+      },
+      "required_fields": [
+        "answer",
+        "clue"
+      ]
+    },
+    "semantic_giveaway": {
+      "question": {
+        "type": "noul",
+        "instructions": "Is the clue a near-definitional restatement or a set phrase where essentially only this answer can fit, so no real solving happens?",
+        "criteria": {
+          "true": "'Kith and ___' for KIN; 'Make good ___ of' for USE; 'Pincered crustaceans' for CRABS; 'Nice scent' for AROMA.",
+          "false": "The solver must do inference; several plausible answers exist."
+        }
+      },
+      "required_fields": [
+        "answer",
+        "clue"
+      ]
+    },
+    "too_easy_for_hard": {
+      "question": {
+        "type": "noul",
+        "instructions": "Given `puzzle_difficulty`, is this clue TOO PLAIN for that difficulty? A Hard puzzle needs misdirection, wordplay, or a non-obvious angle; a bare dictionary definition is too easy for Hard.",
+        "criteria": {
+          "true": "difficulty is 'hard' and the clue is a flat definition, e.g. SUN clued 'Source of a beachgoer's tan', YAY clued 'Excited cheer'.",
+          "false": "The clue matches its difficulty, or the puzzle is easy/starter where plain clues are correct."
+        }
+      },
+      "required_fields": [
+        "answer",
+        "clue"
+      ]
+    },
+    "ambiguous_multi_answer": {
+      "question": {
+        "type": "noul",
+        "instructions": "Could several different words legitimately answer this clue, so it does not uniquely identify the given ANSWER?",
+        "criteria": {
+          "true": "APPLES clued 'Fruits for pies' (many fruits fit); ERICA clued 'Common woman's first name'.",
+          "false": "The clue pins down this answer specifically."
+        }
+      },
+      "required_fields": [
+        "answer",
+        "clue"
+      ]
+    },
+    "factually_wrong": {
+      "question": {
+        "type": "noul",
+        "instructions": "Is any checkable claim in the clue false for this answer, or does the clue point to a different word or word form?",
+        "criteria": {
+          "true": "IVORY clued 'named for a soap'; THE clued '\"___ Who\" (sci-fi series)'; UNHOOK clued 'Release from a latch' (a latch is not a hook).",
+          "false": "Every claim is true and the form matches exactly."
+        }
+      },
+      "required_fields": [
+        "answer",
+        "clue"
+      ]
+    },
+    "sensitive_content": {
+      "question": {
+        "type": "noul",
+        "instructions": "Does the clue reference a topic a broad family audience puzzle should avoid \u2014 alcohol, guns/ammunition, underwear/lingerie, body weight, drugs, or death?",
+        "criteria": {
+          "true": "BRA clued 'Lingerie shop purchase'; OBESE clued 'At a very unhealthy weight'; AMMO clued via guns.",
+          "false": "The clue is neutral for all ages."
+        }
+      },
+      "required_fields": [
+        "answer",
+        "clue"
+      ]
+    },
+    "currency_risk": {
+      "question": {
+        "type": "noul",
+        "instructions": "Does the clue's truth depend on the present-day state of the world (who currently hosts, plays for, leads, airs, or holds a title)?",
+        "criteria": {
+          "true": "CONAN clued 'Late-night host O'Brien'.",
+          "false": "Timeless, historical, or explicitly past-tense."
+        }
+      },
+      "required_fields": [
+        "answer",
+        "clue"
+      ]
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "id": "content-policy-v2-current-grader",
+  "state_fields": [
+    "answer",
+    "clue"
+  ],
+  "questions": {
+    "fairness_repair": {
+      "required_fields": [
+        "answer",
+        "clue"
+      ],
+      "question": {
+        "type": "noul",
+        "instructions": "Raw production clue-grader fairness score is below 15. Binary observed action, not a probability estimate. Includes all fairness issues, not only content."
+      }
+    }
+  }
+}

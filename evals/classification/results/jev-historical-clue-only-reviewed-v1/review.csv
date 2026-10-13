@@ -1,0 +1,341 @@
+case_id,question,answer,clue,hint,previous_clue,probability,predicted,label,label_source,disagreement,repeats,range,historical_feedback
+a5cf42499210488711b4,current_state,YOURS,Belonging to you,,,0.83,True,False,agent-reviewed-historical,True,1,0.0,"too easy for Hard, plain definition"
+c49aa8868dcc302c78ee,current_state,PGA,Links org.,,,0.78,True,False,agent-reviewed-historical,True,1,0.0,
+87811cb73168c48d7825,current_state,VIP,"Special guest, briefly",,,0.74,True,False,agent-reviewed-historical,True,1,0.0,"leaks: VIP contains letters of 'guest' angle is fine but 'briefly' weak signal; 'Important person, abbr.' cleaner"
+dfbbe677b1df8a3a050e,current_state,RENEW,Keep a subscription going,,,0.73,True,False,agent-reviewed-historical,True,1,0.0,Hidden answer leak: reNEW contains NEW; also NEW is a crossing word
+651b221038dd074d8669,current_state,VOICE,A say in the matter,,,0.6,True,False,agent-reviewed-historical,True,1,0.0,
+6d02e9054ceef5553719,current_state,ADDED,Tacked on extra,,,0.59,True,False,agent-reviewed-historical,True,1,0.0,
+e49ef87e772ef9727e70,current_state,STATS,"Baseball figures, briefly",,,0.59,True,False,agent-reviewed-historical,True,1,0.0,STATS: abbrev indicator ok but 'figures' vague; 'statistics' leaks S
+e7f003bf9da8c26c05f2,current_state,EARL,British title of nobility,,,0.57,True,False,agent-reviewed-historical,True,1,0.0,
+a369984f4d87e9edf46d,current_state,ALONE,"Solo, with no one around",,,0.56,True,False,agent-reviewed-historical,True,1,0.0,
+efce27a6ae2fcec07ead,current_state,RBIS,"Cleanup hitter's stats, in brief",,,0.54,True,False,agent-reviewed-historical,True,1,0.0,
+7e909891119f1e648520,current_state,THEIR,"""___ house is blue""",,,0.53,True,False,agent-reviewed-historical,True,1,0.0,Ambiguous: many houses could be blue; no single famous/fixed phrase confirmed.
+7698a5bae56e5611eb3b,alcohol_angle,AGE,"Mature gracefully, like fine wine",,,0.94,True,True,agent-reviewed-historical,False,1,0.0,wine/aging angle fine but AGE hidden in 'gracefully' end; fairness docked
+56fdce829a850a2a764c,current_state,CONAN,Late-night host O'Brien,,,0.66,True,True,agent-reviewed-historical,False,1,0.0,Currency risk: O'Brien no longer hosts a late-night show; too easy for Hard
+e8a69168f78b3008d487,current_state,CONAN,Talk-show host O'Brien,,,0.58,True,True,agent-reviewed-historical,False,1,0.0,currency risk: needs timeless angle for Conan
+e14746670fef247547ce,current_state,TOOK,Grabbed,,,0.44,False,False,agent-reviewed-historical,False,1,0.0,
+c65f36726c7bef71f39c,current_state,KEY,Of central importance,,,0.43,False,False,agent-reviewed-historical,False,1,0.0,too easy for Hard; plain adjective definition
+55cbe1d0509953c48806,firearms_angle,TRY,Give it your best shot,,,0.42,False,False,agent-reviewed-historical,False,1,0.0,hidden-answer leak: beSTshot contains no leak but 'shot' may misdirect; 'Give it your best shot' mildly idiomatic but acceptable; minor: 'shot' gun-culture adjacent
+cd985ae7fcddadf2c4c7,current_state,MAPS,Atlas contents,,,0.4,False,False,agent-reviewed-historical,False,1,0.0,
+2b25a3884dbd3dba1ffe,current_state,HIT,"Smash single, say",,,0.39,False,False,agent-reviewed-historical,False,1,0.0,leaks: smash≈hit
+90e21c65228027ce3f70,current_state,DUNN,Comedian Nora once of late-night sketch comedy,,,0.37,False,False,agent-reviewed-historical,False,1,0.0,Currency risk: 'once of' awkward; clue still depends on current/recent role context
+cede7216892aa493aa5f,current_state,AKIN,Similar in nature,,,0.37,False,False,agent-reviewed-historical,False,1,0.0,
+9801e76b2471c98cd11b,current_state,META,"Self-referential, in current slang",,,0.36,False,False,agent-reviewed-historical,False,1,0.0,currency risk: 'current slang' wording
+94fbd71de4a4315645d1,firearms_angle,AMMO,"Stuff fired from a slingshot, informally",,,0.34,False,,agent-reviewed-historical,False,1,0.0,guns/ammunition clue; needs neutral family-friendly angle; fairness 0-8 for gun-culture reference
+b2496c19a9ea1b91767c,current_state,SALON,"Salt, Hair, or Beauty ___",,,0.34,False,False,agent-reviewed-historical,False,1,0.0,'Salt salon' isn't a real phrase
+213717771576bfdaa651,current_state,MIC,"Karaoke handheld, briefly",,,0.31,False,False,agent-reviewed-historical,False,1,0.0,
+b0436afeeae9404e979e,current_state,HORN,"Trumpet, for one",,,0.3,False,False,agent-reviewed-historical,False,1,0.0,
+78012d86b79c7484c076,alcohol_angle,FLASK,Skinny bottle you can slip in a pocket,,,0.28,False,,agent-reviewed-historical,False,1,0.0,"implies hip flask/alcohol, needs neutral angle"
+f1464c522e9c3fa4a4f6,current_state,ALA,In the style of,,,0.27,False,False,agent-reviewed-historical,False,1,0.0,"missing accent; needs ""à la"" form; too easy; abbreviation indicator missing"
+12efec5789ad48f4ef57,current_state,VCMONEY,"Startup funding from investors, informally",,,0.26,False,False,agent-reviewed-historical,False,1,0.0,VCMONEY looks like two words; needs abbreviation indicator or wordplay signal
+1b2a130d6aa16160fbe8,current_state,SEXES,"""Battle of the ___""",,,0.25,False,False,agent-reviewed-historical,False,1,0.0,
+a6bf80511370d9ea8cb6,current_state,GHOST,"Suddenly cut off contact, in dating slang",,,0.25,False,False,agent-reviewed-historical,False,1,0.0,
+6b076210b4e80153e9e8,current_state,MANLY,Rugged and strong,,,0.24,False,False,agent-reviewed-historical,False,1,0.0,crossing word GAY leaks via antonym/association; also ONLY shares -LY ending fragment
+3b008a441e1a064f315b,current_state,TINY,Very small,,,0.23,False,False,agent-reviewed-historical,False,1,0.0,
+f26c9548d75d1e9e5147,current_state,AHEAD,Winning by a little,,,0.23,False,False,agent-reviewed-historical,False,1,0.0,
+c53a2dec7d8ceebea862,current_state,ATM,"Cash-dispensing spot, for short",,,0.22,False,False,agent-reviewed-historical,False,1,0.0,leaks: machine (M) absent but 'cash' not a leak; clean enough; minor: ATM letters not echoed
+eb1044faacc43dad57f3,current_state,THE,"Word before ""end"" or ""start""",,,0.21,False,False,agent-reviewed-historical,False,1,0.0,'start' not standard: 'the start' less fixed than 'the end'; also 'end' hidden in 'end'
+20fc3f77f14e40ced5d9,drug_use_angle,LIL,Prefix for rappers Wayne and Kim,,,0.2,False,False,agent-reviewed-historical,False,1,0.0,"leaks: LIL is the prefix itself, spelled out in answer"
+7a2a03509f8535b3ab06,current_state,PROGRAM,Handout at a theater performance,,,0.2,False,False,agent-reviewed-historical,False,1,0.0,
+dd25e503565f33bfcb6a,current_state,PIC,"Quick snapshot, casually",,,0.2,False,False,agent-reviewed-historical,False,1,0.0,'casually' is redundant with 'for short' implied; minor craft issue
+0e27538c4b3477bbd3f2,current_state,HART,"Comedian Kevin of ""Jumanji"" films",,,0.19,False,False,agent-reviewed-historical,False,1,0.0,currency risk: current role/films reference may go stale
+153cfdf684e3b2c8eabd,current_state,ANNIE,Little orphan of the comics,,,0.19,False,False,agent-reviewed-historical,False,1,0.0,
+1b2a130d6aa16160fbe8,alcohol_angle,SEXES,"""Battle of the ___""",,,0.19,False,False,agent-reviewed-historical,False,1,0.0,
+2fb4cd56b4310e3e62bc,current_state,USE,Make good ___ of,,,0.19,False,False,agent-reviewed-historical,False,1,0.0,collocation giveaway: only 'use' fits phrase
+321a8b431689f7f2c3d1,current_state,FBI,U.S. agency once led by J. Edgar Hoover (abbr.),,,0.19,False,False,agent-reviewed-historical,False,1,0.0,abbr. expansion leak: FBI — 'Bureau' not in clue but 'agency' is borderline; acceptable since no B/I expansion words present
+1b2a130d6aa16160fbe8,firearms_angle,SEXES,"""Battle of the ___""",,,0.18,False,False,agent-reviewed-historical,False,1,0.0,
+20fc3f77f14e40ced5d9,current_state,LIL,Prefix for rappers Wayne and Kim,,,0.18,False,False,agent-reviewed-historical,False,1,0.0,"leaks: LIL is the prefix itself, spelled out in answer"
+55cbe1d0509953c48806,current_state,TRY,Give it your best shot,,,0.18,False,False,agent-reviewed-historical,False,1,0.0,hidden-answer leak: beSTshot contains no leak but 'shot' may misdirect; 'Give it your best shot' mildly idiomatic but acceptable; minor: 'shot' gun-culture adjacent
+a099c799f5b419ed5d66,current_state,CLUE,Trail a sleuth follows,,,0.18,False,False,agent-reviewed-historical,False,1,0.0,
+b2496c19a9ea1b91767c,drug_use_angle,SALON,"Salt, Hair, or Beauty ___",,,0.18,False,False,agent-reviewed-historical,False,1,0.0,'Salt salon' isn't a real phrase
+e6879b7c392ab9953858,current_state,YUP,Casual affirmative,,,0.18,False,False,agent-reviewed-historical,False,1,0.0,too easy for Hard; plain descriptor
+fa2d349464f57b78d18c,current_state,LOB,Gentle arc over the net,,,0.18,False,False,agent-reviewed-historical,False,1,0.0,too easy for Hard; plain definition
+013366696c25cd3679e4,current_state,ROB,"Lowe of ""St. Elmo's Fire""",,,0.17,False,False,agent-reviewed-historical,False,1,0.0,
+09545ca28fa8a2e47d9a,current_state,AGONY,Sheer torment,,,0.17,False,False,agent-reviewed-historical,False,1,0.0,
+56ed495680eb1c121b7d,current_state,SLOTH,Slow-moving jungle dweller,,,0.17,False,False,agent-reviewed-historical,False,1,0.0,
+6cd46a94f411c8924b6e,current_state,THE,"""___ Who"" (long-running sci-fi series)",,,0.17,False,False,agent-reviewed-historical,False,1,0.0,"wrong: The Who is a band, not sci-fi"
+76336fae2831e1c48b42,current_state,USA,"Home of the Grand Canyon, briefly",,,0.17,False,False,agent-reviewed-historical,False,1,0.0,too easy for Hard
+7698a5bae56e5611eb3b,current_state,AGE,"Mature gracefully, like fine wine",,,0.17,False,False,agent-reviewed-historical,False,1,0.0,wine/aging angle fine but AGE hidden in 'gracefully' end; fairness docked
+82bef8fa3249a82e583b,current_state,IBLEWIT,Rueful confession after a missed chance,,,0.17,False,False,agent-reviewed-historical,False,1,0.0,"Wrong: answer is IBLEWIT not a phrase; likely I BLEW IT — confirm entry, also 'blew' hidden in clue angle unclear"
+8a3a10d7c6a01e00f2a9,current_state,OAR,Sculler's tool,,,0.17,False,False,agent-reviewed-historical,False,1,0.0,
+2b25a3884dbd3dba1ffe,firearms_angle,HIT,"Smash single, say",,,0.16,False,False,agent-reviewed-historical,False,1,0.0,leaks: smash≈hit
+a9725515e25acf4f80f7,current_state,ETA,"Arrival guess on a flight board, for short",,,0.16,False,False,agent-reviewed-historical,False,1,0.0,leaks: arrival (ETA)
+bb8f41a38d68b421cdac,current_state,RICO,Puerto ___ (Caribbean spot),,,0.16,False,False,agent-reviewed-historical,False,1,0.0,
+3d1b09fa3a08a6812fb7,current_state,GRIN,Big happy smile,,,0.15,False,False,agent-reviewed-historical,False,1,0.0,
+777332d5808c085d9f7d,current_state,AROMA,Nice scent,,,0.15,False,False,agent-reviewed-historical,False,1,0.0,'Nice' ambiguous: city in France or adjective; rephrase to plain 'Pleasant scent' or 'Fragrance'
+4f4f68c39936a1eb03ce,current_state,IVE,"""___ had it up to here!""",,,0.14,False,False,agent-reviewed-historical,False,1,0.0,collocation makes fill mostly unique
+de4c5d95551cc13c5401,current_state,EASE,Make less painful,,,0.14,False,False,agent-reviewed-historical,False,1,0.0,
+1562011b02dd1465ad4c,current_state,CON,Sneaky swindle,,,0.13,False,False,agent-reviewed-historical,False,1,0.0,
+dc28ed274e455c179d01,current_state,YOUTH,Time of life when you're young,,,0.13,False,False,agent-reviewed-historical,False,1,0.0,leaks crossing answer YOU via 'you're'
+017dc10f7778a10eb141,current_state,PLEA,Impassioned cry for mercy,,,0.12,False,False,agent-reviewed-historical,False,1,0.0,
+2fb4cd56b4310e3e62bc,firearms_angle,USE,Make good ___ of,,,0.12,False,False,agent-reviewed-historical,False,1,0.0,collocation giveaway: only 'use' fits phrase
+78012d86b79c7484c076,drug_use_angle,FLASK,Skinny bottle you can slip in a pocket,,,0.12,False,False,agent-reviewed-historical,False,1,0.0,"implies hip flask/alcohol, needs neutral angle"
+8ab068c01d45f5c43638,current_state,ALMA,"Nurturing soul, in Latin",,,0.12,False,False,agent-reviewed-historical,False,1,0.0,"wrong: alma means nourishing, not soul, in Latin"
+efce27a6ae2fcec07ead,firearms_angle,RBIS,"Cleanup hitter's stats, in brief",,,0.12,False,False,agent-reviewed-historical,False,1,0.0,
+efce27a6ae2fcec07ead,alcohol_angle,RBIS,"Cleanup hitter's stats, in brief",,,0.12,False,False,agent-reviewed-historical,False,1,0.0,
+33f383e4c8b7fa86e2cf,current_state,BRUTE,"""Et tu, ___?""",,,0.11,False,False,agent-reviewed-historical,False,1,0.0,"Wrong: Shakespeare's line is 'Et tu, Brute?' not 'Et tu, ___?' answer is BRUTE not BRUTE; actually the fill-in answer BRUTE fits but the clue quotes wrong — standard quote is 'Et tu, Brute' so blank clue leaks the answer; more critically answer is BRUTE but clue spelling 'Brute' in the quote gives it away — fairness issue aside, the quoted line is correct but the blank replaces 'Brute' making it trivially transparent; too easy for Hard"
+82bef8fa3249a82e583b,firearms_angle,IBLEWIT,Rueful confession after a missed chance,,,0.11,False,False,agent-reviewed-historical,False,1,0.0,"Wrong: answer is IBLEWIT not a phrase; likely I BLEW IT — confirm entry, also 'blew' hidden in clue angle unclear"
+84456db0247a616685a8,current_state,BEDS,Things you sleep on,,,0.11,False,False,agent-reviewed-historical,False,1,0.0,
+b2496c19a9ea1b91767c,alcohol_angle,SALON,"Salt, Hair, or Beauty ___",,,0.11,False,False,agent-reviewed-historical,False,1,0.0,'Salt salon' isn't a real phrase
+c97a601eeedecf3b966c,current_state,ALE,Ginger ___ (bubbly soft drink),,,0.11,False,False,agent-reviewed-historical,False,1,0.0,"collocation giveaway: Ginger ___, too easy for Hard"
+e8a69168f78b3008d487,alcohol_angle,CONAN,Talk-show host O'Brien,,,0.11,False,False,agent-reviewed-historical,False,1,0.0,currency risk: needs timeless angle for Conan
+20fc3f77f14e40ced5d9,firearms_angle,LIL,Prefix for rappers Wayne and Kim,,,0.1,False,False,agent-reviewed-historical,False,1,0.0,"leaks: LIL is the prefix itself, spelled out in answer"
+2b25a3884dbd3dba1ffe,alcohol_angle,HIT,"Smash single, say",,,0.1,False,False,agent-reviewed-historical,False,1,0.0,leaks: smash≈hit
+2b25a3884dbd3dba1ffe,drug_use_angle,HIT,"Smash single, say",,,0.1,False,False,agent-reviewed-historical,False,1,0.0,leaks: smash≈hit
+55cbe1d0509953c48806,drug_use_angle,TRY,Give it your best shot,,,0.1,False,False,agent-reviewed-historical,False,1,0.0,hidden-answer leak: beSTshot contains no leak but 'shot' may misdirect; 'Give it your best shot' mildly idiomatic but acceptable; minor: 'shot' gun-culture adjacent
+56fdce829a850a2a764c,alcohol_angle,CONAN,Late-night host O'Brien,,,0.1,False,False,agent-reviewed-historical,False,1,0.0,Currency risk: O'Brien no longer hosts a late-night show; too easy for Hard
+6d02e9054ceef5553719,firearms_angle,ADDED,Tacked on extra,,,0.1,False,False,agent-reviewed-historical,False,1,0.0,
+91fabdace00d02ec2fe9,current_state,LAB,"Coat-named dog breed, for short",,,0.1,False,False,agent-reviewed-historical,False,1,0.0,wrong: Labrador not coat-named
+af674c19c7cfc5bca904,current_state,SURE,"""No problem at all!""",,,0.1,False,False,agent-reviewed-historical,False,1,0.0,
+d088381a85c3c00e4416,current_state,RAM,Male sheep with curly horns,,,0.1,False,False,agent-reviewed-historical,False,1,0.0,
+12efec5789ad48f4ef57,alcohol_angle,VCMONEY,"Startup funding from investors, informally",,,0.09,False,False,agent-reviewed-historical,False,1,0.0,VCMONEY looks like two words; needs abbreviation indicator or wordplay signal
+1b2a130d6aa16160fbe8,drug_use_angle,SEXES,"""Battle of the ___""",,,0.09,False,False,agent-reviewed-historical,False,1,0.0,
+36592427cfeeb865179f,current_state,SUM,Total of added numbers,,,0.09,False,False,agent-reviewed-historical,False,1,0.0,
+4b4263453cf11665021e,current_state,ECO,Earth-friendly prefix,,,0.09,False,False,agent-reviewed-historical,False,1,0.0,"leaks: ECO inside 'prefix' angle; ECO is abbreviation, needs abbr. indicator"
+73f9f753eeeee9d5d83c,current_state,MIN,"Sixty seconds, for short",,,0.09,False,False,agent-reviewed-historical,False,1,0.0,
+91fabdace00d02ec2fe9,firearms_angle,LAB,"Coat-named dog breed, for short",,,0.09,False,False,agent-reviewed-historical,False,1,0.0,wrong: Labrador not coat-named
+94fbd71de4a4315645d1,current_state,AMMO,"Stuff fired from a slingshot, informally",,,0.09,False,False,agent-reviewed-historical,False,1,0.0,guns/ammunition clue; needs neutral family-friendly angle; fairness 0-8 for gun-culture reference
+013366696c25cd3679e4,alcohol_angle,ROB,"Lowe of ""St. Elmo's Fire""",,,0.08,False,False,agent-reviewed-historical,False,1,0.0,
+09545ca28fa8a2e47d9a,alcohol_angle,AGONY,Sheer torment,,,0.08,False,False,agent-reviewed-historical,False,1,0.0,
+2fb4cd56b4310e3e62bc,alcohol_angle,USE,Make good ___ of,,,0.08,False,False,agent-reviewed-historical,False,1,0.0,collocation giveaway: only 'use' fits phrase
+4f4f68c39936a1eb03ce,firearms_angle,IVE,"""___ had it up to here!""",,,0.08,False,False,agent-reviewed-historical,False,1,0.0,collocation makes fill mostly unique
+55cbe1d0509953c48806,alcohol_angle,TRY,Give it your best shot,,,0.08,False,False,agent-reviewed-historical,False,1,0.0,hidden-answer leak: beSTshot contains no leak but 'shot' may misdirect; 'Give it your best shot' mildly idiomatic but acceptable; minor: 'shot' gun-culture adjacent
+78012d86b79c7484c076,current_state,FLASK,Skinny bottle you can slip in a pocket,,,0.08,False,False,agent-reviewed-historical,False,1,0.0,"implies hip flask/alcohol, needs neutral angle"
+8609b0e20138a51225f3,current_state,RPG,"Dungeon-crawling video game type, for short",,,0.08,False,False,agent-reviewed-historical,False,1,0.0,missing abbreviation indicator; leaks: RPG expansion 'game'
+a369984f4d87e9edf46d,drug_use_angle,ALONE,"Solo, with no one around",,,0.08,False,False,agent-reviewed-historical,False,1,0.0,
+bead4eb455eef1495a5d,current_state,COVE,Sheltered nook along a coastline,,,0.08,False,False,agent-reviewed-historical,False,1,0.0,
+c49aa8868dcc302c78ee,drug_use_angle,PGA,Links org.,,,0.08,False,False,agent-reviewed-historical,False,1,0.0,
+de4c5d95551cc13c5401,alcohol_angle,EASE,Make less painful,,,0.08,False,False,agent-reviewed-historical,False,1,0.0,
+33f383e4c8b7fa86e2cf,firearms_angle,BRUTE,"""Et tu, ___?""",,,0.07,False,False,agent-reviewed-historical,False,1,0.0,"Wrong: Shakespeare's line is 'Et tu, Brute?' not 'Et tu, ___?' answer is BRUTE not BRUTE; actually the fill-in answer BRUTE fits but the clue quotes wrong — standard quote is 'Et tu, Brute' so blank clue leaks the answer; more critically answer is BRUTE but clue spelling 'Brute' in the quote gives it away — fairness issue aside, the quoted line is correct but the blank replaces 'Brute' making it trivially transparent; too easy for Hard"
+3b008a441e1a064f315b,firearms_angle,TINY,Very small,,,0.07,False,False,agent-reviewed-historical,False,1,0.0,
+6cd46a94f411c8924b6e,firearms_angle,THE,"""___ Who"" (long-running sci-fi series)",,,0.07,False,False,agent-reviewed-historical,False,1,0.0,"wrong: The Who is a band, not sci-fi"
+7114558650684d8229d2,current_state,KIN,Kith and ___,,,0.07,False,False,agent-reviewed-historical,False,1,0.0,collocation giveaway: kith and kin
+76336fae2831e1c48b42,alcohol_angle,USA,"Home of the Grand Canyon, briefly",,,0.07,False,False,agent-reviewed-historical,False,1,0.0,too easy for Hard
+7698a5bae56e5611eb3b,drug_use_angle,AGE,"Mature gracefully, like fine wine",,,0.07,False,False,agent-reviewed-historical,False,1,0.0,wine/aging angle fine but AGE hidden in 'gracefully' end; fairness docked
+9801e76b2471c98cd11b,drug_use_angle,META,"Self-referential, in current slang",,,0.07,False,False,agent-reviewed-historical,False,1,0.0,currency risk: 'current slang' wording
+b5ef294a5b69d6c94b84,current_state,SUP,Greeting that's short for three words,,,0.07,False,False,agent-reviewed-historical,False,1,0.0,questionable: 'sup' expands to two words
+b772ee153c6fb385276b,current_state,MOAN,Sound of a wind in the trees,,,0.07,False,False,agent-reviewed-historical,False,1,0.0,wind in trees is more of a sigh or rustle; slightly off
+c49aa8868dcc302c78ee,alcohol_angle,PGA,Links org.,,,0.07,False,False,agent-reviewed-historical,False,1,0.0,
+dd25e503565f33bfcb6a,drug_use_angle,PIC,"Quick snapshot, casually",,,0.07,False,False,agent-reviewed-historical,False,1,0.0,'casually' is redundant with 'for short' implied; minor craft issue
+de4c5d95551cc13c5401,drug_use_angle,EASE,Make less painful,,,0.07,False,False,agent-reviewed-historical,False,1,0.0,
+e14746670fef247547ce,drug_use_angle,TOOK,Grabbed,,,0.07,False,False,agent-reviewed-historical,False,1,0.0,
+f54456ac759acf4d510e,current_state,MAST,Tall pole holding a ship's sail,,,0.07,False,False,agent-reviewed-historical,False,1,0.0,
+f905dc2fad5204986943,current_state,TRI,"Prefix for ""angle"" or ""pod""",,,0.07,False,False,agent-reviewed-historical,False,1,0.0,leaks: TRI hidden in tRIangle; also prefix expansion leak
+0e27538c4b3477bbd3f2,drug_use_angle,HART,"Comedian Kevin of ""Jumanji"" films",,,0.06,False,False,agent-reviewed-historical,False,1,0.0,currency risk: current role/films reference may go stale
+213717771576bfdaa651,alcohol_angle,MIC,"Karaoke handheld, briefly",,,0.06,False,False,agent-reviewed-historical,False,1,0.0,
+2fb4cd56b4310e3e62bc,drug_use_angle,USE,Make good ___ of,,,0.06,False,False,agent-reviewed-historical,False,1,0.0,collocation giveaway: only 'use' fits phrase
+56ed495680eb1c121b7d,drug_use_angle,SLOTH,Slow-moving jungle dweller,,,0.06,False,False,agent-reviewed-historical,False,1,0.0,
+7e909891119f1e648520,alcohol_angle,THEIR,"""___ house is blue""",,,0.06,False,False,agent-reviewed-historical,False,1,0.0,Ambiguous: many houses could be blue; no single famous/fixed phrase confirmed.
+87811cb73168c48d7825,drug_use_angle,VIP,"Special guest, briefly",,,0.06,False,False,agent-reviewed-historical,False,1,0.0,"leaks: VIP contains letters of 'guest' angle is fine but 'briefly' weak signal; 'Important person, abbr.' cleaner"
+94fbd71de4a4315645d1,drug_use_angle,AMMO,"Stuff fired from a slingshot, informally",,,0.06,False,False,agent-reviewed-historical,False,1,0.0,guns/ammunition clue; needs neutral family-friendly angle; fairness 0-8 for gun-culture reference
+b5ef294a5b69d6c94b84,drug_use_angle,SUP,Greeting that's short for three words,,,0.06,False,False,agent-reviewed-historical,False,1,0.0,questionable: 'sup' expands to two words
+bb8f41a38d68b421cdac,alcohol_angle,RICO,Puerto ___ (Caribbean spot),,,0.06,False,False,agent-reviewed-historical,False,1,0.0,
+bea964d33ccde968f177,current_state,SUN,Source of a beachgoer's tan,,,0.06,False,False,agent-reviewed-historical,False,1,0.0,too easy for Hard
+e8a69168f78b3008d487,drug_use_angle,CONAN,Talk-show host O'Brien,,,0.06,False,False,agent-reviewed-historical,False,1,0.0,currency risk: needs timeless angle for Conan
+013366696c25cd3679e4,firearms_angle,ROB,"Lowe of ""St. Elmo's Fire""",,,0.05,False,False,agent-reviewed-historical,False,1,0.0,
+0e27538c4b3477bbd3f2,firearms_angle,HART,"Comedian Kevin of ""Jumanji"" films",,,0.05,False,False,agent-reviewed-historical,False,1,0.0,currency risk: current role/films reference may go stale
+20fc3f77f14e40ced5d9,alcohol_angle,LIL,Prefix for rappers Wayne and Kim,,,0.05,False,False,agent-reviewed-historical,False,1,0.0,"leaks: LIL is the prefix itself, spelled out in answer"
+34a53a8f14805b2b7841,current_state,CUE,Stick for striking a billiard ball,,,0.05,False,False,agent-reviewed-historical,False,1,0.0,
+3d1b09fa3a08a6812fb7,drug_use_angle,GRIN,Big happy smile,,,0.05,False,False,agent-reviewed-historical,False,1,0.0,
+4f4f68c39936a1eb03ce,alcohol_angle,IVE,"""___ had it up to here!""",,,0.05,False,False,agent-reviewed-historical,False,1,0.0,collocation makes fill mostly unique
+5fec8f034319e06ea267,current_state,PRE,Prefix meaning before,,,0.05,False,False,agent-reviewed-historical,False,1,0.0,leaks: 'Prefix meaning before' — etymology leak and hidden PRE in 'prefix'; fairness 0-8
+651b221038dd074d8669,firearms_angle,VOICE,A say in the matter,,,0.05,False,False,agent-reviewed-historical,False,1,0.0,
+6b076210b4e80153e9e8,firearms_angle,MANLY,Rugged and strong,,,0.05,False,False,agent-reviewed-historical,False,1,0.0,crossing word GAY leaks via antonym/association; also ONLY shares -LY ending fragment
+6cd46a94f411c8924b6e,alcohol_angle,THE,"""___ Who"" (long-running sci-fi series)",,,0.05,False,False,agent-reviewed-historical,False,1,0.0,"wrong: The Who is a band, not sci-fi"
+73f9f753eeeee9d5d83c,firearms_angle,MIN,"Sixty seconds, for short",,,0.05,False,False,agent-reviewed-historical,False,1,0.0,
+78012d86b79c7484c076,firearms_angle,FLASK,Skinny bottle you can slip in a pocket,,,0.05,False,False,agent-reviewed-historical,False,1,0.0,"implies hip flask/alcohol, needs neutral angle"
+82bef8fa3249a82e583b,alcohol_angle,IBLEWIT,Rueful confession after a missed chance,,,0.05,False,False,agent-reviewed-historical,False,1,0.0,"Wrong: answer is IBLEWIT not a phrase; likely I BLEW IT — confirm entry, also 'blew' hidden in clue angle unclear"
+82bef8fa3249a82e583b,drug_use_angle,IBLEWIT,Rueful confession after a missed chance,,,0.05,False,False,agent-reviewed-historical,False,1,0.0,"Wrong: answer is IBLEWIT not a phrase; likely I BLEW IT — confirm entry, also 'blew' hidden in clue angle unclear"
+87811cb73168c48d7825,alcohol_angle,VIP,"Special guest, briefly",,,0.05,False,False,agent-reviewed-historical,False,1,0.0,"leaks: VIP contains letters of 'guest' angle is fine but 'briefly' weak signal; 'Important person, abbr.' cleaner"
+88acfb94147b0b09b8e2,current_state,IVORY,Off-white shade named for a soap,,,0.05,False,False,agent-reviewed-historical,False,1,0.0,"wrong: ivory named for tusks, not soap"
+8a3a10d7c6a01e00f2a9,alcohol_angle,OAR,Sculler's tool,,,0.05,False,False,agent-reviewed-historical,False,1,0.0,
+90e21c65228027ce3f70,alcohol_angle,DUNN,Comedian Nora once of late-night sketch comedy,,,0.05,False,False,agent-reviewed-historical,False,1,0.0,Currency risk: 'once of' awkward; clue still depends on current/recent role context
+9fa085025502fc305cc1,current_state,ACL,"Knee tissue a runner might tear, briefly",,,0.05,False,False,agent-reviewed-historical,False,1,0.0,leaks: knee (K in ACL... actually 'knee' shares collocation with ACL tear)
+a099c799f5b419ed5d66,drug_use_angle,CLUE,Trail a sleuth follows,,,0.05,False,False,agent-reviewed-historical,False,1,0.0,
+a369984f4d87e9edf46d,alcohol_angle,ALONE,"Solo, with no one around",,,0.05,False,False,agent-reviewed-historical,False,1,0.0,
+a6bf80511370d9ea8cb6,firearms_angle,GHOST,"Suddenly cut off contact, in dating slang",,,0.05,False,False,agent-reviewed-historical,False,1,0.0,
+dd25e503565f33bfcb6a,firearms_angle,PIC,"Quick snapshot, casually",,,0.05,False,False,agent-reviewed-historical,False,1,0.0,'casually' is redundant with 'for short' implied; minor craft issue
+e6879b7c392ab9953858,drug_use_angle,YUP,Casual affirmative,,,0.05,False,False,agent-reviewed-historical,False,1,0.0,too easy for Hard; plain descriptor
+eb1044faacc43dad57f3,firearms_angle,THE,"Word before ""end"" or ""start""",,,0.05,False,False,agent-reviewed-historical,False,1,0.0,'start' not standard: 'the start' less fixed than 'the end'; also 'end' hidden in 'end'
+f905dc2fad5204986943,firearms_angle,TRI,"Prefix for ""angle"" or ""pod""",,,0.05,False,False,agent-reviewed-historical,False,1,0.0,leaks: TRI hidden in tRIangle; also prefix expansion leak
+017dc10f7778a10eb141,firearms_angle,PLEA,Impassioned cry for mercy,,,0.04,False,False,agent-reviewed-historical,False,1,0.0,
+09545ca28fa8a2e47d9a,drug_use_angle,AGONY,Sheer torment,,,0.04,False,False,agent-reviewed-historical,False,1,0.0,
+213717771576bfdaa651,firearms_angle,MIC,"Karaoke handheld, briefly",,,0.04,False,False,agent-reviewed-historical,False,1,0.0,
+213717771576bfdaa651,drug_use_angle,MIC,"Karaoke handheld, briefly",,,0.04,False,False,agent-reviewed-historical,False,1,0.0,
+321a8b431689f7f2c3d1,firearms_angle,FBI,U.S. agency once led by J. Edgar Hoover (abbr.),,,0.04,False,False,agent-reviewed-historical,False,1,0.0,abbr. expansion leak: FBI — 'Bureau' not in clue but 'agency' is borderline; acceptable since no B/I expansion words present
+4f4f68c39936a1eb03ce,drug_use_angle,IVE,"""___ had it up to here!""",,,0.04,False,False,agent-reviewed-historical,False,1,0.0,collocation makes fill mostly unique
+56fdce829a850a2a764c,firearms_angle,CONAN,Late-night host O'Brien,,,0.04,False,False,agent-reviewed-historical,False,1,0.0,Currency risk: O'Brien no longer hosts a late-night show; too easy for Hard
+56fdce829a850a2a764c,drug_use_angle,CONAN,Late-night host O'Brien,,,0.04,False,False,agent-reviewed-historical,False,1,0.0,Currency risk: O'Brien no longer hosts a late-night show; too easy for Hard
+6b076210b4e80153e9e8,alcohol_angle,MANLY,Rugged and strong,,,0.04,False,False,agent-reviewed-historical,False,1,0.0,crossing word GAY leaks via antonym/association; also ONLY shares -LY ending fragment
+6d02e9054ceef5553719,drug_use_angle,ADDED,Tacked on extra,,,0.04,False,False,agent-reviewed-historical,False,1,0.0,
+7333c107ad5769c8205b,current_state,TRUNK,Elephant's grabbing appendage,,,0.04,False,False,agent-reviewed-historical,False,1,0.0,
+73f9f753eeeee9d5d83c,drug_use_angle,MIN,"Sixty seconds, for short",,,0.04,False,False,agent-reviewed-historical,False,1,0.0,
+76336fae2831e1c48b42,drug_use_angle,USA,"Home of the Grand Canyon, briefly",,,0.04,False,False,agent-reviewed-historical,False,1,0.0,too easy for Hard
+777332d5808c085d9f7d,alcohol_angle,AROMA,Nice scent,,,0.04,False,False,agent-reviewed-historical,False,1,0.0,'Nice' ambiguous: city in France or adjective; rephrase to plain 'Pleasant scent' or 'Fragrance'
+777332d5808c085d9f7d,drug_use_angle,AROMA,Nice scent,,,0.04,False,False,agent-reviewed-historical,False,1,0.0,'Nice' ambiguous: city in France or adjective; rephrase to plain 'Pleasant scent' or 'Fragrance'
+7e909891119f1e648520,drug_use_angle,THEIR,"""___ house is blue""",,,0.04,False,False,agent-reviewed-historical,False,1,0.0,Ambiguous: many houses could be blue; no single famous/fixed phrase confirmed.
+87811cb73168c48d7825,firearms_angle,VIP,"Special guest, briefly",,,0.04,False,False,agent-reviewed-historical,False,1,0.0,"leaks: VIP contains letters of 'guest' angle is fine but 'briefly' weak signal; 'Important person, abbr.' cleaner"
+90e21c65228027ce3f70,drug_use_angle,DUNN,Comedian Nora once of late-night sketch comedy,,,0.04,False,False,agent-reviewed-historical,False,1,0.0,Currency risk: 'once of' awkward; clue still depends on current/recent role context
+a369984f4d87e9edf46d,firearms_angle,ALONE,"Solo, with no one around",,,0.04,False,False,agent-reviewed-historical,False,1,0.0,
+b0436afeeae9404e979e,firearms_angle,HORN,"Trumpet, for one",,,0.04,False,False,agent-reviewed-historical,False,1,0.0,
+b0436afeeae9404e979e,alcohol_angle,HORN,"Trumpet, for one",,,0.04,False,False,agent-reviewed-historical,False,1,0.0,
+b0436afeeae9404e979e,drug_use_angle,HORN,"Trumpet, for one",,,0.04,False,False,agent-reviewed-historical,False,1,0.0,
+bb8f41a38d68b421cdac,drug_use_angle,RICO,Puerto ___ (Caribbean spot),,,0.04,False,False,agent-reviewed-historical,False,1,0.0,
+c49aa8868dcc302c78ee,firearms_angle,PGA,Links org.,,,0.04,False,False,agent-reviewed-historical,False,1,0.0,
+c97a601eeedecf3b966c,alcohol_angle,ALE,Ginger ___ (bubbly soft drink),,,0.04,False,False,agent-reviewed-historical,False,1,0.0,"collocation giveaway: Ginger ___, too easy for Hard"
+c97a601eeedecf3b966c,drug_use_angle,ALE,Ginger ___ (bubbly soft drink),,,0.04,False,False,agent-reviewed-historical,False,1,0.0,"collocation giveaway: Ginger ___, too easy for Hard"
+e14746670fef247547ce,firearms_angle,TOOK,Grabbed,,,0.04,False,False,agent-reviewed-historical,False,1,0.0,
+e14746670fef247547ce,alcohol_angle,TOOK,Grabbed,,,0.04,False,False,agent-reviewed-historical,False,1,0.0,
+e49ef87e772ef9727e70,alcohol_angle,STATS,"Baseball figures, briefly",,,0.04,False,False,agent-reviewed-historical,False,1,0.0,STATS: abbrev indicator ok but 'figures' vague; 'statistics' leaks S
+efce27a6ae2fcec07ead,drug_use_angle,RBIS,"Cleanup hitter's stats, in brief",,,0.04,False,False,agent-reviewed-historical,False,1,0.0,
+013366696c25cd3679e4,drug_use_angle,ROB,"Lowe of ""St. Elmo's Fire""",,,0.03,False,False,agent-reviewed-historical,False,1,0.0,
+017dc10f7778a10eb141,alcohol_angle,PLEA,Impassioned cry for mercy,,,0.03,False,False,agent-reviewed-historical,False,1,0.0,
+017dc10f7778a10eb141,drug_use_angle,PLEA,Impassioned cry for mercy,,,0.03,False,False,agent-reviewed-historical,False,1,0.0,
+09545ca28fa8a2e47d9a,firearms_angle,AGONY,Sheer torment,,,0.03,False,False,agent-reviewed-historical,False,1,0.0,
+0e27538c4b3477bbd3f2,alcohol_angle,HART,"Comedian Kevin of ""Jumanji"" films",,,0.03,False,False,agent-reviewed-historical,False,1,0.0,currency risk: current role/films reference may go stale
+12efec5789ad48f4ef57,drug_use_angle,VCMONEY,"Startup funding from investors, informally",,,0.03,False,False,agent-reviewed-historical,False,1,0.0,VCMONEY looks like two words; needs abbreviation indicator or wordplay signal
+153cfdf684e3b2c8eabd,alcohol_angle,ANNIE,Little orphan of the comics,,,0.03,False,False,agent-reviewed-historical,False,1,0.0,
+1562011b02dd1465ad4c,alcohol_angle,CON,Sneaky swindle,,,0.03,False,False,agent-reviewed-historical,False,1,0.0,
+1562011b02dd1465ad4c,drug_use_angle,CON,Sneaky swindle,,,0.03,False,False,agent-reviewed-historical,False,1,0.0,
+34a53a8f14805b2b7841,firearms_angle,CUE,Stick for striking a billiard ball,,,0.03,False,False,agent-reviewed-historical,False,1,0.0,
+3b008a441e1a064f315b,alcohol_angle,TINY,Very small,,,0.03,False,False,agent-reviewed-historical,False,1,0.0,
+3b008a441e1a064f315b,drug_use_angle,TINY,Very small,,,0.03,False,False,agent-reviewed-historical,False,1,0.0,
+56ed495680eb1c121b7d,alcohol_angle,SLOTH,Slow-moving jungle dweller,,,0.03,False,False,agent-reviewed-historical,False,1,0.0,
+5fec8f034319e06ea267,firearms_angle,PRE,Prefix meaning before,,,0.03,False,False,agent-reviewed-historical,False,1,0.0,leaks: 'Prefix meaning before' — etymology leak and hidden PRE in 'prefix'; fairness 0-8
+651b221038dd074d8669,alcohol_angle,VOICE,A say in the matter,,,0.03,False,False,agent-reviewed-historical,False,1,0.0,
+6cd46a94f411c8924b6e,drug_use_angle,THE,"""___ Who"" (long-running sci-fi series)",,,0.03,False,False,agent-reviewed-historical,False,1,0.0,"wrong: The Who is a band, not sci-fi"
+6d02e9054ceef5553719,alcohol_angle,ADDED,Tacked on extra,,,0.03,False,False,agent-reviewed-historical,False,1,0.0,
+7114558650684d8229d2,alcohol_angle,KIN,Kith and ___,,,0.03,False,False,agent-reviewed-historical,False,1,0.0,collocation giveaway: kith and kin
+7a2a03509f8535b3ab06,drug_use_angle,PROGRAM,Handout at a theater performance,,,0.03,False,False,agent-reviewed-historical,False,1,0.0,
+8609b0e20138a51225f3,firearms_angle,RPG,"Dungeon-crawling video game type, for short",,,0.03,False,False,agent-reviewed-historical,False,1,0.0,missing abbreviation indicator; leaks: RPG expansion 'game'
+8609b0e20138a51225f3,drug_use_angle,RPG,"Dungeon-crawling video game type, for short",,,0.03,False,False,agent-reviewed-historical,False,1,0.0,missing abbreviation indicator; leaks: RPG expansion 'game'
+88acfb94147b0b09b8e2,drug_use_angle,IVORY,Off-white shade named for a soap,,,0.03,False,False,agent-reviewed-historical,False,1,0.0,"wrong: ivory named for tusks, not soap"
+8ab068c01d45f5c43638,alcohol_angle,ALMA,"Nurturing soul, in Latin",,,0.03,False,False,agent-reviewed-historical,False,1,0.0,"wrong: alma means nourishing, not soul, in Latin"
+91fabdace00d02ec2fe9,alcohol_angle,LAB,"Coat-named dog breed, for short",,,0.03,False,False,agent-reviewed-historical,False,1,0.0,wrong: Labrador not coat-named
+94fbd71de4a4315645d1,alcohol_angle,AMMO,"Stuff fired from a slingshot, informally",,,0.03,False,False,agent-reviewed-historical,False,1,0.0,guns/ammunition clue; needs neutral family-friendly angle; fairness 0-8 for gun-culture reference
+9801e76b2471c98cd11b,firearms_angle,META,"Self-referential, in current slang",,,0.03,False,False,agent-reviewed-historical,False,1,0.0,currency risk: 'current slang' wording
+9801e76b2471c98cd11b,alcohol_angle,META,"Self-referential, in current slang",,,0.03,False,False,agent-reviewed-historical,False,1,0.0,currency risk: 'current slang' wording
+a099c799f5b419ed5d66,alcohol_angle,CLUE,Trail a sleuth follows,,,0.03,False,False,agent-reviewed-historical,False,1,0.0,
+a5cf42499210488711b4,firearms_angle,YOURS,Belonging to you,,,0.03,False,False,agent-reviewed-historical,False,1,0.0,"too easy for Hard, plain definition"
+a6bf80511370d9ea8cb6,drug_use_angle,GHOST,"Suddenly cut off contact, in dating slang",,,0.03,False,False,agent-reviewed-historical,False,1,0.0,
+b2496c19a9ea1b91767c,firearms_angle,SALON,"Salt, Hair, or Beauty ___",,,0.03,False,False,agent-reviewed-historical,False,1,0.0,'Salt salon' isn't a real phrase
+bb8f41a38d68b421cdac,firearms_angle,RICO,Puerto ___ (Caribbean spot),,,0.03,False,False,agent-reviewed-historical,False,1,0.0,
+cede7216892aa493aa5f,drug_use_angle,AKIN,Similar in nature,,,0.03,False,False,agent-reviewed-historical,False,1,0.0,
+d088381a85c3c00e4416,alcohol_angle,RAM,Male sheep with curly horns,,,0.03,False,False,agent-reviewed-historical,False,1,0.0,
+dd25e503565f33bfcb6a,alcohol_angle,PIC,"Quick snapshot, casually",,,0.03,False,False,agent-reviewed-historical,False,1,0.0,'casually' is redundant with 'for short' implied; minor craft issue
+e49ef87e772ef9727e70,firearms_angle,STATS,"Baseball figures, briefly",,,0.03,False,False,agent-reviewed-historical,False,1,0.0,STATS: abbrev indicator ok but 'figures' vague; 'statistics' leaks S
+e49ef87e772ef9727e70,drug_use_angle,STATS,"Baseball figures, briefly",,,0.03,False,False,agent-reviewed-historical,False,1,0.0,STATS: abbrev indicator ok but 'figures' vague; 'statistics' leaks S
+e8a69168f78b3008d487,firearms_angle,CONAN,Talk-show host O'Brien,,,0.03,False,False,agent-reviewed-historical,False,1,0.0,currency risk: needs timeless angle for Conan
+eb1044faacc43dad57f3,alcohol_angle,THE,"Word before ""end"" or ""start""",,,0.03,False,False,agent-reviewed-historical,False,1,0.0,'start' not standard: 'the start' less fixed than 'the end'; also 'end' hidden in 'end'
+f26c9548d75d1e9e5147,alcohol_angle,AHEAD,Winning by a little,,,0.03,False,False,agent-reviewed-historical,False,1,0.0,
+f54456ac759acf4d510e,alcohol_angle,MAST,Tall pole holding a ship's sail,,,0.03,False,False,agent-reviewed-historical,False,1,0.0,
+f905dc2fad5204986943,drug_use_angle,TRI,"Prefix for ""angle"" or ""pod""",,,0.03,False,False,agent-reviewed-historical,False,1,0.0,leaks: TRI hidden in tRIangle; also prefix expansion leak
+12efec5789ad48f4ef57,firearms_angle,VCMONEY,"Startup funding from investors, informally",,,0.02,False,False,agent-reviewed-historical,False,1,0.0,VCMONEY looks like two words; needs abbreviation indicator or wordplay signal
+153cfdf684e3b2c8eabd,firearms_angle,ANNIE,Little orphan of the comics,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,
+153cfdf684e3b2c8eabd,drug_use_angle,ANNIE,Little orphan of the comics,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,
+1562011b02dd1465ad4c,firearms_angle,CON,Sneaky swindle,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,
+33f383e4c8b7fa86e2cf,alcohol_angle,BRUTE,"""Et tu, ___?""",,,0.02,False,False,agent-reviewed-historical,False,1,0.0,"Wrong: Shakespeare's line is 'Et tu, Brute?' not 'Et tu, ___?' answer is BRUTE not BRUTE; actually the fill-in answer BRUTE fits but the clue quotes wrong — standard quote is 'Et tu, Brute' so blank clue leaks the answer; more critically answer is BRUTE but clue spelling 'Brute' in the quote gives it away — fairness issue aside, the quoted line is correct but the blank replaces 'Brute' making it trivially transparent; too easy for Hard"
+33f383e4c8b7fa86e2cf,drug_use_angle,BRUTE,"""Et tu, ___?""",,,0.02,False,False,agent-reviewed-historical,False,1,0.0,"Wrong: Shakespeare's line is 'Et tu, Brute?' not 'Et tu, ___?' answer is BRUTE not BRUTE; actually the fill-in answer BRUTE fits but the clue quotes wrong — standard quote is 'Et tu, Brute' so blank clue leaks the answer; more critically answer is BRUTE but clue spelling 'Brute' in the quote gives it away — fairness issue aside, the quoted line is correct but the blank replaces 'Brute' making it trivially transparent; too easy for Hard"
+34a53a8f14805b2b7841,alcohol_angle,CUE,Stick for striking a billiard ball,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,
+34a53a8f14805b2b7841,drug_use_angle,CUE,Stick for striking a billiard ball,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,
+3d1b09fa3a08a6812fb7,alcohol_angle,GRIN,Big happy smile,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,
+56ed495680eb1c121b7d,firearms_angle,SLOTH,Slow-moving jungle dweller,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,
+5fec8f034319e06ea267,alcohol_angle,PRE,Prefix meaning before,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,leaks: 'Prefix meaning before' — etymology leak and hidden PRE in 'prefix'; fairness 0-8
+651b221038dd074d8669,drug_use_angle,VOICE,A say in the matter,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,
+6b076210b4e80153e9e8,drug_use_angle,MANLY,Rugged and strong,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,crossing word GAY leaks via antonym/association; also ONLY shares -LY ending fragment
+7114558650684d8229d2,firearms_angle,KIN,Kith and ___,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,collocation giveaway: kith and kin
+7114558650684d8229d2,drug_use_angle,KIN,Kith and ___,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,collocation giveaway: kith and kin
+7333c107ad5769c8205b,alcohol_angle,TRUNK,Elephant's grabbing appendage,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,
+73f9f753eeeee9d5d83c,alcohol_angle,MIN,"Sixty seconds, for short",,,0.02,False,False,agent-reviewed-historical,False,1,0.0,
+76336fae2831e1c48b42,firearms_angle,USA,"Home of the Grand Canyon, briefly",,,0.02,False,False,agent-reviewed-historical,False,1,0.0,too easy for Hard
+7a2a03509f8535b3ab06,alcohol_angle,PROGRAM,Handout at a theater performance,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,
+84456db0247a616685a8,alcohol_angle,BEDS,Things you sleep on,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,
+84456db0247a616685a8,drug_use_angle,BEDS,Things you sleep on,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,
+8609b0e20138a51225f3,alcohol_angle,RPG,"Dungeon-crawling video game type, for short",,,0.02,False,False,agent-reviewed-historical,False,1,0.0,missing abbreviation indicator; leaks: RPG expansion 'game'
+88acfb94147b0b09b8e2,alcohol_angle,IVORY,Off-white shade named for a soap,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,"wrong: ivory named for tusks, not soap"
+8a3a10d7c6a01e00f2a9,drug_use_angle,OAR,Sculler's tool,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,
+8ab068c01d45f5c43638,drug_use_angle,ALMA,"Nurturing soul, in Latin",,,0.02,False,False,agent-reviewed-historical,False,1,0.0,"wrong: alma means nourishing, not soul, in Latin"
+90e21c65228027ce3f70,firearms_angle,DUNN,Comedian Nora once of late-night sketch comedy,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,Currency risk: 'once of' awkward; clue still depends on current/recent role context
+91fabdace00d02ec2fe9,drug_use_angle,LAB,"Coat-named dog breed, for short",,,0.02,False,False,agent-reviewed-historical,False,1,0.0,wrong: Labrador not coat-named
+a099c799f5b419ed5d66,firearms_angle,CLUE,Trail a sleuth follows,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,
+a5cf42499210488711b4,alcohol_angle,YOURS,Belonging to you,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,"too easy for Hard, plain definition"
+a5cf42499210488711b4,drug_use_angle,YOURS,Belonging to you,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,"too easy for Hard, plain definition"
+a6bf80511370d9ea8cb6,alcohol_angle,GHOST,"Suddenly cut off contact, in dating slang",,,0.02,False,False,agent-reviewed-historical,False,1,0.0,
+a9725515e25acf4f80f7,alcohol_angle,ETA,"Arrival guess on a flight board, for short",,,0.02,False,False,agent-reviewed-historical,False,1,0.0,leaks: arrival (ETA)
+a9725515e25acf4f80f7,drug_use_angle,ETA,"Arrival guess on a flight board, for short",,,0.02,False,False,agent-reviewed-historical,False,1,0.0,leaks: arrival (ETA)
+b5ef294a5b69d6c94b84,alcohol_angle,SUP,Greeting that's short for three words,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,questionable: 'sup' expands to two words
+b772ee153c6fb385276b,alcohol_angle,MOAN,Sound of a wind in the trees,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,wind in trees is more of a sigh or rustle; slightly off
+b772ee153c6fb385276b,drug_use_angle,MOAN,Sound of a wind in the trees,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,wind in trees is more of a sigh or rustle; slightly off
+bead4eb455eef1495a5d,alcohol_angle,COVE,Sheltered nook along a coastline,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,
+c65f36726c7bef71f39c,firearms_angle,KEY,Of central importance,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,too easy for Hard; plain adjective definition
+c65f36726c7bef71f39c,alcohol_angle,KEY,Of central importance,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,too easy for Hard; plain adjective definition
+cd985ae7fcddadf2c4c7,firearms_angle,MAPS,Atlas contents,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,
+cd985ae7fcddadf2c4c7,alcohol_angle,MAPS,Atlas contents,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,
+cd985ae7fcddadf2c4c7,drug_use_angle,MAPS,Atlas contents,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,
+cede7216892aa493aa5f,firearms_angle,AKIN,Similar in nature,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,
+cede7216892aa493aa5f,alcohol_angle,AKIN,Similar in nature,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,
+d088381a85c3c00e4416,firearms_angle,RAM,Male sheep with curly horns,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,
+d088381a85c3c00e4416,drug_use_angle,RAM,Male sheep with curly horns,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,
+dc28ed274e455c179d01,alcohol_angle,YOUTH,Time of life when you're young,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,leaks crossing answer YOU via 'you're'
+dc28ed274e455c179d01,drug_use_angle,YOUTH,Time of life when you're young,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,leaks crossing answer YOU via 'you're'
+de4c5d95551cc13c5401,firearms_angle,EASE,Make less painful,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,
+dfbbe677b1df8a3a050e,alcohol_angle,RENEW,Keep a subscription going,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,Hidden answer leak: reNEW contains NEW; also NEW is a crossing word
+dfbbe677b1df8a3a050e,drug_use_angle,RENEW,Keep a subscription going,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,Hidden answer leak: reNEW contains NEW; also NEW is a crossing word
+e6879b7c392ab9953858,firearms_angle,YUP,Casual affirmative,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,too easy for Hard; plain descriptor
+e6879b7c392ab9953858,alcohol_angle,YUP,Casual affirmative,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,too easy for Hard; plain descriptor
+e7f003bf9da8c26c05f2,alcohol_angle,EARL,British title of nobility,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,
+eb1044faacc43dad57f3,drug_use_angle,THE,"Word before ""end"" or ""start""",,,0.02,False,False,agent-reviewed-historical,False,1,0.0,'start' not standard: 'the start' less fixed than 'the end'; also 'end' hidden in 'end'
+f1464c522e9c3fa4a4f6,firearms_angle,ALA,In the style of,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,"missing accent; needs ""à la"" form; too easy; abbreviation indicator missing"
+f1464c522e9c3fa4a4f6,alcohol_angle,ALA,In the style of,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,"missing accent; needs ""à la"" form; too easy; abbreviation indicator missing"
+f1464c522e9c3fa4a4f6,drug_use_angle,ALA,In the style of,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,"missing accent; needs ""à la"" form; too easy; abbreviation indicator missing"
+f26c9548d75d1e9e5147,firearms_angle,AHEAD,Winning by a little,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,
+f905dc2fad5204986943,alcohol_angle,TRI,"Prefix for ""angle"" or ""pod""",,,0.02,False,False,agent-reviewed-historical,False,1,0.0,leaks: TRI hidden in tRIangle; also prefix expansion leak
+fa2d349464f57b78d18c,firearms_angle,LOB,Gentle arc over the net,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,too easy for Hard; plain definition
+fa2d349464f57b78d18c,alcohol_angle,LOB,Gentle arc over the net,,,0.02,False,False,agent-reviewed-historical,False,1,0.0,too easy for Hard; plain definition
+321a8b431689f7f2c3d1,alcohol_angle,FBI,U.S. agency once led by J. Edgar Hoover (abbr.),,,0.01,False,False,agent-reviewed-historical,False,1,0.0,abbr. expansion leak: FBI — 'Bureau' not in clue but 'agency' is borderline; acceptable since no B/I expansion words present
+321a8b431689f7f2c3d1,drug_use_angle,FBI,U.S. agency once led by J. Edgar Hoover (abbr.),,,0.01,False,False,agent-reviewed-historical,False,1,0.0,abbr. expansion leak: FBI — 'Bureau' not in clue but 'agency' is borderline; acceptable since no B/I expansion words present
+36592427cfeeb865179f,firearms_angle,SUM,Total of added numbers,,,0.01,False,False,agent-reviewed-historical,False,1,0.0,
+36592427cfeeb865179f,alcohol_angle,SUM,Total of added numbers,,,0.01,False,False,agent-reviewed-historical,False,1,0.0,
+36592427cfeeb865179f,drug_use_angle,SUM,Total of added numbers,,,0.01,False,False,agent-reviewed-historical,False,1,0.0,
+3d1b09fa3a08a6812fb7,firearms_angle,GRIN,Big happy smile,,,0.01,False,False,agent-reviewed-historical,False,1,0.0,
+4b4263453cf11665021e,firearms_angle,ECO,Earth-friendly prefix,,,0.01,False,False,agent-reviewed-historical,False,1,0.0,"leaks: ECO inside 'prefix' angle; ECO is abbreviation, needs abbr. indicator"
+4b4263453cf11665021e,alcohol_angle,ECO,Earth-friendly prefix,,,0.01,False,False,agent-reviewed-historical,False,1,0.0,"leaks: ECO inside 'prefix' angle; ECO is abbreviation, needs abbr. indicator"
+4b4263453cf11665021e,drug_use_angle,ECO,Earth-friendly prefix,,,0.01,False,False,agent-reviewed-historical,False,1,0.0,"leaks: ECO inside 'prefix' angle; ECO is abbreviation, needs abbr. indicator"
+5fec8f034319e06ea267,drug_use_angle,PRE,Prefix meaning before,,,0.01,False,False,agent-reviewed-historical,False,1,0.0,leaks: 'Prefix meaning before' — etymology leak and hidden PRE in 'prefix'; fairness 0-8
+7333c107ad5769c8205b,firearms_angle,TRUNK,Elephant's grabbing appendage,,,0.01,False,False,agent-reviewed-historical,False,1,0.0,
+7333c107ad5769c8205b,drug_use_angle,TRUNK,Elephant's grabbing appendage,,,0.01,False,False,agent-reviewed-historical,False,1,0.0,
+7698a5bae56e5611eb3b,firearms_angle,AGE,"Mature gracefully, like fine wine",,,0.01,False,False,agent-reviewed-historical,False,1,0.0,wine/aging angle fine but AGE hidden in 'gracefully' end; fairness docked
+777332d5808c085d9f7d,firearms_angle,AROMA,Nice scent,,,0.01,False,False,agent-reviewed-historical,False,1,0.0,'Nice' ambiguous: city in France or adjective; rephrase to plain 'Pleasant scent' or 'Fragrance'
+7a2a03509f8535b3ab06,firearms_angle,PROGRAM,Handout at a theater performance,,,0.01,False,False,agent-reviewed-historical,False,1,0.0,
+7e909891119f1e648520,firearms_angle,THEIR,"""___ house is blue""",,,0.01,False,False,agent-reviewed-historical,False,1,0.0,Ambiguous: many houses could be blue; no single famous/fixed phrase confirmed.
+84456db0247a616685a8,firearms_angle,BEDS,Things you sleep on,,,0.01,False,False,agent-reviewed-historical,False,1,0.0,
+88acfb94147b0b09b8e2,firearms_angle,IVORY,Off-white shade named for a soap,,,0.01,False,False,agent-reviewed-historical,False,1,0.0,"wrong: ivory named for tusks, not soap"
+8a3a10d7c6a01e00f2a9,firearms_angle,OAR,Sculler's tool,,,0.01,False,False,agent-reviewed-historical,False,1,0.0,
+8ab068c01d45f5c43638,firearms_angle,ALMA,"Nurturing soul, in Latin",,,0.01,False,False,agent-reviewed-historical,False,1,0.0,"wrong: alma means nourishing, not soul, in Latin"
+9fa085025502fc305cc1,firearms_angle,ACL,"Knee tissue a runner might tear, briefly",,,0.01,False,False,agent-reviewed-historical,False,1,0.0,leaks: knee (K in ACL... actually 'knee' shares collocation with ACL tear)
+9fa085025502fc305cc1,alcohol_angle,ACL,"Knee tissue a runner might tear, briefly",,,0.01,False,False,agent-reviewed-historical,False,1,0.0,leaks: knee (K in ACL... actually 'knee' shares collocation with ACL tear)
+9fa085025502fc305cc1,drug_use_angle,ACL,"Knee tissue a runner might tear, briefly",,,0.01,False,False,agent-reviewed-historical,False,1,0.0,leaks: knee (K in ACL... actually 'knee' shares collocation with ACL tear)
+a9725515e25acf4f80f7,firearms_angle,ETA,"Arrival guess on a flight board, for short",,,0.01,False,False,agent-reviewed-historical,False,1,0.0,leaks: arrival (ETA)
+af674c19c7cfc5bca904,firearms_angle,SURE,"""No problem at all!""",,,0.01,False,False,agent-reviewed-historical,False,1,0.0,
+af674c19c7cfc5bca904,alcohol_angle,SURE,"""No problem at all!""",,,0.01,False,False,agent-reviewed-historical,False,1,0.0,
+af674c19c7cfc5bca904,drug_use_angle,SURE,"""No problem at all!""",,,0.01,False,False,agent-reviewed-historical,False,1,0.0,
+b5ef294a5b69d6c94b84,firearms_angle,SUP,Greeting that's short for three words,,,0.01,False,False,agent-reviewed-historical,False,1,0.0,questionable: 'sup' expands to two words
+b772ee153c6fb385276b,firearms_angle,MOAN,Sound of a wind in the trees,,,0.01,False,False,agent-reviewed-historical,False,1,0.0,wind in trees is more of a sigh or rustle; slightly off
+bea964d33ccde968f177,firearms_angle,SUN,Source of a beachgoer's tan,,,0.01,False,False,agent-reviewed-historical,False,1,0.0,too easy for Hard
+bea964d33ccde968f177,alcohol_angle,SUN,Source of a beachgoer's tan,,,0.01,False,False,agent-reviewed-historical,False,1,0.0,too easy for Hard
+bea964d33ccde968f177,drug_use_angle,SUN,Source of a beachgoer's tan,,,0.01,False,False,agent-reviewed-historical,False,1,0.0,too easy for Hard
+bead4eb455eef1495a5d,firearms_angle,COVE,Sheltered nook along a coastline,,,0.01,False,False,agent-reviewed-historical,False,1,0.0,
+bead4eb455eef1495a5d,drug_use_angle,COVE,Sheltered nook along a coastline,,,0.01,False,False,agent-reviewed-historical,False,1,0.0,
+c53a2dec7d8ceebea862,firearms_angle,ATM,"Cash-dispensing spot, for short",,,0.01,False,False,agent-reviewed-historical,False,1,0.0,leaks: machine (M) absent but 'cash' not a leak; clean enough; minor: ATM letters not echoed
+c53a2dec7d8ceebea862,alcohol_angle,ATM,"Cash-dispensing spot, for short",,,0.01,False,False,agent-reviewed-historical,False,1,0.0,leaks: machine (M) absent but 'cash' not a leak; clean enough; minor: ATM letters not echoed
+c53a2dec7d8ceebea862,drug_use_angle,ATM,"Cash-dispensing spot, for short",,,0.01,False,False,agent-reviewed-historical,False,1,0.0,leaks: machine (M) absent but 'cash' not a leak; clean enough; minor: ATM letters not echoed
+c65f36726c7bef71f39c,drug_use_angle,KEY,Of central importance,,,0.01,False,False,agent-reviewed-historical,False,1,0.0,too easy for Hard; plain adjective definition
+c97a601eeedecf3b966c,firearms_angle,ALE,Ginger ___ (bubbly soft drink),,,0.01,False,False,agent-reviewed-historical,False,1,0.0,"collocation giveaway: Ginger ___, too easy for Hard"
+dc28ed274e455c179d01,firearms_angle,YOUTH,Time of life when you're young,,,0.01,False,False,agent-reviewed-historical,False,1,0.0,leaks crossing answer YOU via 'you're'
+dfbbe677b1df8a3a050e,firearms_angle,RENEW,Keep a subscription going,,,0.01,False,False,agent-reviewed-historical,False,1,0.0,Hidden answer leak: reNEW contains NEW; also NEW is a crossing word
+e7f003bf9da8c26c05f2,firearms_angle,EARL,British title of nobility,,,0.01,False,False,agent-reviewed-historical,False,1,0.0,
+e7f003bf9da8c26c05f2,drug_use_angle,EARL,British title of nobility,,,0.01,False,False,agent-reviewed-historical,False,1,0.0,
+f26c9548d75d1e9e5147,drug_use_angle,AHEAD,Winning by a little,,,0.01,False,False,agent-reviewed-historical,False,1,0.0,
+f54456ac759acf4d510e,firearms_angle,MAST,Tall pole holding a ship's sail,,,0.01,False,False,agent-reviewed-historical,False,1,0.0,
+f54456ac759acf4d510e,drug_use_angle,MAST,Tall pole holding a ship's sail,,,0.01,False,False,agent-reviewed-historical,False,1,0.0,
+fa2d349464f57b78d18c,drug_use_angle,LOB,Gentle arc over the net,,,0.01,False,False,agent-reviewed-historical,False,1,0.0,too easy for Hard; plain definition

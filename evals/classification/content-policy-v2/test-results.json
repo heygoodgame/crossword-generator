@@ -1,0 +1,5324 @@
+{
+  "selection_sha256": "5540d3b2df03820336e282587def9a75734c6dc184a142258d196f7e9fbc39ba",
+  "test_corpus_sha256": "30c77992e0a530f589e53e565d9cbf4a28bb322861ab464723f4dea7ced1341c",
+  "questions": {
+    "firearms_angle": {
+      "variant": "context",
+      "threshold": 0.78,
+      "metrics": {
+        "n": 130,
+        "positive": 17,
+        "negative": 113,
+        "tp": 17,
+        "fp": 0,
+        "fn": 0,
+        "tn": 113,
+        "accuracy": 1.0,
+        "recall": 1.0,
+        "fpr": 0.0,
+        "precision": 1.0,
+        "auc": 1.0,
+        "brier": 0.01093846153846154
+      },
+      "by_origin": {
+        "authored": {
+          "n": 100,
+          "positive": 16,
+          "negative": 84,
+          "tp": 16,
+          "fp": 0,
+          "fn": 0,
+          "tn": 84,
+          "accuracy": 1.0,
+          "recall": 1.0,
+          "fpr": 0.0,
+          "precision": 1.0,
+          "auc": 1.0,
+          "brier": 0.012428
+        },
+        "historical": {
+          "n": 30,
+          "positive": 1,
+          "negative": 29,
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "tn": 29,
+          "accuracy": 1.0,
+          "recall": 1.0,
+          "fpr": 0.0,
+          "precision": 1.0,
+          "auc": 1.0,
+          "brier": 0.005973333333333333
+        }
+      }
+    },
+    "alcohol_angle": {
+      "variant": "clue-only",
+      "threshold": 0.82,
+      "metrics": {
+        "n": 130,
+        "positive": 20,
+        "negative": 110,
+        "tp": 16,
+        "fp": 0,
+        "fn": 4,
+        "tn": 110,
+        "accuracy": 0.9692307692307692,
+        "recall": 0.8,
+        "fpr": 0.0,
+        "precision": 1.0,
+        "auc": 0.9990909090909091,
+        "brier": 0.012936923076923078
+      },
+      "by_origin": {
+        "authored": {
+          "n": 100,
+          "positive": 18,
+          "negative": 82,
+          "tp": 16,
+          "fp": 0,
+          "fn": 2,
+          "tn": 82,
+          "accuracy": 0.98,
+          "recall": 0.8888888888888888,
+          "fpr": 0.0,
+          "precision": 1.0,
+          "auc": 1.0,
+          "brier": 0.006827000000000001
+        },
+        "historical": {
+          "n": 30,
+          "positive": 2,
+          "negative": 28,
+          "tp": 0,
+          "fp": 0,
+          "fn": 2,
+          "tn": 28,
+          "accuracy": 0.9333333333333333,
+          "recall": 0.0,
+          "fpr": 0.0,
+          "precision": null,
+          "auc": 0.9642857142857143,
+          "brier": 0.03330333333333334
+        }
+      }
+    },
+    "drug_use_angle": {
+      "variant": "context",
+      "threshold": 0.95,
+      "metrics": {
+        "n": 132,
+        "positive": 15,
+        "negative": 117,
+        "tp": 14,
+        "fp": 0,
+        "fn": 1,
+        "tn": 117,
+        "accuracy": 0.9924242424242424,
+        "recall": 0.9333333333333333,
+        "fpr": 0.0,
+        "precision": 1.0,
+        "auc": 1.0,
+        "brier": 0.025529545454545458
+      },
+      "by_origin": {
+        "authored": {
+          "n": 100,
+          "positive": 14,
+          "negative": 86,
+          "tp": 13,
+          "fp": 0,
+          "fn": 1,
+          "tn": 86,
+          "accuracy": 0.99,
+          "recall": 0.9285714285714286,
+          "fpr": 0.0,
+          "precision": 1.0,
+          "auc": 1.0,
+          "brier": 0.032528
+        },
+        "historical": {
+          "n": 32,
+          "positive": 1,
+          "negative": 31,
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "tn": 31,
+          "accuracy": 1.0,
+          "recall": 1.0,
+          "fpr": 0.0,
+          "precision": 1.0,
+          "auc": 1.0,
+          "brier": 0.0036593750000000003
+        }
+      }
+    }
+  },
+  "any_policy_violation": {
+    "n": 128,
+    "positive": 52,
+    "negative": 76,
+    "tp": 47,
+    "fp": 0,
+    "fn": 5,
+    "tn": 76,
+    "accuracy": 0.9609375,
+    "recall": 0.9038461538461539,
+    "fpr": 0.0,
+    "precision": 1.0,
+    "auc": 0.9519230769230769,
+    "brier": 0.0390625
+  },
+  "review": [
+    {
+      "case_id": "content-v2-024-pos",
+      "state": {
+        "answer": "RECOIL",
+        "clue": "Backward kick of a fired gun"
+      },
+      "question": "firearms_angle",
+      "probability": 0.97,
+      "label": true,
+      "flagged": true,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-071-pos",
+      "state": {
+        "answer": "USER",
+        "clue": "Person who takes illicit drugs"
+      },
+      "question": "firearms_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-030-neg",
+      "state": {
+        "answer": "BAR",
+        "clue": "Horizontal gymnastics apparatus"
+      },
+      "question": "firearms_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-history-e4c5c62272d527178bc6",
+      "state": {
+        "answer": "AXIS",
+        "clue": "Line that a globe spins around"
+      },
+      "question": "firearms_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-009-neg",
+      "state": {
+        "answer": "STOCK",
+        "clue": "Broth used as a soup base"
+      },
+      "question": "firearms_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-history-af2c00b43cab42da4672",
+      "state": {
+        "answer": "PEAK",
+        "clue": "High point of one's career"
+      },
+      "question": "firearms_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-history-c97a601eeedecf3b966c",
+      "state": {
+        "answer": "ALE",
+        "clue": "Ginger ___ (bubbly soft drink)"
+      },
+      "question": "firearms_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-history-84795ffc54872ebc12fb",
+      "state": {
+        "answer": "DEA",
+        "clue": "Antidrug fed. org."
+      },
+      "question": "firearms_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-027-pos",
+      "state": {
+        "answer": "BEER",
+        "clue": "Alcoholic drink made with hops"
+      },
+      "question": "firearms_angle",
+      "probability": 0.01,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-063-neg",
+      "state": {
+        "answer": "ICE",
+        "clue": "Frozen water"
+      },
+      "question": "firearms_angle",
+      "probability": 0.05,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-029-pos",
+      "state": {
+        "answer": "SPIRIT",
+        "clue": "Distilled alcoholic beverage"
+      },
+      "question": "firearms_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-041-pos",
+      "state": {
+        "answer": "SAUCE",
+        "clue": "Liquor, in the phrase on the ___"
+      },
+      "question": "firearms_angle",
+      "probability": 0.34,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-041-neg",
+      "state": {
+        "answer": "SAUCE",
+        "clue": "Marinara, for example"
+      },
+      "question": "firearms_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-067-neg",
+      "state": {
+        "answer": "SMOKE",
+        "clue": "Cloud rising from a chimney"
+      },
+      "question": "firearms_angle",
+      "probability": 0.05,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-history-7aad8ce2fe29763a44f9",
+      "state": {
+        "answer": "BARR",
+        "clue": "Roseanne of sitcom fame"
+      },
+      "question": "firearms_angle",
+      "probability": 0.15,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-063-pos",
+      "state": {
+        "answer": "ICE",
+        "clue": "Crystal meth, slangily"
+      },
+      "question": "firearms_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-049-neg",
+      "state": {
+        "answer": "BREW",
+        "clue": "Prepare a pot of tea"
+      },
+      "question": "firearms_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-history-9f981f8a1e5b169066d7",
+      "state": {
+        "answer": "SLINGSHOT",
+        "clue": "Dennis the Menace's Y-shaped toy"
+      },
+      "question": "firearms_angle",
+      "probability": 0.07,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-044-neg",
+      "state": {
+        "answer": "DRINK",
+        "clue": "Have a glass of water"
+      },
+      "question": "firearms_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-028-pos",
+      "state": {
+        "answer": "PORT",
+        "clue": "Sweet fortified wine"
+      },
+      "question": "firearms_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-058-pos",
+      "state": {
+        "answer": "TRIP",
+        "clue": "Hallucinogenic drug experience"
+      },
+      "question": "firearms_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-027-neg",
+      "state": {
+        "answer": "BEER",
+        "clue": "Root ___ float"
+      },
+      "question": "firearms_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-040-neg",
+      "state": {
+        "answer": "RUM",
+        "clue": "Odd, in British slang"
+      },
+      "question": "firearms_angle",
+      "probability": 0.18,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-029-neg",
+      "state": {
+        "answer": "SPIRIT",
+        "clue": "School pride"
+      },
+      "question": "firearms_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-039-neg",
+      "state": {
+        "answer": "GIN",
+        "clue": "Cotton-separating machine"
+      },
+      "question": "firearms_angle",
+      "probability": 0.07,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-boundary-07",
+      "state": {
+        "answer": "CANNABIS",
+        "clue": "Drug smoked to get high"
+      },
+      "question": "firearms_angle",
+      "probability": 0.01,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-048-neg",
+      "state": {
+        "answer": "CHASER",
+        "clue": "One running after someone"
+      },
+      "question": "firearms_angle",
+      "probability": 0.09,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-boundary-09",
+      "state": {
+        "answer": "DRUG",
+        "clue": "Medicine prescribed by a physician"
+      },
+      "question": "firearms_angle",
+      "probability": 0.01,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-009-pos",
+      "state": {
+        "answer": "STOCK",
+        "clue": "Shoulder-rest part of a rifle"
+      },
+      "question": "firearms_angle",
+      "probability": 0.97,
+      "label": true,
+      "flagged": true,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-history-2fb3de9fb566b71e04ff",
+      "state": {
+        "answer": "ARI",
+        "clue": "Onassis the shipping magnate, for short"
+      },
+      "question": "firearms_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-054-neg",
+      "state": {
+        "answer": "JOINT",
+        "clue": "Where two bones meet"
+      },
+      "question": "firearms_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-017-neg",
+      "state": {
+        "answer": "BULLET",
+        "clue": "Dot before a list item"
+      },
+      "question": "firearms_angle",
+      "probability": 0.24,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-boundary-03",
+      "state": {
+        "answer": "TABLET",
+        "clue": "Pill prescribed by a doctor"
+      },
+      "question": "firearms_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-028-neg",
+      "state": {
+        "answer": "PORT",
+        "clue": "Harbor for ships"
+      },
+      "question": "firearms_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-015-neg",
+      "state": {
+        "answer": "PACK",
+        "clue": "Group of wolves"
+      },
+      "question": "firearms_angle",
+      "probability": 0.07,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-001-neg",
+      "state": {
+        "answer": "DRAW",
+        "clue": "Sketch with a pencil"
+      },
+      "question": "firearms_angle",
+      "probability": 0.05,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-008-neg",
+      "state": {
+        "answer": "BARREL",
+        "clue": "Large wooden container"
+      },
+      "question": "firearms_angle",
+      "probability": 0.11,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-001-pos",
+      "state": {
+        "answer": "DRAW",
+        "clue": "Pull a pistol from its holster"
+      },
+      "question": "firearms_angle",
+      "probability": 0.93,
+      "label": true,
+      "flagged": true,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-024-neg",
+      "state": {
+        "answer": "RECOIL",
+        "clue": "Shrink back in surprise"
+      },
+      "question": "firearms_angle",
+      "probability": 0.31,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-011-neg",
+      "state": {
+        "answer": "TRIGGER",
+        "clue": "Set off an alarm"
+      },
+      "question": "firearms_angle",
+      "probability": 0.51,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-003-pos",
+      "state": {
+        "answer": "SHOOT",
+        "clue": "Fire a rifle"
+      },
+      "question": "firearms_angle",
+      "probability": 0.96,
+      "label": true,
+      "flagged": true,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-033-pos",
+      "state": {
+        "answer": "PROOF",
+        "clue": "Measure of liquor strength"
+      },
+      "question": "firearms_angle",
+      "probability": 0.05,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-010-pos",
+      "state": {
+        "answer": "SIGHT",
+        "clue": "Device used to aim a rifle"
+      },
+      "question": "firearms_angle",
+      "probability": 0.97,
+      "label": true,
+      "flagged": true,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-history-94fbd71de4a4315645d1",
+      "state": {
+        "answer": "AMMO",
+        "clue": "Stuff fired from a slingshot, informally"
+      },
+      "question": "firearms_angle",
+      "probability": 0.35,
+      "label": null,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-021-pos",
+      "state": {
+        "answer": "ARMS",
+        "clue": "Firearms, collectively"
+      },
+      "question": "firearms_angle",
+      "probability": 0.92,
+      "label": true,
+      "flagged": true,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-history-e4055530b1c2c3e1051c",
+      "state": {
+        "answer": "OPTIC",
+        "clue": "Kind of fiber for high-speed internet"
+      },
+      "question": "firearms_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-007-pos",
+      "state": {
+        "answer": "MAGAZINE",
+        "clue": "Ammunition holder in a pistol"
+      },
+      "question": "firearms_angle",
+      "probability": 0.97,
+      "label": true,
+      "flagged": true,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-056-pos",
+      "state": {
+        "answer": "STONED",
+        "clue": "Very intoxicated from marijuana"
+      },
+      "question": "firearms_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-046-pos",
+      "state": {
+        "answer": "HANGOVER",
+        "clue": "Morning-after effect of too much wine"
+      },
+      "question": "firearms_angle",
+      "probability": 0.01,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-068-neg",
+      "state": {
+        "answer": "PIPE",
+        "clue": "Tube that carries water"
+      },
+      "question": "firearms_angle",
+      "probability": 0.08,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-015-pos",
+      "state": {
+        "answer": "PACK",
+        "clue": "Carry a concealed gun, slangily"
+      },
+      "question": "firearms_angle",
+      "probability": 0.91,
+      "label": true,
+      "flagged": true,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-074-neg",
+      "state": {
+        "answer": "COKE",
+        "clue": "Soft drink sold in a red can"
+      },
+      "question": "firearms_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-074-pos",
+      "state": {
+        "answer": "COKE",
+        "clue": "Cocaine, informally"
+      },
+      "question": "firearms_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-033-neg",
+      "state": {
+        "answer": "PROOF",
+        "clue": "Evidence supporting a claim"
+      },
+      "question": "firearms_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-025-pos",
+      "state": {
+        "answer": "PIN",
+        "clue": "Firing ___ (gun mechanism part)"
+      },
+      "question": "firearms_angle",
+      "probability": 0.94,
+      "label": true,
+      "flagged": true,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-history-ae04fea5a357df9f5a12",
+      "state": {
+        "answer": "LAD",
+        "clue": "Strapping young chap"
+      },
+      "question": "firearms_angle",
+      "probability": 0.16,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-053-pos",
+      "state": {
+        "answer": "WEED",
+        "clue": "Cannabis, colloquially"
+      },
+      "question": "firearms_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-060-neg",
+      "state": {
+        "answer": "ECSTASY",
+        "clue": "Overwhelming joy"
+      },
+      "question": "firearms_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-history-64332decd64bbc25adc9",
+      "state": {
+        "answer": "ATM",
+        "clue": "Bank spot to get cash, for short"
+      },
+      "question": "firearms_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-057-neg",
+      "state": {
+        "answer": "DOPE",
+        "clue": "Inside information, informally"
+      },
+      "question": "firearms_angle",
+      "probability": 0.1,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-043-pos",
+      "state": {
+        "answer": "MALT",
+        "clue": "Grain prepared for making whisky"
+      },
+      "question": "firearms_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-014-neg",
+      "state": {
+        "answer": "RIFLE",
+        "clue": "Rummage through, as a drawer"
+      },
+      "question": "firearms_angle",
+      "probability": 0.18,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-073-pos",
+      "state": {
+        "answer": "COOK",
+        "clue": "Produce methamphetamine, slangily"
+      },
+      "question": "firearms_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-046-neg",
+      "state": {
+        "answer": "HANGOVER",
+        "clue": "Lingering consequence of an earlier era"
+      },
+      "question": "firearms_angle",
+      "probability": 0.08,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-060-pos",
+      "state": {
+        "answer": "ECSTASY",
+        "clue": "Recreational drug also called MDMA"
+      },
+      "question": "firearms_angle",
+      "probability": 0.01,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-history-c53a2dec7d8ceebea862",
+      "state": {
+        "answer": "ATM",
+        "clue": "Cash-dispensing spot, for short"
+      },
+      "question": "firearms_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-025-neg",
+      "state": {
+        "answer": "PIN",
+        "clue": "Bowling-alley target"
+      },
+      "question": "firearms_angle",
+      "probability": 0.08,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-007-neg",
+      "state": {
+        "answer": "MAGAZINE",
+        "clue": "Periodical on a waiting-room table"
+      },
+      "question": "firearms_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-030-pos",
+      "state": {
+        "answer": "BAR",
+        "clue": "Place to order a martini"
+      },
+      "question": "firearms_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-018-pos",
+      "state": {
+        "answer": "CHAMBER",
+        "clue": "Gun compartment that holds a cartridge"
+      },
+      "question": "firearms_angle",
+      "probability": 0.97,
+      "label": true,
+      "flagged": true,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-038-neg",
+      "state": {
+        "answer": "BOURBON",
+        "clue": "French royal house of Louis XVI"
+      },
+      "question": "firearms_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-047-neg",
+      "state": {
+        "answer": "AGED",
+        "clue": "Grew older"
+      },
+      "question": "firearms_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-053-neg",
+      "state": {
+        "answer": "WEED",
+        "clue": "Unwanted plant in a flower bed"
+      },
+      "question": "firearms_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-history-aaf0e17b6f05b1d62e01",
+      "state": {
+        "answer": "BEER",
+        "clue": "Root ___ float (ice cream treat)"
+      },
+      "question": "firearms_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-history-c93fa838546928cba12b",
+      "state": {
+        "answer": "GUNMAN",
+        "clue": "Tough guy in an old Western"
+      },
+      "question": "firearms_angle",
+      "probability": 0.8,
+      "label": true,
+      "flagged": true,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-history-e88e04af08c7d9d7cfab",
+      "state": {
+        "answer": "IRON",
+        "clue": "Pumping ___ (weight training)"
+      },
+      "question": "firearms_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-005-neg",
+      "state": {
+        "answer": "SHELL",
+        "clue": "Seashell collector's find"
+      },
+      "question": "firearms_angle",
+      "probability": 0.15,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-history-78012d86b79c7484c076",
+      "state": {
+        "answer": "FLASK",
+        "clue": "Skinny bottle you can slip in a pocket"
+      },
+      "question": "firearms_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-057-pos",
+      "state": {
+        "answer": "DOPE",
+        "clue": "Illegal narcotics, slangily"
+      },
+      "question": "firearms_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-history-3ebadcd1e4e11dacdce7",
+      "state": {
+        "answer": "ATMS",
+        "clue": "Withdrawal spots, for short"
+      },
+      "question": "firearms_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-history-55cbe1d0509953c48806",
+      "state": {
+        "answer": "TRY",
+        "clue": "Give it your best shot"
+      },
+      "question": "firearms_angle",
+      "probability": 0.44,
+      "label": null,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-067-pos",
+      "state": {
+        "answer": "SMOKE",
+        "clue": "Inhale from a marijuana joint"
+      },
+      "question": "firearms_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-boundary-04",
+      "state": {
+        "answer": "INSULIN",
+        "clue": "Medication prescribed for diabetes"
+      },
+      "question": "firearms_angle",
+      "probability": 0.01,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-071-neg",
+      "state": {
+        "answer": "USER",
+        "clue": "Person operating a computer"
+      },
+      "question": "firearms_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-058-neg",
+      "state": {
+        "answer": "TRIP",
+        "clue": "Journey to another city"
+      },
+      "question": "firearms_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-history-dd25e503565f33bfcb6a",
+      "state": {
+        "answer": "PIC",
+        "clue": "Quick snapshot, casually"
+      },
+      "question": "firearms_angle",
+      "probability": 0.07,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-045-neg",
+      "state": {
+        "answer": "SOBER",
+        "clue": "Serious and solemn"
+      },
+      "question": "firearms_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-005-pos",
+      "state": {
+        "answer": "SHELL",
+        "clue": "Shotgun cartridge"
+      },
+      "question": "firearms_angle",
+      "probability": 0.96,
+      "label": true,
+      "flagged": true,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-boundary-10",
+      "state": {
+        "answer": "BEER",
+        "clue": "Ginger ___"
+      },
+      "question": "firearms_angle",
+      "probability": 0.05,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-boundary-01",
+      "state": {
+        "answer": "STAR",
+        "clue": "Shooting ___"
+      },
+      "question": "firearms_angle",
+      "probability": 0.44,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-history-b8750c8a277f6f4ec8db",
+      "state": {
+        "answer": "DINO",
+        "clue": "Fred Flintstone's dinosaur pet"
+      },
+      "question": "firearms_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-history-6a623aa331b76d900b6b",
+      "state": {
+        "answer": "JUDAH",
+        "clue": "Ancient kingdom with Jerusalem as its capital"
+      },
+      "question": "firearms_angle",
+      "probability": 0.01,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-010-neg",
+      "state": {
+        "answer": "SIGHT",
+        "clue": "Sense used when looking"
+      },
+      "question": "firearms_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-008-pos",
+      "state": {
+        "answer": "BARREL",
+        "clue": "Part of a gun that a bullet travels through"
+      },
+      "question": "firearms_angle",
+      "probability": 0.98,
+      "label": true,
+      "flagged": true,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-068-pos",
+      "state": {
+        "answer": "PIPE",
+        "clue": "Device for smoking crack cocaine"
+      },
+      "question": "firearms_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-011-pos",
+      "state": {
+        "answer": "TRIGGER",
+        "clue": "Finger-operated gun part"
+      },
+      "question": "firearms_angle",
+      "probability": 0.97,
+      "label": true,
+      "flagged": true,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-history-916ea65e708f7e446352",
+      "state": {
+        "answer": "ALE",
+        "clue": "Ginger ___ (soothing soda)"
+      },
+      "question": "firearms_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-026-pos",
+      "state": {
+        "answer": "ALE",
+        "clue": "Pub drink served by the pint"
+      },
+      "question": "firearms_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-history-7698a5bae56e5611eb3b",
+      "state": {
+        "answer": "AGE",
+        "clue": "Mature gracefully, like fine wine"
+      },
+      "question": "firearms_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-073-neg",
+      "state": {
+        "answer": "COOK",
+        "clue": "Prepare dinner"
+      },
+      "question": "firearms_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-history-90bd6aaee4544f1210d9",
+      "state": {
+        "answer": "HEIDI",
+        "clue": "Alpine girl in a classic Swiss children's tale"
+      },
+      "question": "firearms_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-history-56fdce829a850a2a764c",
+      "state": {
+        "answer": "CONAN",
+        "clue": "Late-night host O'Brien"
+      },
+      "question": "firearms_angle",
+      "probability": 0.1,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-049-pos",
+      "state": {
+        "answer": "BREW",
+        "clue": "Make beer by fermentation"
+      },
+      "question": "firearms_angle",
+      "probability": 0.01,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-056-neg",
+      "state": {
+        "answer": "STONED",
+        "clue": "Pelted with rocks"
+      },
+      "question": "firearms_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-019-pos",
+      "state": {
+        "answer": "BORE",
+        "clue": "Interior of a gun barrel"
+      },
+      "question": "firearms_angle",
+      "probability": 0.97,
+      "label": true,
+      "flagged": true,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-048-pos",
+      "state": {
+        "answer": "CHASER",
+        "clue": "Drink taken after a shot of liquor"
+      },
+      "question": "firearms_angle",
+      "probability": 0.06,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-history-4152c73f8ffbaa1e6abd",
+      "state": {
+        "answer": "PAYS",
+        "clue": "Settles up, as a bar tab"
+      },
+      "question": "firearms_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-019-neg",
+      "state": {
+        "answer": "BORE",
+        "clue": "Person who puts listeners to sleep"
+      },
+      "question": "firearms_angle",
+      "probability": 0.08,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-history-33bfe47afb8f3de217a2",
+      "state": {
+        "answer": "BEER",
+        "clue": "Root ___ (sweet fizzy drink)"
+      },
+      "question": "firearms_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-047-pos",
+      "state": {
+        "answer": "AGED",
+        "clue": "Matured in oak, as whisky"
+      },
+      "question": "firearms_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-052-neg",
+      "state": {
+        "answer": "GRASS",
+        "clue": "Green growth covering a lawn"
+      },
+      "question": "firearms_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-history-d088381a85c3c00e4416",
+      "state": {
+        "answer": "RAM",
+        "clue": "Male sheep with curly horns"
+      },
+      "question": "firearms_angle",
+      "probability": 0.17,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-052-pos",
+      "state": {
+        "answer": "GRASS",
+        "clue": "Marijuana, in slang"
+      },
+      "question": "firearms_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-history-bb8f41a38d68b421cdac",
+      "state": {
+        "answer": "RICO",
+        "clue": "Puerto ___ (Caribbean spot)"
+      },
+      "question": "firearms_angle",
+      "probability": 0.12,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-021-neg",
+      "state": {
+        "answer": "ARMS",
+        "clue": "Limbs ending in hands"
+      },
+      "question": "firearms_angle",
+      "probability": 0.06,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-026-neg",
+      "state": {
+        "answer": "ALE",
+        "clue": "Ginger ___ (nonalcoholic soda)"
+      },
+      "question": "firearms_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-045-pos",
+      "state": {
+        "answer": "SOBER",
+        "clue": "No longer intoxicated"
+      },
+      "question": "firearms_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-037-neg",
+      "state": {
+        "answer": "TAP",
+        "clue": "Touch lightly"
+      },
+      "question": "firearms_angle",
+      "probability": 0.05,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-014-pos",
+      "state": {
+        "answer": "RIFLE",
+        "clue": "Long firearm held against the shoulder"
+      },
+      "question": "firearms_angle",
+      "probability": 0.97,
+      "label": true,
+      "flagged": true,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-054-pos",
+      "state": {
+        "answer": "JOINT",
+        "clue": "Hand-rolled marijuana cigarette"
+      },
+      "question": "firearms_angle",
+      "probability": 0.09,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-037-pos",
+      "state": {
+        "answer": "TAP",
+        "clue": "Source of draft beer at a pub"
+      },
+      "question": "firearms_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-003-neg",
+      "state": {
+        "answer": "SHOOT",
+        "clue": "Rats!"
+      },
+      "question": "firearms_angle",
+      "probability": 0.48,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-044-pos",
+      "state": {
+        "answer": "DRINK",
+        "clue": "Have a glass of wine"
+      },
+      "question": "firearms_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-039-pos",
+      "state": {
+        "answer": "GIN",
+        "clue": "Spirit in a classic martini"
+      },
+      "question": "firearms_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-038-pos",
+      "state": {
+        "answer": "BOURBON",
+        "clue": "Whiskey associated with Kentucky"
+      },
+      "question": "firearms_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-history-d7cbb97a5274a3dc2ac0",
+      "state": {
+        "answer": "MOLD",
+        "clue": "Fuzzy growth on stale bread"
+      },
+      "question": "firearms_angle",
+      "probability": 0.01,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-017-pos",
+      "state": {
+        "answer": "BULLET",
+        "clue": "Projectile fired from a gun"
+      },
+      "question": "firearms_angle",
+      "probability": 0.97,
+      "label": true,
+      "flagged": true,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-043-neg",
+      "state": {
+        "answer": "MALT",
+        "clue": "Milkshake with powdered grain flavoring"
+      },
+      "question": "firearms_angle",
+      "probability": 0.06,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-history-ee21db60b1c8d9d968ae",
+      "state": {
+        "answer": "BEERS",
+        "clue": "Root, A&W, and Mug, all named for one"
+      },
+      "question": "firearms_angle",
+      "probability": 0.1,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-history-04fc6f6fd0a8dd3277b7",
+      "state": {
+        "answer": "BARS",
+        "clue": "Where a bartender works"
+      },
+      "question": "firearms_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-040-pos",
+      "state": {
+        "answer": "RUM",
+        "clue": "Spirit used in a mojito"
+      },
+      "question": "firearms_angle",
+      "probability": 0.01,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-018-neg",
+      "state": {
+        "answer": "CHAMBER",
+        "clue": "Room in a castle"
+      },
+      "question": "firearms_angle",
+      "probability": 0.18,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.78
+    },
+    {
+      "case_id": "content-v2-024-pos",
+      "state": {
+        "answer": "RECOIL",
+        "clue": "Backward kick of a fired gun"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.05,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-071-pos",
+      "state": {
+        "answer": "USER",
+        "clue": "Person who takes illicit drugs"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.08,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-030-neg",
+      "state": {
+        "answer": "BAR",
+        "clue": "Horizontal gymnastics apparatus"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-history-e4c5c62272d527178bc6",
+      "state": {
+        "answer": "AXIS",
+        "clue": "Line that a globe spins around"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-009-neg",
+      "state": {
+        "answer": "STOCK",
+        "clue": "Broth used as a soup base"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-history-af2c00b43cab42da4672",
+      "state": {
+        "answer": "PEAK",
+        "clue": "High point of one's career"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.05,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-history-c97a601eeedecf3b966c",
+      "state": {
+        "answer": "ALE",
+        "clue": "Ginger ___ (bubbly soft drink)"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.08,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-history-84795ffc54872ebc12fb",
+      "state": {
+        "answer": "DEA",
+        "clue": "Antidrug fed. org."
+      },
+      "question": "alcohol_angle",
+      "probability": 0.27,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-027-pos",
+      "state": {
+        "answer": "BEER",
+        "clue": "Alcoholic drink made with hops"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.97,
+      "label": true,
+      "flagged": true,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-063-neg",
+      "state": {
+        "answer": "ICE",
+        "clue": "Frozen water"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-029-pos",
+      "state": {
+        "answer": "SPIRIT",
+        "clue": "Distilled alcoholic beverage"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.97,
+      "label": true,
+      "flagged": true,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-041-pos",
+      "state": {
+        "answer": "SAUCE",
+        "clue": "Liquor, in the phrase on the ___"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.72,
+      "label": true,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-041-neg",
+      "state": {
+        "answer": "SAUCE",
+        "clue": "Marinara, for example"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-067-neg",
+      "state": {
+        "answer": "SMOKE",
+        "clue": "Cloud rising from a chimney"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.1,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-history-7aad8ce2fe29763a44f9",
+      "state": {
+        "answer": "BARR",
+        "clue": "Roseanne of sitcom fame"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.07,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-063-pos",
+      "state": {
+        "answer": "ICE",
+        "clue": "Crystal meth, slangily"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-049-neg",
+      "state": {
+        "answer": "BREW",
+        "clue": "Prepare a pot of tea"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-history-9f981f8a1e5b169066d7",
+      "state": {
+        "answer": "SLINGSHOT",
+        "clue": "Dennis the Menace's Y-shaped toy"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.05,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-044-neg",
+      "state": {
+        "answer": "DRINK",
+        "clue": "Have a glass of water"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-028-pos",
+      "state": {
+        "answer": "PORT",
+        "clue": "Sweet fortified wine"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.97,
+      "label": true,
+      "flagged": true,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-058-pos",
+      "state": {
+        "answer": "TRIP",
+        "clue": "Hallucinogenic drug experience"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.1,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-027-neg",
+      "state": {
+        "answer": "BEER",
+        "clue": "Root ___ float"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.18,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-040-neg",
+      "state": {
+        "answer": "RUM",
+        "clue": "Odd, in British slang"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.25,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-029-neg",
+      "state": {
+        "answer": "SPIRIT",
+        "clue": "School pride"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-039-neg",
+      "state": {
+        "answer": "GIN",
+        "clue": "Cotton-separating machine"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-boundary-07",
+      "state": {
+        "answer": "CANNABIS",
+        "clue": "Drug smoked to get high"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-048-neg",
+      "state": {
+        "answer": "CHASER",
+        "clue": "One running after someone"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-boundary-09",
+      "state": {
+        "answer": "DRUG",
+        "clue": "Medicine prescribed by a physician"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-009-pos",
+      "state": {
+        "answer": "STOCK",
+        "clue": "Shoulder-rest part of a rifle"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-history-2fb3de9fb566b71e04ff",
+      "state": {
+        "answer": "ARI",
+        "clue": "Onassis the shipping magnate, for short"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.05,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-054-neg",
+      "state": {
+        "answer": "JOINT",
+        "clue": "Where two bones meet"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-017-neg",
+      "state": {
+        "answer": "BULLET",
+        "clue": "Dot before a list item"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-boundary-03",
+      "state": {
+        "answer": "TABLET",
+        "clue": "Pill prescribed by a doctor"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-028-neg",
+      "state": {
+        "answer": "PORT",
+        "clue": "Harbor for ships"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-015-neg",
+      "state": {
+        "answer": "PACK",
+        "clue": "Group of wolves"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-001-neg",
+      "state": {
+        "answer": "DRAW",
+        "clue": "Sketch with a pencil"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-008-neg",
+      "state": {
+        "answer": "BARREL",
+        "clue": "Large wooden container"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.13,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-001-pos",
+      "state": {
+        "answer": "DRAW",
+        "clue": "Pull a pistol from its holster"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-024-neg",
+      "state": {
+        "answer": "RECOIL",
+        "clue": "Shrink back in surprise"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-011-neg",
+      "state": {
+        "answer": "TRIGGER",
+        "clue": "Set off an alarm"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.06,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-003-pos",
+      "state": {
+        "answer": "SHOOT",
+        "clue": "Fire a rifle"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.08,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-033-pos",
+      "state": {
+        "answer": "PROOF",
+        "clue": "Measure of liquor strength"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.97,
+      "label": true,
+      "flagged": true,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-010-pos",
+      "state": {
+        "answer": "SIGHT",
+        "clue": "Device used to aim a rifle"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-history-94fbd71de4a4315645d1",
+      "state": {
+        "answer": "AMMO",
+        "clue": "Stuff fired from a slingshot, informally"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.06,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-021-pos",
+      "state": {
+        "answer": "ARMS",
+        "clue": "Firearms, collectively"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-history-e4055530b1c2c3e1051c",
+      "state": {
+        "answer": "OPTIC",
+        "clue": "Kind of fiber for high-speed internet"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-007-pos",
+      "state": {
+        "answer": "MAGAZINE",
+        "clue": "Ammunition holder in a pistol"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-056-pos",
+      "state": {
+        "answer": "STONED",
+        "clue": "Very intoxicated from marijuana"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.23,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-046-pos",
+      "state": {
+        "answer": "HANGOVER",
+        "clue": "Morning-after effect of too much wine"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.98,
+      "label": true,
+      "flagged": true,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-068-neg",
+      "state": {
+        "answer": "PIPE",
+        "clue": "Tube that carries water"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-015-pos",
+      "state": {
+        "answer": "PACK",
+        "clue": "Carry a concealed gun, slangily"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-074-neg",
+      "state": {
+        "answer": "COKE",
+        "clue": "Soft drink sold in a red can"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-074-pos",
+      "state": {
+        "answer": "COKE",
+        "clue": "Cocaine, informally"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.06,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-033-neg",
+      "state": {
+        "answer": "PROOF",
+        "clue": "Evidence supporting a claim"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-025-pos",
+      "state": {
+        "answer": "PIN",
+        "clue": "Firing ___ (gun mechanism part)"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-history-ae04fea5a357df9f5a12",
+      "state": {
+        "answer": "LAD",
+        "clue": "Strapping young chap"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.1,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-053-pos",
+      "state": {
+        "answer": "WEED",
+        "clue": "Cannabis, colloquially"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.13,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-060-neg",
+      "state": {
+        "answer": "ECSTASY",
+        "clue": "Overwhelming joy"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.12,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-history-64332decd64bbc25adc9",
+      "state": {
+        "answer": "ATM",
+        "clue": "Bank spot to get cash, for short"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-057-neg",
+      "state": {
+        "answer": "DOPE",
+        "clue": "Inside information, informally"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.08,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-043-pos",
+      "state": {
+        "answer": "MALT",
+        "clue": "Grain prepared for making whisky"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.72,
+      "label": true,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-014-neg",
+      "state": {
+        "answer": "RIFLE",
+        "clue": "Rummage through, as a drawer"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-073-pos",
+      "state": {
+        "answer": "COOK",
+        "clue": "Produce methamphetamine, slangily"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-046-neg",
+      "state": {
+        "answer": "HANGOVER",
+        "clue": "Lingering consequence of an earlier era"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.17,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-060-pos",
+      "state": {
+        "answer": "ECSTASY",
+        "clue": "Recreational drug also called MDMA"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.07,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-history-c53a2dec7d8ceebea862",
+      "state": {
+        "answer": "ATM",
+        "clue": "Cash-dispensing spot, for short"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-025-neg",
+      "state": {
+        "answer": "PIN",
+        "clue": "Bowling-alley target"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.05,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-007-neg",
+      "state": {
+        "answer": "MAGAZINE",
+        "clue": "Periodical on a waiting-room table"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-030-pos",
+      "state": {
+        "answer": "BAR",
+        "clue": "Place to order a martini"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.94,
+      "label": true,
+      "flagged": true,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-018-pos",
+      "state": {
+        "answer": "CHAMBER",
+        "clue": "Gun compartment that holds a cartridge"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-038-neg",
+      "state": {
+        "answer": "BOURBON",
+        "clue": "French royal house of Louis XVI"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-047-neg",
+      "state": {
+        "answer": "AGED",
+        "clue": "Grew older"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.05,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-053-neg",
+      "state": {
+        "answer": "WEED",
+        "clue": "Unwanted plant in a flower bed"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-history-aaf0e17b6f05b1d62e01",
+      "state": {
+        "answer": "BEER",
+        "clue": "Root ___ float (ice cream treat)"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.09,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-history-c93fa838546928cba12b",
+      "state": {
+        "answer": "GUNMAN",
+        "clue": "Tough guy in an old Western"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.07,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-history-e88e04af08c7d9d7cfab",
+      "state": {
+        "answer": "IRON",
+        "clue": "Pumping ___ (weight training)"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.06,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-005-neg",
+      "state": {
+        "answer": "SHELL",
+        "clue": "Seashell collector's find"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-history-78012d86b79c7484c076",
+      "state": {
+        "answer": "FLASK",
+        "clue": "Skinny bottle you can slip in a pocket"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.43,
+      "label": null,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-057-pos",
+      "state": {
+        "answer": "DOPE",
+        "clue": "Illegal narcotics, slangily"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.09,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-history-3ebadcd1e4e11dacdce7",
+      "state": {
+        "answer": "ATMS",
+        "clue": "Withdrawal spots, for short"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.68,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-history-55cbe1d0509953c48806",
+      "state": {
+        "answer": "TRY",
+        "clue": "Give it your best shot"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.1,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-067-pos",
+      "state": {
+        "answer": "SMOKE",
+        "clue": "Inhale from a marijuana joint"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.08,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-boundary-04",
+      "state": {
+        "answer": "INSULIN",
+        "clue": "Medication prescribed for diabetes"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-071-neg",
+      "state": {
+        "answer": "USER",
+        "clue": "Person operating a computer"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-058-neg",
+      "state": {
+        "answer": "TRIP",
+        "clue": "Journey to another city"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.05,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-history-dd25e503565f33bfcb6a",
+      "state": {
+        "answer": "PIC",
+        "clue": "Quick snapshot, casually"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.07,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-045-neg",
+      "state": {
+        "answer": "SOBER",
+        "clue": "Serious and solemn"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-005-pos",
+      "state": {
+        "answer": "SHELL",
+        "clue": "Shotgun cartridge"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.08,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-boundary-10",
+      "state": {
+        "answer": "BEER",
+        "clue": "Ginger ___"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.17,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-boundary-01",
+      "state": {
+        "answer": "STAR",
+        "clue": "Shooting ___"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.25,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-history-b8750c8a277f6f4ec8db",
+      "state": {
+        "answer": "DINO",
+        "clue": "Fred Flintstone's dinosaur pet"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-history-6a623aa331b76d900b6b",
+      "state": {
+        "answer": "JUDAH",
+        "clue": "Ancient kingdom with Jerusalem as its capital"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-010-neg",
+      "state": {
+        "answer": "SIGHT",
+        "clue": "Sense used when looking"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-008-pos",
+      "state": {
+        "answer": "BARREL",
+        "clue": "Part of a gun that a bullet travels through"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-068-pos",
+      "state": {
+        "answer": "PIPE",
+        "clue": "Device for smoking crack cocaine"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-011-pos",
+      "state": {
+        "answer": "TRIGGER",
+        "clue": "Finger-operated gun part"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-history-916ea65e708f7e446352",
+      "state": {
+        "answer": "ALE",
+        "clue": "Ginger ___ (soothing soda)"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.08,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-026-pos",
+      "state": {
+        "answer": "ALE",
+        "clue": "Pub drink served by the pint"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.93,
+      "label": true,
+      "flagged": true,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-history-7698a5bae56e5611eb3b",
+      "state": {
+        "answer": "AGE",
+        "clue": "Mature gracefully, like fine wine"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.55,
+      "label": true,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-073-neg",
+      "state": {
+        "answer": "COOK",
+        "clue": "Prepare dinner"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-history-90bd6aaee4544f1210d9",
+      "state": {
+        "answer": "HEIDI",
+        "clue": "Alpine girl in a classic Swiss children's tale"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-history-56fdce829a850a2a764c",
+      "state": {
+        "answer": "CONAN",
+        "clue": "Late-night host O'Brien"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.11,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-049-pos",
+      "state": {
+        "answer": "BREW",
+        "clue": "Make beer by fermentation"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.96,
+      "label": true,
+      "flagged": true,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-056-neg",
+      "state": {
+        "answer": "STONED",
+        "clue": "Pelted with rocks"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.07,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-019-pos",
+      "state": {
+        "answer": "BORE",
+        "clue": "Interior of a gun barrel"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-048-pos",
+      "state": {
+        "answer": "CHASER",
+        "clue": "Drink taken after a shot of liquor"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.93,
+      "label": true,
+      "flagged": true,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-history-4152c73f8ffbaa1e6abd",
+      "state": {
+        "answer": "PAYS",
+        "clue": "Settles up, as a bar tab"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.5,
+      "label": null,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-019-neg",
+      "state": {
+        "answer": "BORE",
+        "clue": "Person who puts listeners to sleep"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.07,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-history-33bfe47afb8f3de217a2",
+      "state": {
+        "answer": "BEER",
+        "clue": "Root ___ (sweet fizzy drink)"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.06,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-047-pos",
+      "state": {
+        "answer": "AGED",
+        "clue": "Matured in oak, as whisky"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.94,
+      "label": true,
+      "flagged": true,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-052-neg",
+      "state": {
+        "answer": "GRASS",
+        "clue": "Green growth covering a lawn"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-history-d088381a85c3c00e4416",
+      "state": {
+        "answer": "RAM",
+        "clue": "Male sheep with curly horns"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.05,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-052-pos",
+      "state": {
+        "answer": "GRASS",
+        "clue": "Marijuana, in slang"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.09,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-history-bb8f41a38d68b421cdac",
+      "state": {
+        "answer": "RICO",
+        "clue": "Puerto ___ (Caribbean spot)"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.06,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-021-neg",
+      "state": {
+        "answer": "ARMS",
+        "clue": "Limbs ending in hands"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-026-neg",
+      "state": {
+        "answer": "ALE",
+        "clue": "Ginger ___ (nonalcoholic soda)"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-045-pos",
+      "state": {
+        "answer": "SOBER",
+        "clue": "No longer intoxicated"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.93,
+      "label": true,
+      "flagged": true,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-037-neg",
+      "state": {
+        "answer": "TAP",
+        "clue": "Touch lightly"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.08,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-014-pos",
+      "state": {
+        "answer": "RIFLE",
+        "clue": "Long firearm held against the shoulder"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-054-pos",
+      "state": {
+        "answer": "JOINT",
+        "clue": "Hand-rolled marijuana cigarette"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.08,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-037-pos",
+      "state": {
+        "answer": "TAP",
+        "clue": "Source of draft beer at a pub"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.94,
+      "label": true,
+      "flagged": true,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-003-neg",
+      "state": {
+        "answer": "SHOOT",
+        "clue": "Rats!"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.06,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-044-pos",
+      "state": {
+        "answer": "DRINK",
+        "clue": "Have a glass of wine"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.96,
+      "label": true,
+      "flagged": true,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-039-pos",
+      "state": {
+        "answer": "GIN",
+        "clue": "Spirit in a classic martini"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.94,
+      "label": true,
+      "flagged": true,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-038-pos",
+      "state": {
+        "answer": "BOURBON",
+        "clue": "Whiskey associated with Kentucky"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.96,
+      "label": true,
+      "flagged": true,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-history-d7cbb97a5274a3dc2ac0",
+      "state": {
+        "answer": "MOLD",
+        "clue": "Fuzzy growth on stale bread"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-017-pos",
+      "state": {
+        "answer": "BULLET",
+        "clue": "Projectile fired from a gun"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-043-neg",
+      "state": {
+        "answer": "MALT",
+        "clue": "Milkshake with powdered grain flavoring"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-history-ee21db60b1c8d9d968ae",
+      "state": {
+        "answer": "BEERS",
+        "clue": "Root, A&W, and Mug, all named for one"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.14,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-history-04fc6f6fd0a8dd3277b7",
+      "state": {
+        "answer": "BARS",
+        "clue": "Where a bartender works"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.62,
+      "label": true,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-040-pos",
+      "state": {
+        "answer": "RUM",
+        "clue": "Spirit used in a mojito"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.97,
+      "label": true,
+      "flagged": true,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-018-neg",
+      "state": {
+        "answer": "CHAMBER",
+        "clue": "Room in a castle"
+      },
+      "question": "alcohol_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "clue-only",
+      "threshold": 0.82
+    },
+    {
+      "case_id": "content-v2-024-pos",
+      "state": {
+        "answer": "RECOIL",
+        "clue": "Backward kick of a fired gun"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-071-pos",
+      "state": {
+        "answer": "USER",
+        "clue": "Person who takes illicit drugs"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.92,
+      "label": true,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-030-neg",
+      "state": {
+        "answer": "BAR",
+        "clue": "Horizontal gymnastics apparatus"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-history-e4c5c62272d527178bc6",
+      "state": {
+        "answer": "AXIS",
+        "clue": "Line that a globe spins around"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.01,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-009-neg",
+      "state": {
+        "answer": "STOCK",
+        "clue": "Broth used as a soup base"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-history-af2c00b43cab42da4672",
+      "state": {
+        "answer": "PEAK",
+        "clue": "High point of one's career"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-history-c97a601eeedecf3b966c",
+      "state": {
+        "answer": "ALE",
+        "clue": "Ginger ___ (bubbly soft drink)"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-history-84795ffc54872ebc12fb",
+      "state": {
+        "answer": "DEA",
+        "clue": "Antidrug fed. org."
+      },
+      "question": "drug_use_angle",
+      "probability": 0.96,
+      "label": true,
+      "flagged": true,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-027-pos",
+      "state": {
+        "answer": "BEER",
+        "clue": "Alcoholic drink made with hops"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.37,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-063-neg",
+      "state": {
+        "answer": "ICE",
+        "clue": "Frozen water"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.11,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-029-pos",
+      "state": {
+        "answer": "SPIRIT",
+        "clue": "Distilled alcoholic beverage"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.65,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-041-pos",
+      "state": {
+        "answer": "SAUCE",
+        "clue": "Liquor, in the phrase on the ___"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.22,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-041-neg",
+      "state": {
+        "answer": "SAUCE",
+        "clue": "Marinara, for example"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.01,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-067-neg",
+      "state": {
+        "answer": "SMOKE",
+        "clue": "Cloud rising from a chimney"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.07,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-history-7aad8ce2fe29763a44f9",
+      "state": {
+        "answer": "BARR",
+        "clue": "Roseanne of sitcom fame"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.14,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-063-pos",
+      "state": {
+        "answer": "ICE",
+        "clue": "Crystal meth, slangily"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.98,
+      "label": true,
+      "flagged": true,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-049-neg",
+      "state": {
+        "answer": "BREW",
+        "clue": "Prepare a pot of tea"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-history-9f981f8a1e5b169066d7",
+      "state": {
+        "answer": "SLINGSHOT",
+        "clue": "Dennis the Menace's Y-shaped toy"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-044-neg",
+      "state": {
+        "answer": "DRINK",
+        "clue": "Have a glass of water"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-028-pos",
+      "state": {
+        "answer": "PORT",
+        "clue": "Sweet fortified wine"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-058-pos",
+      "state": {
+        "answer": "TRIP",
+        "clue": "Hallucinogenic drug experience"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.96,
+      "label": true,
+      "flagged": true,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-027-neg",
+      "state": {
+        "answer": "BEER",
+        "clue": "Root ___ float"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.05,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-040-neg",
+      "state": {
+        "answer": "RUM",
+        "clue": "Odd, in British slang"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.4,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-029-neg",
+      "state": {
+        "answer": "SPIRIT",
+        "clue": "School pride"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-039-neg",
+      "state": {
+        "answer": "GIN",
+        "clue": "Cotton-separating machine"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.06,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-boundary-07",
+      "state": {
+        "answer": "CANNABIS",
+        "clue": "Drug smoked to get high"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.98,
+      "label": true,
+      "flagged": true,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-048-neg",
+      "state": {
+        "answer": "CHASER",
+        "clue": "One running after someone"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.07,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-boundary-09",
+      "state": {
+        "answer": "DRUG",
+        "clue": "Medicine prescribed by a physician"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.07,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-009-pos",
+      "state": {
+        "answer": "STOCK",
+        "clue": "Shoulder-rest part of a rifle"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-history-2fb3de9fb566b71e04ff",
+      "state": {
+        "answer": "ARI",
+        "clue": "Onassis the shipping magnate, for short"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-054-neg",
+      "state": {
+        "answer": "JOINT",
+        "clue": "Where two bones meet"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-017-neg",
+      "state": {
+        "answer": "BULLET",
+        "clue": "Dot before a list item"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.05,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-boundary-03",
+      "state": {
+        "answer": "TABLET",
+        "clue": "Pill prescribed by a doctor"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-028-neg",
+      "state": {
+        "answer": "PORT",
+        "clue": "Harbor for ships"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.01,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-015-neg",
+      "state": {
+        "answer": "PACK",
+        "clue": "Group of wolves"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-001-neg",
+      "state": {
+        "answer": "DRAW",
+        "clue": "Sketch with a pencil"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-008-neg",
+      "state": {
+        "answer": "BARREL",
+        "clue": "Large wooden container"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-001-pos",
+      "state": {
+        "answer": "DRAW",
+        "clue": "Pull a pistol from its holster"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-024-neg",
+      "state": {
+        "answer": "RECOIL",
+        "clue": "Shrink back in surprise"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-011-neg",
+      "state": {
+        "answer": "TRIGGER",
+        "clue": "Set off an alarm"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-003-pos",
+      "state": {
+        "answer": "SHOOT",
+        "clue": "Fire a rifle"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-033-pos",
+      "state": {
+        "answer": "PROOF",
+        "clue": "Measure of liquor strength"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.39,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-010-pos",
+      "state": {
+        "answer": "SIGHT",
+        "clue": "Device used to aim a rifle"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.01,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-history-94fbd71de4a4315645d1",
+      "state": {
+        "answer": "AMMO",
+        "clue": "Stuff fired from a slingshot, informally"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-021-pos",
+      "state": {
+        "answer": "ARMS",
+        "clue": "Firearms, collectively"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-history-e4055530b1c2c3e1051c",
+      "state": {
+        "answer": "OPTIC",
+        "clue": "Kind of fiber for high-speed internet"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.01,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-007-pos",
+      "state": {
+        "answer": "MAGAZINE",
+        "clue": "Ammunition holder in a pistol"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-056-pos",
+      "state": {
+        "answer": "STONED",
+        "clue": "Very intoxicated from marijuana"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.98,
+      "label": true,
+      "flagged": true,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-046-pos",
+      "state": {
+        "answer": "HANGOVER",
+        "clue": "Morning-after effect of too much wine"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.5,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-068-neg",
+      "state": {
+        "answer": "PIPE",
+        "clue": "Tube that carries water"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.07,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-015-pos",
+      "state": {
+        "answer": "PACK",
+        "clue": "Carry a concealed gun, slangily"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-074-neg",
+      "state": {
+        "answer": "COKE",
+        "clue": "Soft drink sold in a red can"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-074-pos",
+      "state": {
+        "answer": "COKE",
+        "clue": "Cocaine, informally"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.97,
+      "label": true,
+      "flagged": true,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-033-neg",
+      "state": {
+        "answer": "PROOF",
+        "clue": "Evidence supporting a claim"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-025-pos",
+      "state": {
+        "answer": "PIN",
+        "clue": "Firing ___ (gun mechanism part)"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-history-ae04fea5a357df9f5a12",
+      "state": {
+        "answer": "LAD",
+        "clue": "Strapping young chap"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.08,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-053-pos",
+      "state": {
+        "answer": "WEED",
+        "clue": "Cannabis, colloquially"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.97,
+      "label": true,
+      "flagged": true,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-060-neg",
+      "state": {
+        "answer": "ECSTASY",
+        "clue": "Overwhelming joy"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.47,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-history-64332decd64bbc25adc9",
+      "state": {
+        "answer": "ATM",
+        "clue": "Bank spot to get cash, for short"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.01,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-057-neg",
+      "state": {
+        "answer": "DOPE",
+        "clue": "Inside information, informally"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.26,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-043-pos",
+      "state": {
+        "answer": "MALT",
+        "clue": "Grain prepared for making whisky"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-014-neg",
+      "state": {
+        "answer": "RIFLE",
+        "clue": "Rummage through, as a drawer"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-073-pos",
+      "state": {
+        "answer": "COOK",
+        "clue": "Produce methamphetamine, slangily"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.98,
+      "label": true,
+      "flagged": true,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-046-neg",
+      "state": {
+        "answer": "HANGOVER",
+        "clue": "Lingering consequence of an earlier era"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.5,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-060-pos",
+      "state": {
+        "answer": "ECSTASY",
+        "clue": "Recreational drug also called MDMA"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.98,
+      "label": true,
+      "flagged": true,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-history-c53a2dec7d8ceebea862",
+      "state": {
+        "answer": "ATM",
+        "clue": "Cash-dispensing spot, for short"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.01,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-025-neg",
+      "state": {
+        "answer": "PIN",
+        "clue": "Bowling-alley target"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-007-neg",
+      "state": {
+        "answer": "MAGAZINE",
+        "clue": "Periodical on a waiting-room table"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-030-pos",
+      "state": {
+        "answer": "BAR",
+        "clue": "Place to order a martini"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-018-pos",
+      "state": {
+        "answer": "CHAMBER",
+        "clue": "Gun compartment that holds a cartridge"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-038-neg",
+      "state": {
+        "answer": "BOURBON",
+        "clue": "French royal house of Louis XVI"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-047-neg",
+      "state": {
+        "answer": "AGED",
+        "clue": "Grew older"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-053-neg",
+      "state": {
+        "answer": "WEED",
+        "clue": "Unwanted plant in a flower bed"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-history-aaf0e17b6f05b1d62e01",
+      "state": {
+        "answer": "BEER",
+        "clue": "Root ___ float (ice cream treat)"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-history-c93fa838546928cba12b",
+      "state": {
+        "answer": "GUNMAN",
+        "clue": "Tough guy in an old Western"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-history-e88e04af08c7d9d7cfab",
+      "state": {
+        "answer": "IRON",
+        "clue": "Pumping ___ (weight training)"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-005-neg",
+      "state": {
+        "answer": "SHELL",
+        "clue": "Seashell collector's find"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-history-78012d86b79c7484c076",
+      "state": {
+        "answer": "FLASK",
+        "clue": "Skinny bottle you can slip in a pocket"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.11,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-057-pos",
+      "state": {
+        "answer": "DOPE",
+        "clue": "Illegal narcotics, slangily"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.97,
+      "label": true,
+      "flagged": true,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-history-3ebadcd1e4e11dacdce7",
+      "state": {
+        "answer": "ATMS",
+        "clue": "Withdrawal spots, for short"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-history-55cbe1d0509953c48806",
+      "state": {
+        "answer": "TRY",
+        "clue": "Give it your best shot"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.05,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-067-pos",
+      "state": {
+        "answer": "SMOKE",
+        "clue": "Inhale from a marijuana joint"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.98,
+      "label": true,
+      "flagged": true,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-boundary-04",
+      "state": {
+        "answer": "INSULIN",
+        "clue": "Medication prescribed for diabetes"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-071-neg",
+      "state": {
+        "answer": "USER",
+        "clue": "Person operating a computer"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-058-neg",
+      "state": {
+        "answer": "TRIP",
+        "clue": "Journey to another city"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-history-dd25e503565f33bfcb6a",
+      "state": {
+        "answer": "PIC",
+        "clue": "Quick snapshot, casually"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-045-neg",
+      "state": {
+        "answer": "SOBER",
+        "clue": "Serious and solemn"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.46,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-005-pos",
+      "state": {
+        "answer": "SHELL",
+        "clue": "Shotgun cartridge"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-boundary-10",
+      "state": {
+        "answer": "BEER",
+        "clue": "Ginger ___"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.07,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-boundary-01",
+      "state": {
+        "answer": "STAR",
+        "clue": "Shooting ___"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.17,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-history-b8750c8a277f6f4ec8db",
+      "state": {
+        "answer": "DINO",
+        "clue": "Fred Flintstone's dinosaur pet"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-history-6a623aa331b76d900b6b",
+      "state": {
+        "answer": "JUDAH",
+        "clue": "Ancient kingdom with Jerusalem as its capital"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.01,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-010-neg",
+      "state": {
+        "answer": "SIGHT",
+        "clue": "Sense used when looking"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-008-pos",
+      "state": {
+        "answer": "BARREL",
+        "clue": "Part of a gun that a bullet travels through"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-068-pos",
+      "state": {
+        "answer": "PIPE",
+        "clue": "Device for smoking crack cocaine"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.98,
+      "label": true,
+      "flagged": true,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-011-pos",
+      "state": {
+        "answer": "TRIGGER",
+        "clue": "Finger-operated gun part"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-history-916ea65e708f7e446352",
+      "state": {
+        "answer": "ALE",
+        "clue": "Ginger ___ (soothing soda)"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-026-pos",
+      "state": {
+        "answer": "ALE",
+        "clue": "Pub drink served by the pint"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.08,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-history-7698a5bae56e5611eb3b",
+      "state": {
+        "answer": "AGE",
+        "clue": "Mature gracefully, like fine wine"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.05,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-073-neg",
+      "state": {
+        "answer": "COOK",
+        "clue": "Prepare dinner"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-history-90bd6aaee4544f1210d9",
+      "state": {
+        "answer": "HEIDI",
+        "clue": "Alpine girl in a classic Swiss children's tale"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.01,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-history-56fdce829a850a2a764c",
+      "state": {
+        "answer": "CONAN",
+        "clue": "Late-night host O'Brien"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.05,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-049-pos",
+      "state": {
+        "answer": "BREW",
+        "clue": "Make beer by fermentation"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.07,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-056-neg",
+      "state": {
+        "answer": "STONED",
+        "clue": "Pelted with rocks"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.41,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-019-pos",
+      "state": {
+        "answer": "BORE",
+        "clue": "Interior of a gun barrel"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-048-pos",
+      "state": {
+        "answer": "CHASER",
+        "clue": "Drink taken after a shot of liquor"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.26,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-history-4152c73f8ffbaa1e6abd",
+      "state": {
+        "answer": "PAYS",
+        "clue": "Settles up, as a bar tab"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-019-neg",
+      "state": {
+        "answer": "BORE",
+        "clue": "Person who puts listeners to sleep"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-history-33bfe47afb8f3de217a2",
+      "state": {
+        "answer": "BEER",
+        "clue": "Root ___ (sweet fizzy drink)"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-047-pos",
+      "state": {
+        "answer": "AGED",
+        "clue": "Matured in oak, as whisky"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-052-neg",
+      "state": {
+        "answer": "GRASS",
+        "clue": "Green growth covering a lawn"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.13,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-history-d088381a85c3c00e4416",
+      "state": {
+        "answer": "RAM",
+        "clue": "Male sheep with curly horns"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.1,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-052-pos",
+      "state": {
+        "answer": "GRASS",
+        "clue": "Marijuana, in slang"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.98,
+      "label": true,
+      "flagged": true,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-history-bb8f41a38d68b421cdac",
+      "state": {
+        "answer": "RICO",
+        "clue": "Puerto ___ (Caribbean spot)"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.14,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-021-neg",
+      "state": {
+        "answer": "ARMS",
+        "clue": "Limbs ending in hands"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-026-neg",
+      "state": {
+        "answer": "ALE",
+        "clue": "Ginger ___ (nonalcoholic soda)"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-045-pos",
+      "state": {
+        "answer": "SOBER",
+        "clue": "No longer intoxicated"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.8,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-037-neg",
+      "state": {
+        "answer": "TAP",
+        "clue": "Touch lightly"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.04,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-014-pos",
+      "state": {
+        "answer": "RIFLE",
+        "clue": "Long firearm held against the shoulder"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.01,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-054-pos",
+      "state": {
+        "answer": "JOINT",
+        "clue": "Hand-rolled marijuana cigarette"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.97,
+      "label": true,
+      "flagged": true,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-037-pos",
+      "state": {
+        "answer": "TAP",
+        "clue": "Source of draft beer at a pub"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.03,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-003-neg",
+      "state": {
+        "answer": "SHOOT",
+        "clue": "Rats!"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.14,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-044-pos",
+      "state": {
+        "answer": "DRINK",
+        "clue": "Have a glass of wine"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.31,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-039-pos",
+      "state": {
+        "answer": "GIN",
+        "clue": "Spirit in a classic martini"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.12,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-038-pos",
+      "state": {
+        "answer": "BOURBON",
+        "clue": "Whiskey associated with Kentucky"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.06,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-history-d7cbb97a5274a3dc2ac0",
+      "state": {
+        "answer": "MOLD",
+        "clue": "Fuzzy growth on stale bread"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-017-pos",
+      "state": {
+        "answer": "BULLET",
+        "clue": "Projectile fired from a gun"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.02,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-043-neg",
+      "state": {
+        "answer": "MALT",
+        "clue": "Milkshake with powdered grain flavoring"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.06,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-history-ee21db60b1c8d9d968ae",
+      "state": {
+        "answer": "BEERS",
+        "clue": "Root, A&W, and Mug, all named for one"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.15,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-history-04fc6f6fd0a8dd3277b7",
+      "state": {
+        "answer": "BARS",
+        "clue": "Where a bartender works"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.05,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-040-pos",
+      "state": {
+        "answer": "RUM",
+        "clue": "Spirit used in a mojito"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.4,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    },
+    {
+      "case_id": "content-v2-018-neg",
+      "state": {
+        "answer": "CHAMBER",
+        "clue": "Room in a castle"
+      },
+      "question": "drug_use_angle",
+      "probability": 0.01,
+      "label": false,
+      "flagged": false,
+      "variant": "context",
+      "threshold": 0.95
+    }
+  ]
+}

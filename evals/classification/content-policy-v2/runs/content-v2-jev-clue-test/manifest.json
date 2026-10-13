@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "corpus_sha256": "30c77992e0a530f589e53e565d9cbf4a28bb322861ab464723f4dea7ced1341c",
+  "suite": {
+    "id": "content-policy-v2-clue-only",
+    "state_fields": [
+      "clue"
+    ],
+    "questions": {
+      "firearms_angle": {
+        "required_fields": [
+          "clue"
+        ],
+        "question": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to firearms, their ammunition or parts, gun use, or a recognizable gun idiom? Count figurative gun references. Unrelated photography, sports, astronomy, tools, and body-part senses do not count. This question concerns firearms, not every kind of weapon or violence."
+        }
+      },
+      "alcohol_angle": {
+        "required_fields": [
+          "clue"
+        ],
+        "question": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to alcoholic beverages, drinking alcohol, intoxication, hangovers, or recovery from drinking? Count figurative references. Nonalcoholic beverages, food, and unrelated alternate meanings do not count."
+        }
+      },
+      "drug_use_angle": {
+        "required_fields": [
+          "clue"
+        ],
+        "question": {
+          "type": "noul",
+          "instructions": "Judge the meaning of the crossword clue, not associations with the answer word in isolation. If an answer is supplied, use it to resolve blanks or ambiguity. A harmless alternate sense of an answer is not a violation. Does this clue refer to recreational or illicit drugs, their use, production, sale, effects, or recovery? Count figurative references. Ordinary medical treatment, pharmacy shopping, food, gardening, and unrelated alternate meanings do not count."
+        }
+      }
+    }
+  },
+  "model": {
+    "provider": "typesafe",
+    "model": "jev-1.13.0",
+    "api_key_env": "TYPESAFE_API_KEY",
+    "timeout": 60,
+    "prices_usd_per_million": {
+      "input_tokens": 0.042,
+      "output_tokens": 0
+    },
+    "pricing_note": "TypeSafe published input/output rates verified 2026-09-18; estimates only."
+  },
+  "repeats": 1,
+  "implementation": {
+    "__init__.py": "20e48998693c33cc745d819b2a7ed8e289f5b65a5ab3ff0fef40824cd154b8cd",
+    "__main__.py": "f97e61725c85e6961fdd9be4fcb0577814e4b45c6419eeab43af6a9e27642c19",
+    "calibration.py": "4d20056ad27b1594923bb899f5ab2302e421649b26fa4e8197c10beea982f169",
+    "core.py": "b5f57ea36697820508e2ed8a739a820e48bd80577e41e44544aa88fd8d45f2d9",
+    "import_logs.py": "b94457f67a1f870bbe0aa0ec9e914dc3c3fdf48f2466a531467e29ac20043fc7",
+    "providers.py": "f2981f90c99034c084e3f0203405c48a38ac407bb40fb23bb921f87975b278dc",
+    "report.py": "2fc86b416e9c9139729919a615219b3d468d119b03e70fc6167cf91f61fe2afb"
+  },
+  "run_hash": "d5872611789e24d8d94ea02ed489df477e68ae160bb77f91fc2334d9e1712212",
+  "created_at": "2026-09-22T17:12:17.947780+00:00"
+}

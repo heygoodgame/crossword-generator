@@ -1,0 +1,38 @@
+{
+  "type": "noul",
+  "instructions": {
+    "task": "Crossword clue leak detection",
+    "question": "Does any word in `clue` contain the letters of `answer` in sequence, as a prefix, suffix, or part of a compound word?",
+    "inspect": "clue",
+    "focus": "Compare literal letters, not meaning. A clue that merely DEFINES the answer is not a leak; only a clue that spells the answer out inside one of its own words is a leak.",
+    "note": "The answer's own spelling is irrelevant. Words contained INSIDE the answer do not matter; only the answer appearing inside a clue word counts."
+  },
+  "criteria": {
+    "true": {
+      "what": "A word in the clue contains the answer's letters in sequence, so the solver can read the answer directly off the clue.",
+      "examples": [
+        "answer SCREW, clue 'Fastener you turn with a screwdriver' - screwdriver starts with SCREW",
+        "answer WED, clue 'Have a wedding' - wedding starts with WED",
+        "answer MELON, clue 'Watermelon or cantaloupe' - watermelon ends with MELON",
+        "answer TRI, clue 'Number of sides on a triangle' - triangle starts with TRI",
+        "answer SITS, clue 'Babysits' - babysits ends with SITS",
+        "answer DINO, clue 'Fred Flintstone's dinosaur pet' - dinosaur starts with DINO",
+        "answer BED, clue 'Piece of bedroom furniture' - bedroom starts with BED",
+        "answer ALPHA, clue 'First letter in the Greek alphabet' - alphabet starts with ALPHA"
+      ]
+    },
+    "false": {
+      "what": "No clue word contains the answer's letters in sequence. The clue defines, describes, or names the answer without spelling it out.",
+      "examples": [
+        "answer SOAR, clue 'Rise high, as an eagle' - no clue word contains SOAR",
+        "answer WENT, clue 'Past tense of go' - naming a word's other form is not a leak; no clue word contains WENT",
+        "answer THRU, clue 'Casual way to spell through' - 'through' does not contain the letters T-H-R-U in sequence",
+        "answer BEGUN, clue 'Started, as a project' - no clue word contains BEGUN",
+        "answer CIA, clue 'U.S. spy agency, briefly' - 'agency' does not contain C-I-A in sequence",
+        "answer EVER, clue 'At any time whatsoever' - coincidental letters inside a common word, not a solving shortcut",
+        "answer SON, clue 'Bart, to Homer Simpson' - 'Simpson' coincidentally contains SON but is a proper name, not a giveaway",
+        "answer ABLE, clue 'Capable of getting it done' - 'capable' coincidentally contains ABLE"
+      ]
+    }
+  }
+}

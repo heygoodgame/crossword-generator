@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "corpus_sha256": "fee4a547771413b64a0111fef544fb1f7c824c96e4b3a1cbbb93bd38282f11e9",
+  "suite": {
+    "id": "content-clue-only-v1",
+    "description": "State ablation: identical current-state and content instructions, only clue supplied.",
+    "state_fields": [
+      "clue"
+    ],
+    "questions": {
+      "current_state": {
+        "required_fields": [
+          "clue"
+        ],
+        "question": {
+          "type": "noul",
+          "instructions": "Would `clue` potentially stop being correct because a person or organization changes a present job, affiliation, roster, ownership, broadcast arrangement, or held title? Count implied present relationships even when the clue does not say current. Completed historical facts, credited works, and explicitly past roles do not count."
+        }
+      },
+      "firearms_angle": {
+        "required_fields": [
+          "clue"
+        ],
+        "question": {
+          "type": "noul",
+          "instructions": "Does `clue` invoke firearms, ammunition, gun culture, or shooting a weapon, including figurative expressions? Judge the clue's meaning. Camera shots, basketball shots, and shooting stars do not count just because they use the word shot or shooting."
+        }
+      },
+      "alcohol_angle": {
+        "required_fields": [
+          "clue"
+        ],
+        "question": {
+          "type": "noul",
+          "instructions": "Does `clue` invoke alcoholic drinks, drinking alcohol, drunkenness, hangovers, or recovery from drinking? Include figurative references. Nonalcoholic drinks and unrelated uses of words like spirit do not count."
+        }
+      },
+      "drug_use_angle": {
+        "required_fields": [
+          "clue"
+        ],
+        "question": {
+          "type": "noul",
+          "instructions": "Does `clue` invoke recreational drug use or intoxication from drugs? Ordinary pharmacy shopping, prescribed medical treatment, and unrelated uses of high do not count."
+        }
+      }
+    }
+  },
+  "model": {
+    "provider": "typesafe",
+    "model": "jev-1.13.0",
+    "api_key_env": "TYPESAFE_API_KEY",
+    "timeout": 60,
+    "prices_usd_per_million": {
+      "input_tokens": 0.042,
+      "output_tokens": 0
+    },
+    "pricing_note": "TypeSafe published input/output rates verified 2026-09-18; estimates only."
+  },
+  "repeats": 1,
+  "implementation": {
+    "__init__.py": "20e48998693c33cc745d819b2a7ed8e289f5b65a5ab3ff0fef40824cd154b8cd",
+    "__main__.py": "ae6e53f6172d771bf9229684c340634f1243d7cab0820107cddbc23f1a7845cf",
+    "core.py": "ab99db66157d4c71fc30b895858d0d80e75848b87137818583d810caef379b20",
+    "import_logs.py": "b94457f67a1f870bbe0aa0ec9e914dc3c3fdf48f2466a531467e29ac20043fc7",
+    "providers.py": "f2981f90c99034c084e3f0203405c48a38ac407bb40fb23bb921f87975b278dc",
+    "report.py": "7a0f30563b1c34cd6cd877c99b8f11a29d90231ab9a71090b7c56825ecca542d"
+  },
+  "run_hash": "9f8f0ca19f487a3491373151d61943e68c723481acd22df231a2a3cfb7122dc0",
+  "created_at": "2026-09-18T19:45:45.262868+00:00",
+  "derived_from": {
+    "run_hash": "d6f647d92a9c0247b52a67406127abebba8046b24e96c5295d87696b1db3527a",
+    "directory": "output/classification-evals/jev-historical-clue-only-v1"
+  },
+  "inference_reused": true
+}

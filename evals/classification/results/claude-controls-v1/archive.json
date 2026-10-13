@@ -1,0 +1,5 @@
+{
+  "source": "output/classification-evals/claude-controls-v1",
+  "original_records_sha256": "d3cd3da5b04a69fb111b3bdb72b3770f4ce7a9ca38f0c4e8450303f4ec6e8b15",
+  "note": "All attempts retained; repeated request objects omitted. Reconstruct each with core.prepare(corpus row, manifest suite)."
+}

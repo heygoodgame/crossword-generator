@@ -1,0 +1,49 @@
+{
+  "id": "legacy-leak-full",
+  "description": "Preserved tuned question from the previous scratch experiment; compare states without editing prompts. Legacy mechanical labels have unpreserved builder provenance.",
+  "state_fields": [
+    "answer",
+    "clue",
+    "crossing_answers",
+    "puzzle_difficulty",
+    "puzzle_type"
+  ],
+  "questions": {
+    "leaks_answer": {
+      "required_fields": [
+        "answer",
+        "clue"
+      ],
+      "question": {
+        "type": "noul",
+        "instructions": {
+          "question": "Does any word in the clue contain the letters of the answer in sequence, as a prefix, suffix, or part of a compound word?",
+          "inspect": "clue",
+          "focus": "Compare literal letters, not meaning. A clue that merely DEFINES the answer is not a leak; only a clue that spells the answer out inside one of its own words is a leak."
+        },
+        "criteria": {
+          "true": {
+            "what": "A clue word contains the answer's letters in sequence, so the solver can read the answer off the clue.",
+            "examples": [
+              "answer SCREW, clue \"Fastener you turn with a screwdriver\" (screwdriver starts with SCREW)",
+              "answer WED, clue \"Have a wedding\" (wedding starts with WED)",
+              "answer MELON, clue \"Watermelon or cantaloupe\" (watermelon ends with MELON)",
+              "answer ALPHA, clue \"First letter in the Greek alphabet\" (alphabet starts with ALPHA)",
+              "answer BED, clue \"Piece of bedroom furniture\" (bedroom starts with BED)",
+              "answer DINO, clue \"Fred Flintstone's dinosaur pet\" (dinosaur starts with DINO)"
+            ]
+          },
+          "false": {
+            "what": "No clue word contains the answer's letters in sequence.",
+            "examples": [
+              "answer SOAR, clue \"Rise high, as an eagle\" (no clue word contains SOAR)",
+              "answer WENT, clue \"Past tense of go\" (naming another form of the word is not a leak)",
+              "answer THRU, clue \"Casual way to spell through\" (through does not contain T-H-R-U in sequence)",
+              "answer CIA, clue \"U.S. spy agency, briefly\" (agency does not contain C-I-A in sequence)"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

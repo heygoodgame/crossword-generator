@@ -1,0 +1,45 @@
+{
+  "id": "content-clue-only-v1",
+  "description": "State ablation: identical current-state and content instructions, only clue supplied.",
+  "state_fields": [
+    "clue"
+  ],
+  "questions": {
+    "current_state": {
+      "required_fields": [
+        "clue"
+      ],
+      "question": {
+        "type": "noul",
+        "instructions": "Would `clue` potentially stop being correct because a person or organization changes a present job, affiliation, roster, ownership, broadcast arrangement, or held title? Count implied present relationships even when the clue does not say current. Completed historical facts, credited works, and explicitly past roles do not count."
+      }
+    },
+    "firearms_angle": {
+      "required_fields": [
+        "clue"
+      ],
+      "question": {
+        "type": "noul",
+        "instructions": "Does `clue` invoke firearms, ammunition, gun culture, or shooting a weapon, including figurative expressions? Judge the clue's meaning. Camera shots, basketball shots, and shooting stars do not count just because they use the word shot or shooting."
+      }
+    },
+    "alcohol_angle": {
+      "required_fields": [
+        "clue"
+      ],
+      "question": {
+        "type": "noul",
+        "instructions": "Does `clue` invoke alcoholic drinks, drinking alcohol, drunkenness, hangovers, or recovery from drinking? Include figurative references. Nonalcoholic drinks and unrelated uses of words like spirit do not count."
+      }
+    },
+    "drug_use_angle": {
+      "required_fields": [
+        "clue"
+      ],
+      "question": {
+        "type": "noul",
+        "instructions": "Does `clue` invoke recreational drug use or intoxication from drugs? Ordinary pharmacy shopping, prescribed medical treatment, and unrelated uses of high do not count."
+      }
+    }
+  }
+}

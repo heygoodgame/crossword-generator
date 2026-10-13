@@ -1,0 +1,11 @@
+{
+  "provider": "typesafe",
+  "model": "jev-1.13.0",
+  "api_key_env": "TYPESAFE_API_KEY",
+  "timeout": 60,
+  "prices_usd_per_million": {
+    "input_tokens": 0.042,
+    "output_tokens": 0
+  },
+  "pricing_note": "TypeSafe published input/output rates verified 2026-09-18; estimates only."
+}

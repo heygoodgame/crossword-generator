@@ -1,0 +1,1550 @@
+[
+  {
+    "id": "content-v2-002-pos",
+    "state": {
+      "answer": "SHOT",
+      "clue": "Bullet fired at a target"
+    },
+    "labels": {
+      "firearms_angle": true,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "firearms_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "SHOT",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-002-neg",
+    "state": {
+      "answer": "SHOT",
+      "clue": "Photo taken with a camera"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "firearms_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "SHOT",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-004-pos",
+    "state": {
+      "answer": "ROUND",
+      "clue": "Single unit of firearm ammunition"
+    },
+    "labels": {
+      "firearms_angle": true,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "firearms_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "ROUND",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-004-neg",
+    "state": {
+      "answer": "ROUND",
+      "clue": "Shaped like a circle"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "firearms_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "ROUND",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-006-pos",
+    "state": {
+      "answer": "CLIP",
+      "clue": "Holder of rifle cartridges"
+    },
+    "labels": {
+      "firearms_angle": true,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "firearms_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "CLIP",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-006-neg",
+    "state": {
+      "answer": "CLIP",
+      "clue": "Fastener for a stack of papers"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "firearms_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "CLIP",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-012-pos",
+    "state": {
+      "answer": "HAMMER",
+      "clue": "Gun part that strikes a firing pin"
+    },
+    "labels": {
+      "firearms_angle": true,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "firearms_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "HAMMER",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-012-neg",
+    "state": {
+      "answer": "HAMMER",
+      "clue": "Tool for pounding nails"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "firearms_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "HAMMER",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-013-pos",
+    "state": {
+      "answer": "SAFETY",
+      "clue": "Device that prevents a gun from firing"
+    },
+    "labels": {
+      "firearms_angle": true,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "firearms_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "SAFETY",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-013-neg",
+    "state": {
+      "answer": "SAFETY",
+      "clue": "Freedom from danger"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "firearms_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "SAFETY",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-016-pos",
+    "state": {
+      "answer": "FIRE",
+      "clue": "Discharge a weapon"
+    },
+    "labels": {
+      "firearms_angle": true,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "firearms_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "FIRE",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-016-neg",
+    "state": {
+      "answer": "FIRE",
+      "clue": "Blaze in a fireplace"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "firearms_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "FIRE",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-020-pos",
+    "state": {
+      "answer": "GAUGE",
+      "clue": "Measure of a shotgun's bore"
+    },
+    "labels": {
+      "firearms_angle": true,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "firearms_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "GAUGE",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-020-neg",
+    "state": {
+      "answer": "GAUGE",
+      "clue": "Dashboard measuring instrument"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "firearms_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "GAUGE",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-022-pos",
+    "state": {
+      "answer": "AIM",
+      "clue": "Point a rifle at a target"
+    },
+    "labels": {
+      "firearms_angle": true,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "firearms_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "AIM",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-022-neg",
+    "state": {
+      "answer": "AIM",
+      "clue": "Goal or purpose"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "firearms_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "AIM",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-023-pos",
+    "state": {
+      "answer": "LOADED",
+      "clue": "Containing live ammunition, as a gun"
+    },
+    "labels": {
+      "firearms_angle": true,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "firearms_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "LOADED",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-023-neg",
+    "state": {
+      "answer": "LOADED",
+      "clue": "Full of cargo, as a truck"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "firearms_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "LOADED",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-031-pos",
+    "state": {
+      "answer": "SHOT",
+      "clue": "Small serving of tequila"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": true,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "alcohol_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "SHOT",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-031-neg",
+    "state": {
+      "answer": "SHOT",
+      "clue": "Attempt at solving a problem"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "alcohol_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "SHOT",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-032-pos",
+    "state": {
+      "answer": "DRY",
+      "clue": "Not sweet, as a martini"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": true,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "alcohol_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "DRY",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-032-neg",
+    "state": {
+      "answer": "DRY",
+      "clue": "Free of moisture"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "alcohol_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "DRY",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-034-pos",
+    "state": {
+      "answer": "CORK",
+      "clue": "Stopper pulled from a wine bottle"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": true,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "alcohol_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "CORK",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-034-neg",
+    "state": {
+      "answer": "CORK",
+      "clue": "Material used for a bulletin board"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "alcohol_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "CORK",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-035-pos",
+    "state": {
+      "answer": "TOAST",
+      "clue": "Raise a champagne glass in someone's honor"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": true,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "alcohol_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "TOAST",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-035-neg",
+    "state": {
+      "answer": "TOAST",
+      "clue": "Bread browned for breakfast"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "alcohol_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "TOAST",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-036-pos",
+    "state": {
+      "answer": "ROUND",
+      "clue": "Drinks bought for everyone at the pub"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": true,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "alcohol_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "ROUND",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-036-neg",
+    "state": {
+      "answer": "ROUND",
+      "clue": "Stage in a spelling bee"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "alcohol_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "ROUND",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-042-pos",
+    "state": {
+      "answer": "BOTTLE",
+      "clue": "Off the ___ (no longer drinking alcohol)"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": true,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "alcohol_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "BOTTLE",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-042-neg",
+    "state": {
+      "answer": "BOTTLE",
+      "clue": "Baby's milk container"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "alcohol_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "BOTTLE",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-050-pos",
+    "state": {
+      "answer": "WINE",
+      "clue": "Alcoholic beverage from fermented grapes"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": true,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "alcohol_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "WINE",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-050-neg",
+    "state": {
+      "answer": "WINE",
+      "clue": "Homophone of whine"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "alcohol_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "WINE",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-051-pos",
+    "state": {
+      "answer": "POT",
+      "clue": "Marijuana, slangily"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": true
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "drug_use_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "POT",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-051-neg",
+    "state": {
+      "answer": "POT",
+      "clue": "Container for growing a houseplant"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "drug_use_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "POT",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-055-pos",
+    "state": {
+      "answer": "HIGH",
+      "clue": "Intoxicated from cannabis"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": true
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "drug_use_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "HIGH",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-055-neg",
+    "state": {
+      "answer": "HIGH",
+      "clue": "Far above the ground"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "drug_use_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "HIGH",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-059-pos",
+    "state": {
+      "answer": "ACID",
+      "clue": "LSD, slangily"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": true
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "drug_use_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "ACID",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-059-neg",
+    "state": {
+      "answer": "ACID",
+      "clue": "Substance with a pH below seven"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "drug_use_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "ACID",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-061-pos",
+    "state": {
+      "answer": "CRACK",
+      "clue": "Smokable form of cocaine"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": true
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "drug_use_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "CRACK",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-061-neg",
+    "state": {
+      "answer": "CRACK",
+      "clue": "Narrow split in a sidewalk"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "drug_use_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "CRACK",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-062-pos",
+    "state": {
+      "answer": "SPEED",
+      "clue": "Amphetamines taken recreationally"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": true
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "drug_use_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "SPEED",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-062-neg",
+    "state": {
+      "answer": "SPEED",
+      "clue": "Rate measured in miles per hour"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "drug_use_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "SPEED",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-064-pos",
+    "state": {
+      "answer": "BAKED",
+      "clue": "Very high on cannabis, slangily"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": true
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "drug_use_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "BAKED",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-064-neg",
+    "state": {
+      "answer": "BAKED",
+      "clue": "Prepared in an oven"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "drug_use_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "BAKED",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-065-pos",
+    "state": {
+      "answer": "HASH",
+      "clue": "Cannabis resin smoked for a high"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": true
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "drug_use_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "HASH",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-065-neg",
+    "state": {
+      "answer": "HASH",
+      "clue": "Chopped-potato breakfast dish"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "drug_use_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "HASH",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-066-pos",
+    "state": {
+      "answer": "ROLL",
+      "clue": "Prepare a marijuana cigarette"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": true
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "drug_use_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "ROLL",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-066-neg",
+    "state": {
+      "answer": "ROLL",
+      "clue": "Small bread served with dinner"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "drug_use_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "ROLL",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-069-pos",
+    "state": {
+      "answer": "HIT",
+      "clue": "Single inhalation of marijuana smoke"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": true
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "drug_use_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "HIT",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-069-neg",
+    "state": {
+      "answer": "HIT",
+      "clue": "Successful pop song"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "drug_use_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "HIT",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-070-pos",
+    "state": {
+      "answer": "DEALER",
+      "clue": "Seller of illegal narcotics"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": true
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "drug_use_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "DEALER",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-070-neg",
+    "state": {
+      "answer": "DEALER",
+      "clue": "Person handing out playing cards"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "drug_use_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "DEALER",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-072-pos",
+    "state": {
+      "answer": "FIX",
+      "clue": "Dose sought by a heroin addict"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": true
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "drug_use_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "FIX",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-072-neg",
+    "state": {
+      "answer": "FIX",
+      "clue": "Repair a broken appliance"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "drug_use_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "FIX",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-075-pos",
+    "state": {
+      "answer": "MUSHROOMS",
+      "clue": "Fungi eaten for a psychedelic experience"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": true
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "drug_use_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "MUSHROOM",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-v2-075-neg",
+    "state": {
+      "answer": "MUSHROOMS",
+      "clue": "Pizza toppings such as button or cremini"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "target_category": "drug_use_angle",
+      "origin": "authored",
+      "label_note": "Frozen before candidate inference; content labels do not judge other clue defects.",
+      "group": "MUSHROOM",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-boundary-02",
+    "state": {
+      "answer": "SHOT",
+      "clue": "Vaccination dose"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "origin": "authored",
+      "boundary_probe": true,
+      "group": "SHOT",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-boundary-05",
+    "state": {
+      "answer": "PHARMACY",
+      "clue": "Place to fill a prescription"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "origin": "authored",
+      "boundary_probe": true,
+      "group": "PHARMACY",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-boundary-06",
+    "state": {
+      "answer": "HEMP",
+      "clue": "Fiber crop used to make rope"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "origin": "authored",
+      "boundary_probe": true,
+      "group": "HEMP",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-boundary-08",
+    "state": {
+      "answer": "MORPHINE",
+      "clue": "Painkiller administered after surgery"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-policy-case",
+      "origin": "authored",
+      "boundary_probe": true,
+      "group": "MORPHINE",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-history-aee7c2a400fbabb015dd",
+    "state": {
+      "answer": "CALEB",
+      "clue": "Joshua's fellow scout in the Bible"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-reviewed-policy-history",
+      "origin": "historical",
+      "prior_exposure": true,
+      "historical_id": "aee7c2a400fbabb015dd",
+      "reference": {
+        "answer": "CALEB",
+        "clue": "Joshua's fellow scout in the Bible",
+        "crossing": "CAL, TALE, PALES, EXEC, RIB",
+        "difficulty": "easy",
+        "puzzle_type": "mini",
+        "acc": 20,
+        "fair": 24,
+        "craft": 20,
+        "fresh": 16,
+        "total": 80,
+        "opus_defect": false,
+        "feedback": "niche biblical trivia; too hard for Easy",
+        "jev": {
+          "leaks_answer": 0.12,
+          "semantic_giveaway": 0.61,
+          "too_easy_for_hard": 0.05,
+          "ambiguous_multi_answer": 0.12,
+          "factually_wrong": 0.11,
+          "sensitive_content": 0.04,
+          "currency_risk": 0.03
+        }
+      },
+      "label_note": "Selected boundary cases from previously explored corpus; null denotes policy ambiguity.",
+      "group": "CALEB",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-history-9c2c235a93cc8c5b6dd2",
+    "state": {
+      "answer": "NSA",
+      "clue": "Eavesdropping intel org. at Fort Meade"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-reviewed-policy-history",
+      "origin": "historical",
+      "prior_exposure": true,
+      "historical_id": "9c2c235a93cc8c5b6dd2",
+      "reference": {
+        "answer": "NSA",
+        "clue": "Eavesdropping intel org. at Fort Meade",
+        "crossing": "NBA, SEMI, ATOM",
+        "difficulty": "hard",
+        "puzzle_type": "midi",
+        "acc": 22,
+        "fair": 14,
+        "craft": 21,
+        "fresh": 18,
+        "total": 75,
+        "opus_defect": true,
+        "feedback": "leaks: org. contains no expansion word but intel agency angle fine; currency risk: Fort Meade location timeless, ok",
+        "jev": {
+          "leaks_answer": 0.2,
+          "semantic_giveaway": 0.66,
+          "too_easy_for_hard": 0.79,
+          "ambiguous_multi_answer": 0.12,
+          "factually_wrong": 0.11,
+          "sensitive_content": 0.07,
+          "currency_risk": 0.22
+        }
+      },
+      "label_note": "Selected boundary cases from previously explored corpus; null denotes policy ambiguity.",
+      "group": "NSA",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-history-a8068705490e9edaaa71",
+    "state": {
+      "answer": "SOAR",
+      "clue": "Rise high, as an eagle"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-reviewed-policy-history",
+      "origin": "historical",
+      "prior_exposure": true,
+      "historical_id": "a8068705490e9edaaa71",
+      "reference": {
+        "answer": "SOAR",
+        "clue": "Rise high, as an eagle",
+        "crossing": "GLASSES, MON, MAY, ARC",
+        "difficulty": "easy",
+        "puzzle_type": "midi",
+        "acc": 24,
+        "fair": 24,
+        "craft": 22,
+        "fresh": 21,
+        "total": 91,
+        "opus_defect": false,
+        "feedback": null,
+        "jev": {
+          "leaks_answer": 0.62,
+          "semantic_giveaway": 0.43,
+          "too_easy_for_hard": 0.06,
+          "ambiguous_multi_answer": 0.77,
+          "factually_wrong": 0.16,
+          "sensitive_content": 0.03,
+          "currency_risk": 0.05
+        }
+      },
+      "label_note": "Selected boundary cases from previously explored corpus; null denotes policy ambiguity.",
+      "group": "SOAR",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-history-6d35f2c422d99177a2c9",
+    "state": {
+      "answer": "GUN",
+      "clue": "Jump the ___ (start too soon)"
+    },
+    "labels": {
+      "firearms_angle": true,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-reviewed-policy-history",
+      "origin": "historical",
+      "prior_exposure": true,
+      "historical_id": "6d35f2c422d99177a2c9",
+      "reference": {
+        "answer": "GUN",
+        "clue": "Jump the ___ (start too soon)",
+        "crossing": "PGA, BLUNT, IRANIAN",
+        "difficulty": "hard",
+        "puzzle_type": "mini",
+        "acc": 20,
+        "fair": 0,
+        "craft": 18,
+        "fresh": 18,
+        "total": 56,
+        "opus_defect": true,
+        "feedback": "gun reference; needs neutral angle",
+        "jev": {
+          "leaks_answer": 0.21,
+          "semantic_giveaway": 0.54,
+          "too_easy_for_hard": 0.39,
+          "ambiguous_multi_answer": 0.53,
+          "factually_wrong": 0.51,
+          "sensitive_content": 0.88,
+          "currency_risk": 0.18
+        }
+      },
+      "label_note": "Selected boundary cases from previously explored corpus; null denotes policy ambiguity.",
+      "group": "GUN",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-history-97ce23ad55d1a1f7d609",
+    "state": {
+      "answer": "DJS",
+      "clue": "Folks who spin music at clubs, for short"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-reviewed-policy-history",
+      "origin": "historical",
+      "prior_exposure": true,
+      "historical_id": "97ce23ad55d1a1f7d609",
+      "reference": {
+        "answer": "DJS",
+        "clue": "Folks who spin music at clubs, for short",
+        "crossing": "DOT, JAR, SPY",
+        "difficulty": "easy",
+        "puzzle_type": "midi",
+        "acc": 24,
+        "fair": 24,
+        "craft": 23,
+        "fresh": 22,
+        "total": 93,
+        "opus_defect": false,
+        "feedback": null,
+        "jev": {
+          "leaks_answer": 0.5,
+          "semantic_giveaway": 0.74,
+          "too_easy_for_hard": 0.06,
+          "ambiguous_multi_answer": 0.29,
+          "factually_wrong": 0.1,
+          "sensitive_content": 0.08,
+          "currency_risk": 0.09
+        }
+      },
+      "label_note": "Selected boundary cases from previously explored corpus; null denotes policy ambiguity.",
+      "group": "DJ",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-history-35f802eb707350bf9685",
+    "state": {
+      "answer": "VPS",
+      "clue": "Corporate higher-ups, for short"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-reviewed-policy-history",
+      "origin": "historical",
+      "prior_exposure": true,
+      "historical_id": "35f802eb707350bf9685",
+      "reference": {
+        "answer": "VPS",
+        "clue": "Corporate higher-ups, for short",
+        "crossing": "VASE, PUSS, SLY",
+        "difficulty": "hard",
+        "puzzle_type": "midi",
+        "acc": 20,
+        "fair": 8,
+        "craft": 18,
+        "fresh": 16,
+        "total": 62,
+        "opus_defect": true,
+        "feedback": "leaks: VP expansion 'vice president' — abbreviation expansion leak",
+        "jev": {
+          "leaks_answer": 0.27,
+          "semantic_giveaway": 0.44,
+          "too_easy_for_hard": 0.71,
+          "ambiguous_multi_answer": 0.51,
+          "factually_wrong": 0.22,
+          "sensitive_content": 0.06,
+          "currency_risk": 0.13
+        }
+      },
+      "label_note": "Selected boundary cases from previously explored corpus; null denotes policy ambiguity.",
+      "group": "VP",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-history-3bb8ae693262909be478",
+    "state": {
+      "answer": "APRON",
+      "clue": "Barbecue-grill wearer's protection"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-reviewed-policy-history",
+      "origin": "historical",
+      "prior_exposure": true,
+      "historical_id": "3bb8ae693262909be478",
+      "reference": {
+        "answer": "APRON",
+        "clue": "Barbecue-grill wearer's protection",
+        "crossing": "EARL, SPOIL, PRUNE, NOSES, NEST",
+        "difficulty": "hard",
+        "puzzle_type": "mini",
+        "acc": 22,
+        "fair": 22,
+        "craft": 16,
+        "fresh": 16,
+        "total": 76,
+        "opus_defect": false,
+        "feedback": "Awkward phrasing.",
+        "jev": {
+          "leaks_answer": 0.14,
+          "semantic_giveaway": 0.41,
+          "too_easy_for_hard": 0.82,
+          "ambiguous_multi_answer": 0.52,
+          "factually_wrong": 0.16,
+          "sensitive_content": 0.05,
+          "currency_risk": 0.06
+        }
+      },
+      "label_note": "Selected boundary cases from previously explored corpus; null denotes policy ambiguity.",
+      "group": "APRON",
+      "split": "dev"
+    }
+  },
+  {
+    "id": "content-history-d8a41862b927eb64292b",
+    "state": {
+      "answer": "MAX",
+      "clue": "Highest possible amount, for short"
+    },
+    "labels": {
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-reviewed-policy-history",
+      "origin": "historical",
+      "prior_exposure": true,
+      "historical_id": "d8a41862b927eb64292b",
+      "reference": {
+        "answer": "MAX",
+        "clue": "Highest possible amount, for short",
+        "crossing": "SWARM, KINDA, INDEX",
+        "difficulty": "easy",
+        "puzzle_type": "mini",
+        "acc": 12,
+        "fair": 10,
+        "craft": 18,
+        "fresh": 18,
+        "total": 58,
+        "opus_defect": true,
+        "feedback": "MAX not an abbreviation; 'for short' misleads; leaks: maximum",
+        "jev": {
+          "leaks_answer": 0.27,
+          "semantic_giveaway": 0.66,
+          "too_easy_for_hard": 0.06,
+          "ambiguous_multi_answer": 0.65,
+          "factually_wrong": 0.14,
+          "sensitive_content": 0.03,
+          "currency_risk": 0.05
+        }
+      },
+      "label_note": "Selected boundary cases from previously explored corpus; null denotes policy ambiguity.",
+      "group": "MAX",
+      "split": "dev"
+    }
+  }
+]

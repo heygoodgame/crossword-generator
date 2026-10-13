@@ -1,0 +1,5 @@
+{
+  "source": "output/classification-evals/content-v2-claude",
+  "original_records_sha256": "a6a34b3ed070ab4af2623dd43432cfe213d8768361b47a518c73f0c6bd46f21b",
+  "note": "All attempts retained; repeated request objects omitted. Reconstruct each with core.prepare(corpus row, manifest suite)."
+}

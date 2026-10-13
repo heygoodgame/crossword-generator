@@ -1,0 +1,2995 @@
+{
+  "selection_sha256": "5540d3b2df03820336e282587def9a75734c6dc184a142258d196f7e9fbc39ba",
+  "claude_test_default_05": {
+    "firearms_angle": {
+      "n": 130,
+      "positive": 17,
+      "negative": 113,
+      "tp": 17,
+      "fp": 1,
+      "fn": 0,
+      "tn": 112,
+      "accuracy": 0.9923076923076923,
+      "recall": 1.0,
+      "fpr": 0.008849557522123894,
+      "precision": 0.9444444444444444,
+      "auc": 0.9997397188964081,
+      "brier": 0.008156153846153846
+    },
+    "alcohol_angle": {
+      "n": 130,
+      "positive": 20,
+      "negative": 110,
+      "tp": 20,
+      "fp": 2,
+      "fn": 0,
+      "tn": 108,
+      "accuracy": 0.9846153846153847,
+      "recall": 1.0,
+      "fpr": 0.01818181818181818,
+      "precision": 0.9090909090909091,
+      "auc": 0.9959090909090909,
+      "brier": 0.014135384615384616
+    },
+    "drug_use_angle": {
+      "n": 132,
+      "positive": 15,
+      "negative": 117,
+      "tp": 15,
+      "fp": 1,
+      "fn": 0,
+      "tn": 116,
+      "accuracy": 0.9924242424242424,
+      "recall": 1.0,
+      "fpr": 0.008547008547008548,
+      "precision": 0.9375,
+      "auc": 1.0,
+      "brier": 0.006164393939393939
+    }
+  },
+  "blind_label_disagreements": [
+    {
+      "case_id": "content-v2-027-neg",
+      "state": {
+        "answer": "BEER",
+        "clue": "Root ___ float"
+      },
+      "question": "alcohol_angle",
+      "split": "test",
+      "label": false,
+      "claude_probability": 0.95
+    },
+    {
+      "case_id": "content-v2-057-neg",
+      "state": {
+        "answer": "DOPE",
+        "clue": "Inside information, informally"
+      },
+      "question": "drug_use_angle",
+      "split": "test",
+      "label": false,
+      "claude_probability": 0.85
+    },
+    {
+      "case_id": "content-boundary-10",
+      "state": {
+        "answer": "BEER",
+        "clue": "Ginger ___"
+      },
+      "question": "alcohol_angle",
+      "split": "test",
+      "label": false,
+      "claude_probability": 0.85
+    },
+    {
+      "case_id": "content-boundary-01",
+      "state": {
+        "answer": "STAR",
+        "clue": "Shooting ___"
+      },
+      "question": "firearms_angle",
+      "split": "test",
+      "label": false,
+      "claude_probability": 0.9
+    },
+    {
+      "case_id": "content-v2-050-neg",
+      "state": {
+        "answer": "WINE",
+        "clue": "Homophone of whine"
+      },
+      "question": "alcohol_angle",
+      "split": "dev",
+      "label": false,
+      "claude_probability": 0.85
+    }
+  ],
+  "grader_overlap": {
+    "positive_cases": 52,
+    "grader_fairness_flagged_positive": 45,
+    "jev_additional_positive_flags": [
+      {
+        "case_id": "content-v2-026-pos",
+        "state": {
+          "answer": "ALE",
+          "clue": "Pub drink served by the pint"
+        },
+        "label_any_policy_violation": true,
+        "jev_flag": true,
+        "grader_fairness_flag": false,
+        "grader": {
+          "number": 1,
+          "direction": "across",
+          "answer": "",
+          "score": 89.0,
+          "feedback": "",
+          "accuracy": 24.0,
+          "freshness": 22.0,
+          "craft": 23.0,
+          "fairness": 20.0
+        }
+      },
+      {
+        "case_id": "content-v2-049-pos",
+        "state": {
+          "answer": "BREW",
+          "clue": "Make beer by fermentation"
+        },
+        "label_any_policy_violation": true,
+        "jev_flag": true,
+        "grader_fairness_flag": false,
+        "grader": {
+          "number": 1,
+          "direction": "across",
+          "answer": "",
+          "score": 91.0,
+          "feedback": "",
+          "accuracy": 24.0,
+          "freshness": 22.0,
+          "craft": 21.0,
+          "fairness": 24.0
+        }
+      },
+      {
+        "case_id": "content-v2-047-pos",
+        "state": {
+          "answer": "AGED",
+          "clue": "Matured in oak, as whisky"
+        },
+        "label_any_policy_violation": true,
+        "jev_flag": true,
+        "grader_fairness_flag": false,
+        "grader": {
+          "number": 1,
+          "direction": "across",
+          "answer": "",
+          "score": 86.0,
+          "feedback": "",
+          "accuracy": 23.0,
+          "freshness": 20.0,
+          "craft": 21.0,
+          "fairness": 22.0
+        }
+      },
+      {
+        "case_id": "content-v2-038-pos",
+        "state": {
+          "answer": "BOURBON",
+          "clue": "Whiskey associated with Kentucky"
+        },
+        "label_any_policy_violation": true,
+        "jev_flag": true,
+        "grader_fairness_flag": false,
+        "grader": {
+          "number": 1,
+          "direction": "across",
+          "answer": "",
+          "score": 92.0,
+          "feedback": "",
+          "accuracy": 24.0,
+          "freshness": 22.0,
+          "craft": 23.0,
+          "fairness": 23.0
+        }
+      },
+      {
+        "case_id": "content-v2-040-pos",
+        "state": {
+          "answer": "RUM",
+          "clue": "Spirit used in a mojito"
+        },
+        "label_any_policy_violation": true,
+        "jev_flag": true,
+        "grader_fairness_flag": false,
+        "grader": {
+          "number": 1,
+          "direction": "across",
+          "answer": "",
+          "score": 92.0,
+          "feedback": "",
+          "accuracy": 24.0,
+          "freshness": 23.0,
+          "craft": 23.0,
+          "fairness": 22.0
+        }
+      }
+    ],
+    "combined_flagged_positive": 50,
+    "grader_fairness_flagged_content_negative": 14,
+    "caveat": "Raw fairness <15 also flags leaks and other defects. Content-negative does not mean the overall clue is clean. No crossings; Easy Mini rubric, one clue per call."
+  },
+  "test_rows": [
+    {
+      "case_id": "content-v2-024-pos",
+      "state": {
+        "answer": "RECOIL",
+        "clue": "Backward kick of a fired gun"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 64.0,
+        "feedback": "gun reference, needs neutral family-friendly angle",
+        "accuracy": 22.0,
+        "freshness": 18.0,
+        "craft": 18.0,
+        "fairness": 6.0
+      }
+    },
+    {
+      "case_id": "content-v2-071-pos",
+      "state": {
+        "answer": "USER",
+        "clue": "Person who takes illicit drugs"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": false,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 34.0,
+        "feedback": "drug reference, needs family-friendly angle; too hard for Easy",
+        "accuracy": 14.0,
+        "freshness": 5.0,
+        "craft": 10.0,
+        "fairness": 5.0
+      }
+    },
+    {
+      "case_id": "content-v2-030-neg",
+      "state": {
+        "answer": "BAR",
+        "clue": "Horizontal gymnastics apparatus"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 87.0,
+        "feedback": "",
+        "accuracy": 23.0,
+        "freshness": 20.0,
+        "craft": 21.0,
+        "fairness": 23.0
+      }
+    },
+    {
+      "case_id": "content-history-e4c5c62272d527178bc6",
+      "state": {
+        "answer": "AXIS",
+        "clue": "Line that a globe spins around"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 93.0,
+        "feedback": "",
+        "accuracy": 24.0,
+        "freshness": 22.0,
+        "craft": 23.0,
+        "fairness": 24.0
+      }
+    },
+    {
+      "case_id": "content-v2-009-neg",
+      "state": {
+        "answer": "STOCK",
+        "clue": "Broth used as a soup base"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 92.0,
+        "feedback": "",
+        "accuracy": 24.0,
+        "freshness": 22.0,
+        "craft": 22.0,
+        "fairness": 24.0
+      }
+    },
+    {
+      "case_id": "content-history-af2c00b43cab42da4672",
+      "state": {
+        "answer": "PEAK",
+        "clue": "High point of one's career"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 93.0,
+        "feedback": "",
+        "accuracy": 24.0,
+        "freshness": 22.0,
+        "craft": 23.0,
+        "fairness": 24.0
+      }
+    },
+    {
+      "case_id": "content-history-c97a601eeedecf3b966c",
+      "state": {
+        "answer": "ALE",
+        "clue": "Ginger ___ (bubbly soft drink)"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 69.0,
+        "feedback": "collocation giveaway: Ginger ___",
+        "accuracy": 24.0,
+        "freshness": 20.0,
+        "craft": 18.0,
+        "fairness": 7.0
+      }
+    },
+    {
+      "case_id": "content-history-84795ffc54872ebc12fb",
+      "state": {
+        "answer": "DEA",
+        "clue": "Antidrug fed. org."
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 63.0,
+        "feedback": "leaks: drug (expansion word)",
+        "accuracy": 22.0,
+        "freshness": 18.0,
+        "craft": 18.0,
+        "fairness": 5.0
+      }
+    },
+    {
+      "case_id": "content-v2-027-pos",
+      "state": {
+        "answer": "BEER",
+        "clue": "Alcoholic drink made with hops"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 64.0,
+        "feedback": "alcohol reference, needs neutral family-friendly angle",
+        "accuracy": 22.0,
+        "freshness": 18.0,
+        "craft": 18.0,
+        "fairness": 6.0
+      }
+    },
+    {
+      "case_id": "content-v2-063-neg",
+      "state": {
+        "answer": "ICE",
+        "clue": "Frozen water"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 95.0,
+        "feedback": "",
+        "accuracy": 24.0,
+        "freshness": 23.0,
+        "craft": 24.0,
+        "fairness": 24.0
+      }
+    },
+    {
+      "case_id": "content-v2-029-pos",
+      "state": {
+        "answer": "SPIRIT",
+        "clue": "Distilled alcoholic beverage"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 44.0,
+        "feedback": "alcohol reference; needs neutral angle; too hard for Easy",
+        "accuracy": 16.0,
+        "freshness": 8.0,
+        "craft": 14.0,
+        "fairness": 6.0
+      }
+    },
+    {
+      "case_id": "content-v2-041-pos",
+      "state": {
+        "answer": "SAUCE",
+        "clue": "Liquor, in the phrase on the ___"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": false,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 36.0,
+        "feedback": "alcohol reference; needs neutral angle; too hard for Easy; collocation giveaway",
+        "accuracy": 15.0,
+        "freshness": 6.0,
+        "craft": 10.0,
+        "fairness": 5.0
+      }
+    },
+    {
+      "case_id": "content-v2-041-neg",
+      "state": {
+        "answer": "SAUCE",
+        "clue": "Marinara, for example"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 94.0,
+        "feedback": "",
+        "accuracy": 25.0,
+        "freshness": 22.0,
+        "craft": 23.0,
+        "fairness": 24.0
+      }
+    },
+    {
+      "case_id": "content-v2-067-neg",
+      "state": {
+        "answer": "SMOKE",
+        "clue": "Cloud rising from a chimney"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 93.0,
+        "feedback": "",
+        "accuracy": 24.0,
+        "freshness": 22.0,
+        "craft": 23.0,
+        "fairness": 24.0
+      }
+    },
+    {
+      "case_id": "content-history-7aad8ce2fe29763a44f9",
+      "state": {
+        "answer": "BARR",
+        "clue": "Roseanne of sitcom fame"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 90.0,
+        "feedback": "",
+        "accuracy": 24.0,
+        "freshness": 20.0,
+        "craft": 22.0,
+        "fairness": 24.0
+      }
+    },
+    {
+      "case_id": "content-v2-063-pos",
+      "state": {
+        "answer": "ICE",
+        "clue": "Crystal meth, slangily"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 38.0,
+        "feedback": "drug reference, needs neutral angle",
+        "accuracy": 15.0,
+        "freshness": 8.0,
+        "craft": 10.0,
+        "fairness": 5.0
+      }
+    },
+    {
+      "case_id": "content-v2-049-neg",
+      "state": {
+        "answer": "BREW",
+        "clue": "Prepare a pot of tea"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 93.0,
+        "feedback": "",
+        "accuracy": 24.0,
+        "freshness": 23.0,
+        "craft": 23.0,
+        "fairness": 23.0
+      }
+    },
+    {
+      "case_id": "content-history-9f981f8a1e5b169066d7",
+      "state": {
+        "answer": "SLINGSHOT",
+        "clue": "Dennis the Menace's Y-shaped toy"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 87.0,
+        "feedback": "",
+        "accuracy": 23.0,
+        "freshness": 20.0,
+        "craft": 21.0,
+        "fairness": 23.0
+      }
+    },
+    {
+      "case_id": "content-v2-044-neg",
+      "state": {
+        "answer": "DRINK",
+        "clue": "Have a glass of water"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 84.0,
+        "feedback": "",
+        "accuracy": 22.0,
+        "freshness": 20.0,
+        "craft": 20.0,
+        "fairness": 22.0
+      }
+    },
+    {
+      "case_id": "content-v2-028-pos",
+      "state": {
+        "answer": "PORT",
+        "clue": "Sweet fortified wine"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 66.0,
+        "feedback": "alcohol reference; needs neutral angle (e.g. harbor)",
+        "accuracy": 22.0,
+        "freshness": 20.0,
+        "craft": 18.0,
+        "fairness": 6.0
+      }
+    },
+    {
+      "case_id": "content-v2-058-pos",
+      "state": {
+        "answer": "TRIP",
+        "clue": "Hallucinogenic drug experience"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 44.0,
+        "feedback": "drug reference not family-friendly; too hard for Easy, needs neutral angle",
+        "accuracy": 18.0,
+        "freshness": 8.0,
+        "craft": 12.0,
+        "fairness": 6.0
+      }
+    },
+    {
+      "case_id": "content-v2-027-neg",
+      "state": {
+        "answer": "BEER",
+        "clue": "Root ___ float"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 71.0,
+        "feedback": "collocation giveaway: root ___ float",
+        "accuracy": 24.0,
+        "freshness": 20.0,
+        "craft": 20.0,
+        "fairness": 7.0
+      }
+    },
+    {
+      "case_id": "content-v2-040-neg",
+      "state": {
+        "answer": "RUM",
+        "clue": "Odd, in British slang"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 49.0,
+        "feedback": "too hard for Easy; obscure Briticism, avoids common 'drink' sense",
+        "accuracy": 18.0,
+        "freshness": 6.0,
+        "craft": 15.0,
+        "fairness": 10.0
+      }
+    },
+    {
+      "case_id": "content-v2-029-neg",
+      "state": {
+        "answer": "SPIRIT",
+        "clue": "School pride"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 84.0,
+        "feedback": "",
+        "accuracy": 22.0,
+        "freshness": 20.0,
+        "craft": 20.0,
+        "fairness": 22.0
+      }
+    },
+    {
+      "case_id": "content-v2-039-neg",
+      "state": {
+        "answer": "GIN",
+        "clue": "Cotton-separating machine"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 68.0,
+        "feedback": "too hard for Easy: secondary sense of GIN",
+        "accuracy": 22.0,
+        "freshness": 8.0,
+        "craft": 18.0,
+        "fairness": 20.0
+      }
+    },
+    {
+      "case_id": "content-boundary-07",
+      "state": {
+        "answer": "CANNABIS",
+        "clue": "Drug smoked to get high"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 52.0,
+        "feedback": "drug reference, needs neutral family-friendly angle",
+        "accuracy": 18.0,
+        "freshness": 14.0,
+        "craft": 15.0,
+        "fairness": 5.0
+      }
+    },
+    {
+      "case_id": "content-v2-048-neg",
+      "state": {
+        "answer": "CHASER",
+        "clue": "One running after someone"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 87.0,
+        "feedback": "",
+        "accuracy": 23.0,
+        "freshness": 20.0,
+        "craft": 21.0,
+        "fairness": 23.0
+      }
+    },
+    {
+      "case_id": "content-boundary-09",
+      "state": {
+        "answer": "DRUG",
+        "clue": "Medicine prescribed by a physician"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 84.0,
+        "feedback": "",
+        "accuracy": 20.0,
+        "freshness": 20.0,
+        "craft": 21.0,
+        "fairness": 23.0
+      }
+    },
+    {
+      "case_id": "content-v2-009-pos",
+      "state": {
+        "answer": "STOCK",
+        "clue": "Shoulder-rest part of a rifle"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 40.0,
+        "feedback": "gun reference, needs neutral angle; too hard for Easy",
+        "accuracy": 15.0,
+        "freshness": 10.0,
+        "craft": 10.0,
+        "fairness": 5.0
+      }
+    },
+    {
+      "case_id": "content-history-2fb3de9fb566b71e04ff",
+      "state": {
+        "answer": "ARI",
+        "clue": "Onassis the shipping magnate, for short"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 90.0,
+        "feedback": "",
+        "accuracy": 24.0,
+        "freshness": 20.0,
+        "craft": 22.0,
+        "fairness": 24.0
+      }
+    },
+    {
+      "case_id": "content-v2-054-neg",
+      "state": {
+        "answer": "JOINT",
+        "clue": "Where two bones meet"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 93.0,
+        "feedback": "",
+        "accuracy": 24.0,
+        "freshness": 22.0,
+        "craft": 23.0,
+        "fairness": 24.0
+      }
+    },
+    {
+      "case_id": "content-v2-017-neg",
+      "state": {
+        "answer": "BULLET",
+        "clue": "Dot before a list item"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 93.0,
+        "feedback": "",
+        "accuracy": 24.0,
+        "freshness": 22.0,
+        "craft": 23.0,
+        "fairness": 24.0
+      }
+    },
+    {
+      "case_id": "content-boundary-03",
+      "state": {
+        "answer": "TABLET",
+        "clue": "Pill prescribed by a doctor"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 87.0,
+        "feedback": "",
+        "accuracy": 23.0,
+        "freshness": 20.0,
+        "craft": 22.0,
+        "fairness": 22.0
+      }
+    },
+    {
+      "case_id": "content-v2-028-neg",
+      "state": {
+        "answer": "PORT",
+        "clue": "Harbor for ships"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 87.0,
+        "feedback": "",
+        "accuracy": 22.0,
+        "freshness": 22.0,
+        "craft": 21.0,
+        "fairness": 22.0
+      }
+    },
+    {
+      "case_id": "content-v2-015-neg",
+      "state": {
+        "answer": "PACK",
+        "clue": "Group of wolves"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 95.0,
+        "feedback": "",
+        "accuracy": 24.0,
+        "freshness": 23.0,
+        "craft": 24.0,
+        "fairness": 24.0
+      }
+    },
+    {
+      "case_id": "content-v2-001-neg",
+      "state": {
+        "answer": "DRAW",
+        "clue": "Sketch with a pencil"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 91.0,
+        "feedback": "",
+        "accuracy": 24.0,
+        "freshness": 22.0,
+        "craft": 22.0,
+        "fairness": 23.0
+      }
+    },
+    {
+      "case_id": "content-v2-008-neg",
+      "state": {
+        "answer": "BARREL",
+        "clue": "Large wooden container"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 93.0,
+        "feedback": "",
+        "accuracy": 24.0,
+        "freshness": 22.0,
+        "craft": 23.0,
+        "fairness": 24.0
+      }
+    },
+    {
+      "case_id": "content-v2-001-pos",
+      "state": {
+        "answer": "DRAW",
+        "clue": "Pull a pistol from its holster"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 54.0,
+        "feedback": "gun reference, needs neutral family-friendly angle",
+        "accuracy": 20.0,
+        "freshness": 14.0,
+        "craft": 15.0,
+        "fairness": 5.0
+      }
+    },
+    {
+      "case_id": "content-v2-024-neg",
+      "state": {
+        "answer": "RECOIL",
+        "clue": "Shrink back in surprise"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 94.0,
+        "feedback": "",
+        "accuracy": 24.0,
+        "freshness": 22.0,
+        "craft": 23.0,
+        "fairness": 25.0
+      }
+    },
+    {
+      "case_id": "content-v2-011-neg",
+      "state": {
+        "answer": "TRIGGER",
+        "clue": "Set off an alarm"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 89.0,
+        "feedback": "",
+        "accuracy": 23.0,
+        "freshness": 20.0,
+        "craft": 22.0,
+        "fairness": 24.0
+      }
+    },
+    {
+      "case_id": "content-v2-003-pos",
+      "state": {
+        "answer": "SHOOT",
+        "clue": "Fire a rifle"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 45.0,
+        "feedback": "gun reference, needs neutral angle",
+        "accuracy": 10.0,
+        "freshness": 15.0,
+        "craft": 15.0,
+        "fairness": 5.0
+      }
+    },
+    {
+      "case_id": "content-v2-033-pos",
+      "state": {
+        "answer": "PROOF",
+        "clue": "Measure of liquor strength"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 70.0,
+        "feedback": "alcohol reference, needs neutral angle",
+        "accuracy": 24.0,
+        "freshness": 20.0,
+        "craft": 20.0,
+        "fairness": 6.0
+      }
+    },
+    {
+      "case_id": "content-v2-010-pos",
+      "state": {
+        "answer": "SIGHT",
+        "clue": "Device used to aim a rifle"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 50.0,
+        "feedback": "guns reference; also too hard for Easy, needs neutral everyday sense",
+        "accuracy": 22.0,
+        "freshness": 8.0,
+        "craft": 15.0,
+        "fairness": 5.0
+      }
+    },
+    {
+      "case_id": "content-history-94fbd71de4a4315645d1",
+      "state": {
+        "answer": "AMMO",
+        "clue": "Stuff fired from a slingshot, informally"
+      },
+      "label_any_policy_violation": null,
+      "jev_flag": false,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 54.0,
+        "feedback": "gun/ammo reference, needs neutral angle",
+        "accuracy": 14.0,
+        "freshness": 18.0,
+        "craft": 16.0,
+        "fairness": 6.0
+      }
+    },
+    {
+      "case_id": "content-v2-021-pos",
+      "state": {
+        "answer": "ARMS",
+        "clue": "Firearms, collectively"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 57.0,
+        "feedback": "leaks: arms; also gun/weapon reference",
+        "accuracy": 20.0,
+        "freshness": 15.0,
+        "craft": 18.0,
+        "fairness": 4.0
+      }
+    },
+    {
+      "case_id": "content-history-e4055530b1c2c3e1051c",
+      "state": {
+        "answer": "OPTIC",
+        "clue": "Kind of fiber for high-speed internet"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 65.0,
+        "feedback": "collocation giveaway: fiber",
+        "accuracy": 22.0,
+        "freshness": 18.0,
+        "craft": 19.0,
+        "fairness": 6.0
+      }
+    },
+    {
+      "case_id": "content-v2-007-pos",
+      "state": {
+        "answer": "MAGAZINE",
+        "clue": "Ammunition holder in a pistol"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 43.0,
+        "feedback": "gun/ammo reference; too hard for Easy, needs neutral angle",
+        "accuracy": 20.0,
+        "freshness": 6.0,
+        "craft": 12.0,
+        "fairness": 5.0
+      }
+    },
+    {
+      "case_id": "content-v2-056-pos",
+      "state": {
+        "answer": "STONED",
+        "clue": "Very intoxicated from marijuana"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 47.0,
+        "feedback": "drug use reference; needs neutral angle",
+        "accuracy": 20.0,
+        "freshness": 12.0,
+        "craft": 10.0,
+        "fairness": 5.0
+      }
+    },
+    {
+      "case_id": "content-v2-046-pos",
+      "state": {
+        "answer": "HANGOVER",
+        "clue": "Morning-after effect of too much wine"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 51.0,
+        "feedback": "references drinking; needs neutral, family-friendly angle",
+        "accuracy": 18.0,
+        "freshness": 12.0,
+        "craft": 15.0,
+        "fairness": 6.0
+      }
+    },
+    {
+      "case_id": "content-v2-068-neg",
+      "state": {
+        "answer": "PIPE",
+        "clue": "Tube that carries water"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 93.0,
+        "feedback": "",
+        "accuracy": 24.0,
+        "freshness": 22.0,
+        "craft": 23.0,
+        "fairness": 24.0
+      }
+    },
+    {
+      "case_id": "content-v2-015-pos",
+      "state": {
+        "answer": "PACK",
+        "clue": "Carry a concealed gun, slangily"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 41.0,
+        "feedback": "gun reference; needs neutral angle; too hard for Easy",
+        "accuracy": 18.0,
+        "freshness": 8.0,
+        "craft": 10.0,
+        "fairness": 5.0
+      }
+    },
+    {
+      "case_id": "content-v2-074-neg",
+      "state": {
+        "answer": "COKE",
+        "clue": "Soft drink sold in a red can"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 93.0,
+        "feedback": "",
+        "accuracy": 24.0,
+        "freshness": 22.0,
+        "craft": 23.0,
+        "fairness": 24.0
+      }
+    },
+    {
+      "case_id": "content-v2-074-pos",
+      "state": {
+        "answer": "COKE",
+        "clue": "Cocaine, informally"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 50.0,
+        "feedback": "drug reference, needs neutral family-friendly angle",
+        "accuracy": 20.0,
+        "freshness": 10.0,
+        "craft": 15.0,
+        "fairness": 5.0
+      }
+    },
+    {
+      "case_id": "content-v2-033-neg",
+      "state": {
+        "answer": "PROOF",
+        "clue": "Evidence supporting a claim"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 92.0,
+        "feedback": "",
+        "accuracy": 24.0,
+        "freshness": 22.0,
+        "craft": 22.0,
+        "fairness": 24.0
+      }
+    },
+    {
+      "case_id": "content-v2-025-pos",
+      "state": {
+        "answer": "PIN",
+        "clue": "Firing ___ (gun mechanism part)"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 50.0,
+        "feedback": "gun reference; needs neutral angle; collocation giveaway",
+        "accuracy": 20.0,
+        "freshness": 15.0,
+        "craft": 10.0,
+        "fairness": 5.0
+      }
+    },
+    {
+      "case_id": "content-history-ae04fea5a357df9f5a12",
+      "state": {
+        "answer": "LAD",
+        "clue": "Strapping young chap"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 86.0,
+        "feedback": "",
+        "accuracy": 23.0,
+        "freshness": 20.0,
+        "craft": 21.0,
+        "fairness": 22.0
+      }
+    },
+    {
+      "case_id": "content-v2-053-pos",
+      "state": {
+        "answer": "WEED",
+        "clue": "Cannabis, colloquially"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 55.0,
+        "feedback": "drug reference; needs neutral angle like garden weed",
+        "accuracy": 20.0,
+        "freshness": 15.0,
+        "craft": 15.0,
+        "fairness": 5.0
+      }
+    },
+    {
+      "case_id": "content-v2-060-neg",
+      "state": {
+        "answer": "ECSTASY",
+        "clue": "Overwhelming joy"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 95.0,
+        "feedback": "",
+        "accuracy": 24.0,
+        "freshness": 23.0,
+        "craft": 24.0,
+        "fairness": 24.0
+      }
+    },
+    {
+      "case_id": "content-history-64332decd64bbc25adc9",
+      "state": {
+        "answer": "ATM",
+        "clue": "Bank spot to get cash, for short"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 92.0,
+        "feedback": "",
+        "accuracy": 24.0,
+        "freshness": 22.0,
+        "craft": 23.0,
+        "fairness": 23.0
+      }
+    },
+    {
+      "case_id": "content-v2-057-neg",
+      "state": {
+        "answer": "DOPE",
+        "clue": "Inside information, informally"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 89.0,
+        "feedback": "",
+        "accuracy": 23.0,
+        "freshness": 20.0,
+        "craft": 22.0,
+        "fairness": 24.0
+      }
+    },
+    {
+      "case_id": "content-v2-043-pos",
+      "state": {
+        "answer": "MALT",
+        "clue": "Grain prepared for making whisky"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 92.0,
+        "feedback": "",
+        "accuracy": 24.0,
+        "freshness": 22.0,
+        "craft": 22.0,
+        "fairness": 24.0
+      }
+    },
+    {
+      "case_id": "content-v2-014-neg",
+      "state": {
+        "answer": "RIFLE",
+        "clue": "Rummage through, as a drawer"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 75.0,
+        "feedback": "secondary verb sense, tricky for Easy",
+        "accuracy": 22.0,
+        "freshness": 13.0,
+        "craft": 18.0,
+        "fairness": 22.0
+      }
+    },
+    {
+      "case_id": "content-v2-073-pos",
+      "state": {
+        "answer": "COOK",
+        "clue": "Produce methamphetamine, slangily"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 35.0,
+        "feedback": "drug reference; too hard for Easy; needs neutral cooking sense",
+        "accuracy": 15.0,
+        "freshness": 5.0,
+        "craft": 10.0,
+        "fairness": 5.0
+      }
+    },
+    {
+      "case_id": "content-v2-046-neg",
+      "state": {
+        "answer": "HANGOVER",
+        "clue": "Lingering consequence of an earlier era"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 79.0,
+        "feedback": "secondary sense may be tricky for Easy",
+        "accuracy": 22.0,
+        "freshness": 16.0,
+        "craft": 19.0,
+        "fairness": 22.0
+      }
+    },
+    {
+      "case_id": "content-v2-060-pos",
+      "state": {
+        "answer": "ECSTASY",
+        "clue": "Recreational drug also called MDMA"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 69.0,
+        "feedback": "drug reference; needs a neutral, family-friendly angle",
+        "accuracy": 24.0,
+        "freshness": 21.0,
+        "craft": 19.0,
+        "fairness": 5.0
+      }
+    },
+    {
+      "case_id": "content-history-c53a2dec7d8ceebea862",
+      "state": {
+        "answer": "ATM",
+        "clue": "Cash-dispensing spot, for short"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 92.0,
+        "feedback": "",
+        "accuracy": 24.0,
+        "freshness": 22.0,
+        "craft": 23.0,
+        "fairness": 23.0
+      }
+    },
+    {
+      "case_id": "content-v2-025-neg",
+      "state": {
+        "answer": "PIN",
+        "clue": "Bowling-alley target"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 96.0,
+        "feedback": "",
+        "accuracy": 25.0,
+        "freshness": 22.0,
+        "craft": 24.0,
+        "fairness": 25.0
+      }
+    },
+    {
+      "case_id": "content-v2-007-neg",
+      "state": {
+        "answer": "MAGAZINE",
+        "clue": "Periodical on a waiting-room table"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 93.0,
+        "feedback": "",
+        "accuracy": 24.0,
+        "freshness": 22.0,
+        "craft": 23.0,
+        "fairness": 24.0
+      }
+    },
+    {
+      "case_id": "content-v2-030-pos",
+      "state": {
+        "answer": "BAR",
+        "clue": "Place to order a martini"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 60.0,
+        "feedback": "alcohol reference; needs neutral angle",
+        "accuracy": 18.0,
+        "freshness": 18.0,
+        "craft": 18.0,
+        "fairness": 6.0
+      }
+    },
+    {
+      "case_id": "content-v2-018-pos",
+      "state": {
+        "answer": "CHAMBER",
+        "clue": "Gun compartment that holds a cartridge"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 45.0,
+        "feedback": "gun reference; too hard for Easy, needs neutral angle",
+        "accuracy": 20.0,
+        "freshness": 8.0,
+        "craft": 12.0,
+        "fairness": 5.0
+      }
+    },
+    {
+      "case_id": "content-v2-038-neg",
+      "state": {
+        "answer": "BOURBON",
+        "clue": "French royal house of Louis XVI"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 70.0,
+        "feedback": "too hard for Easy; whiskey sense simpler",
+        "accuracy": 22.0,
+        "freshness": 8.0,
+        "craft": 18.0,
+        "fairness": 22.0
+      }
+    },
+    {
+      "case_id": "content-v2-047-neg",
+      "state": {
+        "answer": "AGED",
+        "clue": "Grew older"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 93.0,
+        "feedback": "",
+        "accuracy": 24.0,
+        "freshness": 22.0,
+        "craft": 23.0,
+        "fairness": 24.0
+      }
+    },
+    {
+      "case_id": "content-v2-053-neg",
+      "state": {
+        "answer": "WEED",
+        "clue": "Unwanted plant in a flower bed"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 94.0,
+        "feedback": "",
+        "accuracy": 24.0,
+        "freshness": 22.0,
+        "craft": 23.0,
+        "fairness": 25.0
+      }
+    },
+    {
+      "case_id": "content-history-aaf0e17b6f05b1d62e01",
+      "state": {
+        "answer": "BEER",
+        "clue": "Root ___ float (ice cream treat)"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 68.0,
+        "feedback": "collocation giveaway: root beer float",
+        "accuracy": 24.0,
+        "freshness": 20.0,
+        "craft": 18.0,
+        "fairness": 6.0
+      }
+    },
+    {
+      "case_id": "content-history-c93fa838546928cba12b",
+      "state": {
+        "answer": "GUNMAN",
+        "clue": "Tough guy in an old Western"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 56.0,
+        "feedback": "gun culture reference, needs neutral angle",
+        "accuracy": 18.0,
+        "freshness": 16.0,
+        "craft": 16.0,
+        "fairness": 6.0
+      }
+    },
+    {
+      "case_id": "content-history-e88e04af08c7d9d7cfab",
+      "state": {
+        "answer": "IRON",
+        "clue": "Pumping ___ (weight training)"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 70.0,
+        "feedback": "collocation giveaway: pumping ___",
+        "accuracy": 24.0,
+        "freshness": 20.0,
+        "craft": 20.0,
+        "fairness": 6.0
+      }
+    },
+    {
+      "case_id": "content-v2-005-neg",
+      "state": {
+        "answer": "SHELL",
+        "clue": "Seashell collector's find"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 50.0,
+        "feedback": "leaks: seashell contains shell",
+        "accuracy": 15.0,
+        "freshness": 15.0,
+        "craft": 15.0,
+        "fairness": 5.0
+      }
+    },
+    {
+      "case_id": "content-history-78012d86b79c7484c076",
+      "state": {
+        "answer": "FLASK",
+        "clue": "Skinny bottle you can slip in a pocket"
+      },
+      "label_any_policy_violation": null,
+      "jev_flag": false,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 59.0,
+        "feedback": "implies hip flask/drinking, needs neutral angle",
+        "accuracy": 18.0,
+        "freshness": 18.0,
+        "craft": 16.0,
+        "fairness": 7.0
+      }
+    },
+    {
+      "case_id": "content-v2-057-pos",
+      "state": {
+        "answer": "DOPE",
+        "clue": "Illegal narcotics, slangily"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 54.0,
+        "feedback": "drug reference, needs neutral angle",
+        "accuracy": 20.0,
+        "freshness": 14.0,
+        "craft": 14.0,
+        "fairness": 6.0
+      }
+    },
+    {
+      "case_id": "content-history-3ebadcd1e4e11dacdce7",
+      "state": {
+        "answer": "ATMS",
+        "clue": "Withdrawal spots, for short"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 93.0,
+        "feedback": "",
+        "accuracy": 24.0,
+        "freshness": 22.0,
+        "craft": 23.0,
+        "fairness": 24.0
+      }
+    },
+    {
+      "case_id": "content-history-55cbe1d0509953c48806",
+      "state": {
+        "answer": "TRY",
+        "clue": "Give it your best shot"
+      },
+      "label_any_policy_violation": null,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 87.0,
+        "feedback": "",
+        "accuracy": 22.0,
+        "freshness": 20.0,
+        "craft": 21.0,
+        "fairness": 24.0
+      }
+    },
+    {
+      "case_id": "content-v2-067-pos",
+      "state": {
+        "answer": "SMOKE",
+        "clue": "Inhale from a marijuana joint"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 32.0,
+        "feedback": "drug reference; needs neutral, family-friendly angle",
+        "accuracy": 12.0,
+        "freshness": 5.0,
+        "craft": 10.0,
+        "fairness": 5.0
+      }
+    },
+    {
+      "case_id": "content-boundary-04",
+      "state": {
+        "answer": "INSULIN",
+        "clue": "Medication prescribed for diabetes"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 93.0,
+        "feedback": "",
+        "accuracy": 24.0,
+        "freshness": 22.0,
+        "craft": 23.0,
+        "fairness": 24.0
+      }
+    },
+    {
+      "case_id": "content-v2-071-neg",
+      "state": {
+        "answer": "USER",
+        "clue": "Person operating a computer"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 91.0,
+        "feedback": "",
+        "accuracy": 23.0,
+        "freshness": 22.0,
+        "craft": 22.0,
+        "fairness": 24.0
+      }
+    },
+    {
+      "case_id": "content-v2-058-neg",
+      "state": {
+        "answer": "TRIP",
+        "clue": "Journey to another city"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 93.0,
+        "feedback": "",
+        "accuracy": 24.0,
+        "freshness": 22.0,
+        "craft": 23.0,
+        "fairness": 24.0
+      }
+    },
+    {
+      "case_id": "content-history-dd25e503565f33bfcb6a",
+      "state": {
+        "answer": "PIC",
+        "clue": "Quick snapshot, casually"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 86.0,
+        "feedback": "",
+        "accuracy": 23.0,
+        "freshness": 20.0,
+        "craft": 21.0,
+        "fairness": 22.0
+      }
+    },
+    {
+      "case_id": "content-v2-045-neg",
+      "state": {
+        "answer": "SOBER",
+        "clue": "Serious and solemn"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 93.0,
+        "feedback": "",
+        "accuracy": 24.0,
+        "freshness": 22.0,
+        "craft": 23.0,
+        "fairness": 24.0
+      }
+    },
+    {
+      "case_id": "content-v2-005-pos",
+      "state": {
+        "answer": "SHELL",
+        "clue": "Shotgun cartridge"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 55.0,
+        "feedback": "guns/ammunition reference, needs neutral angle",
+        "accuracy": 20.0,
+        "freshness": 15.0,
+        "craft": 15.0,
+        "fairness": 5.0
+      }
+    },
+    {
+      "case_id": "content-boundary-10",
+      "state": {
+        "answer": "BEER",
+        "clue": "Ginger ___"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 65.0,
+        "feedback": "collocation giveaway: ginger beer",
+        "accuracy": 20.0,
+        "freshness": 20.0,
+        "craft": 18.0,
+        "fairness": 7.0
+      }
+    },
+    {
+      "case_id": "content-boundary-01",
+      "state": {
+        "answer": "STAR",
+        "clue": "Shooting ___"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 58.0,
+        "feedback": "collocation giveaway: shooting star",
+        "accuracy": 20.0,
+        "freshness": 15.0,
+        "craft": 15.0,
+        "fairness": 8.0
+      }
+    },
+    {
+      "case_id": "content-history-b8750c8a277f6f4ec8db",
+      "state": {
+        "answer": "DINO",
+        "clue": "Fred Flintstone's dinosaur pet"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 70.0,
+        "feedback": "leaks: dinosaur root of DINO",
+        "accuracy": 24.0,
+        "freshness": 20.0,
+        "craft": 20.0,
+        "fairness": 6.0
+      }
+    },
+    {
+      "case_id": "content-history-6a623aa331b76d900b6b",
+      "state": {
+        "answer": "JUDAH",
+        "clue": "Ancient kingdom with Jerusalem as its capital"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 89.0,
+        "feedback": "",
+        "accuracy": 23.0,
+        "freshness": 20.0,
+        "craft": 22.0,
+        "fairness": 24.0
+      }
+    },
+    {
+      "case_id": "content-v2-010-neg",
+      "state": {
+        "answer": "SIGHT",
+        "clue": "Sense used when looking"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 90.0,
+        "feedback": "",
+        "accuracy": 24.0,
+        "freshness": 22.0,
+        "craft": 22.0,
+        "fairness": 22.0
+      }
+    },
+    {
+      "case_id": "content-v2-008-pos",
+      "state": {
+        "answer": "BARREL",
+        "clue": "Part of a gun that a bullet travels through"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 63.0,
+        "feedback": "gun reference; needs neutral angle",
+        "accuracy": 22.0,
+        "freshness": 18.0,
+        "craft": 18.0,
+        "fairness": 5.0
+      }
+    },
+    {
+      "case_id": "content-v2-068-pos",
+      "state": {
+        "answer": "PIPE",
+        "clue": "Device for smoking crack cocaine"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 33.0,
+        "feedback": "drug reference; needs neutral, family-friendly angle",
+        "accuracy": 15.0,
+        "freshness": 5.0,
+        "craft": 8.0,
+        "fairness": 5.0
+      }
+    },
+    {
+      "case_id": "content-v2-011-pos",
+      "state": {
+        "answer": "TRIGGER",
+        "clue": "Finger-operated gun part"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 40.0,
+        "feedback": "gun reference, needs neutral angle like 'trigger finger' or movie horse",
+        "accuracy": 15.0,
+        "freshness": 10.0,
+        "craft": 10.0,
+        "fairness": 5.0
+      }
+    },
+    {
+      "case_id": "content-history-916ea65e708f7e446352",
+      "state": {
+        "answer": "ALE",
+        "clue": "Ginger ___ (soothing soda)"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 70.0,
+        "feedback": "collocation giveaway: Ginger ___",
+        "accuracy": 24.0,
+        "freshness": 20.0,
+        "craft": 20.0,
+        "fairness": 6.0
+      }
+    },
+    {
+      "case_id": "content-v2-026-pos",
+      "state": {
+        "answer": "ALE",
+        "clue": "Pub drink served by the pint"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 89.0,
+        "feedback": "",
+        "accuracy": 24.0,
+        "freshness": 22.0,
+        "craft": 23.0,
+        "fairness": 20.0
+      }
+    },
+    {
+      "case_id": "content-history-7698a5bae56e5611eb3b",
+      "state": {
+        "answer": "AGE",
+        "clue": "Mature gracefully, like fine wine"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 86.0,
+        "feedback": "",
+        "accuracy": 23.0,
+        "freshness": 20.0,
+        "craft": 21.0,
+        "fairness": 22.0
+      }
+    },
+    {
+      "case_id": "content-v2-073-neg",
+      "state": {
+        "answer": "COOK",
+        "clue": "Prepare dinner"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 93.0,
+        "feedback": "",
+        "accuracy": 24.0,
+        "freshness": 22.0,
+        "craft": 23.0,
+        "fairness": 24.0
+      }
+    },
+    {
+      "case_id": "content-history-90bd6aaee4544f1210d9",
+      "state": {
+        "answer": "HEIDI",
+        "clue": "Alpine girl in a classic Swiss children's tale"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 92.0,
+        "feedback": "",
+        "accuracy": 24.0,
+        "freshness": 22.0,
+        "craft": 22.0,
+        "fairness": 24.0
+      }
+    },
+    {
+      "case_id": "content-history-56fdce829a850a2a764c",
+      "state": {
+        "answer": "CONAN",
+        "clue": "Late-night host O'Brien"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 93.0,
+        "feedback": "",
+        "accuracy": 24.0,
+        "freshness": 22.0,
+        "craft": 23.0,
+        "fairness": 24.0
+      }
+    },
+    {
+      "case_id": "content-v2-049-pos",
+      "state": {
+        "answer": "BREW",
+        "clue": "Make beer by fermentation"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 91.0,
+        "feedback": "",
+        "accuracy": 24.0,
+        "freshness": 22.0,
+        "craft": 21.0,
+        "fairness": 24.0
+      }
+    },
+    {
+      "case_id": "content-v2-056-neg",
+      "state": {
+        "answer": "STONED",
+        "clue": "Pelted with rocks"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 86.0,
+        "feedback": "",
+        "accuracy": 23.0,
+        "freshness": 20.0,
+        "craft": 21.0,
+        "fairness": 22.0
+      }
+    },
+    {
+      "case_id": "content-v2-019-pos",
+      "state": {
+        "answer": "BORE",
+        "clue": "Interior of a gun barrel"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 39.0,
+        "feedback": "gun reference; too hard for Easy, needs neutral angle",
+        "accuracy": 18.0,
+        "freshness": 6.0,
+        "craft": 10.0,
+        "fairness": 5.0
+      }
+    },
+    {
+      "case_id": "content-v2-048-pos",
+      "state": {
+        "answer": "CHASER",
+        "clue": "Drink taken after a shot of liquor"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 57.0,
+        "feedback": "references alcohol/drinking; needs neutral, family-friendly angle",
+        "accuracy": 22.0,
+        "freshness": 15.0,
+        "craft": 15.0,
+        "fairness": 5.0
+      }
+    },
+    {
+      "case_id": "content-history-4152c73f8ffbaa1e6abd",
+      "state": {
+        "answer": "PAYS",
+        "clue": "Settles up, as a bar tab"
+      },
+      "label_any_policy_violation": null,
+      "jev_flag": false,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 60.0,
+        "feedback": "bar tab references alcohol; needs neutral angle",
+        "accuracy": 20.0,
+        "freshness": 16.0,
+        "craft": 16.0,
+        "fairness": 8.0
+      }
+    },
+    {
+      "case_id": "content-v2-019-neg",
+      "state": {
+        "answer": "BORE",
+        "clue": "Person who puts listeners to sleep"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 91.0,
+        "feedback": "",
+        "accuracy": 23.0,
+        "freshness": 22.0,
+        "craft": 22.0,
+        "fairness": 24.0
+      }
+    },
+    {
+      "case_id": "content-history-33bfe47afb8f3de217a2",
+      "state": {
+        "answer": "BEER",
+        "clue": "Root ___ (sweet fizzy drink)"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 62.0,
+        "feedback": "collocation giveaway: root beer",
+        "accuracy": 20.0,
+        "freshness": 18.0,
+        "craft": 18.0,
+        "fairness": 6.0
+      }
+    },
+    {
+      "case_id": "content-v2-047-pos",
+      "state": {
+        "answer": "AGED",
+        "clue": "Matured in oak, as whisky"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 86.0,
+        "feedback": "",
+        "accuracy": 23.0,
+        "freshness": 20.0,
+        "craft": 21.0,
+        "fairness": 22.0
+      }
+    },
+    {
+      "case_id": "content-v2-052-neg",
+      "state": {
+        "answer": "GRASS",
+        "clue": "Green growth covering a lawn"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 93.0,
+        "feedback": "",
+        "accuracy": 24.0,
+        "freshness": 22.0,
+        "craft": 23.0,
+        "fairness": 24.0
+      }
+    },
+    {
+      "case_id": "content-history-d088381a85c3c00e4416",
+      "state": {
+        "answer": "RAM",
+        "clue": "Male sheep with curly horns"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 93.0,
+        "feedback": "",
+        "accuracy": 24.0,
+        "freshness": 22.0,
+        "craft": 23.0,
+        "fairness": 24.0
+      }
+    },
+    {
+      "case_id": "content-v2-052-pos",
+      "state": {
+        "answer": "GRASS",
+        "clue": "Marijuana, in slang"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 48.0,
+        "feedback": "drug reference; too hard for Easy, needs neutral angle",
+        "accuracy": 20.0,
+        "freshness": 8.0,
+        "craft": 15.0,
+        "fairness": 5.0
+      }
+    },
+    {
+      "case_id": "content-history-bb8f41a38d68b421cdac",
+      "state": {
+        "answer": "RICO",
+        "clue": "Puerto ___ (Caribbean spot)"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 89.0,
+        "feedback": "",
+        "accuracy": 25.0,
+        "freshness": 20.0,
+        "craft": 22.0,
+        "fairness": 22.0
+      }
+    },
+    {
+      "case_id": "content-v2-021-neg",
+      "state": {
+        "answer": "ARMS",
+        "clue": "Limbs ending in hands"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 91.0,
+        "feedback": "",
+        "accuracy": 24.0,
+        "freshness": 22.0,
+        "craft": 22.0,
+        "fairness": 23.0
+      }
+    },
+    {
+      "case_id": "content-v2-026-neg",
+      "state": {
+        "answer": "ALE",
+        "clue": "Ginger ___ (nonalcoholic soda)"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 72.0,
+        "feedback": "references alcohol; needs neutral angle",
+        "accuracy": 22.0,
+        "freshness": 22.0,
+        "craft": 18.0,
+        "fairness": 10.0
+      }
+    },
+    {
+      "case_id": "content-v2-045-pos",
+      "state": {
+        "answer": "SOBER",
+        "clue": "No longer intoxicated"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 56.0,
+        "feedback": "references intoxication; needs neutral angle",
+        "accuracy": 20.0,
+        "freshness": 15.0,
+        "craft": 15.0,
+        "fairness": 6.0
+      }
+    },
+    {
+      "case_id": "content-v2-037-neg",
+      "state": {
+        "answer": "TAP",
+        "clue": "Touch lightly"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 93.0,
+        "feedback": "",
+        "accuracy": 24.0,
+        "freshness": 22.0,
+        "craft": 23.0,
+        "fairness": 24.0
+      }
+    },
+    {
+      "case_id": "content-v2-014-pos",
+      "state": {
+        "answer": "RIFLE",
+        "clue": "Long firearm held against the shoulder"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 40.0,
+        "feedback": "gun reference, needs neutral angle",
+        "accuracy": 15.0,
+        "freshness": 10.0,
+        "craft": 10.0,
+        "fairness": 5.0
+      }
+    },
+    {
+      "case_id": "content-v2-054-pos",
+      "state": {
+        "answer": "JOINT",
+        "clue": "Hand-rolled marijuana cigarette"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 53.0,
+        "feedback": "drug reference, needs neutral family-friendly angle",
+        "accuracy": 20.0,
+        "freshness": 12.0,
+        "craft": 15.0,
+        "fairness": 6.0
+      }
+    },
+    {
+      "case_id": "content-v2-037-pos",
+      "state": {
+        "answer": "TAP",
+        "clue": "Source of draft beer at a pub"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 70.0,
+        "feedback": "references beer/alcohol, needs neutral angle",
+        "accuracy": 24.0,
+        "freshness": 20.0,
+        "craft": 20.0,
+        "fairness": 6.0
+      }
+    },
+    {
+      "case_id": "content-v2-003-neg",
+      "state": {
+        "answer": "SHOOT",
+        "clue": "Rats!"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 93.0,
+        "feedback": "",
+        "accuracy": 24.0,
+        "freshness": 22.0,
+        "craft": 23.0,
+        "fairness": 24.0
+      }
+    },
+    {
+      "case_id": "content-v2-044-pos",
+      "state": {
+        "answer": "DRINK",
+        "clue": "Have a glass of wine"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 62.0,
+        "feedback": "needs neutral, non-alcohol angle",
+        "accuracy": 20.0,
+        "freshness": 18.0,
+        "craft": 18.0,
+        "fairness": 6.0
+      }
+    },
+    {
+      "case_id": "content-v2-039-pos",
+      "state": {
+        "answer": "GIN",
+        "clue": "Spirit in a classic martini"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 64.0,
+        "feedback": "alcohol reference; use cotton gin/gin rummy angle",
+        "accuracy": 22.0,
+        "freshness": 18.0,
+        "craft": 18.0,
+        "fairness": 6.0
+      }
+    },
+    {
+      "case_id": "content-v2-038-pos",
+      "state": {
+        "answer": "BOURBON",
+        "clue": "Whiskey associated with Kentucky"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 92.0,
+        "feedback": "",
+        "accuracy": 24.0,
+        "freshness": 22.0,
+        "craft": 23.0,
+        "fairness": 23.0
+      }
+    },
+    {
+      "case_id": "content-history-d7cbb97a5274a3dc2ac0",
+      "state": {
+        "answer": "MOLD",
+        "clue": "Fuzzy growth on stale bread"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 94.0,
+        "feedback": "",
+        "accuracy": 24.0,
+        "freshness": 22.0,
+        "craft": 23.0,
+        "fairness": 25.0
+      }
+    },
+    {
+      "case_id": "content-v2-017-pos",
+      "state": {
+        "answer": "BULLET",
+        "clue": "Projectile fired from a gun"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 52.0,
+        "feedback": "gun reference, needs neutral family-friendly angle",
+        "accuracy": 22.0,
+        "freshness": 10.0,
+        "craft": 15.0,
+        "fairness": 5.0
+      }
+    },
+    {
+      "case_id": "content-v2-043-neg",
+      "state": {
+        "answer": "MALT",
+        "clue": "Milkshake with powdered grain flavoring"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 82.0,
+        "feedback": "slightly wordy but clear",
+        "accuracy": 22.0,
+        "freshness": 20.0,
+        "craft": 18.0,
+        "fairness": 22.0
+      }
+    },
+    {
+      "case_id": "content-history-ee21db60b1c8d9d968ae",
+      "state": {
+        "answer": "BEERS",
+        "clue": "Root, A&W, and Mug, all named for one"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 46.0,
+        "feedback": "leaks: root beer collocation; too hard for Easy",
+        "accuracy": 14.0,
+        "freshness": 10.0,
+        "craft": 14.0,
+        "fairness": 8.0
+      }
+    },
+    {
+      "case_id": "content-history-04fc6f6fd0a8dd3277b7",
+      "state": {
+        "answer": "BARS",
+        "clue": "Where a bartender works"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": false,
+      "grader_fairness_flag": true,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 38.0,
+        "feedback": "leaks: bar; alcohol reference; singular/plural mismatch",
+        "accuracy": 8.0,
+        "freshness": 15.0,
+        "craft": 10.0,
+        "fairness": 5.0
+      }
+    },
+    {
+      "case_id": "content-v2-040-pos",
+      "state": {
+        "answer": "RUM",
+        "clue": "Spirit used in a mojito"
+      },
+      "label_any_policy_violation": true,
+      "jev_flag": true,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 92.0,
+        "feedback": "",
+        "accuracy": 24.0,
+        "freshness": 23.0,
+        "craft": 23.0,
+        "fairness": 22.0
+      }
+    },
+    {
+      "case_id": "content-v2-018-neg",
+      "state": {
+        "answer": "CHAMBER",
+        "clue": "Room in a castle"
+      },
+      "label_any_policy_violation": false,
+      "jev_flag": false,
+      "grader_fairness_flag": false,
+      "grader": {
+        "number": 1,
+        "direction": "across",
+        "answer": "",
+        "score": 93.0,
+        "feedback": "",
+        "accuracy": 24.0,
+        "freshness": 22.0,
+        "craft": 23.0,
+        "fairness": 24.0
+      }
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "provider": "ollama",
+  "model": "llama3",
+  "options": {
+    "base_url": "http://localhost:11434"
+  }
+}

@@ -1,0 +1,5467 @@
+{
+  "left_run": "ef885ee5369dfc5f13bdac8e9da471c7972533e07ca8eed0703a896450b4720b",
+  "right_run": "362f191048c964330941b7e15e0b5333347a071aca38a7072460d5f2a2f9cb14",
+  "threshold": 0.5,
+  "paired_predictions": 682,
+  "left_only": 10,
+  "right_only": 0,
+  "decision_changes": 35,
+  "predictions": [
+    {
+      "case_id": "control-054",
+      "question": "plain_definition",
+      "left": 0.09,
+      "right": 0.9,
+      "delta": 0.81,
+      "decision_changed": true
+    },
+    {
+      "case_id": "control-066",
+      "question": "plain_definition",
+      "left": 0.17666666666666667,
+      "right": 0.9,
+      "delta": 0.7233333333333334,
+      "decision_changed": true
+    },
+    {
+      "case_id": "control-026",
+      "question": "plain_definition",
+      "left": 0.23333333333333334,
+      "right": 0.9,
+      "delta": 0.6666666666666667,
+      "decision_changed": true
+    },
+    {
+      "case_id": "control-044",
+      "question": "plain_definition",
+      "left": 0.23666666666666666,
+      "right": 0.9,
+      "delta": 0.6633333333333333,
+      "decision_changed": true
+    },
+    {
+      "case_id": "control-043",
+      "question": "plain_definition",
+      "left": 0.22333333333333333,
+      "right": 0.85,
+      "delta": 0.6266666666666667,
+      "decision_changed": true
+    },
+    {
+      "case_id": "control-032",
+      "question": "part_of_speech_mismatch",
+      "left": 0.6433333333333333,
+      "right": 0.05,
+      "delta": -0.5933333333333333,
+      "decision_changed": true
+    },
+    {
+      "case_id": "control-050",
+      "question": "plain_definition",
+      "left": 0.17,
+      "right": 0.75,
+      "delta": 0.58,
+      "decision_changed": true
+    },
+    {
+      "case_id": "control-015",
+      "question": "tense_mismatch",
+      "left": 0.32666666666666666,
+      "right": 0.9,
+      "delta": 0.5733333333333334,
+      "decision_changed": true
+    },
+    {
+      "case_id": "control-033",
+      "question": "drug_use_angle",
+      "left": 0.62,
+      "right": 0.05,
+      "delta": -0.57,
+      "decision_changed": true
+    },
+    {
+      "case_id": "control-025",
+      "question": "plain_definition",
+      "left": 0.35333333333333333,
+      "right": 0.92,
+      "delta": 0.5666666666666667,
+      "decision_changed": true
+    },
+    {
+      "case_id": "control-021",
+      "question": "part_of_speech_mismatch",
+      "left": 0.7066666666666667,
+      "right": 0.15,
+      "delta": -0.5566666666666666,
+      "decision_changed": true
+    },
+    {
+      "case_id": "control-036",
+      "question": "plain_definition",
+      "left": 0.29333333333333333,
+      "right": 0.85,
+      "delta": 0.5566666666666666,
+      "decision_changed": true
+    },
+    {
+      "case_id": "control-037",
+      "question": "plain_definition",
+      "left": 0.35,
+      "right": 0.9,
+      "delta": 0.55,
+      "decision_changed": true
+    },
+    {
+      "case_id": "control-034",
+      "question": "plain_definition",
+      "left": 0.37,
+      "right": 0.9,
+      "delta": 0.53,
+      "decision_changed": true
+    },
+    {
+      "case_id": "control-040",
+      "question": "part_of_speech_mismatch",
+      "left": 0.56,
+      "right": 0.03,
+      "delta": -0.53,
+      "decision_changed": true
+    },
+    {
+      "case_id": "control-021",
+      "question": "plain_definition",
+      "left": 0.33666666666666667,
+      "right": 0.85,
+      "delta": 0.5133333333333333,
+      "decision_changed": true
+    },
+    {
+      "case_id": "control-026",
+      "question": "part_of_speech_mismatch",
+      "left": 0.5533333333333333,
+      "right": 0.05,
+      "delta": -0.5033333333333333,
+      "decision_changed": true
+    },
+    {
+      "case_id": "control-057",
+      "question": "specialist_knowledge",
+      "left": 0.69,
+      "right": 0.2,
+      "delta": -0.48999999999999994,
+      "decision_changed": true
+    },
+    {
+      "case_id": "control-017",
+      "question": "tense_mismatch",
+      "left": 0.36333333333333334,
+      "right": 0.85,
+      "delta": 0.48666666666666664,
+      "decision_changed": true
+    },
+    {
+      "case_id": "control-035",
+      "question": "drug_use_angle",
+      "left": 0.49666666666666665,
+      "right": 0.01,
+      "delta": -0.48666666666666664,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-039",
+      "question": "part_of_speech_mismatch",
+      "left": 0.53,
+      "right": 0.05,
+      "delta": -0.48000000000000004,
+      "decision_changed": true
+    },
+    {
+      "case_id": "control-021",
+      "question": "unnatural_wording",
+      "left": 0.5266666666666667,
+      "right": 0.05,
+      "delta": -0.47666666666666674,
+      "decision_changed": true
+    },
+    {
+      "case_id": "control-005",
+      "question": "plain_definition",
+      "left": 0.08,
+      "right": 0.55,
+      "delta": 0.47000000000000003,
+      "decision_changed": true
+    },
+    {
+      "case_id": "control-038",
+      "question": "drug_use_angle",
+      "left": 0.4666666666666667,
+      "right": 0.0,
+      "delta": -0.4666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-055",
+      "question": "plain_definition",
+      "left": 0.39,
+      "right": 0.85,
+      "delta": 0.45999999999999996,
+      "decision_changed": true
+    },
+    {
+      "case_id": "control-003",
+      "question": "current_state",
+      "left": 0.29333333333333333,
+      "right": 0.75,
+      "delta": 0.45666666666666667,
+      "decision_changed": true
+    },
+    {
+      "case_id": "control-022",
+      "question": "part_of_speech_mismatch",
+      "left": 0.47333333333333333,
+      "right": 0.03,
+      "delta": -0.44333333333333336,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-063",
+      "question": "hint_new_angle",
+      "left": 0.59,
+      "right": 0.15,
+      "delta": -0.43999999999999995,
+      "decision_changed": true
+    },
+    {
+      "case_id": "control-009",
+      "question": "number_mismatch",
+      "left": 0.41333333333333333,
+      "right": 0.85,
+      "delta": 0.43666666666666665,
+      "decision_changed": true
+    },
+    {
+      "case_id": "control-053",
+      "question": "plain_definition",
+      "left": 0.41333333333333333,
+      "right": 0.85,
+      "delta": 0.43666666666666665,
+      "decision_changed": true
+    },
+    {
+      "case_id": "control-014",
+      "question": "plain_definition",
+      "left": 0.5466666666666666,
+      "right": 0.95,
+      "delta": 0.4033333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-033",
+      "question": "part_of_speech_mismatch",
+      "left": 0.5033333333333333,
+      "right": 0.1,
+      "delta": -0.4033333333333333,
+      "decision_changed": true
+    },
+    {
+      "case_id": "control-032",
+      "question": "plain_definition",
+      "left": 0.45333333333333337,
+      "right": 0.85,
+      "delta": 0.3966666666666666,
+      "decision_changed": true
+    },
+    {
+      "case_id": "control-058",
+      "question": "specialist_knowledge",
+      "left": 0.63,
+      "right": 0.25,
+      "delta": -0.38,
+      "decision_changed": true
+    },
+    {
+      "case_id": "control-064",
+      "question": "specialist_knowledge",
+      "left": 0.42333333333333334,
+      "right": 0.05,
+      "delta": -0.37333333333333335,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-029",
+      "question": "part_of_speech_mismatch",
+      "left": 0.4166666666666667,
+      "right": 0.05,
+      "delta": -0.3666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-056",
+      "question": "current_state",
+      "left": 0.38666666666666666,
+      "right": 0.02,
+      "delta": -0.36666666666666664,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-031",
+      "question": "current_state",
+      "left": 0.38333333333333336,
+      "right": 0.02,
+      "delta": -0.36333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-005",
+      "question": "number_mismatch",
+      "left": 0.19,
+      "right": 0.55,
+      "delta": 0.36000000000000004,
+      "decision_changed": true
+    },
+    {
+      "case_id": "control-031",
+      "question": "part_of_speech_mismatch",
+      "left": 0.41000000000000003,
+      "right": 0.05,
+      "delta": -0.36000000000000004,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-068",
+      "question": "current_state",
+      "left": 0.38,
+      "right": 0.02,
+      "delta": -0.36,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-035",
+      "question": "plain_definition",
+      "left": 0.5433333333333333,
+      "right": 0.9,
+      "delta": 0.3566666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-042",
+      "question": "current_state",
+      "left": 0.39999999999999997,
+      "right": 0.05,
+      "delta": -0.35,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-015",
+      "question": "current_state",
+      "left": 0.3666666666666667,
+      "right": 0.02,
+      "delta": -0.3466666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-034",
+      "question": "part_of_speech_mismatch",
+      "left": 0.37666666666666665,
+      "right": 0.03,
+      "delta": -0.3466666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-039",
+      "question": "plain_definition",
+      "left": 0.25333333333333335,
+      "right": 0.6,
+      "delta": 0.3466666666666666,
+      "decision_changed": true
+    },
+    {
+      "case_id": "control-037",
+      "question": "current_state",
+      "left": 0.35666666666666663,
+      "right": 0.02,
+      "delta": -0.3366666666666666,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-004",
+      "question": "specialist_knowledge",
+      "left": 0.53,
+      "right": 0.2,
+      "delta": -0.33,
+      "decision_changed": true
+    },
+    {
+      "case_id": "control-016",
+      "question": "current_state",
+      "left": 0.3433333333333333,
+      "right": 0.02,
+      "delta": -0.3233333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-054",
+      "question": "specialist_knowledge",
+      "left": 0.5700000000000001,
+      "right": 0.25,
+      "delta": -0.32000000000000006,
+      "decision_changed": true
+    },
+    {
+      "case_id": "control-020",
+      "question": "current_state",
+      "left": 0.34,
+      "right": 0.02,
+      "delta": -0.32,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-047",
+      "question": "plain_definition",
+      "left": 0.5833333333333333,
+      "right": 0.9,
+      "delta": 0.31666666666666676,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-011",
+      "question": "plain_definition",
+      "left": 0.6433333333333333,
+      "right": 0.95,
+      "delta": 0.30666666666666664,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-010",
+      "question": "current_state",
+      "left": 0.3233333333333333,
+      "right": 0.02,
+      "delta": -0.3033333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-009",
+      "question": "unnatural_wording",
+      "left": 0.32666666666666666,
+      "right": 0.03,
+      "delta": -0.29666666666666663,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-035",
+      "question": "unnatural_wording",
+      "left": 0.32666666666666666,
+      "right": 0.03,
+      "delta": -0.29666666666666663,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-042",
+      "question": "plain_definition",
+      "left": 0.6033333333333334,
+      "right": 0.9,
+      "delta": 0.29666666666666663,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-018",
+      "question": "part_of_speech_mismatch",
+      "left": 0.32333333333333336,
+      "right": 0.03,
+      "delta": -0.29333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-025",
+      "question": "part_of_speech_mismatch",
+      "left": 0.3233333333333333,
+      "right": 0.03,
+      "delta": -0.29333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-030",
+      "question": "plain_definition",
+      "left": 0.6066666666666667,
+      "right": 0.9,
+      "delta": 0.29333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-004",
+      "question": "part_of_speech_mismatch",
+      "left": 0.34,
+      "right": 0.05,
+      "delta": -0.29000000000000004,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-062",
+      "question": "unnatural_wording",
+      "left": 0.33333333333333337,
+      "right": 0.05,
+      "delta": -0.2833333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-004",
+      "question": "unnatural_wording",
+      "left": 0.30666666666666664,
+      "right": 0.03,
+      "delta": -0.2766666666666666,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-033",
+      "question": "current_state",
+      "left": 0.31666666666666665,
+      "right": 0.05,
+      "delta": -0.26666666666666666,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-001",
+      "question": "part_of_speech_mismatch",
+      "left": 0.31333333333333335,
+      "right": 0.05,
+      "delta": -0.26333333333333336,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-009",
+      "question": "current_state",
+      "left": 0.2833333333333333,
+      "right": 0.02,
+      "delta": -0.2633333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-027",
+      "question": "specialist_knowledge",
+      "left": 0.36,
+      "right": 0.1,
+      "delta": -0.26,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-028",
+      "question": "plain_definition",
+      "left": 0.6633333333333333,
+      "right": 0.92,
+      "delta": 0.2566666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-068",
+      "question": "specialist_knowledge",
+      "left": 0.55,
+      "right": 0.3,
+      "delta": -0.25000000000000006,
+      "decision_changed": true
+    },
+    {
+      "case_id": "control-012",
+      "question": "plain_definition",
+      "left": 0.7,
+      "right": 0.95,
+      "delta": 0.25,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-025",
+      "question": "unnatural_wording",
+      "left": 0.28,
+      "right": 0.03,
+      "delta": -0.25,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-026",
+      "question": "tense_mismatch",
+      "left": 0.27,
+      "right": 0.02,
+      "delta": -0.25,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-038",
+      "question": "tense_mismatch",
+      "left": 0.25,
+      "right": 0.0,
+      "delta": -0.25,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-002",
+      "question": "unnatural_wording",
+      "left": 0.29333333333333333,
+      "right": 0.05,
+      "delta": -0.24333333333333335,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-049",
+      "question": "specialist_knowledge",
+      "left": 0.29,
+      "right": 0.05,
+      "delta": -0.24,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-029",
+      "question": "plain_definition",
+      "left": 0.6133333333333333,
+      "right": 0.85,
+      "delta": 0.2366666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-056",
+      "question": "plain_definition",
+      "left": 0.7133333333333333,
+      "right": 0.95,
+      "delta": 0.2366666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-018",
+      "question": "plain_definition",
+      "left": 0.6733333333333333,
+      "right": 0.9,
+      "delta": 0.22666666666666668,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-049",
+      "question": "tense_mismatch",
+      "left": 0.24666666666666667,
+      "right": 0.02,
+      "delta": -0.22666666666666668,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-029",
+      "question": "unnatural_wording",
+      "left": 0.25666666666666665,
+      "right": 0.03,
+      "delta": -0.22666666666666666,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-030",
+      "question": "part_of_speech_mismatch",
+      "left": 0.25666666666666665,
+      "right": 0.03,
+      "delta": -0.22666666666666666,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-045",
+      "question": "drug_use_angle",
+      "left": 0.23666666666666666,
+      "right": 0.01,
+      "delta": -0.22666666666666666,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-030",
+      "question": "tense_mismatch",
+      "left": 0.25333333333333335,
+      "right": 0.03,
+      "delta": -0.22333333333333336,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-040",
+      "question": "tense_mismatch",
+      "left": 0.24333333333333335,
+      "right": 0.02,
+      "delta": -0.22333333333333336,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-002",
+      "question": "part_of_speech_mismatch",
+      "left": 0.2733333333333333,
+      "right": 0.05,
+      "delta": -0.22333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-041",
+      "question": "plain_definition",
+      "left": 0.7,
+      "right": 0.92,
+      "delta": 0.22000000000000008,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-029",
+      "question": "tense_mismatch",
+      "left": 0.25,
+      "right": 0.03,
+      "delta": -0.22,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-062",
+      "question": "current_state",
+      "left": 0.24,
+      "right": 0.02,
+      "delta": -0.22,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-063",
+      "question": "tense_mismatch",
+      "left": 0.24,
+      "right": 0.02,
+      "delta": -0.22,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-022",
+      "question": "unnatural_wording",
+      "left": 0.24666666666666667,
+      "right": 0.03,
+      "delta": -0.21666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-066",
+      "question": "same_clue_angle",
+      "left": 0.24666666666666667,
+      "right": 0.03,
+      "delta": -0.21666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-035",
+      "question": "current_state",
+      "left": 0.23333333333333334,
+      "right": 0.02,
+      "delta": -0.21333333333333335,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-023",
+      "question": "part_of_speech_mismatch",
+      "left": 0.31,
+      "right": 0.1,
+      "delta": -0.21,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-048",
+      "question": "tense_mismatch",
+      "left": 0.22666666666666668,
+      "right": 0.02,
+      "delta": -0.2066666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-051",
+      "question": "tense_mismatch",
+      "left": 0.22666666666666668,
+      "right": 0.02,
+      "delta": -0.2066666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-011",
+      "question": "tense_mismatch",
+      "left": 0.22666666666666666,
+      "right": 0.02,
+      "delta": -0.20666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-050",
+      "question": "tense_mismatch",
+      "left": 0.22666666666666666,
+      "right": 0.02,
+      "delta": -0.20666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-001",
+      "question": "unnatural_wording",
+      "left": 0.25333333333333335,
+      "right": 0.05,
+      "delta": -0.20333333333333337,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-002",
+      "question": "current_state",
+      "left": 0.25333333333333335,
+      "right": 0.05,
+      "delta": -0.20333333333333337,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-017",
+      "question": "part_of_speech_mismatch",
+      "left": 0.30333333333333334,
+      "right": 0.1,
+      "delta": -0.20333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-037",
+      "question": "tense_mismatch",
+      "left": 0.22333333333333333,
+      "right": 0.02,
+      "delta": -0.20333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-027",
+      "question": "current_state",
+      "left": 0.23,
+      "right": 0.03,
+      "delta": -0.2,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-013",
+      "question": "plain_definition",
+      "left": 0.75,
+      "right": 0.95,
+      "delta": 0.19999999999999996,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-048",
+      "question": "current_state",
+      "left": 0.21666666666666667,
+      "right": 0.02,
+      "delta": -0.19666666666666668,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-064",
+      "question": "drug_use_angle",
+      "left": 0.21666666666666667,
+      "right": 0.02,
+      "delta": -0.19666666666666668,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-007",
+      "question": "number_mismatch",
+      "left": 0.7066666666666667,
+      "right": 0.9,
+      "delta": 0.19333333333333336,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-047",
+      "question": "tense_mismatch",
+      "left": 0.21333333333333335,
+      "right": 0.02,
+      "delta": -0.19333333333333336,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-064",
+      "question": "tense_mismatch",
+      "left": 0.21333333333333335,
+      "right": 0.02,
+      "delta": -0.19333333333333336,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-039",
+      "question": "specialist_knowledge",
+      "left": 0.24333333333333332,
+      "right": 0.05,
+      "delta": -0.1933333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-017",
+      "question": "unnatural_wording",
+      "left": 0.24,
+      "right": 0.05,
+      "delta": -0.19,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-018",
+      "question": "tense_mismatch",
+      "left": 0.21,
+      "right": 0.02,
+      "delta": -0.19,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-031",
+      "question": "specialist_knowledge",
+      "left": 0.22,
+      "right": 0.03,
+      "delta": -0.19,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-031",
+      "question": "tense_mismatch",
+      "left": 0.21,
+      "right": 0.02,
+      "delta": -0.19,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-034",
+      "question": "tense_mismatch",
+      "left": 0.21,
+      "right": 0.02,
+      "delta": -0.19,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-035",
+      "question": "tense_mismatch",
+      "left": 0.21,
+      "right": 0.02,
+      "delta": -0.19,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-061",
+      "question": "tense_mismatch",
+      "left": 0.21,
+      "right": 0.02,
+      "delta": -0.19,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-066",
+      "question": "tense_mismatch",
+      "left": 0.21,
+      "right": 0.02,
+      "delta": -0.19,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-005",
+      "question": "tense_mismatch",
+      "left": 0.20666666666666667,
+      "right": 0.02,
+      "delta": -0.18666666666666668,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-012",
+      "question": "tense_mismatch",
+      "left": 0.20666666666666667,
+      "right": 0.02,
+      "delta": -0.18666666666666668,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-031",
+      "question": "unnatural_wording",
+      "left": 0.21666666666666667,
+      "right": 0.03,
+      "delta": -0.18666666666666668,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-036",
+      "question": "tense_mismatch",
+      "left": 0.20666666666666667,
+      "right": 0.02,
+      "delta": -0.18666666666666668,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-052",
+      "question": "tense_mismatch",
+      "left": 0.20666666666666667,
+      "right": 0.02,
+      "delta": -0.18666666666666668,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-063",
+      "question": "current_state",
+      "left": 0.20666666666666667,
+      "right": 0.02,
+      "delta": -0.18666666666666668,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-032",
+      "question": "tense_mismatch",
+      "left": 0.23666666666666666,
+      "right": 0.05,
+      "delta": -0.18666666666666665,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-062",
+      "question": "specialist_knowledge",
+      "left": 0.48666666666666664,
+      "right": 0.3,
+      "delta": -0.18666666666666665,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-010",
+      "question": "tense_mismatch",
+      "left": 0.20333333333333334,
+      "right": 0.02,
+      "delta": -0.18333333333333335,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-055",
+      "question": "tense_mismatch",
+      "left": 0.20333333333333334,
+      "right": 0.02,
+      "delta": -0.18333333333333335,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-036",
+      "question": "unnatural_wording",
+      "left": 0.21333333333333332,
+      "right": 0.03,
+      "delta": -0.18333333333333332,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-040",
+      "question": "plain_definition",
+      "left": 0.72,
+      "right": 0.9,
+      "delta": 0.18000000000000005,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-014",
+      "question": "tense_mismatch",
+      "left": 0.2,
+      "right": 0.02,
+      "delta": -0.18000000000000002,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-044",
+      "question": "tense_mismatch",
+      "left": 0.2,
+      "right": 0.02,
+      "delta": -0.18000000000000002,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-025",
+      "question": "tense_mismatch",
+      "left": 0.23,
+      "right": 0.05,
+      "delta": -0.18,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-043",
+      "question": "tense_mismatch",
+      "left": 0.19666666666666666,
+      "right": 0.02,
+      "delta": -0.17666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-067",
+      "question": "plain_definition",
+      "left": 0.7733333333333333,
+      "right": 0.95,
+      "delta": 0.17666666666666664,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-003",
+      "question": "unnatural_wording",
+      "left": 0.22333333333333333,
+      "right": 0.05,
+      "delta": -0.17333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-045",
+      "question": "tense_mismatch",
+      "left": 0.19333333333333333,
+      "right": 0.02,
+      "delta": -0.17333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-046",
+      "question": "tense_mismatch",
+      "left": 0.17333333333333334,
+      "right": 0.0,
+      "delta": -0.17333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-001",
+      "question": "tense_mismatch",
+      "left": 0.19,
+      "right": 0.02,
+      "delta": -0.17,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-004",
+      "question": "tense_mismatch",
+      "left": 0.19,
+      "right": 0.02,
+      "delta": -0.17,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-007",
+      "question": "tense_mismatch",
+      "left": 0.19,
+      "right": 0.02,
+      "delta": -0.17,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-008",
+      "question": "tense_mismatch",
+      "left": 0.19,
+      "right": 0.02,
+      "delta": -0.17,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-041",
+      "question": "tense_mismatch",
+      "left": 0.19,
+      "right": 0.02,
+      "delta": -0.17,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-006",
+      "question": "unnatural_wording",
+      "left": 0.22,
+      "right": 0.05,
+      "delta": -0.16999999999999998,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-068",
+      "question": "unnatural_wording",
+      "left": 0.22,
+      "right": 0.05,
+      "delta": -0.16999999999999998,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-003",
+      "question": "part_of_speech_mismatch",
+      "left": 0.21666666666666667,
+      "right": 0.05,
+      "delta": -0.16666666666666669,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-005",
+      "question": "part_of_speech_mismatch",
+      "left": 0.21666666666666667,
+      "right": 0.05,
+      "delta": -0.16666666666666669,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-031",
+      "question": "number_mismatch",
+      "left": 0.19666666666666668,
+      "right": 0.03,
+      "delta": -0.16666666666666669,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-054",
+      "question": "tense_mismatch",
+      "left": 0.18666666666666668,
+      "right": 0.02,
+      "delta": -0.16666666666666669,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-057",
+      "question": "tense_mismatch",
+      "left": 0.18666666666666668,
+      "right": 0.02,
+      "delta": -0.16666666666666669,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-068",
+      "question": "same_clue_angle",
+      "left": 0.21666666666666667,
+      "right": 0.05,
+      "delta": -0.16666666666666669,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-062",
+      "question": "tense_mismatch",
+      "left": 0.18333333333333335,
+      "right": 0.02,
+      "delta": -0.16333333333333336,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-013",
+      "question": "tense_mismatch",
+      "left": 0.19333333333333333,
+      "right": 0.03,
+      "delta": -0.16333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-062",
+      "question": "drug_use_angle",
+      "left": 0.21333333333333332,
+      "right": 0.05,
+      "delta": -0.16333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-001",
+      "question": "current_state",
+      "left": 0.69,
+      "right": 0.85,
+      "delta": 0.16000000000000003,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-011",
+      "question": "number_mismatch",
+      "left": 0.76,
+      "right": 0.6,
+      "delta": -0.16000000000000003,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-042",
+      "question": "tense_mismatch",
+      "left": 0.18000000000000002,
+      "right": 0.02,
+      "delta": -0.16000000000000003,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-013",
+      "question": "specialist_knowledge",
+      "left": 0.18,
+      "right": 0.02,
+      "delta": -0.16,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-028",
+      "question": "tense_mismatch",
+      "left": 0.18,
+      "right": 0.02,
+      "delta": -0.16,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-044",
+      "question": "unnatural_wording",
+      "left": 0.19,
+      "right": 0.03,
+      "delta": -0.16,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-002",
+      "question": "tense_mismatch",
+      "left": 0.20666666666666667,
+      "right": 0.05,
+      "delta": -0.15666666666666668,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-021",
+      "question": "current_state",
+      "left": 0.17666666666666667,
+      "right": 0.02,
+      "delta": -0.15666666666666668,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-031",
+      "question": "firearms_angle",
+      "left": 0.20666666666666667,
+      "right": 0.05,
+      "delta": -0.15666666666666668,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-009",
+      "question": "tense_mismatch",
+      "left": 0.17333333333333334,
+      "right": 0.02,
+      "delta": -0.15333333333333335,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-013",
+      "question": "current_state",
+      "left": 0.17333333333333334,
+      "right": 0.02,
+      "delta": -0.15333333333333335,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-039",
+      "question": "tense_mismatch",
+      "left": 0.18333333333333335,
+      "right": 0.03,
+      "delta": -0.15333333333333335,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-056",
+      "question": "tense_mismatch",
+      "left": 0.17333333333333334,
+      "right": 0.02,
+      "delta": -0.15333333333333335,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-060",
+      "question": "tense_mismatch",
+      "left": 0.17333333333333334,
+      "right": 0.02,
+      "delta": -0.15333333333333335,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-006",
+      "question": "number_mismatch",
+      "left": 0.19666666666666666,
+      "right": 0.35,
+      "delta": 0.15333333333333332,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-017",
+      "question": "plain_definition",
+      "left": 0.5966666666666667,
+      "right": 0.75,
+      "delta": 0.15333333333333332,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-065",
+      "question": "tense_mismatch",
+      "left": 0.18333333333333332,
+      "right": 0.03,
+      "delta": -0.15333333333333332,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-031",
+      "question": "drug_use_angle",
+      "left": 0.17,
+      "right": 0.02,
+      "delta": -0.15000000000000002,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-034",
+      "question": "alcohol_angle",
+      "left": 0.2,
+      "right": 0.05,
+      "delta": -0.15000000000000002,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-034",
+      "question": "current_state",
+      "left": 0.17,
+      "right": 0.02,
+      "delta": -0.15000000000000002,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-068",
+      "question": "tense_mismatch",
+      "left": 0.17,
+      "right": 0.02,
+      "delta": -0.15000000000000002,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-037",
+      "question": "part_of_speech_mismatch",
+      "left": 0.18,
+      "right": 0.03,
+      "delta": -0.15,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-053",
+      "question": "tense_mismatch",
+      "left": 0.16666666666666669,
+      "right": 0.02,
+      "delta": -0.1466666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-010",
+      "question": "unnatural_wording",
+      "left": 0.17666666666666667,
+      "right": 0.03,
+      "delta": -0.14666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-020",
+      "question": "tense_mismatch",
+      "left": 0.19666666666666668,
+      "right": 0.05,
+      "delta": -0.14666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-021",
+      "question": "tense_mismatch",
+      "left": 0.17666666666666667,
+      "right": 0.03,
+      "delta": -0.14666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-036",
+      "question": "specialist_knowledge",
+      "left": 0.17333333333333334,
+      "right": 0.03,
+      "delta": -0.14333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-057",
+      "question": "current_state",
+      "left": 0.17333333333333334,
+      "right": 0.03,
+      "delta": -0.14333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-058",
+      "question": "tense_mismatch",
+      "left": 0.16333333333333333,
+      "right": 0.02,
+      "delta": -0.14333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-057",
+      "question": "part_of_speech_mismatch",
+      "left": 0.19333333333333333,
+      "right": 0.05,
+      "delta": -0.1433333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-005",
+      "question": "specialist_knowledge",
+      "left": 0.19,
+      "right": 0.05,
+      "delta": -0.14,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-006",
+      "question": "tense_mismatch",
+      "left": 0.19,
+      "right": 0.05,
+      "delta": -0.14,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-009",
+      "question": "plain_definition",
+      "left": 0.76,
+      "right": 0.9,
+      "delta": 0.14,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-016",
+      "question": "tense_mismatch",
+      "left": 0.19,
+      "right": 0.05,
+      "delta": -0.14,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-033",
+      "question": "unnatural_wording",
+      "left": 0.24,
+      "right": 0.1,
+      "delta": -0.13999999999999999,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-055",
+      "question": "specialist_knowledge",
+      "left": 0.69,
+      "right": 0.55,
+      "delta": -0.1399999999999999,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-057",
+      "question": "unnatural_wording",
+      "left": 0.48666666666666664,
+      "right": 0.35,
+      "delta": -0.13666666666666666,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-051",
+      "question": "plain_definition",
+      "left": 0.8133333333333334,
+      "right": 0.95,
+      "delta": 0.1366666666666666,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-023",
+      "question": "tense_mismatch",
+      "left": 0.18333333333333335,
+      "right": 0.05,
+      "delta": -0.13333333333333336,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-024",
+      "question": "tense_mismatch",
+      "left": 0.15333333333333335,
+      "right": 0.02,
+      "delta": -0.13333333333333336,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-003",
+      "question": "tense_mismatch",
+      "left": 0.15,
+      "right": 0.02,
+      "delta": -0.13,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-007",
+      "question": "current_state",
+      "left": 0.15,
+      "right": 0.02,
+      "delta": -0.13,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-018",
+      "question": "unnatural_wording",
+      "left": 0.16,
+      "right": 0.03,
+      "delta": -0.13,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-047",
+      "question": "unnatural_wording",
+      "left": 0.16,
+      "right": 0.03,
+      "delta": -0.13,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-049",
+      "question": "part_of_speech_mismatch",
+      "left": 0.16,
+      "right": 0.03,
+      "delta": -0.13,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-054",
+      "question": "unnatural_wording",
+      "left": 0.16,
+      "right": 0.03,
+      "delta": -0.13,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-058",
+      "question": "current_state",
+      "left": 0.16,
+      "right": 0.03,
+      "delta": -0.13,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-067",
+      "question": "tense_mismatch",
+      "left": 0.15,
+      "right": 0.02,
+      "delta": -0.13,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-006",
+      "question": "specialist_knowledge",
+      "left": 0.7233333333333333,
+      "right": 0.85,
+      "delta": 0.1266666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-015",
+      "question": "plain_definition",
+      "left": 0.8766666666666667,
+      "right": 0.75,
+      "delta": -0.1266666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-062",
+      "question": "hint_easier",
+      "left": 0.8233333333333333,
+      "right": 0.95,
+      "delta": 0.1266666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-064",
+      "question": "plain_definition",
+      "left": 0.8233333333333333,
+      "right": 0.95,
+      "delta": 0.1266666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-066",
+      "question": "unnatural_wording",
+      "left": 0.15666666666666668,
+      "right": 0.03,
+      "delta": -0.12666666666666668,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-043",
+      "question": "specialist_knowledge",
+      "left": 0.17666666666666667,
+      "right": 0.05,
+      "delta": -0.12666666666666665,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-011",
+      "question": "specialist_knowledge",
+      "left": 0.14333333333333334,
+      "right": 0.02,
+      "delta": -0.12333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-017",
+      "question": "specialist_knowledge",
+      "left": 0.14333333333333334,
+      "right": 0.02,
+      "delta": -0.12333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-031",
+      "question": "alcohol_angle",
+      "left": 0.14333333333333334,
+      "right": 0.02,
+      "delta": -0.12333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-001",
+      "question": "number_mismatch",
+      "left": 0.15333333333333332,
+      "right": 0.03,
+      "delta": -0.12333333333333332,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-027",
+      "question": "tense_mismatch",
+      "left": 0.22333333333333333,
+      "right": 0.1,
+      "delta": -0.12333333333333332,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-032",
+      "question": "unnatural_wording",
+      "left": 0.17,
+      "right": 0.05,
+      "delta": -0.12000000000000001,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-034",
+      "question": "drug_use_angle",
+      "left": 0.13,
+      "right": 0.01,
+      "delta": -0.12000000000000001,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-040",
+      "question": "current_state",
+      "left": 0.14,
+      "right": 0.02,
+      "delta": -0.12000000000000001,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-048",
+      "question": "unnatural_wording",
+      "left": 0.17,
+      "right": 0.05,
+      "delta": -0.12000000000000001,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-007",
+      "question": "unnatural_wording",
+      "left": 0.15,
+      "right": 0.03,
+      "delta": -0.12,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-020",
+      "question": "plain_definition",
+      "left": 0.83,
+      "right": 0.95,
+      "delta": 0.12,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-059",
+      "question": "plain_definition",
+      "left": 0.42,
+      "right": 0.3,
+      "delta": -0.12,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-036",
+      "question": "part_of_speech_mismatch",
+      "left": 0.16666666666666669,
+      "right": 0.05,
+      "delta": -0.11666666666666668,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-008",
+      "question": "unnatural_wording",
+      "left": 0.14666666666666667,
+      "right": 0.03,
+      "delta": -0.11666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-037",
+      "question": "unnatural_wording",
+      "left": 0.14666666666666667,
+      "right": 0.03,
+      "delta": -0.11666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-059",
+      "question": "tense_mismatch",
+      "left": 0.21666666666666667,
+      "right": 0.1,
+      "delta": -0.11666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-013",
+      "question": "part_of_speech_mismatch",
+      "left": 0.14333333333333334,
+      "right": 0.03,
+      "delta": -0.11333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-061",
+      "question": "part_of_speech_mismatch",
+      "left": 0.14333333333333334,
+      "right": 0.03,
+      "delta": -0.11333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-001",
+      "question": "alcohol_angle",
+      "left": 0.11333333333333333,
+      "right": 0.0,
+      "delta": -0.11333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-018",
+      "question": "current_state",
+      "left": 0.13333333333333333,
+      "right": 0.02,
+      "delta": -0.11333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-022",
+      "question": "tense_mismatch",
+      "left": 0.13333333333333333,
+      "right": 0.02,
+      "delta": -0.11333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-062",
+      "question": "part_of_speech_mismatch",
+      "left": 0.16333333333333333,
+      "right": 0.05,
+      "delta": -0.11333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-063",
+      "question": "unnatural_wording",
+      "left": 0.16333333333333333,
+      "right": 0.05,
+      "delta": -0.11333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-001",
+      "question": "specialist_knowledge",
+      "left": 0.6633333333333333,
+      "right": 0.55,
+      "delta": -0.11333333333333329,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-064",
+      "question": "part_of_speech_mismatch",
+      "left": 0.14,
+      "right": 0.03,
+      "delta": -0.11000000000000001,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-065",
+      "question": "part_of_speech_mismatch",
+      "left": 0.14,
+      "right": 0.03,
+      "delta": -0.11000000000000001,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-012",
+      "question": "specialist_knowledge",
+      "left": 0.13,
+      "right": 0.02,
+      "delta": -0.11,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-015",
+      "question": "part_of_speech_mismatch",
+      "left": 0.16,
+      "right": 0.05,
+      "delta": -0.11,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-028",
+      "question": "number_mismatch",
+      "left": 0.16,
+      "right": 0.05,
+      "delta": -0.11,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-046",
+      "question": "unnatural_wording",
+      "left": 0.11,
+      "right": 0.0,
+      "delta": -0.11,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-066",
+      "question": "current_state",
+      "left": 0.13,
+      "right": 0.02,
+      "delta": -0.11,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-006",
+      "question": "part_of_speech_mismatch",
+      "left": 0.21,
+      "right": 0.1,
+      "delta": -0.10999999999999999,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-033",
+      "question": "tense_mismatch",
+      "left": 0.21,
+      "right": 0.1,
+      "delta": -0.10999999999999999,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-014",
+      "question": "unnatural_wording",
+      "left": 0.1366666666666667,
+      "right": 0.03,
+      "delta": -0.10666666666666669,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-060",
+      "question": "plain_definition",
+      "left": 0.7933333333333333,
+      "right": 0.9,
+      "delta": 0.10666666666666669,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-063",
+      "question": "number_mismatch",
+      "left": 0.1366666666666667,
+      "right": 0.03,
+      "delta": -0.10666666666666669,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-042",
+      "question": "number_mismatch",
+      "left": 0.15666666666666668,
+      "right": 0.05,
+      "delta": -0.10666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-041",
+      "question": "unnatural_wording",
+      "left": 0.13666666666666666,
+      "right": 0.03,
+      "delta": -0.10666666666666666,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-005",
+      "question": "unnatural_wording",
+      "left": 0.15333333333333335,
+      "right": 0.05,
+      "delta": -0.10333333333333335,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-014",
+      "question": "part_of_speech_mismatch",
+      "left": 0.12333333333333334,
+      "right": 0.02,
+      "delta": -0.10333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-020",
+      "question": "part_of_speech_mismatch",
+      "left": 0.13333333333333333,
+      "right": 0.03,
+      "delta": -0.10333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-028",
+      "question": "unnatural_wording",
+      "left": 0.13333333333333333,
+      "right": 0.03,
+      "delta": -0.10333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-048",
+      "question": "number_mismatch",
+      "left": 0.13333333333333333,
+      "right": 0.03,
+      "delta": -0.10333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-067",
+      "question": "unnatural_wording",
+      "left": 0.13333333333333333,
+      "right": 0.03,
+      "delta": -0.10333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-030",
+      "question": "unnatural_wording",
+      "left": 0.13,
+      "right": 0.03,
+      "delta": -0.1,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-032",
+      "question": "specialist_knowledge",
+      "left": 0.13,
+      "right": 0.03,
+      "delta": -0.1,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-060",
+      "question": "current_state",
+      "left": 0.12,
+      "right": 0.02,
+      "delta": -0.09999999999999999,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-052",
+      "question": "plain_definition",
+      "left": 0.85,
+      "right": 0.95,
+      "delta": 0.09999999999999998,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-012",
+      "question": "number_mismatch",
+      "left": 0.11666666666666667,
+      "right": 0.02,
+      "delta": -0.09666666666666666,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-048",
+      "question": "part_of_speech_mismatch",
+      "left": 0.14666666666666667,
+      "right": 0.05,
+      "delta": -0.09666666666666666,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-037",
+      "question": "number_mismatch",
+      "left": 0.12333333333333334,
+      "right": 0.03,
+      "delta": -0.09333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-049",
+      "question": "number_mismatch",
+      "left": 0.14333333333333334,
+      "right": 0.05,
+      "delta": -0.09333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-064",
+      "question": "number_mismatch",
+      "left": 0.12333333333333334,
+      "right": 0.03,
+      "delta": -0.09333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-068",
+      "question": "drug_use_angle",
+      "left": 0.14333333333333334,
+      "right": 0.05,
+      "delta": -0.09333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-047",
+      "question": "current_state",
+      "left": 0.11333333333333333,
+      "right": 0.02,
+      "delta": -0.09333333333333332,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-003",
+      "question": "specialist_knowledge",
+      "left": 0.44,
+      "right": 0.35,
+      "delta": -0.09000000000000002,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-055",
+      "question": "unnatural_wording",
+      "left": 0.14,
+      "right": 0.05,
+      "delta": -0.09000000000000001,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-001",
+      "question": "drug_use_angle",
+      "left": 0.09,
+      "right": 0.0,
+      "delta": -0.09,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-004",
+      "question": "current_state",
+      "left": 0.12,
+      "right": 0.03,
+      "delta": -0.09,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-008",
+      "question": "number_mismatch",
+      "left": 0.11,
+      "right": 0.02,
+      "delta": -0.09,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-054",
+      "question": "part_of_speech_mismatch",
+      "left": 0.12,
+      "right": 0.03,
+      "delta": -0.09,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-057",
+      "question": "number_mismatch",
+      "left": 0.11,
+      "right": 0.02,
+      "delta": -0.09,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-012",
+      "question": "unnatural_wording",
+      "left": 0.11666666666666667,
+      "right": 0.03,
+      "delta": -0.08666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-026",
+      "question": "current_state",
+      "left": 0.10666666666666667,
+      "right": 0.02,
+      "delta": -0.08666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-032",
+      "question": "current_state",
+      "left": 0.11666666666666667,
+      "right": 0.03,
+      "delta": -0.08666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-035",
+      "question": "number_mismatch",
+      "left": 0.11666666666666667,
+      "right": 0.03,
+      "delta": -0.08666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-045",
+      "question": "part_of_speech_mismatch",
+      "left": 0.11666666666666667,
+      "right": 0.03,
+      "delta": -0.08666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-051",
+      "question": "unnatural_wording",
+      "left": 0.10666666666666667,
+      "right": 0.02,
+      "delta": -0.08666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-055",
+      "question": "current_state",
+      "left": 0.10666666666666667,
+      "right": 0.02,
+      "delta": -0.08666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-056",
+      "question": "part_of_speech_mismatch",
+      "left": 0.11666666666666667,
+      "right": 0.03,
+      "delta": -0.08666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-065",
+      "question": "unnatural_wording",
+      "left": 0.10666666666666667,
+      "right": 0.02,
+      "delta": -0.08666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-054",
+      "question": "number_mismatch",
+      "left": 0.13666666666666666,
+      "right": 0.05,
+      "delta": -0.08666666666666666,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-063",
+      "question": "part_of_speech_mismatch",
+      "left": 0.13666666666666666,
+      "right": 0.05,
+      "delta": -0.08666666666666666,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-050",
+      "question": "part_of_speech_mismatch",
+      "left": 0.11333333333333334,
+      "right": 0.03,
+      "delta": -0.08333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-059",
+      "question": "part_of_speech_mismatch",
+      "left": 0.23333333333333334,
+      "right": 0.15,
+      "delta": -0.08333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-002",
+      "question": "number_mismatch",
+      "left": 0.10333333333333333,
+      "right": 0.02,
+      "delta": -0.08333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-004",
+      "question": "number_mismatch",
+      "left": 0.10333333333333333,
+      "right": 0.02,
+      "delta": -0.08333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-008",
+      "question": "current_state",
+      "left": 0.10333333333333333,
+      "right": 0.02,
+      "delta": -0.08333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-046",
+      "question": "part_of_speech_mismatch",
+      "left": 0.08333333333333333,
+      "right": 0.0,
+      "delta": -0.08333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-056",
+      "question": "unnatural_wording",
+      "left": 0.10333333333333333,
+      "right": 0.02,
+      "delta": -0.08333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-066",
+      "question": "part_of_speech_mismatch",
+      "left": 0.11333333333333333,
+      "right": 0.03,
+      "delta": -0.08333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-008",
+      "question": "plain_definition",
+      "left": 0.8666666666666667,
+      "right": 0.95,
+      "delta": 0.08333333333333326,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-011",
+      "question": "unnatural_wording",
+      "left": 0.11,
+      "right": 0.03,
+      "delta": -0.08,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-017",
+      "question": "current_state",
+      "left": 0.1,
+      "right": 0.02,
+      "delta": -0.08,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-026",
+      "question": "number_mismatch",
+      "left": 0.11,
+      "right": 0.03,
+      "delta": -0.08,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-029",
+      "question": "current_state",
+      "left": 0.1,
+      "right": 0.02,
+      "delta": -0.08,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-035",
+      "question": "part_of_speech_mismatch",
+      "left": 0.11,
+      "right": 0.03,
+      "delta": -0.08,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-037",
+      "question": "specialist_knowledge",
+      "left": 0.1,
+      "right": 0.02,
+      "delta": -0.08,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-038",
+      "question": "part_of_speech_mismatch",
+      "left": 0.08,
+      "right": 0.0,
+      "delta": -0.08,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-044",
+      "question": "current_state",
+      "left": 0.1,
+      "right": 0.02,
+      "delta": -0.08,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-047",
+      "question": "part_of_speech_mismatch",
+      "left": 0.11,
+      "right": 0.03,
+      "delta": -0.08,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-058",
+      "question": "unnatural_wording",
+      "left": 0.13,
+      "right": 0.05,
+      "delta": -0.08,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-060",
+      "question": "unnatural_wording",
+      "left": 0.11,
+      "right": 0.03,
+      "delta": -0.08,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-013",
+      "question": "unnatural_wording",
+      "left": 0.09999999999999999,
+      "right": 0.02,
+      "delta": -0.07999999999999999,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-058",
+      "question": "part_of_speech_mismatch",
+      "left": 0.18,
+      "right": 0.1,
+      "delta": -0.07999999999999999,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-028",
+      "question": "part_of_speech_mismatch",
+      "left": 0.10666666666666667,
+      "right": 0.03,
+      "delta": -0.07666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-039",
+      "question": "unnatural_wording",
+      "left": 0.12666666666666668,
+      "right": 0.05,
+      "delta": -0.07666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-040",
+      "question": "unnatural_wording",
+      "left": 0.10666666666666667,
+      "right": 0.03,
+      "delta": -0.07666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-042",
+      "question": "specialist_knowledge",
+      "left": 0.12666666666666668,
+      "right": 0.05,
+      "delta": -0.07666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-052",
+      "question": "unnatural_wording",
+      "left": 0.10666666666666667,
+      "right": 0.03,
+      "delta": -0.07666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-066",
+      "question": "specialist_knowledge",
+      "left": 0.10666666666666667,
+      "right": 0.03,
+      "delta": -0.07666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-010",
+      "question": "part_of_speech_mismatch",
+      "left": 0.09666666666666666,
+      "right": 0.02,
+      "delta": -0.07666666666666666,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-022",
+      "question": "current_state",
+      "left": 0.09666666666666666,
+      "right": 0.02,
+      "delta": -0.07666666666666666,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-024",
+      "question": "unnatural_wording",
+      "left": 0.09666666666666666,
+      "right": 0.02,
+      "delta": -0.07666666666666666,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-039",
+      "question": "current_state",
+      "left": 0.09666666666666666,
+      "right": 0.02,
+      "delta": -0.07666666666666666,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-055",
+      "question": "firearms_angle",
+      "left": 0.09666666666666666,
+      "right": 0.02,
+      "delta": -0.07666666666666666,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-061",
+      "question": "hint_easier",
+      "left": 0.17666666666666667,
+      "right": 0.1,
+      "delta": -0.07666666666666666,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-066",
+      "question": "number_mismatch",
+      "left": 0.09666666666666666,
+      "right": 0.02,
+      "delta": -0.07666666666666666,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-009",
+      "question": "part_of_speech_mismatch",
+      "left": 0.10333333333333333,
+      "right": 0.03,
+      "delta": -0.07333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-011",
+      "question": "part_of_speech_mismatch",
+      "left": 0.10333333333333333,
+      "right": 0.03,
+      "delta": -0.07333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-024",
+      "question": "current_state",
+      "left": 0.09333333333333334,
+      "right": 0.02,
+      "delta": -0.07333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-034",
+      "question": "unnatural_wording",
+      "left": 0.10333333333333333,
+      "right": 0.03,
+      "delta": -0.07333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-036",
+      "question": "current_state",
+      "left": 0.09333333333333334,
+      "right": 0.02,
+      "delta": -0.07333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-039",
+      "question": "alcohol_angle",
+      "left": 0.10333333333333333,
+      "right": 0.03,
+      "delta": -0.07333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-041",
+      "question": "current_state",
+      "left": 0.09333333333333334,
+      "right": 0.02,
+      "delta": -0.07333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-045",
+      "question": "unnatural_wording",
+      "left": 0.09333333333333334,
+      "right": 0.02,
+      "delta": -0.07333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-061",
+      "question": "unnatural_wording",
+      "left": 0.10333333333333333,
+      "right": 0.03,
+      "delta": -0.07333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-001",
+      "question": "firearms_angle",
+      "left": 0.07,
+      "right": 0.0,
+      "delta": -0.07,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-012",
+      "question": "part_of_speech_mismatch",
+      "left": 0.1,
+      "right": 0.03,
+      "delta": -0.07,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-008",
+      "question": "part_of_speech_mismatch",
+      "left": 0.09,
+      "right": 0.02,
+      "delta": -0.06999999999999999,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-025",
+      "question": "current_state",
+      "left": 0.09,
+      "right": 0.02,
+      "delta": -0.06999999999999999,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-034",
+      "question": "specialist_knowledge",
+      "left": 0.09,
+      "right": 0.02,
+      "delta": -0.06999999999999999,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-036",
+      "question": "number_mismatch",
+      "left": 0.12,
+      "right": 0.05,
+      "delta": -0.06999999999999999,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-054",
+      "question": "current_state",
+      "left": 0.09,
+      "right": 0.02,
+      "delta": -0.06999999999999999,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-055",
+      "question": "part_of_speech_mismatch",
+      "left": 0.12,
+      "right": 0.05,
+      "delta": -0.06999999999999999,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-010",
+      "question": "plain_definition",
+      "left": 0.88,
+      "right": 0.95,
+      "delta": 0.06999999999999995,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-046",
+      "question": "plain_definition",
+      "left": 0.93,
+      "right": 1.0,
+      "delta": 0.06999999999999995,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-013",
+      "question": "number_mismatch",
+      "left": 0.11666666666666667,
+      "right": 0.05,
+      "delta": -0.06666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-029",
+      "question": "specialist_knowledge",
+      "left": 0.09666666666666666,
+      "right": 0.03,
+      "delta": -0.06666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-030",
+      "question": "current_state",
+      "left": 0.08666666666666667,
+      "right": 0.02,
+      "delta": -0.06666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-043",
+      "question": "number_mismatch",
+      "left": 0.08666666666666667,
+      "right": 0.02,
+      "delta": -0.06666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-043",
+      "question": "part_of_speech_mismatch",
+      "left": 0.09666666666666666,
+      "right": 0.03,
+      "delta": -0.06666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-051",
+      "question": "part_of_speech_mismatch",
+      "left": 0.08666666666666667,
+      "right": 0.02,
+      "delta": -0.06666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-053",
+      "question": "unnatural_wording",
+      "left": 0.11666666666666667,
+      "right": 0.05,
+      "delta": -0.06666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-067",
+      "question": "part_of_speech_mismatch",
+      "left": 0.09666666666666666,
+      "right": 0.03,
+      "delta": -0.06666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-050",
+      "question": "specialist_knowledge",
+      "left": 0.6333333333333333,
+      "right": 0.7,
+      "delta": 0.06666666666666665,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-064",
+      "question": "hint_easier",
+      "left": 0.41666666666666663,
+      "right": 0.35,
+      "delta": -0.06666666666666665,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-026",
+      "question": "unnatural_wording",
+      "left": 0.09333333333333334,
+      "right": 0.03,
+      "delta": -0.06333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-045",
+      "question": "number_mismatch",
+      "left": 0.09333333333333334,
+      "right": 0.03,
+      "delta": -0.06333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-046",
+      "question": "current_state",
+      "left": 0.06333333333333334,
+      "right": 0.0,
+      "delta": -0.06333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-059",
+      "question": "current_state",
+      "left": 0.09333333333333334,
+      "right": 0.03,
+      "delta": -0.06333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-006",
+      "question": "current_state",
+      "left": 0.11333333333333333,
+      "right": 0.05,
+      "delta": -0.06333333333333332,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-011",
+      "question": "current_state",
+      "left": 0.08333333333333333,
+      "right": 0.02,
+      "delta": -0.06333333333333332,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-012",
+      "question": "current_state",
+      "left": 0.08333333333333333,
+      "right": 0.02,
+      "delta": -0.06333333333333332,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-014",
+      "question": "number_mismatch",
+      "left": 0.08333333333333333,
+      "right": 0.02,
+      "delta": -0.06333333333333332,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-018",
+      "question": "specialist_knowledge",
+      "left": 0.08333333333333333,
+      "right": 0.02,
+      "delta": -0.06333333333333332,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-028",
+      "question": "current_state",
+      "left": 0.08333333333333333,
+      "right": 0.02,
+      "delta": -0.06333333333333332,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-068",
+      "question": "part_of_speech_mismatch",
+      "left": 0.11333333333333333,
+      "right": 0.05,
+      "delta": -0.06333333333333332,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-002",
+      "question": "drug_use_angle",
+      "left": 0.06,
+      "right": 0.0,
+      "delta": -0.06,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-024",
+      "question": "part_of_speech_mismatch",
+      "left": 0.08,
+      "right": 0.02,
+      "delta": -0.06,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-027",
+      "question": "number_mismatch",
+      "left": 0.11,
+      "right": 0.05,
+      "delta": -0.06,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-029",
+      "question": "number_mismatch",
+      "left": 0.09,
+      "right": 0.03,
+      "delta": -0.06,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-065",
+      "question": "plain_definition",
+      "left": 0.89,
+      "right": 0.95,
+      "delta": 0.05999999999999994,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-017",
+      "question": "number_mismatch",
+      "left": 0.10666666666666667,
+      "right": 0.05,
+      "delta": -0.05666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-018",
+      "question": "number_mismatch",
+      "left": 0.08666666666666667,
+      "right": 0.03,
+      "delta": -0.05666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-043",
+      "question": "current_state",
+      "left": 0.07666666666666667,
+      "right": 0.02,
+      "delta": -0.05666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-043",
+      "question": "unnatural_wording",
+      "left": 0.08666666666666667,
+      "right": 0.03,
+      "delta": -0.05666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-044",
+      "question": "part_of_speech_mismatch",
+      "left": 0.08666666666666667,
+      "right": 0.03,
+      "delta": -0.05666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-055",
+      "question": "number_mismatch",
+      "left": 0.08666666666666667,
+      "right": 0.03,
+      "delta": -0.05666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-058",
+      "question": "number_mismatch",
+      "left": 0.08666666666666667,
+      "right": 0.03,
+      "delta": -0.05666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-065",
+      "question": "number_mismatch",
+      "left": 0.08666666666666667,
+      "right": 0.03,
+      "delta": -0.05666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-002",
+      "question": "alcohol_angle",
+      "left": 0.056666666666666664,
+      "right": 0.0,
+      "delta": -0.056666666666666664,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-038",
+      "question": "unnatural_wording",
+      "left": 0.056666666666666664,
+      "right": 0.0,
+      "delta": -0.056666666666666664,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-046",
+      "question": "number_mismatch",
+      "left": 0.056666666666666664,
+      "right": 0.0,
+      "delta": -0.056666666666666664,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-068",
+      "question": "alcohol_angle",
+      "left": 0.07666666666666666,
+      "right": 0.02,
+      "delta": -0.05666666666666666,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-045",
+      "question": "plain_definition",
+      "left": 0.9133333333333333,
+      "right": 0.97,
+      "delta": 0.05666666666666664,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-061",
+      "question": "plain_definition",
+      "left": 0.8933333333333333,
+      "right": 0.95,
+      "delta": 0.05666666666666664,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-001",
+      "question": "plain_definition",
+      "left": 0.09666666666666666,
+      "right": 0.15,
+      "delta": 0.05333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-016",
+      "question": "part_of_speech_mismatch",
+      "left": 0.10333333333333333,
+      "right": 0.05,
+      "delta": -0.05333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-021",
+      "question": "specialist_knowledge",
+      "left": 0.07333333333333333,
+      "right": 0.02,
+      "delta": -0.05333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-023",
+      "question": "unnatural_wording",
+      "left": 0.08333333333333333,
+      "right": 0.03,
+      "delta": -0.05333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-038",
+      "question": "number_mismatch",
+      "left": 0.07333333333333333,
+      "right": 0.02,
+      "delta": -0.05333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-041",
+      "question": "part_of_speech_mismatch",
+      "left": 0.08333333333333333,
+      "right": 0.03,
+      "delta": -0.05333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-047",
+      "question": "specialist_knowledge",
+      "left": 0.08333333333333333,
+      "right": 0.03,
+      "delta": -0.05333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-053",
+      "question": "number_mismatch",
+      "left": 0.08333333333333333,
+      "right": 0.03,
+      "delta": -0.05333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-058",
+      "question": "drug_use_angle",
+      "left": 0.07333333333333333,
+      "right": 0.02,
+      "delta": -0.05333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-005",
+      "question": "current_state",
+      "left": 0.9,
+      "right": 0.85,
+      "delta": -0.050000000000000044,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-053",
+      "question": "specialist_knowledge",
+      "left": 0.85,
+      "right": 0.9,
+      "delta": 0.050000000000000044,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-020",
+      "question": "firearms_angle",
+      "left": 0.05,
+      "right": 0.0,
+      "delta": -0.05,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-023",
+      "question": "current_state",
+      "left": 0.07,
+      "right": 0.02,
+      "delta": -0.05,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-028",
+      "question": "specialist_knowledge",
+      "left": 0.08,
+      "right": 0.03,
+      "delta": -0.05,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-030",
+      "question": "specialist_knowledge",
+      "left": 0.08,
+      "right": 0.03,
+      "delta": -0.05,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-038",
+      "question": "specialist_knowledge",
+      "left": 0.05,
+      "right": 0.0,
+      "delta": -0.05,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-044",
+      "question": "number_mismatch",
+      "left": 0.08,
+      "right": 0.03,
+      "delta": -0.05,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-047",
+      "question": "number_mismatch",
+      "left": 0.08,
+      "right": 0.03,
+      "delta": -0.05,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-058",
+      "question": "firearms_angle",
+      "left": 0.07,
+      "right": 0.02,
+      "delta": -0.05,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-059",
+      "question": "number_mismatch",
+      "left": 0.1,
+      "right": 0.05,
+      "delta": -0.05,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-060",
+      "question": "part_of_speech_mismatch",
+      "left": 0.1,
+      "right": 0.05,
+      "delta": -0.05,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-061",
+      "question": "number_mismatch",
+      "left": 0.08,
+      "right": 0.03,
+      "delta": -0.05,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-064",
+      "question": "unnatural_wording",
+      "left": 0.08,
+      "right": 0.03,
+      "delta": -0.05,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-003",
+      "question": "number_mismatch",
+      "left": 0.07666666666666667,
+      "right": 0.03,
+      "delta": -0.046666666666666676,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-025",
+      "question": "number_mismatch",
+      "left": 0.07666666666666667,
+      "right": 0.03,
+      "delta": -0.046666666666666676,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-044",
+      "question": "specialist_knowledge",
+      "left": 0.07666666666666667,
+      "right": 0.03,
+      "delta": -0.046666666666666676,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-068",
+      "question": "number_mismatch",
+      "left": 0.07666666666666667,
+      "right": 0.03,
+      "delta": -0.046666666666666676,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-035",
+      "question": "specialist_knowledge",
+      "left": 0.06666666666666667,
+      "right": 0.02,
+      "delta": -0.04666666666666666,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-042",
+      "question": "part_of_speech_mismatch",
+      "left": 0.09666666666666666,
+      "right": 0.05,
+      "delta": -0.04666666666666666,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-044",
+      "question": "drug_use_angle",
+      "left": 0.06666666666666667,
+      "right": 0.02,
+      "delta": -0.04666666666666666,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-051",
+      "question": "number_mismatch",
+      "left": 0.06666666666666667,
+      "right": 0.02,
+      "delta": -0.04666666666666666,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-067",
+      "question": "current_state",
+      "left": 0.06666666666666667,
+      "right": 0.02,
+      "delta": -0.04666666666666666,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-003",
+      "question": "drug_use_angle",
+      "left": 0.06333333333333334,
+      "right": 0.02,
+      "delta": -0.043333333333333335,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-004",
+      "question": "alcohol_angle",
+      "left": 0.06333333333333334,
+      "right": 0.02,
+      "delta": -0.043333333333333335,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-007",
+      "question": "part_of_speech_mismatch",
+      "left": 0.09333333333333334,
+      "right": 0.05,
+      "delta": -0.043333333333333335,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-025",
+      "question": "specialist_knowledge",
+      "left": 0.06333333333333334,
+      "right": 0.02,
+      "delta": -0.043333333333333335,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-026",
+      "question": "specialist_knowledge",
+      "left": 0.06333333333333334,
+      "right": 0.02,
+      "delta": -0.043333333333333335,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-034",
+      "question": "number_mismatch",
+      "left": 0.06333333333333334,
+      "right": 0.02,
+      "delta": -0.043333333333333335,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-052",
+      "question": "part_of_speech_mismatch",
+      "left": 0.09333333333333334,
+      "right": 0.05,
+      "delta": -0.043333333333333335,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-053",
+      "question": "part_of_speech_mismatch",
+      "left": 0.07333333333333333,
+      "right": 0.03,
+      "delta": -0.043333333333333335,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-058",
+      "question": "alcohol_angle",
+      "left": 0.06333333333333334,
+      "right": 0.02,
+      "delta": -0.043333333333333335,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-064",
+      "question": "current_state",
+      "left": 0.06333333333333334,
+      "right": 0.02,
+      "delta": -0.043333333333333335,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-020",
+      "question": "number_mismatch",
+      "left": 0.07,
+      "right": 0.03,
+      "delta": -0.04000000000000001,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-020",
+      "question": "unnatural_wording",
+      "left": 0.07,
+      "right": 0.03,
+      "delta": -0.04000000000000001,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-030",
+      "question": "number_mismatch",
+      "left": 0.07,
+      "right": 0.03,
+      "delta": -0.04000000000000001,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-048",
+      "question": "plain_definition",
+      "left": 0.14,
+      "right": 0.1,
+      "delta": -0.04000000000000001,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-002",
+      "question": "plain_definition",
+      "left": 0.11,
+      "right": 0.15,
+      "delta": 0.039999999999999994,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-010",
+      "question": "number_mismatch",
+      "left": 0.06,
+      "right": 0.02,
+      "delta": -0.039999999999999994,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-016",
+      "question": "specialist_knowledge",
+      "left": 0.06,
+      "right": 0.02,
+      "delta": -0.039999999999999994,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-020",
+      "question": "specialist_knowledge",
+      "left": 0.06,
+      "right": 0.02,
+      "delta": -0.039999999999999994,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-027",
+      "question": "drug_use_angle",
+      "left": 0.06,
+      "right": 0.02,
+      "delta": -0.039999999999999994,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-032",
+      "question": "number_mismatch",
+      "left": 0.09,
+      "right": 0.05,
+      "delta": -0.039999999999999994,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-040",
+      "question": "number_mismatch",
+      "left": 0.06,
+      "right": 0.02,
+      "delta": -0.039999999999999994,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-048",
+      "question": "specialist_knowledge",
+      "left": 0.09,
+      "right": 0.05,
+      "delta": -0.039999999999999994,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-049",
+      "question": "current_state",
+      "left": 0.06,
+      "right": 0.02,
+      "delta": -0.039999999999999994,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-056",
+      "question": "number_mismatch",
+      "left": 0.06,
+      "right": 0.02,
+      "delta": -0.039999999999999994,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-059",
+      "question": "specialist_knowledge",
+      "left": 0.06,
+      "right": 0.02,
+      "delta": -0.039999999999999994,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-003",
+      "question": "firearms_angle",
+      "left": 0.056666666666666664,
+      "right": 0.02,
+      "delta": -0.03666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-016",
+      "question": "number_mismatch",
+      "left": 0.06666666666666667,
+      "right": 0.03,
+      "delta": -0.03666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-039",
+      "question": "number_mismatch",
+      "left": 0.06666666666666667,
+      "right": 0.03,
+      "delta": -0.03666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-040",
+      "question": "specialist_knowledge",
+      "left": 0.056666666666666664,
+      "right": 0.02,
+      "delta": -0.03666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-041",
+      "question": "number_mismatch",
+      "left": 0.056666666666666664,
+      "right": 0.02,
+      "delta": -0.03666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-046",
+      "question": "specialist_knowledge",
+      "left": 0.03666666666666667,
+      "right": 0.0,
+      "delta": -0.03666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-049",
+      "question": "unnatural_wording",
+      "left": 0.06666666666666667,
+      "right": 0.03,
+      "delta": -0.03666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-057",
+      "question": "firearms_angle",
+      "left": 0.056666666666666664,
+      "right": 0.02,
+      "delta": -0.03666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-061",
+      "question": "drug_use_angle",
+      "left": 0.05666666666666667,
+      "right": 0.02,
+      "delta": -0.03666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-062",
+      "question": "number_mismatch",
+      "left": 0.06666666666666667,
+      "right": 0.03,
+      "delta": -0.03666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-003",
+      "question": "plain_definition",
+      "left": 0.13666666666666666,
+      "right": 0.1,
+      "delta": -0.03666666666666665,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-015",
+      "question": "number_mismatch",
+      "left": 0.06333333333333334,
+      "right": 0.03,
+      "delta": -0.03333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-015",
+      "question": "specialist_knowledge",
+      "left": 0.05333333333333334,
+      "right": 0.02,
+      "delta": -0.03333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-015",
+      "question": "unnatural_wording",
+      "left": 0.06333333333333334,
+      "right": 0.03,
+      "delta": -0.03333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-041",
+      "question": "specialist_knowledge",
+      "left": 0.06333333333333334,
+      "right": 0.03,
+      "delta": -0.03333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-042",
+      "question": "unnatural_wording",
+      "left": 0.06333333333333334,
+      "right": 0.03,
+      "delta": -0.03333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-065",
+      "question": "specialist_knowledge",
+      "left": 0.05333333333333334,
+      "right": 0.02,
+      "delta": -0.03333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-067",
+      "question": "number_mismatch",
+      "left": 0.05333333333333334,
+      "right": 0.02,
+      "delta": -0.03333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-059",
+      "question": "drug_use_angle",
+      "left": 0.03333333333333333,
+      "right": 0.0,
+      "delta": -0.03333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-027",
+      "question": "firearms_angle",
+      "left": 0.9333333333333333,
+      "right": 0.9,
+      "delta": -0.033333333333333326,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-027",
+      "question": "unnatural_wording",
+      "left": 0.13333333333333333,
+      "right": 0.1,
+      "delta": -0.033333333333333326,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-033",
+      "question": "specialist_knowledge",
+      "left": 0.13333333333333333,
+      "right": 0.1,
+      "delta": -0.033333333333333326,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-007",
+      "question": "plain_definition",
+      "left": 0.82,
+      "right": 0.85,
+      "delta": 0.030000000000000027,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-063",
+      "question": "hint_easier",
+      "left": 0.82,
+      "right": 0.85,
+      "delta": 0.030000000000000027,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-014",
+      "question": "current_state",
+      "left": 0.05,
+      "right": 0.02,
+      "delta": -0.030000000000000002,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-022",
+      "question": "specialist_knowledge",
+      "left": 0.05,
+      "right": 0.02,
+      "delta": -0.030000000000000002,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-023",
+      "question": "specialist_knowledge",
+      "left": 0.05,
+      "right": 0.02,
+      "delta": -0.030000000000000002,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-024",
+      "question": "specialist_knowledge",
+      "left": 0.05,
+      "right": 0.02,
+      "delta": -0.030000000000000002,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-042",
+      "question": "drug_use_angle",
+      "left": 0.02,
+      "right": 0.05,
+      "delta": 0.030000000000000002,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-045",
+      "question": "current_state",
+      "left": 0.05,
+      "right": 0.02,
+      "delta": -0.030000000000000002,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-050",
+      "question": "number_mismatch",
+      "left": 0.05,
+      "right": 0.02,
+      "delta": -0.030000000000000002,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-052",
+      "question": "current_state",
+      "left": 0.05,
+      "right": 0.02,
+      "delta": -0.030000000000000002,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-062",
+      "question": "alcohol_angle",
+      "left": 0.05,
+      "right": 0.02,
+      "delta": -0.030000000000000002,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-002",
+      "question": "firearms_angle",
+      "left": 0.03,
+      "right": 0.0,
+      "delta": -0.03,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-021",
+      "question": "number_mismatch",
+      "left": 0.06,
+      "right": 0.03,
+      "delta": -0.03,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-063",
+      "question": "specialist_knowledge",
+      "left": 0.06,
+      "right": 0.03,
+      "delta": -0.03,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-068",
+      "question": "plain_definition",
+      "left": 0.07333333333333333,
+      "right": 0.1,
+      "delta": 0.026666666666666672,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-053",
+      "question": "current_state",
+      "left": 0.04666666666666667,
+      "right": 0.02,
+      "delta": -0.02666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-063",
+      "question": "alcohol_angle",
+      "left": 0.04666666666666667,
+      "right": 0.02,
+      "delta": -0.02666666666666667,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-016",
+      "question": "unnatural_wording",
+      "left": 0.056666666666666664,
+      "right": 0.03,
+      "delta": -0.026666666666666665,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-050",
+      "question": "unnatural_wording",
+      "left": 0.056666666666666664,
+      "right": 0.03,
+      "delta": -0.026666666666666665,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-065",
+      "question": "drug_use_angle",
+      "left": 0.056666666666666664,
+      "right": 0.03,
+      "delta": -0.026666666666666665,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-029",
+      "question": "firearms_angle",
+      "left": 0.05333333333333334,
+      "right": 0.03,
+      "delta": -0.023333333333333338,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-005",
+      "question": "firearms_angle",
+      "left": 0.023333333333333334,
+      "right": 0.0,
+      "delta": -0.023333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-055",
+      "question": "drug_use_angle",
+      "left": 0.043333333333333335,
+      "right": 0.02,
+      "delta": -0.023333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-057",
+      "question": "drug_use_angle",
+      "left": 0.043333333333333335,
+      "right": 0.02,
+      "delta": -0.023333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-061",
+      "question": "current_state",
+      "left": 0.043333333333333335,
+      "right": 0.02,
+      "delta": -0.023333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-063",
+      "question": "firearms_angle",
+      "left": 0.043333333333333335,
+      "right": 0.02,
+      "delta": -0.023333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-012",
+      "question": "drug_use_angle",
+      "left": 0.03333333333333333,
+      "right": 0.01,
+      "delta": -0.02333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-026",
+      "question": "drug_use_angle",
+      "left": 0.03333333333333333,
+      "right": 0.01,
+      "delta": -0.02333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-027",
+      "question": "plain_definition",
+      "left": 0.07333333333333333,
+      "right": 0.05,
+      "delta": -0.02333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-062",
+      "question": "hint_new_angle",
+      "left": 0.8766666666666667,
+      "right": 0.9,
+      "delta": 0.023333333333333317,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-002",
+      "question": "specialist_knowledge",
+      "left": 0.53,
+      "right": 0.55,
+      "delta": 0.020000000000000018,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-023",
+      "question": "plain_definition",
+      "left": 0.92,
+      "right": 0.9,
+      "delta": -0.020000000000000018,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-028",
+      "question": "firearms_angle",
+      "left": 0.99,
+      "right": 0.97,
+      "delta": -0.020000000000000018,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-033",
+      "question": "alcohol_angle",
+      "left": 0.97,
+      "right": 0.95,
+      "delta": -0.020000000000000018,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-052",
+      "question": "number_mismatch",
+      "left": 0.07,
+      "right": 0.05,
+      "delta": -0.020000000000000004,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-004",
+      "question": "firearms_angle",
+      "left": 0.04,
+      "right": 0.02,
+      "delta": -0.02,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-005",
+      "question": "alcohol_angle",
+      "left": 0.02,
+      "right": 0.0,
+      "delta": -0.02,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-005",
+      "question": "drug_use_angle",
+      "left": 0.02,
+      "right": 0.0,
+      "delta": -0.02,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-007",
+      "question": "specialist_knowledge",
+      "left": 0.04,
+      "right": 0.02,
+      "delta": -0.02,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-008",
+      "question": "specialist_knowledge",
+      "left": 0.04,
+      "right": 0.02,
+      "delta": -0.02,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-009",
+      "question": "specialist_knowledge",
+      "left": 0.04,
+      "right": 0.02,
+      "delta": -0.02,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-010",
+      "question": "specialist_knowledge",
+      "left": 0.04,
+      "right": 0.02,
+      "delta": -0.02,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-017",
+      "question": "alcohol_angle",
+      "left": 0.02,
+      "right": 0.0,
+      "delta": -0.02,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-017",
+      "question": "drug_use_angle",
+      "left": 0.02,
+      "right": 0.0,
+      "delta": -0.02,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-020",
+      "question": "drug_use_angle",
+      "left": 0.02,
+      "right": 0.0,
+      "delta": -0.02,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-022",
+      "question": "number_mismatch",
+      "left": 0.04,
+      "right": 0.02,
+      "delta": -0.02,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-045",
+      "question": "specialist_knowledge",
+      "left": 0.04,
+      "right": 0.02,
+      "delta": -0.02,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-051",
+      "question": "current_state",
+      "left": 0.04,
+      "right": 0.02,
+      "delta": -0.02,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-057",
+      "question": "alcohol_angle",
+      "left": 0.04,
+      "right": 0.02,
+      "delta": -0.02,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-060",
+      "question": "firearms_angle",
+      "left": 0.0,
+      "right": 0.02,
+      "delta": 0.02,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-061",
+      "question": "specialist_knowledge",
+      "left": 0.04,
+      "right": 0.02,
+      "delta": -0.02,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-062",
+      "question": "firearms_angle",
+      "left": 0.04,
+      "right": 0.02,
+      "delta": -0.02,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-065",
+      "question": "current_state",
+      "left": 0.04,
+      "right": 0.02,
+      "delta": -0.02,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-016",
+      "question": "firearms_angle",
+      "left": 0.03,
+      "right": 0.01,
+      "delta": -0.019999999999999997,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-037",
+      "question": "drug_use_angle",
+      "left": 0.03,
+      "right": 0.01,
+      "delta": -0.019999999999999997,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-067",
+      "question": "specialist_knowledge",
+      "left": 0.03,
+      "right": 0.01,
+      "delta": -0.019999999999999997,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-038",
+      "question": "plain_definition",
+      "left": 0.93,
+      "right": 0.95,
+      "delta": 0.019999999999999907,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-033",
+      "question": "plain_definition",
+      "left": 0.3833333333333333,
+      "right": 0.4,
+      "delta": 0.01666666666666672,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-004",
+      "question": "plain_definition",
+      "left": 0.08333333333333333,
+      "right": 0.1,
+      "delta": 0.016666666666666677,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-003",
+      "question": "alcohol_angle",
+      "left": 0.03666666666666667,
+      "right": 0.02,
+      "delta": -0.016666666666666666,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-011",
+      "question": "drug_use_angle",
+      "left": 0.03666666666666667,
+      "right": 0.02,
+      "delta": -0.016666666666666666,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-021",
+      "question": "drug_use_angle",
+      "left": 0.03666666666666667,
+      "right": 0.02,
+      "delta": -0.016666666666666666,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-024",
+      "question": "number_mismatch",
+      "left": 0.03666666666666667,
+      "right": 0.02,
+      "delta": -0.016666666666666666,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-051",
+      "question": "firearms_angle",
+      "left": 0.0033333333333333335,
+      "right": 0.02,
+      "delta": 0.016666666666666666,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-009",
+      "question": "drug_use_angle",
+      "left": 0.026666666666666665,
+      "right": 0.01,
+      "delta": -0.016666666666666663,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-033",
+      "question": "number_mismatch",
+      "left": 0.06666666666666667,
+      "right": 0.05,
+      "delta": -0.016666666666666663,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-060",
+      "question": "number_mismatch",
+      "left": 0.06666666666666667,
+      "right": 0.05,
+      "delta": -0.016666666666666663,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-037",
+      "question": "alcohol_angle",
+      "left": 0.03666666666666667,
+      "right": 0.05,
+      "delta": 0.013333333333333336,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-040",
+      "question": "drug_use_angle",
+      "left": 0.03666666666666667,
+      "right": 0.05,
+      "delta": 0.013333333333333336,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-063",
+      "question": "plain_definition",
+      "left": 0.13666666666666666,
+      "right": 0.15,
+      "delta": 0.013333333333333336,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-018",
+      "question": "alcohol_angle",
+      "left": 0.023333333333333334,
+      "right": 0.01,
+      "delta": -0.013333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-040",
+      "question": "alcohol_angle",
+      "left": 0.023333333333333334,
+      "right": 0.01,
+      "delta": -0.013333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-039",
+      "question": "firearms_angle",
+      "left": 0.03333333333333333,
+      "right": 0.02,
+      "delta": -0.013333333333333332,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-048",
+      "question": "drug_use_angle",
+      "left": 0.03333333333333333,
+      "right": 0.02,
+      "delta": -0.013333333333333332,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-016",
+      "question": "plain_definition",
+      "left": 0.8866666666666667,
+      "right": 0.9,
+      "delta": 0.013333333333333308,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-022",
+      "question": "plain_definition",
+      "left": 0.9066666666666667,
+      "right": 0.92,
+      "delta": 0.013333333333333308,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-038",
+      "question": "alcohol_angle",
+      "left": 0.9633333333333333,
+      "right": 0.95,
+      "delta": -0.013333333333333308,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-059",
+      "question": "unnatural_wording",
+      "left": 0.8866666666666667,
+      "right": 0.9,
+      "delta": 0.013333333333333308,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-024",
+      "question": "plain_definition",
+      "left": 0.94,
+      "right": 0.95,
+      "delta": 0.010000000000000009,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-027",
+      "question": "part_of_speech_mismatch",
+      "left": 0.64,
+      "right": 0.65,
+      "delta": 0.010000000000000009,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-035",
+      "question": "alcohol_angle",
+      "left": 0.96,
+      "right": 0.97,
+      "delta": 0.010000000000000009,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-043",
+      "question": "drug_use_angle",
+      "left": 0.96,
+      "right": 0.95,
+      "delta": -0.010000000000000009,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-006",
+      "question": "plain_definition",
+      "left": 0.04,
+      "right": 0.05,
+      "delta": 0.010000000000000002,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-023",
+      "question": "number_mismatch",
+      "left": 0.04,
+      "right": 0.05,
+      "delta": 0.010000000000000002,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-030",
+      "question": "firearms_angle",
+      "left": 0.04,
+      "right": 0.05,
+      "delta": 0.010000000000000002,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-006",
+      "question": "drug_use_angle",
+      "left": 0.01,
+      "right": 0.02,
+      "delta": 0.01,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-007",
+      "question": "drug_use_angle",
+      "left": 0.02,
+      "right": 0.01,
+      "delta": -0.01,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-008",
+      "question": "alcohol_angle",
+      "left": 0.01,
+      "right": 0.02,
+      "delta": 0.01,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-008",
+      "question": "firearms_angle",
+      "left": 0.01,
+      "right": 0.02,
+      "delta": 0.01,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-011",
+      "question": "firearms_angle",
+      "left": 0.01,
+      "right": 0.02,
+      "delta": 0.01,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-013",
+      "question": "alcohol_angle",
+      "left": 0.01,
+      "right": 0.02,
+      "delta": 0.01,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-013",
+      "question": "drug_use_angle",
+      "left": 0.01,
+      "right": 0.02,
+      "delta": 0.01,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-013",
+      "question": "firearms_angle",
+      "left": 0.01,
+      "right": 0.02,
+      "delta": 0.01,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-014",
+      "question": "alcohol_angle",
+      "left": 0.01,
+      "right": 0.02,
+      "delta": 0.01,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-014",
+      "question": "drug_use_angle",
+      "left": 0.01,
+      "right": 0.02,
+      "delta": 0.01,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-014",
+      "question": "firearms_angle",
+      "left": 0.01,
+      "right": 0.02,
+      "delta": 0.01,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-015",
+      "question": "alcohol_angle",
+      "left": 0.02,
+      "right": 0.01,
+      "delta": -0.01,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-015",
+      "question": "drug_use_angle",
+      "left": 0.02,
+      "right": 0.01,
+      "delta": -0.01,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-015",
+      "question": "firearms_angle",
+      "left": 0.02,
+      "right": 0.01,
+      "delta": -0.01,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-016",
+      "question": "alcohol_angle",
+      "left": 0.02,
+      "right": 0.01,
+      "delta": -0.01,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-016",
+      "question": "drug_use_angle",
+      "left": 0.02,
+      "right": 0.01,
+      "delta": -0.01,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-017",
+      "question": "firearms_angle",
+      "left": 0.01,
+      "right": 0.0,
+      "delta": -0.01,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-018",
+      "question": "drug_use_angle",
+      "left": 0.02,
+      "right": 0.01,
+      "delta": -0.01,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-020",
+      "question": "alcohol_angle",
+      "left": 0.01,
+      "right": 0.0,
+      "delta": -0.01,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-021",
+      "question": "firearms_angle",
+      "left": 0.01,
+      "right": 0.02,
+      "delta": 0.01,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-022",
+      "question": "drug_use_angle",
+      "left": 0.02,
+      "right": 0.01,
+      "delta": -0.01,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-023",
+      "question": "alcohol_angle",
+      "left": 0.01,
+      "right": 0.02,
+      "delta": 0.01,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-025",
+      "question": "alcohol_angle",
+      "left": 0.01,
+      "right": 0.02,
+      "delta": 0.01,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-025",
+      "question": "firearms_angle",
+      "left": 0.01,
+      "right": 0.02,
+      "delta": 0.01,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-032",
+      "question": "alcohol_angle",
+      "left": 0.01,
+      "right": 0.02,
+      "delta": 0.01,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-032",
+      "question": "drug_use_angle",
+      "left": 0.01,
+      "right": 0.02,
+      "delta": 0.01,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-036",
+      "question": "firearms_angle",
+      "left": 0.01,
+      "right": 0.02,
+      "delta": 0.01,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-040",
+      "question": "firearms_angle",
+      "left": 0.02,
+      "right": 0.01,
+      "delta": -0.01,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-042",
+      "question": "firearms_angle",
+      "left": 0.01,
+      "right": 0.02,
+      "delta": 0.01,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-046",
+      "question": "alcohol_angle",
+      "left": 0.01,
+      "right": 0.0,
+      "delta": -0.01,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-046",
+      "question": "drug_use_angle",
+      "left": 0.01,
+      "right": 0.0,
+      "delta": -0.01,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-051",
+      "question": "alcohol_angle",
+      "left": 0.01,
+      "right": 0.02,
+      "delta": 0.01,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-051",
+      "question": "drug_use_angle",
+      "left": 0.01,
+      "right": 0.02,
+      "delta": 0.01,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-052",
+      "question": "alcohol_angle",
+      "left": 0.01,
+      "right": 0.02,
+      "delta": 0.01,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-052",
+      "question": "drug_use_angle",
+      "left": 0.01,
+      "right": 0.02,
+      "delta": 0.01,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-052",
+      "question": "firearms_angle",
+      "left": 0.01,
+      "right": 0.02,
+      "delta": 0.01,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-059",
+      "question": "alcohol_angle",
+      "left": 0.01,
+      "right": 0.0,
+      "delta": -0.01,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-059",
+      "question": "firearms_angle",
+      "left": 0.01,
+      "right": 0.0,
+      "delta": -0.01,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-060",
+      "question": "alcohol_angle",
+      "left": 0.01,
+      "right": 0.02,
+      "delta": 0.01,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-060",
+      "question": "drug_use_angle",
+      "left": 0.01,
+      "right": 0.02,
+      "delta": 0.01,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-066",
+      "question": "firearms_angle",
+      "left": 0.01,
+      "right": 0.02,
+      "delta": 0.01,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-004",
+      "question": "drug_use_angle",
+      "left": 0.03,
+      "right": 0.02,
+      "delta": -0.009999999999999998,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-014",
+      "question": "specialist_knowledge",
+      "left": 0.03,
+      "right": 0.02,
+      "delta": -0.009999999999999998,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-025",
+      "question": "drug_use_angle",
+      "left": 0.03,
+      "right": 0.02,
+      "delta": -0.009999999999999998,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-027",
+      "question": "alcohol_angle",
+      "left": 0.03,
+      "right": 0.02,
+      "delta": -0.009999999999999998,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-036",
+      "question": "alcohol_angle",
+      "left": 0.02,
+      "right": 0.03,
+      "delta": 0.009999999999999998,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-038",
+      "question": "current_state",
+      "left": 0.03,
+      "right": 0.02,
+      "delta": -0.009999999999999998,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-045",
+      "question": "alcohol_angle",
+      "left": 0.03,
+      "right": 0.02,
+      "delta": -0.009999999999999998,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-047",
+      "question": "alcohol_angle",
+      "left": 0.03,
+      "right": 0.02,
+      "delta": -0.009999999999999998,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-048",
+      "question": "firearms_angle",
+      "left": 0.03,
+      "right": 0.02,
+      "delta": -0.009999999999999998,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-051",
+      "question": "specialist_knowledge",
+      "left": 0.03,
+      "right": 0.02,
+      "delta": -0.009999999999999998,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-056",
+      "question": "specialist_knowledge",
+      "left": 0.03,
+      "right": 0.02,
+      "delta": -0.009999999999999998,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-060",
+      "question": "specialist_knowledge",
+      "left": 0.03,
+      "right": 0.02,
+      "delta": -0.009999999999999998,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-063",
+      "question": "drug_use_angle",
+      "left": 0.03,
+      "right": 0.02,
+      "delta": -0.009999999999999998,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-032",
+      "question": "firearms_angle",
+      "left": 0.9766666666666667,
+      "right": 0.97,
+      "delta": -0.00666666666666671,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-065",
+      "question": "same_clue_angle",
+      "left": 0.9566666666666667,
+      "right": 0.95,
+      "delta": -0.00666666666666671,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-067",
+      "question": "same_clue_angle",
+      "left": 0.9566666666666667,
+      "right": 0.95,
+      "delta": -0.00666666666666671,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-049",
+      "question": "plain_definition",
+      "left": 0.03666666666666667,
+      "right": 0.03,
+      "delta": -0.006666666666666668,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-062",
+      "question": "plain_definition",
+      "left": 0.09333333333333334,
+      "right": 0.1,
+      "delta": 0.006666666666666668,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-010",
+      "question": "drug_use_angle",
+      "left": 0.016666666666666666,
+      "right": 0.01,
+      "delta": -0.006666666666666666,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-011",
+      "question": "alcohol_angle",
+      "left": 0.013333333333333334,
+      "right": 0.02,
+      "delta": 0.006666666666666666,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-012",
+      "question": "alcohol_angle",
+      "left": 0.016666666666666666,
+      "right": 0.01,
+      "delta": -0.006666666666666666,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-023",
+      "question": "firearms_angle",
+      "left": 0.013333333333333334,
+      "right": 0.02,
+      "delta": 0.006666666666666666,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-024",
+      "question": "drug_use_angle",
+      "left": 0.016666666666666666,
+      "right": 0.01,
+      "delta": -0.006666666666666666,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-026",
+      "question": "alcohol_angle",
+      "left": 0.016666666666666666,
+      "right": 0.01,
+      "delta": -0.006666666666666666,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-047",
+      "question": "drug_use_angle",
+      "left": 0.013333333333333334,
+      "right": 0.02,
+      "delta": 0.006666666666666666,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-049",
+      "question": "drug_use_angle",
+      "left": 0.016666666666666666,
+      "right": 0.01,
+      "delta": -0.006666666666666666,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-049",
+      "question": "firearms_angle",
+      "left": 0.016666666666666666,
+      "right": 0.01,
+      "delta": -0.006666666666666666,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-054",
+      "question": "drug_use_angle",
+      "left": 0.016666666666666666,
+      "right": 0.01,
+      "delta": -0.006666666666666666,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-066",
+      "question": "drug_use_angle",
+      "left": 0.013333333333333334,
+      "right": 0.02,
+      "delta": 0.006666666666666666,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-021",
+      "question": "alcohol_angle",
+      "left": 0.026666666666666665,
+      "right": 0.02,
+      "delta": -0.0066666666666666645,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-048",
+      "question": "alcohol_angle",
+      "left": 0.026666666666666665,
+      "right": 0.02,
+      "delta": -0.0066666666666666645,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-050",
+      "question": "current_state",
+      "left": 0.026666666666666665,
+      "right": 0.02,
+      "delta": -0.0066666666666666645,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-065",
+      "question": "alcohol_angle",
+      "left": 0.026666666666666665,
+      "right": 0.02,
+      "delta": -0.0066666666666666645,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-058",
+      "question": "plain_definition",
+      "left": 0.056666666666666664,
+      "right": 0.05,
+      "delta": -0.006666666666666661,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-061",
+      "question": "hint_new_angle",
+      "left": 0.056666666666666664,
+      "right": 0.05,
+      "delta": -0.006666666666666661,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-064",
+      "question": "alcohol_angle",
+      "left": 0.056666666666666664,
+      "right": 0.05,
+      "delta": -0.006666666666666661,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-009",
+      "question": "alcohol_angle",
+      "left": 0.013333333333333334,
+      "right": 0.01,
+      "delta": -0.003333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-029",
+      "question": "alcohol_angle",
+      "left": 0.023333333333333334,
+      "right": 0.02,
+      "delta": -0.003333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-030",
+      "question": "drug_use_angle",
+      "left": 0.016666666666666666,
+      "right": 0.02,
+      "delta": 0.003333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-033",
+      "question": "firearms_angle",
+      "left": 0.023333333333333334,
+      "right": 0.02,
+      "delta": -0.003333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-044",
+      "question": "alcohol_angle",
+      "left": 0.016666666666666666,
+      "right": 0.02,
+      "delta": 0.003333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-045",
+      "question": "firearms_angle",
+      "left": 0.013333333333333334,
+      "right": 0.01,
+      "delta": -0.003333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-049",
+      "question": "alcohol_angle",
+      "left": 0.013333333333333334,
+      "right": 0.01,
+      "delta": -0.003333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-052",
+      "question": "specialist_knowledge",
+      "left": 0.03333333333333333,
+      "right": 0.03,
+      "delta": -0.003333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-057",
+      "question": "plain_definition",
+      "left": 0.05333333333333334,
+      "right": 0.05,
+      "delta": -0.003333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-061",
+      "question": "firearms_angle",
+      "left": 0.013333333333333334,
+      "right": 0.01,
+      "delta": -0.003333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-064",
+      "question": "firearms_angle",
+      "left": 0.023333333333333334,
+      "right": 0.02,
+      "delta": -0.003333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-066",
+      "question": "alcohol_angle",
+      "left": 0.023333333333333334,
+      "right": 0.02,
+      "delta": -0.003333333333333334,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-038",
+      "question": "firearms_angle",
+      "left": 0.0033333333333333335,
+      "right": 0.0,
+      "delta": -0.0033333333333333335,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-067",
+      "question": "firearms_angle",
+      "left": 0.006666666666666667,
+      "right": 0.01,
+      "delta": 0.003333333333333333,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-039",
+      "question": "drug_use_angle",
+      "left": 0.9533333333333333,
+      "right": 0.95,
+      "delta": -0.0033333333333332993,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-064",
+      "question": "hint_new_angle",
+      "left": 0.8966666666666667,
+      "right": 0.9,
+      "delta": 0.0033333333333332993,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-006",
+      "question": "alcohol_angle",
+      "left": 0.02,
+      "right": 0.02,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-006",
+      "question": "firearms_angle",
+      "left": 0.02,
+      "right": 0.02,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-007",
+      "question": "alcohol_angle",
+      "left": 0.01,
+      "right": 0.01,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-007",
+      "question": "firearms_angle",
+      "left": 0.01,
+      "right": 0.01,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-008",
+      "question": "drug_use_angle",
+      "left": 0.02,
+      "right": 0.02,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-009",
+      "question": "firearms_angle",
+      "left": 0.01,
+      "right": 0.01,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-010",
+      "question": "alcohol_angle",
+      "left": 0.01,
+      "right": 0.01,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-010",
+      "question": "firearms_angle",
+      "left": 0.01,
+      "right": 0.01,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-012",
+      "question": "firearms_angle",
+      "left": 0.01,
+      "right": 0.01,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-018",
+      "question": "firearms_angle",
+      "left": 0.01,
+      "right": 0.01,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-022",
+      "question": "alcohol_angle",
+      "left": 0.01,
+      "right": 0.01,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-022",
+      "question": "firearms_angle",
+      "left": 0.01,
+      "right": 0.01,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-023",
+      "question": "drug_use_angle",
+      "left": 0.02,
+      "right": 0.02,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-024",
+      "question": "alcohol_angle",
+      "left": 0.01,
+      "right": 0.01,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-024",
+      "question": "firearms_angle",
+      "left": 0.01,
+      "right": 0.01,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-026",
+      "question": "firearms_angle",
+      "left": 0.01,
+      "right": 0.01,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-028",
+      "question": "alcohol_angle",
+      "left": 0.01,
+      "right": 0.01,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-028",
+      "question": "drug_use_angle",
+      "left": 0.01,
+      "right": 0.01,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-029",
+      "question": "drug_use_angle",
+      "left": 0.02,
+      "right": 0.02,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-030",
+      "question": "alcohol_angle",
+      "left": 0.02,
+      "right": 0.02,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-031",
+      "question": "plain_definition",
+      "left": 0.05,
+      "right": 0.05,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-034",
+      "question": "firearms_angle",
+      "left": 0.01,
+      "right": 0.01,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-035",
+      "question": "firearms_angle",
+      "left": 0.01,
+      "right": 0.01,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-036",
+      "question": "drug_use_angle",
+      "left": 0.02,
+      "right": 0.02,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-037",
+      "question": "firearms_angle",
+      "left": 0.01,
+      "right": 0.01,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-041",
+      "question": "alcohol_angle",
+      "left": 0.01,
+      "right": 0.01,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-041",
+      "question": "drug_use_angle",
+      "left": 0.03,
+      "right": 0.03,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-041",
+      "question": "firearms_angle",
+      "left": 0.01,
+      "right": 0.01,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-042",
+      "question": "alcohol_angle",
+      "left": 0.02,
+      "right": 0.02,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-043",
+      "question": "alcohol_angle",
+      "left": 0.02,
+      "right": 0.02,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-043",
+      "question": "firearms_angle",
+      "left": 0.02,
+      "right": 0.02,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-044",
+      "question": "firearms_angle",
+      "left": 0.01,
+      "right": 0.01,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-046",
+      "question": "firearms_angle",
+      "left": 0.0,
+      "right": 0.0,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-047",
+      "question": "firearms_angle",
+      "left": 0.02,
+      "right": 0.02,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-050",
+      "question": "alcohol_angle",
+      "left": 0.01,
+      "right": 0.01,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-050",
+      "question": "drug_use_angle",
+      "left": 0.01,
+      "right": 0.01,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-050",
+      "question": "firearms_angle",
+      "left": 0.01,
+      "right": 0.01,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-053",
+      "question": "alcohol_angle",
+      "left": 0.01,
+      "right": 0.01,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-053",
+      "question": "drug_use_angle",
+      "left": 0.01,
+      "right": 0.01,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-053",
+      "question": "firearms_angle",
+      "left": 0.01,
+      "right": 0.01,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-054",
+      "question": "alcohol_angle",
+      "left": 0.01,
+      "right": 0.01,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-054",
+      "question": "firearms_angle",
+      "left": 0.01,
+      "right": 0.01,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-055",
+      "question": "alcohol_angle",
+      "left": 0.02,
+      "right": 0.02,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-056",
+      "question": "alcohol_angle",
+      "left": 0.01,
+      "right": 0.01,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-056",
+      "question": "drug_use_angle",
+      "left": 0.01,
+      "right": 0.01,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-056",
+      "question": "firearms_angle",
+      "left": 0.01,
+      "right": 0.01,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-061",
+      "question": "alcohol_angle",
+      "left": 0.02,
+      "right": 0.02,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-065",
+      "question": "firearms_angle",
+      "left": 0.01,
+      "right": 0.01,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-067",
+      "question": "alcohol_angle",
+      "left": 0.01,
+      "right": 0.01,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-067",
+      "question": "drug_use_angle",
+      "left": 0.01,
+      "right": 0.01,
+      "delta": 0.0,
+      "decision_changed": false
+    },
+    {
+      "case_id": "control-068",
+      "question": "firearms_angle",
+      "left": 0.02,
+      "right": 0.02,
+      "delta": 0.0,
+      "decision_changed": false
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "source": "output/classification-evals/claude-isolated-retry",
+  "original_records_sha256": "b5804d8b432505fafa993a3dbe1fa7e42334ff8dd85f9eff243dc6f4a53601fa",
+  "note": "All attempts retained; repeated request objects omitted. Reconstruct each with core.prepare(corpus row, manifest suite)."
+}
