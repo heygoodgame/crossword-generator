@@ -2,11 +2,35 @@
 
 import re
 
+# Cache writes are priced at the 5-minute TTL (the only TTL the provider
+# requests). Cache-read multipliers differ by model: 0.05x base input on
+# Opus 5.5 / Sonnet 5.5, 0.1x elsewhere.
 _ANTHROPIC_PRICING_USD_PER_MTOK = {
+    # Haiku 5.5 has two rate cards keyed on total prompt length (see
+    # _HAIKU_5_5_LONG_PROMPT_TOKENS); this is the <=100K-token card.
+    "haiku_5_5": {
+        "input_tokens": 0.10,
+        "output_tokens": 0.50,
+        "cache_creation_input_tokens": 0.125,
+        "cache_read_input_tokens": 0.01,
+    },
+    "haiku_5_5_long": {
+        "input_tokens": 0.50,
+        "output_tokens": 2.50,
+        "cache_creation_input_tokens": 0.625,
+        "cache_read_input_tokens": 0.05,
+    },
     "haiku": {
         "input_tokens": 1.00,
         "output_tokens": 5.00,
         "cache_creation_input_tokens": 1.25,
+        "cache_read_input_tokens": 0.10,
+    },
+    # Sonnet 5.5 keeps Sonnet 5's $2/$10 but halves the cache-read rate.
+    "sonnet_5_5": {
+        "input_tokens": 2.00,
+        "output_tokens": 10.00,
+        "cache_creation_input_tokens": 2.50,
         "cache_read_input_tokens": 0.10,
     },
     # Sonnet 5 dropped to $2/$10 (Sonnet 4.x stays at $3/$15).
@@ -22,6 +46,12 @@ _ANTHROPIC_PRICING_USD_PER_MTOK = {
         "cache_creation_input_tokens": 3.75,
         "cache_read_input_tokens": 0.30,
     },
+    "opus_5_5": {
+        "input_tokens": 4.00,
+        "output_tokens": 20.00,
+        "cache_creation_input_tokens": 5.00,
+        "cache_read_input_tokens": 0.20,
+    },
     "opus_4_5_plus": {
         "input_tokens": 5.00,
         "output_tokens": 25.00,
@@ -35,6 +65,11 @@ _ANTHROPIC_PRICING_USD_PER_MTOK = {
         "cache_read_input_tokens": 1.50,
     },
 }
+
+
+# Haiku 5.5 bills a request on its long-prompt rate card when the prompt
+# (uncached input + cache writes + cache reads) exceeds this many tokens.
+_HAIKU_5_5_LONG_PROMPT_TOKENS = 100_000
 
 
 # OpenAI text pricing (USD per million tokens). Approximate; recorded with
@@ -80,20 +115,21 @@ def estimate_llm_cost(
             "pricing": "unknown_anthropic_model",
         }
 
-    prices = _ANTHROPIC_PRICING_USD_PER_MTOK[pricing_key]
     input_tokens = _usage_value(usage, "input_tokens")
     output_tokens = _usage_value(usage, "output_tokens")
     cache_creation_tokens = _usage_value(usage, "cache_creation_input_tokens")
     cache_read_tokens = _usage_value(usage, "cache_read_input_tokens")
 
-    # Anthropic usage reports cache tokens separately. Subtract them from base
-    # input to avoid double-counting when present.
-    base_input_tokens = max(
-        0.0,
-        input_tokens - cache_creation_tokens - cache_read_tokens,
-    )
+    # Anthropic's ``input_tokens`` is already the uncached remainder: the
+    # cache fields are additive, so the full prompt is the sum of all three.
+    # (Subtracting the cache fields from ``input_tokens`` zeroed out uncached
+    # input on well-cached steps and under-reported cost by ~17%.)
+    prompt_tokens = input_tokens + cache_creation_tokens + cache_read_tokens
+    if pricing_key == "haiku_5_5" and prompt_tokens > _HAIKU_5_5_LONG_PROMPT_TOKENS:
+        pricing_key = "haiku_5_5_long"
+    prices = _ANTHROPIC_PRICING_USD_PER_MTOK[pricing_key]
     total = (
-        base_input_tokens * prices["input_tokens"]
+        input_tokens * prices["input_tokens"]
         + output_tokens * prices["output_tokens"]
         + cache_creation_tokens * prices["cache_creation_input_tokens"]
         + cache_read_tokens * prices["cache_read_input_tokens"]
@@ -143,6 +179,14 @@ def _openai_pricing_key(model: str) -> str | None:
 
 def _anthropic_pricing_key(model: str) -> str | None:
     normalized = model.lower()
+    # 5.5 generation first: "opus-5-5" would otherwise match the "opus-5"
+    # check below, and "sonnet-5-5" the Sonnet 5 regex.
+    if re.search(r"opus-5-5(?:\b|-)", normalized):
+        return "opus_5_5"
+    if re.search(r"sonnet-5-5(?:\b|-)", normalized):
+        return "sonnet_5_5"
+    if re.search(r"haiku-5-5(?:\b|-)", normalized):
+        return "haiku_5_5"
     # Opus 4.5 through Opus 5 share the $5/$25 tier; Opus 4.1 and earlier
     # were $15/$75.
     if "opus" in normalized and any(

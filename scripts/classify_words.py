@@ -48,6 +48,8 @@ from pathlib import Path
 
 import ollama
 
+from crossword_generator.llm.claude_provider import _rejects_sampling_params
+
 try:
     import anthropic
     from anthropic.types.message_create_params import MessageCreateParamsNonStreaming
@@ -61,14 +63,40 @@ DICT_PATH = Path("dictionaries/HggCuratedCrosswordList.txt")
 CLAUDE_PRICING: dict[str, dict[str, float]] = {
     "claude-haiku-4-5-20251001": {"input": 1.00, "output": 5.00},
     "claude-haiku-4-5": {"input": 1.00, "output": 5.00},
+    "claude-haiku-5-5": {"input": 0.10, "output": 0.50},
 }
 
 DEFAULT_MODELS = {
     "ollama": "llama3",
-    "claude": "claude-haiku-4-5",
+    "claude": "claude-haiku-5-5",
 }
 
 LAZY_BATCH_THRESHOLD = 0.7  # retry if >70% share the same reason
+
+
+def _claude_request_kwargs(model: str, schema: dict) -> dict:
+    """Sampling and output settings for one classification request.
+
+    The Claude 5 family (and Opus 4.7+) rejects ``temperature`` with a 400 and
+    thinks by default, so those models get ``effort: low`` instead, which keeps
+    them close to the no-thinking Haiku 4.5 runs this script was tuned on.
+    Older models keep the original low temperature (they reject ``effort``).
+    """
+    output_config: dict = {"format": {"type": "json_schema", "schema": schema}}
+    if _rejects_sampling_params(model):
+        output_config["effort"] = "low"
+        return {"output_config": output_config}
+    return {"temperature": 0.1, "output_config": output_config}
+
+
+def _response_text(message: object) -> str:
+    """Join a response's text blocks (Claude 5 replies can open with thinking)."""
+    return "".join(
+        block.text
+        for block in getattr(message, "content", [])
+        if getattr(block, "type", None) == "text"
+    )
+
 
 SYSTEM_PROMPT = """\
 You are a crossword puzzle construction expert evaluating word quality for \
@@ -483,15 +511,9 @@ class WordClassifier:
                     system=SYSTEM_PROMPT,
                     messages=[{"role": "user", "content": user_msg}],
                     max_tokens=4096,
-                    temperature=0.1,
-                    output_config={
-                        "format": {
-                            "type": "json_schema",
-                            "schema": RESPONSE_SCHEMA,
-                        }
-                    },
+                    **_claude_request_kwargs(self.model, RESPONSE_SCHEMA),
                 )
-                content = response.content[0].text
+                content = _response_text(response)
                 parsed = json.loads(content)
                 return parsed.get("classifications", [])
             except (json.JSONDecodeError, KeyError, TypeError, IndexError):
@@ -706,13 +728,7 @@ def _build_batch_request(
             system=SYSTEM_PROMPT,
             messages=[{"role": "user", "content": user_msg}],
             max_tokens=4096,
-            temperature=0.1,
-            output_config={
-                "format": {
-                    "type": "json_schema",
-                    "schema": RESPONSE_SCHEMA,
-                }
-            },
+            **_claude_request_kwargs(model, RESPONSE_SCHEMA),
         ),
     )
 
@@ -884,7 +900,7 @@ def run_batch_api_classification(
 
         message = result.result.message
         try:
-            content = message.content[0].text
+            content = _response_text(message)
             parsed = json.loads(content)
             classifications = parsed.get("classifications", [])
         except (json.JSONDecodeError, KeyError, TypeError, IndexError):

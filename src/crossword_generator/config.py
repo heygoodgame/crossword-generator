@@ -212,37 +212,51 @@ class ClaudeConfig(BaseModel):
     fall back to ``model`` when set to the empty string.
     """
 
-    model: str = "claude-haiku-4-5-20251001"
+    model: str = "claude-haiku-5-5"
     theme_model: str = "claude-sonnet-5"
     fill_selection_model: str = ""
-    # Opus 5 for the quality-critical generative step (Phase 3). Adaptive
+    # Opus 5.5 for the quality-critical generative step (Phase 3). Adaptive
     # thinking only; the provider omits temperature for the Claude 5 family.
-    clue_generation_model: str = "claude-opus-5"
+    # Paired replay (2026-10-16, 104 clues, Sonnet 5 grader held fixed): at
+    # effort "medium" Opus 5.5 cut repair-flagged clues 11.5% -> 4.8% vs Opus 5
+    # but wrote ~1.7x the output tokens; "low" flagged 7.7% at ~0.8x tokens.
+    clue_generation_model: str = "claude-opus-5-5"
     # Repair rewrites the clues that already failed grading — the highest-
-    # leverage place to spend on quality. Opus 5 (the first-pass generator)
+    # leverage place to spend on quality. Opus (the first-pass generator)
     # also writes repairs; the grading-cost cuts (subset re-grade + terser
-    # output) more than pay for the upgrade. Opus 5 replaced Opus 4.8 at the
-    # same per-token price (2026-09-09).
-    clue_repair_model: str = "claude-opus-5"
+    # output) more than pay for the upgrade. Opus 5.5 replaced Opus 5
+    # (2026-10-16) at $4/$20 vs $5/$25; Opus 5 had replaced Opus 4.8.
+    clue_repair_model: str = "claude-opus-5-5"
     # Grading is the leak/accuracy gate — Sonnet 5 for a stronger judge (P5).
+    # Stays on Sonnet 5: Sonnet 5.5 scored the same clues ~8 points lower on
+    # average (2026-10-16 replay), and the repair thresholds are calibrated on
+    # Sonnet 5's score distribution. Re-tune them before moving the grader.
     clue_grading_model: str = "claude-sonnet-5"
     # Fact-check is the accuracy gate. Opus is stricter about word-precision
     # (e.g. catching "Pope born in 2025" — Leo XIV was elected, not born, in
-    # 2025 — which Sonnet rationalized as "safe"). At ~3% of pipeline spend the
-    # upgrade adds only ~2% to total cost. See docs/clue-quality.md.
-    clue_fact_check_model: str = "claude-opus-5"
+    # 2025 — which Sonnet rationalized as "safe"). See docs/clue-quality.md.
+    # Not cheap: Opus 5 thought on every call (~470 output tokens vs ~150 on
+    # Opus 4.8) and fact-check reached ~21% of spend; Opus 5.5 defaults to
+    # effort "medium" (Opus 5: "high"): replayed calls wrote ~40% fewer output
+    # tokens at half the latency, with verdicts mostly unchanged.
+    clue_fact_check_model: str = "claude-opus-5-5"
     # Naming is a trivial creative task — Haiku is sufficient (P5). Empty falls
     # back to ``model`` (also Haiku); set explicitly for clarity.
-    puzzle_naming_model: str = "claude-haiku-4-5-20251001"
+    puzzle_naming_model: str = "claude-haiku-5-5"
     # Hints are easy beginner clues — a simpler task than clue generation, but
     # still answer-leak-sensitive. Sonnet 5 is a good quality/cost balance;
     # the leak detector screens its output. Empty falls back to ``model``.
+    # Sonnet 5.5 returned a malformed array in 1 of 6 replays, and Haiku 5.5
+    # (~15x cheaper) is untested here — both need an eval before switching.
     hint_generation_model: str = "claude-sonnet-5"
     # 8192 (not 4096): the Claude 5 family thinks by default even when we do
-    # not request it, so a non-thinking call's budget must cover the model's
-    # internal reasoning AND the answer, or a large grading response truncates
-    # (stop_reason=max_tokens) with only a thinking block and no text — see
-    # _extract_text_content / _rejects_sampling_params.
+    # not request it (and Opus 5.5 cannot turn thinking off at all), so a
+    # non-thinking call's budget must cover the model's internal reasoning AND
+    # the answer, or a large grading response truncates (stop_reason=max_tokens)
+    # with only a thinking block and no text — see _extract_text_content /
+    # _rejects_sampling_params. ``thinking_enabled: false`` therefore means
+    # "send no thinking param" (model default), never ``{"type": "disabled"}``,
+    # which Opus 5.5 and Sonnet 5.5 reject with a 400.
     max_tokens: int = 8192
     thinking_enabled: bool = False
     thinking_type: str = "adaptive"
