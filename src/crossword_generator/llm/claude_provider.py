@@ -14,6 +14,11 @@ from crossword_generator.llm.costs import estimate_llm_cost
 
 logger = logging.getLogger(__name__)
 
+# Server-side refusal fallback (beta): when a safety classifier declines a
+# request, the API re-runs it on Anthropic's recommended substitute for that
+# refusal category inside the same call, instead of returning the refusal.
+_SERVER_FALLBACK_BETA = "server-side-fallback-2026-07-01"
+
 
 class ClaudeProvider(LLMProvider):
     """LLM provider backed by the Anthropic Claude API.
@@ -108,10 +113,19 @@ class ClaudeProvider(LLMProvider):
                     "cache_control": {"type": "ephemeral"},
                 }
             ]
+        use_server_fallback = _supports_server_fallback(model)
+        if use_server_fallback:
+            request_kwargs["betas"] = [_SERVER_FALLBACK_BETA]
+            request_kwargs["fallbacks"] = "default"
+        create = (
+            self._client.beta.messages.create
+            if use_server_fallback
+            else self._client.messages.create
+        )
 
         for attempt in range(max_overload_retries + 1):
             try:
-                message = self._client.messages.create(**request_kwargs)
+                message = create(**request_kwargs)
                 break
             except Exception as exc:
                 if (
@@ -128,8 +142,20 @@ class ClaudeProvider(LLMProvider):
                 )
                 time.sleep(sleep_seconds)
 
+        _raise_on_refusal(message, model)
         text = _extract_text_content(message.content)
         usage = _extract_usage(message)
+        # A server-side fallback reports the model that actually served the
+        # request; price the call at that model's rates.
+        served_model = _get_attr(message, "model")
+        if not isinstance(served_model, str) or not served_model:
+            served_model = model
+        if served_model != model:
+            logger.warning(
+                "Claude %s declined the request; served by fallback %s",
+                model,
+                served_model,
+            )
         return LLMCallResponse(
             text=text,
             provider=self.name,
@@ -151,7 +177,7 @@ class ClaudeProvider(LLMProvider):
                 "text_chars": len(text),
             },
             usage=usage,
-            cost=estimate_llm_cost(self.name, model, usage),
+            cost=estimate_llm_cost(self.name, served_model, usage),
         )
 
     def is_available(self) -> bool:
@@ -183,6 +209,40 @@ def _rejects_sampling_params(model: str) -> bool:
     # claude-haiku-5. Match the "-5" generation suffix (optionally followed by
     # a dotted minor or date, e.g. -5-1 / -5-20260101).
     return bool(re.search(r"-(?:sonnet|opus|haiku|fable)-5(?:\b|-)", m))
+
+
+def _supports_server_fallback(model: str) -> bool:
+    """True for models that accept ``fallbacks: "default"``.
+
+    Opus 5, Opus 5.5, Sonnet 5.5 and Fable 5.1 run safety classifiers that can
+    decline a request and support the "default" fallback form. Haiku 5.5 has
+    no server-side fallback (a declined request stays declined), so it and
+    every other model stay on the plain endpoint.
+    """
+    m = model.lower()
+    return bool(
+        re.search(r"-(?:opus-5(?:-5)?|sonnet-5-5|fable-5-1)(?:\b|-)", m)
+    )
+
+
+def _raise_on_refusal(message: object, model: str) -> None:
+    """Raise ValueError when Claude declined the request.
+
+    A refusal is an HTTP 200 with ``stop_reason="refusal"``; its content can be
+    empty or a partial answer that must not be parsed. ValueError lets caller
+    retry loops treat it like any other unusable response.
+    """
+    if _get_attr(message, "stop_reason") != "refusal":
+        return
+    details = _get_attr(message, "stop_details")
+    category = _get_attr(details, "category") if details is not None else None
+    explanation = (
+        _get_attr(details, "explanation") if details is not None else None
+    )
+    raise ValueError(
+        f"Claude {model} declined the request "
+        f"(stop_reason=refusal, category={category!r}): {explanation or ''}"
+    )
 
 
 def _resolve_api_key() -> str | None:

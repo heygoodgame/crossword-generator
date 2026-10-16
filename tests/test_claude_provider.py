@@ -73,7 +73,9 @@ class TestClaudeProvider:
             "cache_creation_input_tokens": 50,
             "cache_read_input_tokens": 0,
         }
-        assert detailed.cost["estimated_cost_usd"] == 0.0002125
+        # 100 * $1 + 20 * $5 + 50 * $1.25 per MTok (cache writes are
+        # additive to input_tokens, not a subset of them).
+        assert detailed.cost["estimated_cost_usd"] == 0.0002625
         mock_client.messages.create.assert_called_once_with(
             model="claude-haiku-4-5-20251001",
             max_tokens=4096,
@@ -200,6 +202,105 @@ class TestClaudeProvider:
 
         _, kwargs = mock_client.messages.create.call_args
         assert "temperature" in kwargs
+
+    def test_opus_5_5_opts_into_server_fallback(self, config: ClaudeConfig) -> None:
+        """Opus 5.5 goes through the beta endpoint with fallbacks="default"."""
+        with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key"}):
+            with patch("anthropic.Anthropic") as mock_cls:
+                mock_client = MagicMock()
+                mock_cls.return_value = mock_client
+                mock_text_block = MagicMock()
+                mock_text_block.text = "ok"
+                mock_message = MagicMock()
+                mock_message.content = [mock_text_block]
+                mock_client.beta.messages.create.return_value = mock_message
+
+                from crossword_generator.llm.claude_provider import ClaudeProvider
+
+                provider = ClaudeProvider(config)
+                provider.generate("prompt", model="claude-opus-5-5")
+
+        mock_client.messages.create.assert_not_called()
+        mock_client.beta.messages.create.assert_called_once_with(
+            model="claude-opus-5-5",
+            max_tokens=4096,
+            messages=[{"role": "user", "content": "prompt"}],
+            betas=["server-side-fallback-2026-07-01"],
+            fallbacks="default",
+        )
+
+    def test_haiku_5_5_skips_server_fallback(self, config: ClaudeConfig) -> None:
+        """Haiku 5.5 has no server-side fallback and rejects temperature."""
+        with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key"}):
+            with patch("anthropic.Anthropic") as mock_cls:
+                mock_client = MagicMock()
+                mock_cls.return_value = mock_client
+                mock_text_block = MagicMock()
+                mock_text_block.text = "ok"
+                mock_message = MagicMock()
+                mock_message.content = [mock_text_block]
+                mock_client.messages.create.return_value = mock_message
+
+                from crossword_generator.llm.claude_provider import ClaudeProvider
+
+                provider = ClaudeProvider(config)
+                provider.generate("prompt", model="claude-haiku-5-5")
+
+        mock_client.beta.messages.create.assert_not_called()
+        mock_client.messages.create.assert_called_once_with(
+            model="claude-haiku-5-5",
+            max_tokens=4096,
+            messages=[{"role": "user", "content": "prompt"}],
+        )
+
+    def test_refusal_raises_value_error(self, config: ClaudeConfig) -> None:
+        """A refusal's partial text must not be returned as an answer."""
+        with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key"}):
+            with patch("anthropic.Anthropic") as mock_cls:
+                mock_client = MagicMock()
+                mock_cls.return_value = mock_client
+                mock_message = MagicMock()
+                mock_message.content = [{"type": "text", "text": '{"clues": ['}]
+                mock_message.stop_reason = "refusal"
+                mock_message.stop_details = SimpleNamespace(
+                    category="bio", explanation="declined"
+                )
+                mock_client.beta.messages.create.return_value = mock_message
+
+                from crossword_generator.llm.claude_provider import ClaudeProvider
+
+                provider = ClaudeProvider(config)
+                with pytest.raises(ValueError, match="category='bio'"):
+                    provider.generate("prompt", model="claude-opus-5-5")
+
+    def test_fallback_is_priced_at_serving_model(self, config: ClaudeConfig) -> None:
+        with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key"}):
+            with patch("anthropic.Anthropic") as mock_cls:
+                mock_client = MagicMock()
+                mock_cls.return_value = mock_client
+                mock_message = MagicMock()
+                mock_message.content = [
+                    {"type": "fallback"},
+                    {"type": "text", "text": "rescued"},
+                ]
+                mock_message.model = "claude-opus-4-8"
+                mock_message.stop_reason = "end_turn"
+                mock_message.usage = SimpleNamespace(
+                    input_tokens=1_000_000, output_tokens=0
+                )
+                mock_client.beta.messages.create.return_value = mock_message
+
+                from crossword_generator.llm.claude_provider import ClaudeProvider
+
+                provider = ClaudeProvider(config)
+                detailed = provider.generate_with_details(
+                    "prompt", model="claude-opus-5-5"
+                )
+
+        assert detailed.text == "rescued"
+        assert detailed.model == "claude-opus-5-5"
+        assert detailed.cost["pricing"] == "anthropic_opus_4_5_plus_usd_per_mtok"
+        assert detailed.cost["estimated_cost_usd"] == 5.0
 
     def test_generate_with_thinking_uses_text_block(self, config: ClaudeConfig) -> None:
         thinking_config = config.model_copy(

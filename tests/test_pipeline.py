@@ -194,7 +194,7 @@ class TestPipeline:
         clue_gen_configs = [
             config
             for config in provider_configs
-            if config.model == "claude-opus-5"
+            if config.model == "claude-opus-5-5"
             and config.thinking_enabled is True
         ]
         assert len(clue_gen_configs) == 1
@@ -212,6 +212,6 @@ class TestPipeline:
         naming_configs = [
             config
             for config in provider_configs
-            if config.model == "claude-haiku-4-5-20251001"
+            if config.model == "claude-haiku-5-5"
         ]
         assert all(config.thinking_enabled is False for config in naming_configs)
