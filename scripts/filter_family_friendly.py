@@ -24,6 +24,8 @@ import time
 from datetime import UTC, datetime
 from pathlib import Path
 
+from crossword_generator.llm.claude_provider import _rejects_sampling_params
+
 try:
     import anthropic
     from anthropic.types.message_create_params import MessageCreateParamsNonStreaming
@@ -41,9 +43,35 @@ FLAGGED_DICT_PATH = Path("dictionaries/XwiJeffChenList-NotFamilyFriendly.txt")
 CLAUDE_PRICING: dict[str, dict[str, float]] = {
     "claude-haiku-4-5-20251001": {"input": 1.00, "output": 5.00},
     "claude-haiku-4-5": {"input": 1.00, "output": 5.00},
+    "claude-haiku-5-5": {"input": 0.10, "output": 0.50},
 }
 
-DEFAULT_MODEL = "claude-haiku-4-5"
+DEFAULT_MODEL = "claude-haiku-5-5"
+
+
+def _claude_request_kwargs(model: str, schema: dict) -> dict:
+    """Sampling and output settings for one classification request.
+
+    The Claude 5 family (and Opus 4.7+) rejects ``temperature`` with a 400 and
+    thinks by default, so those models get ``effort: low`` instead, which keeps
+    them close to the no-thinking Haiku 4.5 runs this script was tuned on.
+    Older models keep the original low temperature (they reject ``effort``).
+    """
+    output_config: dict = {"format": {"type": "json_schema", "schema": schema}}
+    if _rejects_sampling_params(model):
+        output_config["effort"] = "low"
+        return {"output_config": output_config}
+    return {"temperature": 0.1, "output_config": output_config}
+
+
+def _response_text(message: object) -> str:
+    """Join a response's text blocks (Claude 5 replies can open with thinking)."""
+    return "".join(
+        block.text
+        for block in getattr(message, "content", [])
+        if getattr(block, "type", None) == "text"
+    )
+
 
 SYSTEM_PROMPT = """\
 You are a content filter evaluating whether crossword puzzle entries are \
@@ -233,14 +261,10 @@ def _build_batch_request(
             model=model,
             system=SYSTEM_PROMPT,
             messages=[{"role": "user", "content": user_msg}],
-            max_tokens=8192,
-            temperature=0.1,
-            output_config={
-                "format": {
-                    "type": "json_schema",
-                    "schema": RESPONSE_SCHEMA,
-                }
-            },
+            # 200 words ran to ~7.3K output tokens on Haiku 5.5 (its tokenizer
+            # counts ~30% more than Haiku 4.5), so leave room above that.
+            max_tokens=16384,
+            **_claude_request_kwargs(model, RESPONSE_SCHEMA),
         ),
     )
 
@@ -385,7 +409,7 @@ def run_batch_api_classification(
 
         message = api_result.result.message
         try:
-            content = message.content[0].text
+            content = _response_text(message)
             parsed = json.loads(content)
             classifications = parsed.get("classifications", [])
         except (json.JSONDecodeError, KeyError, TypeError, IndexError):
