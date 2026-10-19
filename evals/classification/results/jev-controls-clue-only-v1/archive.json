@@ -1,0 +1,5 @@
+{
+  "source": "output/classification-evals/jev-controls-clue-only-v1",
+  "original_records_sha256": "515887610d33741c7b3ff8a0ad607a8fc1a0133db755bad4e33c6badd094c94d",
+  "note": "All attempts retained; repeated request objects omitted. Reconstruct each with core.prepare(corpus row, manifest suite)."
+}

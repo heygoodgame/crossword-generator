@@ -10,6 +10,8 @@ from pathlib import Path
 
 from crossword_generator.clue_history import ClueHistoryIndex
 from crossword_generator.config import Config, find_project_root
+from crossword_generator.content_shadow import ContentShadow
+from crossword_generator.content_shadow_study import collection_status
 from crossword_generator.dictionary import Dictionary
 from crossword_generator.exporters.base import Exporter
 from crossword_generator.exporters.ipuz_exporter import IpuzExporter
@@ -454,6 +456,15 @@ def create_pipeline(
         fact_checker=clue_fact_checker,
         clue_history=clue_history,
         dictionary=dictionary,
+        content_shadow=(
+            ContentShadow(
+                Path(config.output.directory) / "content-shadow.json",
+                workers=config.grading.clue.content_shadow.max_workers,
+                timeout=config.grading.clue.content_shadow.timeout_seconds,
+            )
+            if collection_status(config.grading.clue.content_shadow.enabled)[0]
+            else None
+        ),
     )
 
     # Build steps

@@ -1,0 +1,11 @@
+case_id,question,answer,clue,hint,previous_clue,probability,predicted,label,label_source,disagreement,repeats,range,historical_feedback
+control-019,tense_mismatch,GO,Departed,,,0.85,True,True,agent-authored-control,False,1,0.0,
+control-019,plain_definition,GO,Departed,,,0.6,True,,agent-authored-control,False,1,0.0,
+control-019,part_of_speech_mismatch,GO,Departed,,,0.15,False,,agent-authored-control,False,1,0.0,
+control-019,number_mismatch,GO,Departed,,,0.05,False,,agent-authored-control,False,1,0.0,
+control-019,unnatural_wording,GO,Departed,,,0.05,False,,agent-authored-control,False,1,0.0,
+control-019,current_state,GO,Departed,,,0.03,False,,agent-authored-control,False,1,0.0,
+control-019,specialist_knowledge,GO,Departed,,,0.03,False,,agent-authored-control,False,1,0.0,
+control-019,firearms_angle,GO,Departed,,,0.02,False,,agent-authored-control,False,1,0.0,
+control-019,alcohol_angle,GO,Departed,,,0.02,False,,agent-authored-control,False,1,0.0,
+control-019,drug_use_angle,GO,Departed,,,0.02,False,,agent-authored-control,False,1,0.0,

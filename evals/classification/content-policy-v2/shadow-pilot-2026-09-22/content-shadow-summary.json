@@ -1,0 +1,22 @@
+{
+  "mode": "shadow",
+  "artifacts": 4,
+  "expected_artifacts": 4,
+  "missing_artifacts": [],
+  "unreadable_artifacts": [],
+  "unfinished_artifacts": 0,
+  "unique_clue_revisions": 49,
+  "requests": 98,
+  "request_errors": 0,
+  "incomplete_revisions": 0,
+  "flagged_revisions": 0,
+  "additional_to_grader": 0,
+  "additional_to_detector_sweep": 0,
+  "final_clues": 40,
+  "final_flagged_clues": 0,
+  "usage": {
+    "input_tokens": 56980,
+    "output_tokens": 5782
+  },
+  "note": "Repeated observations use cached predictions. Revisions are not independent labeled samples. Marginal flags are review candidates, not proven violations; detector comparisons use the latest sweep of the same clue revision."
+}

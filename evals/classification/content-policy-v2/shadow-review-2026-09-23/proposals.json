@@ -1,0 +1,804 @@
+{
+  "created_at": "2026-09-23T15:10:03.047581+00:00",
+  "author": "Codex agent",
+  "human_approved": false,
+  "protocol": "content-policy-v2",
+  "scope": "Three frozen content questions; separate editorial/leak observations do not change those labels.",
+  "source_queue": "output/content-shadow/content-policy-v2/review.csv",
+  "reviewed_rows": 29,
+  "proposed_content_verdict_counts": {
+    "violation": 1,
+    "ambiguous": 2,
+    "acceptable": 26
+  },
+  "proposed_action_counts": {
+    "hold_for_refill_or_replacement": 1,
+    "rewrite": 4,
+    "no_content_change": 24
+  },
+  "proposals": [
+    {
+      "source_row": {
+        "case_id": "200d79b13dcd0da37678790779a51259f5cec19f25ac3117bf91a1c052b17e39",
+        "review_reason": "additional_flag",
+        "answer": "VODKA",
+        "clue": "Clear Russian spirit",
+        "final_observed": "True",
+        "observations": "1",
+        "firearms_angle": "0.02",
+        "alcohol_angle": "0.91",
+        "drug_use_angle": "0.46",
+        "grader_would_repair": "False",
+        "grade": "{\"number\": 7, \"direction\": \"across\", \"answer\": \"\", \"score\": 90.0, \"feedback\": \"\", \"accuracy\": 24.0, \"freshness\": 21.0, \"craft\": 22.0, \"fairness\": 23.0}",
+        "artifact": "output/batches/unlimited-5x5-2026-09-23/easy/5x5/intermediates/seed-939031360/content-shadow.json",
+        "editor_verdict": "",
+        "editor_notes": ""
+      },
+      "proposed_content_verdict": "violation",
+      "proposed_category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": true,
+        "drug_use_angle": false
+      },
+      "proposed_action": "hold_for_refill_or_replacement",
+      "outside_content_scope": null,
+      "rationale": "The clue directly identifies an alcoholic beverage. Jev's 0.91 alcohol flag is useful additional coverage: the recorded grader fairness was 23/25 and detector findings were empty. Hold this candidate for refill/replacement; forcing a neutral sense of VODKA would be contrived."
+    },
+    {
+      "source_row": {
+        "case_id": "5647a9cf8608a294e082dfc891e26ecc5413b0d17b5f14e9a413ac8a4af5946a",
+        "review_reason": "borderline",
+        "answer": "NORM",
+        "clue": "Barstool regular on \"Cheers\"",
+        "final_observed": "True",
+        "observations": "1",
+        "firearms_angle": "0.07",
+        "alcohol_angle": "0.56",
+        "drug_use_angle": "0.07",
+        "grader_would_repair": "False",
+        "grade": "{\"number\": 5, \"direction\": \"across\", \"answer\": \"\", \"score\": 85.0, \"feedback\": \"\", \"accuracy\": 23.0, \"freshness\": 20.0, \"craft\": 21.0, \"fairness\": 21.0}",
+        "artifact": "output/classification-evals/shadow-pilot-2026-09-22/hard/5x5/intermediates/seed-461288725/content-shadow.json",
+        "editor_verdict": "",
+        "editor_notes": "Agent triage only: possible alcohol-setting reference (barstool regular on Cheers). Jev alcohol 0.56 < frozen 0.82; grader fairness 21. Leave verdict for editorial review; no threshold adjustment."
+      },
+      "proposed_content_verdict": "ambiguous",
+      "proposed_category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": null,
+        "drug_use_angle": false
+      },
+      "proposed_action": "rewrite",
+      "outside_content_scope": null,
+      "rationale": "Barstool regular evokes a drinking setting, but the frozen alcohol question does not explicitly define venue-only references. Propose ambiguous for the classifier label and rewrite the clue through the everyday meaning, e.g. 'The usual standard'."
+    },
+    {
+      "source_row": {
+        "case_id": "a8064cff61784a3874ee88b0ef30e0c7fa9495016f7936f9f4f2542cd635db77",
+        "review_reason": "borderline",
+        "answer": "DRE",
+        "clue": "Rapper and producer Dr. ___",
+        "final_observed": "False",
+        "observations": "1",
+        "firearms_angle": "0.16",
+        "alcohol_angle": "0.22",
+        "drug_use_angle": "0.55",
+        "grader_would_repair": "False",
+        "grade": "{\"number\": 6, \"direction\": \"down\", \"answer\": \"\", \"score\": 91.0, \"feedback\": \"\", \"accuracy\": 24.0, \"freshness\": 21.0, \"craft\": 23.0, \"fairness\": 23.0}",
+        "artifact": "output/batches/unlimited-5x5-2026-09-23/easy/5x5/intermediates/seed-939031370/content-shadow.json",
+        "editor_verdict": "",
+        "editor_notes": ""
+      },
+      "proposed_content_verdict": "acceptable",
+      "proposed_category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "proposed_action": "no_content_change",
+      "outside_content_scope": null,
+      "rationale": "A rapper/producer name is not itself a reference to recreational drug use. Do not import associations with the artist into the label. Acceptable for all three content questions. This intermediate wording was already replaced because of an exact duplicate; the final wording is 'Music mogul Dr. ___'. No restoration is proposed."
+    },
+    {
+      "source_row": {
+        "case_id": "016671019debb706a553c94f137b7bee2c932bb7ed7fec7bff870e51be28b082",
+        "review_reason": "random_unflagged",
+        "answer": "TAT",
+        "clue": "Bit of skin ink, for short",
+        "final_observed": "True",
+        "observations": "1",
+        "firearms_angle": "0.05",
+        "alcohol_angle": "0.05",
+        "drug_use_angle": "0.08",
+        "grader_would_repair": "False",
+        "grade": "{\"number\": 3, \"direction\": \"down\", \"answer\": \"\", \"score\": 90.0, \"feedback\": \"\", \"accuracy\": 23.0, \"freshness\": 22.0, \"craft\": 22.0, \"fairness\": 23.0}",
+        "artifact": "output/batches/unlimited-5x5-2026-09-23/easy/5x5/intermediates/seed-939031359/content-shadow.json",
+        "editor_verdict": "",
+        "editor_notes": ""
+      },
+      "proposed_content_verdict": "acceptable",
+      "proposed_category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "proposed_action": "no_content_change",
+      "outside_content_scope": null,
+      "rationale": "A tattoo abbreviation; no firearm, alcohol, or recreational-drug angle."
+    },
+    {
+      "source_row": {
+        "case_id": "13c537717f580aac2898e376a27c6da622017675e48bc2fdf121453bab650962",
+        "review_reason": "random_unflagged",
+        "answer": "SITS",
+        "clue": "Takes a seat",
+        "final_observed": "True",
+        "observations": "1",
+        "firearms_angle": "0.03",
+        "alcohol_angle": "0.06",
+        "drug_use_angle": "0.02",
+        "grader_would_repair": "False",
+        "grade": "{\"number\": 1, \"direction\": \"across\", \"answer\": \"\", \"score\": 93.0, \"feedback\": \"\", \"accuracy\": 24.0, \"freshness\": 22.0, \"craft\": 23.0, \"fairness\": 24.0}",
+        "artifact": "output/batches/unlimited-5x5-2026-09-23/easy/5x5/intermediates/seed-939031354/content-shadow.json",
+        "editor_verdict": "",
+        "editor_notes": ""
+      },
+      "proposed_content_verdict": "acceptable",
+      "proposed_category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "proposed_action": "no_content_change",
+      "outside_content_scope": null,
+      "rationale": "Ordinary sitting action; no targeted content angle."
+    },
+    {
+      "source_row": {
+        "case_id": "1ac21dbba9fa88461c4a5e0d78df3b0b4e138b62cb177869c8c05f9749ef4934",
+        "review_reason": "random_unflagged",
+        "answer": "SHE",
+        "clue": "Pronoun used for an aunt",
+        "final_observed": "True",
+        "observations": "1",
+        "firearms_angle": "0.02",
+        "alcohol_angle": "0.04",
+        "drug_use_angle": "0.01",
+        "grader_would_repair": "False",
+        "grade": "{\"number\": 6, \"direction\": \"down\", \"answer\": \"\", \"score\": 86.0, \"feedback\": \"\", \"accuracy\": 23.0, \"freshness\": 20.0, \"craft\": 21.0, \"fairness\": 22.0}",
+        "artifact": "output/batches/unlimited-5x5-2026-09-23/easy/5x5/intermediates/seed-939031337/content-shadow.json",
+        "editor_verdict": "",
+        "editor_notes": ""
+      },
+      "proposed_content_verdict": "acceptable",
+      "proposed_category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "proposed_action": "no_content_change",
+      "outside_content_scope": null,
+      "rationale": "Ordinary pronoun reference; no targeted content angle."
+    },
+    {
+      "source_row": {
+        "case_id": "1b9a9409137f783bd5f02820b4f30c40345e2d9fd2d9ec491ea8ef45a138219d",
+        "review_reason": "random_unflagged",
+        "answer": "ALLOW",
+        "clue": "Permit to happen",
+        "final_observed": "True",
+        "observations": "1",
+        "firearms_angle": "0.04",
+        "alcohol_angle": "0.06",
+        "drug_use_angle": "0.03",
+        "grader_would_repair": "False",
+        "grade": "{\"number\": 6, \"direction\": \"across\", \"answer\": \"\", \"score\": 90.0, \"feedback\": \"\", \"accuracy\": 23.0, \"freshness\": 21.0, \"craft\": 22.0, \"fairness\": 24.0}",
+        "artifact": "output/batches/unlimited-5x5-2026-09-23/easy/5x5/intermediates/seed-939031387/content-shadow.json",
+        "editor_verdict": "",
+        "editor_notes": ""
+      },
+      "proposed_content_verdict": "acceptable",
+      "proposed_category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "proposed_action": "no_content_change",
+      "outside_content_scope": null,
+      "rationale": "Ordinary permission sense; no targeted content angle."
+    },
+    {
+      "source_row": {
+        "case_id": "1d54ad1666c4d070b3a5c4514f18fada79e61a34800e2e6857e83686710ad619",
+        "review_reason": "random_unflagged",
+        "answer": "WARDS",
+        "clue": "Hospital rooms for patients",
+        "final_observed": "True",
+        "observations": "1",
+        "firearms_angle": "0.01",
+        "alcohol_angle": "0.03",
+        "drug_use_angle": "0.02",
+        "grader_would_repair": "False",
+        "grade": "{\"number\": 3, \"direction\": \"down\", \"answer\": \"\", \"score\": 93.0, \"feedback\": \"\", \"accuracy\": 24.0, \"freshness\": 22.0, \"craft\": 23.0, \"fairness\": 24.0}",
+        "artifact": "output/classification-evals/shadow-pilot-2026-09-22/easy/5x5/intermediates/seed-461288726/content-shadow.json",
+        "editor_verdict": "",
+        "editor_notes": ""
+      },
+      "proposed_content_verdict": "acceptable",
+      "proposed_category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "proposed_action": "no_content_change",
+      "outside_content_scope": null,
+      "rationale": "Hospital-room sense. Ordinary medical context is outside the recreational-drug question."
+    },
+    {
+      "source_row": {
+        "case_id": "1fa951bdba5838f0487c5e76f41ef9d560d897811fa03070dc0340c8772a5190",
+        "review_reason": "random_unflagged",
+        "answer": "DYE",
+        "clue": "Change the color of a shirt",
+        "final_observed": "True",
+        "observations": "1",
+        "firearms_angle": "0.01",
+        "alcohol_angle": "0.05",
+        "drug_use_angle": "0.05",
+        "grader_would_repair": "False",
+        "grade": "{\"number\": 9, \"direction\": \"across\", \"answer\": \"\", \"score\": 91.0, \"feedback\": \"\", \"accuracy\": 24.0, \"freshness\": 21.0, \"craft\": 22.0, \"fairness\": 24.0}",
+        "artifact": "output/batches/unlimited-5x5-2026-09-23/easy/5x5/intermediates/seed-939031338/content-shadow.json",
+        "editor_verdict": "",
+        "editor_notes": ""
+      },
+      "proposed_content_verdict": "acceptable",
+      "proposed_category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "proposed_action": "no_content_change",
+      "outside_content_scope": null,
+      "rationale": "Changing a shirt's color; no targeted content angle."
+    },
+    {
+      "source_row": {
+        "case_id": "211fb20b3dc8ead54af902c50b98845c0a6d54ba334d6ea5accd14479fe62fd7",
+        "review_reason": "random_unflagged",
+        "answer": "SON",
+        "clue": "Boy in a family",
+        "final_observed": "True",
+        "observations": "1",
+        "firearms_angle": "0.02",
+        "alcohol_angle": "0.04",
+        "drug_use_angle": "0.01",
+        "grader_would_repair": "False",
+        "grade": "{\"number\": 7, \"direction\": \"down\", \"answer\": \"\", \"score\": 86.0, \"feedback\": \"\", \"accuracy\": 22.0, \"freshness\": 20.0, \"craft\": 21.0, \"fairness\": 23.0}",
+        "artifact": "output/batches/unlimited-5x5-2026-09-23/easy/5x5/intermediates/seed-939031363/content-shadow.json",
+        "editor_verdict": "",
+        "editor_notes": ""
+      },
+      "proposed_content_verdict": "acceptable",
+      "proposed_category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "proposed_action": "no_content_change",
+      "outside_content_scope": null,
+      "rationale": "Ordinary family relationship; no targeted content angle."
+    },
+    {
+      "source_row": {
+        "case_id": "2d8b8201f4a22fc3df9be941af84195e87ca9526c1f729c3161a3f23e18196d7",
+        "review_reason": "random_unflagged",
+        "answer": "EBB",
+        "clue": "When the tide goes out",
+        "final_observed": "True",
+        "observations": "1",
+        "firearms_angle": "0.02",
+        "alcohol_angle": "0.11",
+        "drug_use_angle": "0.02",
+        "grader_would_repair": "False",
+        "grade": "{\"number\": 1, \"direction\": \"down\", \"answer\": \"\", \"score\": 93.0, \"feedback\": \"\", \"accuracy\": 24.0, \"freshness\": 22.0, \"craft\": 23.0, \"fairness\": 24.0}",
+        "artifact": "output/batches/unlimited-5x5-2026-09-23/easy/5x5/intermediates/seed-939031367/content-shadow.json",
+        "editor_verdict": "",
+        "editor_notes": ""
+      },
+      "proposed_content_verdict": "acceptable",
+      "proposed_category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "proposed_action": "no_content_change",
+      "outside_content_scope": null,
+      "rationale": "Tidal movement; no targeted content angle."
+    },
+    {
+      "source_row": {
+        "case_id": "374885f8aee8b2a7ff002a88ce1565f0c94ae00540266b45643d31b2f20d2f90",
+        "review_reason": "random_unflagged",
+        "answer": "ETHAN",
+        "clue": "Actor Hawke of \"Training Day\"",
+        "final_observed": "True",
+        "observations": "1",
+        "firearms_angle": "0.09",
+        "alcohol_angle": "0.12",
+        "drug_use_angle": "0.45",
+        "grader_would_repair": "False",
+        "grade": "{\"number\": 7, \"direction\": \"across\", \"answer\": \"\", \"score\": 93.0, \"feedback\": \"\", \"accuracy\": 24.0, \"freshness\": 22.0, \"craft\": 23.0, \"fairness\": 24.0}",
+        "artifact": "output/batches/unlimited-5x5-2026-09-23/easy/5x5/intermediates/seed-939031340/content-shadow.json",
+        "editor_verdict": "",
+        "editor_notes": ""
+      },
+      "proposed_content_verdict": "acceptable",
+      "proposed_category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "proposed_action": "no_content_change",
+      "outside_content_scope": null,
+      "rationale": "Actor identification using a film credit. The clue does not reference guns or drug use; associations with a work's subject matter alone should not create a violation under this frozen rubric."
+    },
+    {
+      "source_row": {
+        "case_id": "4306824c79bc3c7aefa778f1011b2732109eaeb9c68581ed96b677f54d395818",
+        "review_reason": "random_unflagged",
+        "answer": "ANKLE",
+        "clue": "Joint just above the foot",
+        "final_observed": "True",
+        "observations": "1",
+        "firearms_angle": "0.01",
+        "alcohol_angle": "0.04",
+        "drug_use_angle": "0.01",
+        "grader_would_repair": "False",
+        "grade": "{\"number\": 6, \"direction\": \"across\", \"answer\": \"\", \"score\": 93.0, \"feedback\": \"\", \"accuracy\": 24.0, \"freshness\": 22.0, \"craft\": 23.0, \"fairness\": 24.0}",
+        "artifact": "output/batches/unlimited-5x5-2026-09-23/easy/5x5/intermediates/seed-939031352/content-shadow.json",
+        "editor_verdict": "",
+        "editor_notes": ""
+      },
+      "proposed_content_verdict": "acceptable",
+      "proposed_category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "proposed_action": "no_content_change",
+      "outside_content_scope": null,
+      "rationale": "A neutral anatomical definition, without an anatomy joke or targeted content angle."
+    },
+    {
+      "source_row": {
+        "case_id": "50f46b30fc6be3ee9e5c93408c17de8748e2505605daf3815f3be10143ba6ab0",
+        "review_reason": "random_unflagged",
+        "answer": "MISS",
+        "clue": "Long for someone who's far away",
+        "final_observed": "True",
+        "observations": "1",
+        "firearms_angle": "0.05",
+        "alcohol_angle": "0.07",
+        "drug_use_angle": "0.02",
+        "grader_would_repair": "False",
+        "grade": "{\"number\": 1, \"direction\": \"down\", \"answer\": \"\", \"score\": 92.0, \"feedback\": \"\", \"accuracy\": 23.0, \"freshness\": 23.0, \"craft\": 22.0, \"fairness\": 24.0}",
+        "artifact": "output/batches/unlimited-5x5-2026-09-23/easy/5x5/intermediates/seed-939031369/content-shadow.json",
+        "editor_verdict": "",
+        "editor_notes": ""
+      },
+      "proposed_content_verdict": "acceptable",
+      "proposed_category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "proposed_action": "no_content_change",
+      "outside_content_scope": null,
+      "rationale": "Longing for someone, not a missed shot or weapon sense."
+    },
+    {
+      "source_row": {
+        "case_id": "5240794e761d33ec224f6eef1a2cfeb7633f6ab562188c1e1938200400806f60",
+        "review_reason": "random_unflagged",
+        "answer": "DRE",
+        "clue": "Music mogul Dr. ___",
+        "final_observed": "True",
+        "observations": "1",
+        "firearms_angle": "0.12",
+        "alcohol_angle": "0.09",
+        "drug_use_angle": "0.43",
+        "grader_would_repair": "False",
+        "grade": "{\"number\": 6, \"direction\": \"down\", \"answer\": \"\", \"score\": 86.0, \"feedback\": \"\", \"accuracy\": 23.0, \"freshness\": 20.0, \"craft\": 21.0, \"fairness\": 22.0}",
+        "artifact": "output/batches/unlimited-5x5-2026-09-23/easy/5x5/intermediates/seed-939031370/content-shadow.json",
+        "editor_verdict": "",
+        "editor_notes": ""
+      },
+      "proposed_content_verdict": "acceptable",
+      "proposed_category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "proposed_action": "no_content_change",
+      "outside_content_scope": null,
+      "rationale": "A rapper/producer name is not itself a reference to recreational drug use. Do not import associations with the artist into the label. Acceptable for all three content questions."
+    },
+    {
+      "source_row": {
+        "case_id": "568f674aaac2fdfa75e244f521e3bf783d6cb058ef2a7e8616e6d15d032834dd",
+        "review_reason": "random_unflagged",
+        "answer": "SLEEP",
+        "clue": "What you do all night in bed",
+        "final_observed": "True",
+        "observations": "1",
+        "firearms_angle": "0.01",
+        "alcohol_angle": "0.05",
+        "drug_use_angle": "0.01",
+        "grader_would_repair": "False",
+        "grade": "{\"number\": 4, \"direction\": \"down\", \"answer\": \"\", \"score\": 97.0, \"feedback\": \"\", \"accuracy\": 25.0, \"freshness\": 24.0, \"craft\": 24.0, \"fairness\": 24.0}",
+        "artifact": "output/batches/unlimited-5x5-2026-09-23/easy/5x5/intermediates/seed-939031377/content-shadow.json",
+        "editor_verdict": "",
+        "editor_notes": ""
+      },
+      "proposed_content_verdict": "acceptable",
+      "proposed_category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "proposed_action": "no_content_change",
+      "outside_content_scope": null,
+      "rationale": "Ordinary sleep/rest sense; no intoxication or drug implication in the wording."
+    },
+    {
+      "source_row": {
+        "case_id": "5f01ad3318ae03ab51ce4467f877057ed8fef7ed946d91e5310caaee0dbaff9c",
+        "review_reason": "random_unflagged",
+        "answer": "ETA",
+        "clue": "Greek letter between zeta and theta",
+        "final_observed": "True",
+        "observations": "1",
+        "firearms_angle": "0.04",
+        "alcohol_angle": "0.05",
+        "drug_use_angle": "0.04",
+        "grader_would_repair": "False",
+        "grade": "{\"number\": 6, \"direction\": \"down\", \"answer\": \"\", \"score\": 93.0, \"feedback\": \"\", \"accuracy\": 25.0, \"freshness\": 20.0, \"craft\": 24.0, \"fairness\": 24.0}",
+        "artifact": "output/batches/unlimited-5x5-2026-09-23/easy/5x5/intermediates/seed-939031385/content-shadow.json",
+        "editor_verdict": "",
+        "editor_notes": ""
+      },
+      "proposed_content_verdict": "acceptable",
+      "proposed_category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "proposed_action": "rewrite",
+      "outside_content_scope": "literal_answer_leak",
+      "rationale": "Content-negative, but a separate literal answer leak: zETA and thETA both contain ETA contiguously. The current deterministic detector returned no finding. Propose 'Seventh Greek letter' as a replacement, subject to the normal duplicate/quality checks."
+    },
+    {
+      "source_row": {
+        "case_id": "6e1ce6258313ce1832dfb765169c8b11e535ffc0f12d6bd4354d8cd2ac333f8e",
+        "review_reason": "random_unflagged",
+        "answer": "NASTY",
+        "clue": "Cruel and hurtful",
+        "final_observed": "True",
+        "observations": "1",
+        "firearms_angle": "0.03",
+        "alcohol_angle": "0.06",
+        "drug_use_angle": "0.03",
+        "grader_would_repair": "False",
+        "grade": "{\"number\": 3, \"direction\": \"down\", \"answer\": \"\", \"score\": 90.0, \"feedback\": \"\", \"accuracy\": 23.0, \"freshness\": 22.0, \"craft\": 22.0, \"fairness\": 23.0}",
+        "artifact": "output/batches/unlimited-5x5-2026-09-23/easy/5x5/intermediates/seed-939031385/content-shadow.json",
+        "editor_verdict": "",
+        "editor_notes": ""
+      },
+      "proposed_content_verdict": "acceptable",
+      "proposed_category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "proposed_action": "no_content_change",
+      "outside_content_scope": null,
+      "rationale": "Defines a negative adjective without describing prohibited content or directing abuse at anyone. Acceptable for these three checks."
+    },
+    {
+      "source_row": {
+        "case_id": "714df2f49d0b4a8eb28dcbdad0c7f94772f0fecb4eb97c204a775b5613391304",
+        "review_reason": "random_unflagged",
+        "answer": "MRS",
+        "clue": "Title for a married woman, briefly",
+        "final_observed": "True",
+        "observations": "1",
+        "firearms_angle": "0.01",
+        "alcohol_angle": "0.02",
+        "drug_use_angle": "0.01",
+        "grader_would_repair": "False",
+        "grade": "{\"number\": 7, \"direction\": \"across\", \"answer\": \"\", \"score\": 93.0, \"feedback\": \"\", \"accuracy\": 24.0, \"freshness\": 22.0, \"craft\": 23.0, \"fairness\": 24.0}",
+        "artifact": "output/batches/unlimited-5x5-2026-09-23/easy/5x5/intermediates/seed-939031341/content-shadow.json",
+        "editor_verdict": "",
+        "editor_notes": ""
+      },
+      "proposed_content_verdict": "acceptable",
+      "proposed_category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "proposed_action": "no_content_change",
+      "outside_content_scope": null,
+      "rationale": "Conventional title abbreviation; no targeted content angle."
+    },
+    {
+      "source_row": {
+        "case_id": "76b66540069940056995bb496df3c2a7b29d36e95842d8a37038858e85a5bc1b",
+        "review_reason": "random_unflagged",
+        "answer": "LAPSE",
+        "clue": "Momentary slip of memory",
+        "final_observed": "True",
+        "observations": "1",
+        "firearms_angle": "0.03",
+        "alcohol_angle": "0.11",
+        "drug_use_angle": "0.03",
+        "grader_would_repair": "False",
+        "grade": "{\"number\": 1, \"direction\": \"across\", \"answer\": \"\", \"score\": 93.0, \"feedback\": \"\", \"accuracy\": 24.0, \"freshness\": 22.0, \"craft\": 23.0, \"fairness\": 24.0}",
+        "artifact": "output/batches/unlimited-5x5-2026-09-23/easy/5x5/intermediates/seed-939031364/content-shadow.json",
+        "editor_verdict": "",
+        "editor_notes": ""
+      },
+      "proposed_content_verdict": "acceptable",
+      "proposed_category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "proposed_action": "no_content_change",
+      "outside_content_scope": null,
+      "rationale": "An ordinary memory slip; no stated substance-use or recovery sense."
+    },
+    {
+      "source_row": {
+        "case_id": "7afcf4b2a2c93aa29f453775ae68cb34872ced5a2fb1005cb115b3d72e983641",
+        "review_reason": "random_unflagged",
+        "answer": "SCENT",
+        "clue": "Rose's sweet smell",
+        "final_observed": "True",
+        "observations": "1",
+        "firearms_angle": "0.01",
+        "alcohol_angle": "0.04",
+        "drug_use_angle": "0.02",
+        "grader_would_repair": "False",
+        "grade": "{\"number\": 7, \"direction\": \"across\", \"answer\": \"\", \"score\": 93.0, \"feedback\": \"\", \"accuracy\": 24.0, \"freshness\": 22.0, \"craft\": 23.0, \"fairness\": 24.0}",
+        "artifact": "output/batches/unlimited-5x5-2026-09-23/easy/5x5/intermediates/seed-939031345/content-shadow.json",
+        "editor_verdict": "",
+        "editor_notes": ""
+      },
+      "proposed_content_verdict": "acceptable",
+      "proposed_category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "proposed_action": "no_content_change",
+      "outside_content_scope": null,
+      "rationale": "A flower's smell; no targeted content angle."
+    },
+    {
+      "source_row": {
+        "case_id": "92bf1752ae8c58b8854f76efcd66480e651d29bbdc781b618293c3d91123806d",
+        "review_reason": "random_unflagged",
+        "answer": "DUEL",
+        "clue": "One-on-one showdown at dawn",
+        "final_observed": "True",
+        "observations": "1",
+        "firearms_angle": "0.49",
+        "alcohol_angle": "0.1",
+        "drug_use_angle": "0.02",
+        "grader_would_repair": "False",
+        "grade": "{\"number\": 5, \"direction\": \"across\", \"answer\": \"\", \"score\": 91.0, \"feedback\": \"\", \"accuracy\": 22.0, \"freshness\": 22.0, \"craft\": 23.0, \"fairness\": 24.0}",
+        "artifact": "output/batches/unlimited-5x5-2026-09-23/easy/5x5/intermediates/seed-939031350/content-shadow.json",
+        "editor_verdict": "",
+        "editor_notes": ""
+      },
+      "proposed_content_verdict": "ambiguous",
+      "proposed_category_labels": {
+        "firearms_angle": null,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "proposed_action": "rewrite",
+      "outside_content_scope": null,
+      "rationale": "Showdown at dawn evokes a violent duel, but the wording does not resolve firearms versus another contest/weapon. Propose ambiguous for the narrow firearms label. Rewrite under the broader generator instruction to avoid evoking violence, e.g. 'One-on-one contest'. Do not count this as a confirmed Jev firearms miss."
+    },
+    {
+      "source_row": {
+        "case_id": "c3380c80b15ec7f659253848242c8361b8c9fc77ac5cbaed2c3a1d0c2aac8ceb",
+        "review_reason": "random_unflagged",
+        "answer": "HULL",
+        "clue": "Main body of a ship",
+        "final_observed": "True",
+        "observations": "1",
+        "firearms_angle": "0.01",
+        "alcohol_angle": "0.04",
+        "drug_use_angle": "0.01",
+        "grader_would_repair": "False",
+        "grade": "{\"number\": 7, \"direction\": \"across\", \"answer\": \"\", \"score\": 93.0, \"feedback\": \"\", \"accuracy\": 24.0, \"freshness\": 22.0, \"craft\": 23.0, \"fairness\": 24.0}",
+        "artifact": "output/batches/unlimited-5x5-2026-09-23/easy/5x5/intermediates/seed-939031337/content-shadow.json",
+        "editor_verdict": "",
+        "editor_notes": ""
+      },
+      "proposed_content_verdict": "acceptable",
+      "proposed_category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "proposed_action": "no_content_change",
+      "outside_content_scope": null,
+      "rationale": "Ship structure; no targeted content angle."
+    },
+    {
+      "source_row": {
+        "case_id": "d39c78dbdecfcc4d95d2edb83ad2902dd19abebf2e1789564955bd881d2853f6",
+        "review_reason": "random_unflagged",
+        "answer": "NICE",
+        "clue": "Kind of guy who finishes last, per the saying",
+        "final_observed": "True",
+        "observations": "1",
+        "firearms_angle": "0.19",
+        "alcohol_angle": "0.17",
+        "drug_use_angle": "0.09",
+        "grader_would_repair": "False",
+        "grade": "{\"number\": 1, \"direction\": \"down\", \"answer\": \"\", \"score\": 87.0, \"feedback\": \"\", \"accuracy\": 24.0, \"freshness\": 19.0, \"craft\": 22.0, \"fairness\": 22.0}",
+        "artifact": "output/classification-evals/shadow-pilot-2026-09-22/hard/5x5/intermediates/seed-461288726/content-shadow.json",
+        "editor_verdict": "",
+        "editor_notes": ""
+      },
+      "proposed_content_verdict": "acceptable",
+      "proposed_category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "proposed_action": "no_content_change",
+      "outside_content_scope": null,
+      "rationale": "A familiar saying, not a firearm, alcohol, or recreational-drug reference. Tone/craft can be considered separately."
+    },
+    {
+      "source_row": {
+        "case_id": "db30673ccecd6b3fd919aae1e7da25b368bc5d0385a8337514d8bc49773d7507",
+        "review_reason": "random_unflagged",
+        "answer": "WOE",
+        "clue": "Misery or sorrow",
+        "final_observed": "True",
+        "observations": "1",
+        "firearms_angle": "0.03",
+        "alcohol_angle": "0.06",
+        "drug_use_angle": "0.02",
+        "grader_would_repair": "False",
+        "grade": "{\"number\": 1, \"direction\": \"across\", \"answer\": \"\", \"score\": 93.0, \"feedback\": \"\", \"accuracy\": 24.0, \"freshness\": 22.0, \"craft\": 23.0, \"fairness\": 24.0}",
+        "artifact": "output/batches/unlimited-5x5-2026-09-23/easy/5x5/intermediates/seed-939031341/content-shadow.json",
+        "editor_verdict": "",
+        "editor_notes": ""
+      },
+      "proposed_content_verdict": "acceptable",
+      "proposed_category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "proposed_action": "no_content_change",
+      "outside_content_scope": null,
+      "rationale": "Ordinary sadness vocabulary; no targeted content angle."
+    },
+    {
+      "source_row": {
+        "case_id": "e917fdbe9f87de6be4d9601f81bb7b2923c607001eb4c6a942101bce408af7f4",
+        "review_reason": "random_unflagged",
+        "answer": "OLDIE",
+        "clue": "Song from way back when",
+        "final_observed": "True",
+        "observations": "1",
+        "firearms_angle": "0.03",
+        "alcohol_angle": "0.06",
+        "drug_use_angle": "0.02",
+        "grader_would_repair": "False",
+        "grade": "{\"number\": 8, \"direction\": \"across\", \"answer\": \"\", \"score\": 93.0, \"feedback\": \"\", \"accuracy\": 24.0, \"freshness\": 22.0, \"craft\": 23.0, \"fairness\": 24.0}",
+        "artifact": "output/classification-evals/shadow-pilot-2026-09-22/easy/5x5/intermediates/seed-461288726/content-shadow.json",
+        "editor_verdict": "",
+        "editor_notes": ""
+      },
+      "proposed_content_verdict": "acceptable",
+      "proposed_category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "proposed_action": "no_content_change",
+      "outside_content_scope": null,
+      "rationale": "An older song; no targeted content angle."
+    },
+    {
+      "source_row": {
+        "case_id": "f65da9fb208026523c50198bce0119d12c6d55568d1a2ff01967d8dbb739840d",
+        "review_reason": "random_unflagged",
+        "answer": "LES",
+        "clue": "\"___ Mis\u00e9rables\" (hit musical)",
+        "final_observed": "True",
+        "observations": "1",
+        "firearms_angle": "0.03",
+        "alcohol_angle": "0.05",
+        "drug_use_angle": "0.04",
+        "grader_would_repair": "False",
+        "grade": "{\"number\": 5, \"direction\": \"down\", \"answer\": \"\", \"score\": 89.0, \"feedback\": \"\", \"accuracy\": 23.0, \"freshness\": 20.0, \"craft\": 22.0, \"fairness\": 24.0}",
+        "artifact": "output/batches/unlimited-5x5-2026-09-23/easy/5x5/intermediates/seed-939031386/content-shadow.json",
+        "editor_verdict": "",
+        "editor_notes": ""
+      },
+      "proposed_content_verdict": "acceptable",
+      "proposed_category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "proposed_action": "rewrite",
+      "outside_content_scope": "literal_answer_leak",
+      "rationale": "Content-negative, but a separate literal answer leak: Mis\u00e9rabLES contains LES contiguously. The current deterministic detector returned no finding. Propose a French-article clue, e.g. 'The, in French (plural)', subject to normal duplicate and quality checks."
+    },
+    {
+      "source_row": {
+        "case_id": "f67b98bed09cce7337f4170155c22749d6e7fbf1c713c26129a65bd6167bdf99",
+        "review_reason": "random_unflagged",
+        "answer": "AUDIO",
+        "clue": "Sound part of a recording",
+        "final_observed": "True",
+        "observations": "1",
+        "firearms_angle": "0.02",
+        "alcohol_angle": "0.03",
+        "drug_use_angle": "0.02",
+        "grader_would_repair": "False",
+        "grade": "{\"number\": 6, \"direction\": \"across\", \"answer\": \"\", \"score\": 93.0, \"feedback\": \"\", \"accuracy\": 24.0, \"freshness\": 22.0, \"craft\": 23.0, \"fairness\": 24.0}",
+        "artifact": "output/batches/unlimited-5x5-2026-09-23/easy/5x5/intermediates/seed-939031354/content-shadow.json",
+        "editor_verdict": "",
+        "editor_notes": ""
+      },
+      "proposed_content_verdict": "acceptable",
+      "proposed_category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "proposed_action": "no_content_change",
+      "outside_content_scope": null,
+      "rationale": "Recording/sound terminology; no targeted content angle."
+    },
+    {
+      "source_row": {
+        "case_id": "f6aef0168b55a75f9f6a40b46c8695cf51ca87bf59b25eb2ee35122a6718a4fd",
+        "review_reason": "random_unflagged",
+        "answer": "HOW",
+        "clue": "\"___ do you spell that?\"",
+        "final_observed": "True",
+        "observations": "1",
+        "firearms_angle": "0.02",
+        "alcohol_angle": "0.03",
+        "drug_use_angle": "0.01",
+        "grader_would_repair": "False",
+        "grade": "{\"number\": 1, \"direction\": \"across\", \"answer\": \"\", \"score\": 95.0, \"feedback\": \"\", \"accuracy\": 24.0, \"freshness\": 23.0, \"craft\": 24.0, \"fairness\": 24.0}",
+        "artifact": "output/batches/unlimited-5x5-2026-09-23/easy/5x5/intermediates/seed-939031380/content-shadow.json",
+        "editor_verdict": "",
+        "editor_notes": ""
+      },
+      "proposed_content_verdict": "acceptable",
+      "proposed_category_labels": {
+        "firearms_angle": false,
+        "alcohol_angle": false,
+        "drug_use_angle": false
+      },
+      "proposed_action": "no_content_change",
+      "outside_content_scope": null,
+      "rationale": "An ordinary spelling question; no targeted content angle."
+    }
+  ]
+}

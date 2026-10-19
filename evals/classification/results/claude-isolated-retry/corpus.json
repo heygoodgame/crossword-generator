@@ -1,0 +1,17 @@
+[
+  {
+    "id": "control-019",
+    "state": {
+      "answer": "GO",
+      "clue": "Departed"
+    },
+    "labels": {
+      "tense_mismatch": true
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  }
+]

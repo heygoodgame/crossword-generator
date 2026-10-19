@@ -11,6 +11,7 @@ from crossword_generator.clue_history import (
     DuplicateClueHit,
     duplicate_error_message,
 )
+from crossword_generator.content_shadow import ContentShadow
 from crossword_generator.dictionary import Dictionary
 from crossword_generator.exporters.numbering import (
     compute_crossing_words,
@@ -76,8 +77,10 @@ class ClueWithGradingStep(PipelineStep):
         parallel_chunks: bool = False,
         parallel_chunk_workers: int = 4,
         dictionary: Dictionary | None = None,
+        content_shadow: ContentShadow | None = None,
     ) -> None:
         self._llm = llm
+        self._content_shadow = content_shadow
         self._repair_llm = repair_llm or llm
         self._dictionary = dictionary
         self._grader = grader
@@ -162,6 +165,8 @@ class ClueWithGradingStep(PipelineStep):
                 }
             )
 
+            self._observe_shadow(candidate, "generated")
+
             if report.overall_score > best_score:
                 best_score = report.overall_score
                 best_envelope = candidate
@@ -223,6 +228,7 @@ class ClueWithGradingStep(PipelineStep):
             for hit in self._clue_history.find_duplicates(best_envelope.clues):
                 new_errors.append(duplicate_error_message(hit))
 
+        self._observe_shadow(best_envelope, "final")
         return best_envelope.model_copy(
             update={
                 "step_history": step_history,
@@ -403,7 +409,39 @@ class ClueWithGradingStep(PipelineStep):
         add("leak", self._detect_leaks(envelope))
         add("hyphen", self._detect_hyphens(envelope))
         add("duplicate", self._detect_duplicates(envelope))
+        self._observe_shadow(envelope, "detector-sweep", findings)
         return findings, fact_results
+
+    def _observe_shadow(self, envelope, phase, findings=None) -> None:
+        if self._content_shadow is None:
+            return
+        try:
+            quality_flags = {
+                (g.number, g.direction)
+                for g in (
+                    envelope.clue_grade_report.clue_grades
+                    if envelope.clue_grade_report
+                    else []
+                )
+                if self._should_repair_grade(g)
+            }
+            serialized = (
+                None
+                if findings is None
+                else {
+                    key: [
+                        {"detector": name, "feedback": grade.feedback}
+                        for name, _clue, grade in entries
+                    ]
+                    for key, entries in findings.items()
+                }
+            )
+            self._content_shadow.observe(
+                envelope, phase=phase, quality_flags=quality_flags, findings=serialized
+            )
+        except Exception as exc:
+            # Observational network/log failures must not influence generation.
+            logger.warning("Content shadow unavailable (%s)", type(exc).__name__)
 
     def _is_soft_freshness_only(self, grade: ClueGrade) -> bool:
         """True when the quality grade fires ONLY on the freshness threshold.
@@ -901,12 +939,14 @@ class ClueWithGradingStep(PipelineStep):
                     update={"quality_score": new_grade_lookup[key]}
                 )
 
-        return repaired_envelope.model_copy(
+        result = repaired_envelope.model_copy(
             update={
                 "clues": scored_clues,
                 "clue_grade_report": new_report,
             }
         )
+        self._observe_shadow(result, "regraded")
+        return result
 
     def repair_external_duplicates(
         self, envelope: PuzzleEnvelope, duplicate_hits: list[DuplicateClueHit]
@@ -943,6 +983,7 @@ class ClueWithGradingStep(PipelineStep):
         current = envelope
         for attempt in range(1, self._duplicate_repair_attempts + 1):
             if not duplicate_hits:
+                self._observe_shadow(current, "post-duplicate-sweep")
                 return current
             logger.info(
                 "Duplicate clue repair attempt %d/%d: %d exact duplicate(s)",
@@ -999,6 +1040,7 @@ class ClueWithGradingStep(PipelineStep):
                     hit.existing_clue,
                 )
             current = current.model_copy(update={"errors": new_errors})
+        self._observe_shadow(current, "post-duplicate-sweep")
         return current
 
     def _clean_clue_count(self, report: ClueGradeReport) -> int:

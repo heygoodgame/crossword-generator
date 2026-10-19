@@ -1,0 +1,5 @@
+{
+  "source": "output/classification-evals/jev-historical-clue-only-reviewed-v1",
+  "original_records_sha256": "163c7d9fc7fb3380f9ff703897ddfa5f44aec2442a9eb8f75d7c1ccbeff1ce9a",
+  "note": "All attempts retained; repeated request objects omitted. Reconstruct each with core.prepare(corpus row, manifest suite)."
+}

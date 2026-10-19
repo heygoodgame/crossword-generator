@@ -1,0 +1,5 @@
+{
+  "source": "output/classification-evals/content-v2-jev-context-dev",
+  "original_records_sha256": "ef735d2ed076ebc26086c97e83b4c1d97f0fbe57f92cac3d5c9ac96921148077",
+  "note": "All attempts retained; repeated request objects omitted. Reconstruct each with core.prepare(corpus row, manifest suite)."
+}

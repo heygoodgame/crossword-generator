@@ -27,6 +27,12 @@ from crossword_generator.clue_history import (
     extract_ipuz_answers,
 )
 from crossword_generator.config import Config, find_project_root, load_config
+from crossword_generator.content_shadow_study import DISABLED as SHADOW_DISABLED
+from crossword_generator.content_shadow_study import (
+    collection_status,
+    progress_line,
+    update_study,
+)
 from crossword_generator.exporters.base import Exporter
 from crossword_generator.models import PuzzleEnvelope
 from crossword_generator.pipeline import close_providers, create_pipeline
@@ -311,6 +317,18 @@ def generate(
         logger.error("Generation failed: %s", e)
         click.echo(f"Error: {e}", err=True)
         sys.exit(1)
+
+    shadow_reason = collection_status(config.grading.clue.content_shadow.enabled)[1]
+    if shadow_reason != SHADOW_DISABLED:
+        observed = any(
+            getattr(step, "_content_shadow", None) for step in pipeline.steps
+        )
+        shadow_dir = Path(config.output.directory)
+        _announce_shadow(
+            shadow_dir if observed else None,
+            reasons=[shadow_reason],
+            artifact_paths=[shadow_dir / "content-shadow.json"] if observed else None,
+        )
 
     click.echo(
         f"Generated {result.difficulty.value} {result.puzzle_type.value} crossword "
@@ -756,6 +774,18 @@ def generate(
         "The error names the --target-* / fill-open-days command to use."
     ),
 )
+@click.option(
+    "--jev-content-shadow/--no-jev-content-shadow",
+    default=None,
+    help=(
+        "Opt this run in to (or out of) the observation-only Jev "
+        "content-policy experiment, overriding "
+        "grading.clue.content_shadow.enabled (default: off). Needs "
+        "TYPESAFE_API_KEY and sends every answer and clue to TypeSafe; "
+        "collection still pauses at the 500-clue review checkpoint. Never "
+        "changes repairs or upload gates."
+    ),
+)
 def generate_pilot_batch(
     output_root: str,
     batch_id: str,
@@ -802,6 +832,7 @@ def generate_pilot_batch(
     target_max: int | None = None,
     open_day_guard: bool = True,
     exclude_existing_boards: bool = True,
+    jev_content_shadow: bool | None = None,
 ) -> None:
     """Generate the Phase 2B pilot batch and write a JSON manifest."""
     _setup_logging(verbose)
@@ -1483,6 +1514,7 @@ def generate_pilot_batch(
             timeout_by_size={5: timeout_5, 7: timeout_7, 9: timeout_9},
             clue_history=clue_history,
             llm_logging_enabled=not no_llm_log,
+            jev_content_shadow=jev_content_shadow,
             dictionary_overrides=dictionary_overrides,
             keep_sweep_context=max_workers > 1,
             excluded_fill_words=item_excluded,
@@ -1553,6 +1585,12 @@ def generate_pilot_batch(
             f"seed {result['seed']}{target_note}: {status} "
             f"({result['runtime_seconds']}s)"
         )
+        # Feed each observed puzzle into the study as it lands, so a large
+        # batch reaches the review checkpoint (and pauses) mid-run.
+        shadow_path = result.get("content_shadow_path")
+        if result["success"] and shadow_path:
+            path = Path(str(shadow_path))
+            _announce_shadow(path.parent, artifact_paths=[path])
 
     results: list[dict[str, object]] = []
     if max_workers <= 1:
@@ -1702,6 +1740,11 @@ def generate_pilot_batch(
     _checkpoint_batch_progress(
         root, batch_id, results, len(work_items), phase="complete"
     )
+    shadow_reasons = {
+        str(r.get("content_shadow_status", SHADOW_DISABLED)) for r in results
+    }
+    if shadow_reasons - {SHADOW_DISABLED}:
+        _announce_shadow(root, reasons=shadow_reasons)
     click.echo(f"Manifest: {manifest_path}")
 
 
@@ -1732,6 +1775,43 @@ def _checkpoint_batch_progress(
     temporary = root / "progress.json.tmp"
     temporary.write_text(json.dumps(checkpoint, indent=2) + "\n")
     temporary.replace(root / "progress.json")
+
+
+def _announce_shadow(
+    root: Path | None = None,
+    *,
+    reasons: Iterable[str] = (),
+    artifact_paths: list[Path] | None = None,
+) -> None:
+    """Fold a run's Jev observations into the study and print its progress.
+
+    Call only for runs that asked for observation: it writes the shared study
+    files. Tracking problems are reported, never raised.
+    """
+    try:
+        summary = update_study(root, artifact_paths=artifact_paths)
+        click.echo(progress_line(summary))
+        batch = summary.get("last_batch_summary")
+        if batch:
+            unavailable = len(batch["missing_artifacts"]) + len(
+                batch["unreadable_artifacts"]
+            )
+            click.echo(
+                f"  Batch: {batch['complete_final_clues']}/{batch['final_clues']} "
+                f"final clues scored; {batch['artifacts']}/"
+                f"{batch['expected_artifacts']} observation files; "
+                f"{batch['additional_to_grader']} additional flags; "
+                f"{batch['request_errors']} request errors; "
+                f"{unavailable} missing/unreadable artifacts."
+            )
+        if reasons:
+            click.echo(f"  Collection: {', '.join(sorted(set(reasons)))}")
+        click.echo(f"  Review: {summary['queue_path']}")
+    except Exception as exc:  # noqa: BLE001 - observation never fails a run
+        click.echo(
+            f"Jev shadow: tracking unavailable ({type(exc).__name__}); "
+            "generation results unaffected."
+        )
 
 
 def _parse_batch_count_overrides(
@@ -4360,6 +4440,7 @@ def _run_batch_item(
     answer_usage_counts: dict[str, int] | None = None,
     answer_novelty_candidates: int = 1,
     answer_usage_penalty: float | None = None,
+    jev_content_shadow: bool | None = None,
 ) -> dict[str, object]:
     bucket_dir = output_root / difficulty / f"{size}x{size}"
     bucket_dir.mkdir(parents=True, exist_ok=True)
@@ -4379,6 +4460,15 @@ def _run_batch_item(
     config.puzzle.grid_size = size
     config.llm.provider = llm_provider
     config.output.directory = str(bucket_dir / "intermediates" / f"seed-{seed:03d}")
+    if jev_content_shadow is not None:
+        config.grading.clue.content_shadow.enabled = jev_content_shadow
+    shadow_active, shadow_reason = collection_status(
+        config.grading.clue.content_shadow.enabled
+    )
+    shadow_path = Path(config.output.directory) / "content-shadow.json"
+    if shadow_active:
+        # A rerun must not report observations left by the previous generation.
+        shadow_path.unlink(missing_ok=True)
     config.output.formats = ["ipuz"]
     config.fill.max_retries = per_pattern_attempts
     config.fill.max_grid_variants = max_grid_variants
@@ -4422,6 +4512,8 @@ def _run_batch_item(
         "output_path": str(output_path),
         "log_path": str(log_path),
         "llm_log_path": str(llm_log_path) if llm_logging_enabled else None,
+        "content_shadow_path": str(shadow_path) if shadow_active else None,
+        "content_shadow_status": shadow_reason,
         "success": False,
         "fill_score": None,
         "fill_selection": None,

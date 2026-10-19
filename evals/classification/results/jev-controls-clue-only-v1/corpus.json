@@ -1,0 +1,1034 @@
+[
+  {
+    "id": "control-035",
+    "state": {
+      "answer": "BEER",
+      "clue": "Brew served at a pub"
+    },
+    "labels": {
+      "alcohol_angle": true
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-009",
+    "state": {
+      "answer": "DOG",
+      "clue": "Household canines"
+    },
+    "labels": {
+      "number_mismatch": true
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-028",
+    "state": {
+      "answer": "AMMO",
+      "clue": "Bullets for a rifle"
+    },
+    "labels": {
+      "firearms_angle": true
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-017",
+    "state": {
+      "answer": "SANG",
+      "clue": "Sing a tune"
+    },
+    "labels": {
+      "tense_mismatch": true
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-006",
+    "state": {
+      "answer": "TEAM",
+      "clue": "Winners of the 1980 tournament"
+    },
+    "labels": {
+      "current_state": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-049",
+    "state": {
+      "answer": "KIN",
+      "clue": "Kith and ___"
+    },
+    "labels": {
+      "plain_definition": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-016",
+    "state": {
+      "answer": "WENT",
+      "clue": "Departed"
+    },
+    "labels": {
+      "tense_mismatch": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-023",
+    "state": {
+      "answer": "QUICK",
+      "clue": "Speedily"
+    },
+    "labels": {
+      "part_of_speech_mismatch": true
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-004",
+    "state": {
+      "answer": "ROB",
+      "clue": "Lowe of \"St. Elmo's Fire\""
+    },
+    "labels": {
+      "current_state": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-047",
+    "state": {
+      "answer": "BANK",
+      "clue": "River edge"
+    },
+    "labels": {
+      "plain_definition": true
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-034",
+    "state": {
+      "answer": "SOBER",
+      "clue": "Serious in manner"
+    },
+    "labels": {
+      "alcohol_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-013",
+    "state": {
+      "answer": "FLOCK",
+      "clue": "Group of sheep"
+    },
+    "labels": {
+      "number_mismatch": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-056",
+    "state": {
+      "answer": "SANTA",
+      "clue": "Christmas gift giver"
+    },
+    "labels": {
+      "specialist_knowledge": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-055",
+    "state": {
+      "answer": "SNIP",
+      "clue": "A bargain, in British slang"
+    },
+    "labels": {
+      "specialist_knowledge": true
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-063",
+    "state": {
+      "answer": "BANK",
+      "clue": "Place with lots of interest?",
+      "hint": "Place to deposit your money"
+    },
+    "labels": {
+      "hint_easier": true,
+      "hint_new_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-030",
+    "state": {
+      "answer": "SHOT",
+      "clue": "Basketball attempt"
+    },
+    "labels": {
+      "firearms_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-051",
+    "state": {
+      "answer": "CAT",
+      "clue": "Animal that says meow"
+    },
+    "labels": {
+      "specialist_knowledge": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-010",
+    "state": {
+      "answer": "DOG",
+      "clue": "A household canine"
+    },
+    "labels": {
+      "number_mismatch": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-029",
+    "state": {
+      "answer": "SHOT",
+      "clue": "Camera capture"
+    },
+    "labels": {
+      "firearms_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-027",
+    "state": {
+      "answer": "PIN",
+      "clue": "Locked and loaded"
+    },
+    "labels": {
+      "firearms_angle": true
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-015",
+    "state": {
+      "answer": "WENT",
+      "clue": "Depart"
+    },
+    "labels": {
+      "tense_mismatch": true
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-040",
+    "state": {
+      "answer": "HIGH",
+      "clue": "Far above the ground"
+    },
+    "labels": {
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-012",
+    "state": {
+      "answer": "MICE",
+      "clue": "Small rodents"
+    },
+    "labels": {
+      "number_mismatch": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-043",
+    "state": {
+      "answer": "POT",
+      "clue": "Marijuana, informally"
+    },
+    "labels": {
+      "drug_use_angle": true
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-018",
+    "state": {
+      "answer": "SANG",
+      "clue": "Performed a song"
+    },
+    "labels": {
+      "tense_mismatch": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-001",
+    "state": {
+      "answer": "ARI",
+      "clue": "NPR's Shapiro"
+    },
+    "labels": {
+      "current_state": true
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-039",
+    "state": {
+      "answer": "HIGH",
+      "clue": "Stoned, informally"
+    },
+    "labels": {
+      "drug_use_angle": true
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-050",
+    "state": {
+      "answer": "NEON",
+      "clue": "Element with atomic number 10"
+    },
+    "labels": {
+      "plain_definition": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-033",
+    "state": {
+      "answer": "SOBER",
+      "clue": "Newly off the bottle"
+    },
+    "labels": {
+      "alcohol_angle": true
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-020",
+    "state": {
+      "answer": "GO",
+      "clue": "Depart"
+    },
+    "labels": {
+      "tense_mismatch": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-062",
+    "state": {
+      "answer": "CAT",
+      "clue": "A cool jazz musician, slangily",
+      "hint": "Pet that says meow"
+    },
+    "labels": {
+      "hint_easier": true,
+      "hint_new_angle": true
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-021",
+    "state": {
+      "answer": "HAPPY",
+      "clue": "With happiness"
+    },
+    "labels": {
+      "part_of_speech_mismatch": true
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-038",
+    "state": {
+      "answer": "WINE",
+      "clue": "Drink made by fermenting grapes"
+    },
+    "labels": {
+      "alcohol_angle": true
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-065",
+    "state": {
+      "answer": "ICE",
+      "clue": "Frozen water",
+      "previous_clue": "Water in solid form"
+    },
+    "labels": {
+      "same_clue_angle": true
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-011",
+    "state": {
+      "answer": "MICE",
+      "clue": "A small rodent"
+    },
+    "labels": {
+      "number_mismatch": true
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-058",
+    "state": {
+      "answer": "BIRD",
+      "clue": "NBA legend Larry"
+    },
+    "labels": {
+      "unnatural_wording": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-005",
+    "state": {
+      "answer": "TEAM",
+      "clue": "Reigning champions"
+    },
+    "labels": {
+      "current_state": true
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-061",
+    "state": {
+      "answer": "ICE",
+      "clue": "Frozen water",
+      "hint": "Water in its frozen form"
+    },
+    "labels": {
+      "hint_easier": false,
+      "hint_new_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-025",
+    "state": {
+      "answer": "RUN",
+      "clue": "Move at a jog"
+    },
+    "labels": {
+      "part_of_speech_mismatch": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-041",
+    "state": {
+      "answer": "PILL",
+      "clue": "Prescribed tablet"
+    },
+    "labels": {
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-067",
+    "state": {
+      "answer": "CAT",
+      "clue": "Meowing pet",
+      "previous_clue": "Pet that says meow"
+    },
+    "labels": {
+      "same_clue_angle": true
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-068",
+    "state": {
+      "answer": "CAT",
+      "clue": "A cool jazz musician",
+      "previous_clue": "Meowing pet"
+    },
+    "labels": {
+      "same_clue_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-046",
+    "state": {
+      "answer": "CAT",
+      "clue": "Small domesticated feline"
+    },
+    "labels": {
+      "plain_definition": true
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-036",
+    "state": {
+      "answer": "TEA",
+      "clue": "Brew served with biscuits"
+    },
+    "labels": {
+      "alcohol_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-059",
+    "state": {
+      "answer": "CAT",
+      "clue": "Pet that is of meowing doing"
+    },
+    "labels": {
+      "unnatural_wording": true
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-007",
+    "state": {
+      "answer": "CATS",
+      "clue": "A household feline"
+    },
+    "labels": {
+      "number_mismatch": true
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-048",
+    "state": {
+      "answer": "BANK",
+      "clue": "Place with lots of interest?"
+    },
+    "labels": {
+      "plain_definition": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-037",
+    "state": {
+      "answer": "SPIRIT",
+      "clue": "Team enthusiasm"
+    },
+    "labels": {
+      "alcohol_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-002",
+    "state": {
+      "answer": "ARI",
+      "clue": "Former NPR host Shapiro"
+    },
+    "labels": {
+      "current_state": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-053",
+    "state": {
+      "answer": "NEPHRON",
+      "clue": "Renal corpuscle and its associated tubule"
+    },
+    "labels": {
+      "specialist_knowledge": true
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-031",
+    "state": {
+      "answer": "STAR",
+      "clue": "Shooting ___"
+    },
+    "labels": {
+      "firearms_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-026",
+    "state": {
+      "answer": "RUN",
+      "clue": "A jog"
+    },
+    "labels": {
+      "part_of_speech_mismatch": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-042",
+    "state": {
+      "answer": "CVS",
+      "clue": "Drugstore chain"
+    },
+    "labels": {
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-057",
+    "state": {
+      "answer": "BIRD",
+      "clue": "Larry of NBA legend"
+    },
+    "labels": {
+      "unnatural_wording": true
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-064",
+    "state": {
+      "answer": "ICE",
+      "clue": "Frozen water",
+      "hint": "Diamonds, in slang"
+    },
+    "labels": {
+      "hint_easier": false,
+      "hint_new_angle": true
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-060",
+    "state": {
+      "answer": "CAT",
+      "clue": "Meowing pet"
+    },
+    "labels": {
+      "unnatural_wording": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-032",
+    "state": {
+      "answer": "AIM",
+      "clue": "Point a rifle at a target"
+    },
+    "labels": {
+      "firearms_angle": true
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-003",
+    "state": {
+      "answer": "DAVE",
+      "clue": "Foo Fighters frontman Grohl"
+    },
+    "labels": {
+      "current_state": true
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-022",
+    "state": {
+      "answer": "HAPPILY",
+      "clue": "With happiness"
+    },
+    "labels": {
+      "part_of_speech_mismatch": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-054",
+    "state": {
+      "answer": "COS",
+      "clue": "Romaine lettuce variety"
+    },
+    "labels": {
+      "specialist_knowledge": true
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-014",
+    "state": {
+      "answer": "WATER",
+      "clue": "Liquid in a lake"
+    },
+    "labels": {
+      "number_mismatch": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-052",
+    "state": {
+      "answer": "EAR",
+      "clue": "Organ used for hearing"
+    },
+    "labels": {
+      "specialist_knowledge": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-019",
+    "state": {
+      "answer": "GO",
+      "clue": "Departed"
+    },
+    "labels": {
+      "tense_mismatch": true
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-045",
+    "state": {
+      "answer": "ICE",
+      "clue": "Frozen water"
+    },
+    "labels": {
+      "plain_definition": true
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-024",
+    "state": {
+      "answer": "QUICKLY",
+      "clue": "Speedily"
+    },
+    "labels": {
+      "part_of_speech_mismatch": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-066",
+    "state": {
+      "answer": "BANK",
+      "clue": "River edge",
+      "previous_clue": "Place to deposit money"
+    },
+    "labels": {
+      "same_clue_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-008",
+    "state": {
+      "answer": "CATS",
+      "clue": "Household felines"
+    },
+    "labels": {
+      "number_mismatch": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  },
+  {
+    "id": "control-044",
+    "state": {
+      "answer": "POT",
+      "clue": "Soup vessel"
+    },
+    "labels": {
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "label_source": "agent-authored-control",
+      "split": "diagnostic",
+      "note": "Authored before live results; not human-validated or an unbiased test set."
+    }
+  }
+]

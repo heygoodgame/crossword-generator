@@ -1,0 +1,2522 @@
+[
+{
+"answer": "TRI",
+"clue": "Number of wheels on a tricycle",
+"mech": "embedded",
+"p": 0.85,
+"opus_defect": true
+},
+{
+"answer": "FULLY",
+"clue": "Entirely and totally",
+"mech": null,
+"p": 0.12,
+"opus_defect": false
+},
+{
+"answer": "SPA",
+"clue": "Retreat offering seaweed wraps",
+"mech": null,
+"p": 0.23,
+"opus_defect": false
+},
+{
+"answer": "IOS",
+"clue": "Rival platform to Android, for short",
+"mech": null,
+"p": 0.08,
+"opus_defect": false
+},
+{
+"answer": "THAW",
+"clue": "Turn from frozen to liquid",
+"mech": null,
+"p": 0.09,
+"opus_defect": false
+},
+{
+"answer": "BOY",
+"clue": "Boyfriend, casually",
+"mech": "embedded",
+"p": 0.74,
+"opus_defect": false
+},
+{
+"answer": "RIGHT",
+"clue": "Opposite of left",
+"mech": null,
+"p": 0.16,
+"opus_defect": false
+},
+{
+"answer": "POR",
+"clue": "Portugal, on an Olympic scoreboard (abbr.)",
+"mech": "embedded",
+"p": 0.59,
+"opus_defect": false
+},
+{
+"answer": "BAR",
+"clue": "Where a bartender works",
+"mech": "embedded",
+"p": 0.49,
+"opus_defect": true
+},
+{
+"answer": "CAFE",
+"clue": "Coffee shop with sidewalk tables",
+"mech": null,
+"p": 0.28,
+"opus_defect": false
+},
+{
+"answer": "PAY",
+"clue": "What a paycheck provides",
+"mech": "embedded",
+"p": 0.61,
+"opus_defect": true
+},
+{
+"answer": "DUB",
+"clue": "Give a name to",
+"mech": null,
+"p": 0.25,
+"opus_defect": false
+},
+{
+"answer": "PRE",
+"clue": "Prefix meaning before",
+"mech": "embedded",
+"p": 0.3,
+"opus_defect": true
+},
+{
+"answer": "DIS",
+"clue": "Diss track's payload, slangily",
+"mech": "embedded",
+"p": 0.64,
+"opus_defect": true
+},
+{
+"answer": "TESLA",
+"clue": "Electric car brand named for an inventor",
+"mech": null,
+"p": 0.08,
+"opus_defect": false
+},
+{
+"answer": "AND",
+"clue": "Ampersand's meaning",
+"mech": "compound",
+"p": 0.3,
+"opus_defect": true
+},
+{
+"answer": "TIMID",
+"clue": "Shy and bashful",
+"mech": null,
+"p": 0.07,
+"opus_defect": false
+},
+{
+"answer": "MANIA",
+"clue": "Beatlemania, for one",
+"mech": "compound",
+"p": 0.89,
+"opus_defect": false
+},
+{
+"answer": "GMS",
+"clue": "Trade-making team execs, briefly",
+"mech": null,
+"p": 0.21,
+"opus_defect": false
+},
+{
+"answer": "MOAT",
+"clue": "Water ring around a castle",
+"mech": null,
+"p": 0.07,
+"opus_defect": false
+},
+{
+"answer": "ERR",
+"clue": "Make an error",
+"mech": "embedded",
+"p": 0.48,
+"opus_defect": true
+},
+{
+"answer": "ONES",
+"clue": "Single-dollar bills",
+"mech": null,
+"p": 0.42,
+"opus_defect": false
+},
+{
+"answer": "ABC",
+"clue": "Alphabet's opening trio",
+"mech": null,
+"p": 0.23,
+"opus_defect": false
+},
+{
+"answer": "EGOS",
+"clue": "Things flattery is said to stroke",
+"mech": null,
+"p": 0.15,
+"opus_defect": false
+},
+{
+"answer": "OLD",
+"clue": "No longer fresh, as news",
+"mech": null,
+"p": 0.11,
+"opus_defect": false
+},
+{
+"answer": "TWO",
+"clue": "Company, proverbially",
+"mech": null,
+"p": 0.27,
+"opus_defect": false
+},
+{
+"answer": "TUBS",
+"clue": "Big bathtubs",
+"mech": "compound",
+"p": 0.71,
+"opus_defect": true
+},
+{
+"answer": "FAT",
+"clue": "Opposite of skinny",
+"mech": null,
+"p": 0.07,
+"opus_defect": false
+},
+{
+"answer": "HERON",
+"clue": "Wading bird with a long neck",
+"mech": null,
+"p": 0.06,
+"opus_defect": false
+},
+{
+"answer": "BED",
+"clue": "Piece of bedroom furniture",
+"mech": "embedded",
+"p": 0.18,
+"opus_defect": true
+},
+{
+"answer": "ACTORS",
+"clue": "Stars of stage and screen",
+"mech": null,
+"p": 0.09,
+"opus_defect": false
+},
+{
+"answer": "HOBO",
+"clue": "Wanderer who hops freight trains",
+"mech": null,
+"p": 0.14,
+"opus_defect": false
+},
+{
+"answer": "YES",
+"clue": "Sure thing!",
+"mech": null,
+"p": 0.19,
+"opus_defect": false
+},
+{
+"answer": "GEL",
+"clue": "Squeezable hair styling product",
+"mech": null,
+"p": 0.08,
+"opus_defect": false
+},
+{
+"answer": "MIL",
+"clue": "A cool ___ (a million bucks)",
+"mech": "embedded",
+"p": 0.32,
+"opus_defect": false
+},
+{
+"answer": "ERR",
+"clue": "Make an error",
+"mech": "embedded",
+"p": 0.53,
+"opus_defect": true
+},
+{
+"answer": "CAL",
+"clue": "Berkeley school, for short",
+"mech": null,
+"p": 0.47,
+"opus_defect": false
+},
+{
+"answer": "STAIR",
+"clue": "One step in a staircase",
+"mech": "embedded",
+"p": 0.47,
+"opus_defect": true
+},
+{
+"answer": "FIR",
+"clue": "Evergreen used for lumber and paneling",
+"mech": null,
+"p": 0.27,
+"opus_defect": false
+},
+{
+"answer": "NUT",
+"clue": "Peanut or pecan",
+"mech": "compound",
+"p": 0.32,
+"opus_defect": true
+},
+{
+"answer": "MED",
+"clue": "Pre-___ (route toward a career in medicine)",
+"mech": "embedded",
+"p": 0.55,
+"opus_defect": true
+},
+{
+"answer": "BERRY",
+"clue": "Blueberry or raspberry, for example",
+"mech": "compound",
+"p": 0.57,
+"opus_defect": true
+},
+{
+"answer": "WELD",
+"clue": "Join, as metal pieces",
+"mech": null,
+"p": 0.09,
+"opus_defect": false
+},
+{
+"answer": "MIL",
+"clue": "Cool million, slangily",
+"mech": "embedded",
+"p": 0.45,
+"opus_defect": false
+},
+{
+"answer": "MUM",
+"clue": "Not letting a peep slip out",
+"mech": null,
+"p": 0.4,
+"opus_defect": false
+},
+{
+"answer": "OVENS",
+"clue": "Pizzeria fixtures, some wood-fired",
+"mech": null,
+"p": 0.11,
+"opus_defect": false
+},
+{
+"answer": "ABLE",
+"clue": "Capable of getting it done",
+"mech": "compound",
+"p": 0.26,
+"opus_defect": false
+},
+{
+"answer": "MAIL",
+"clue": "Mailbox contents",
+"mech": "embedded",
+"p": 0.72,
+"opus_defect": true
+},
+{
+"answer": "DRE",
+"clue": "Dr. ___ (hip-hop producer)",
+"mech": null,
+"p": 0.52,
+"opus_defect": false
+},
+{
+"answer": "DICED",
+"clue": "Cut into small cubes, as onions",
+"mech": null,
+"p": 0.1,
+"opus_defect": false
+},
+{
+"answer": "DAY",
+"clue": "Monday or Tuesday",
+"mech": "compound",
+"p": 0.57,
+"opus_defect": false
+},
+{
+"answer": "EEL",
+"clue": "Catch in a weir, perhaps",
+"mech": null,
+"p": 0.2,
+"opus_defect": false
+},
+{
+"answer": "RADAR",
+"clue": "What traffic cops use for speed checks",
+"mech": null,
+"p": 0.11,
+"opus_defect": false
+},
+{
+"answer": "MANE",
+"clue": "Thick hair around a lion's head",
+"mech": null,
+"p": 0.11,
+"opus_defect": false
+},
+{
+"answer": "YACHT",
+"clue": "Big pleasure boat",
+"mech": null,
+"p": 0.08,
+"opus_defect": false
+},
+{
+"answer": "OPT",
+"clue": "Choose from the options",
+"mech": "embedded",
+"p": 0.41,
+"opus_defect": true
+},
+{
+"answer": "WINNER",
+"clue": "One who comes in first",
+"mech": null,
+"p": 0.08,
+"opus_defect": false
+},
+{
+"answer": "DEER",
+"clue": "Rudolph, notably",
+"mech": null,
+"p": 0.13,
+"opus_defect": false
+},
+{
+"answer": "ARIA",
+"clue": "Soprano's solo at the opera",
+"mech": null,
+"p": 0.26,
+"opus_defect": false
+},
+{
+"answer": "SEAS",
+"clue": "Large bodies of salt water",
+"mech": null,
+"p": 0.12,
+"opus_defect": false
+},
+{
+"answer": "WEN",
+"clue": "Small harmless cyst, as on the scalp",
+"mech": null,
+"p": 0.24,
+"opus_defect": false
+},
+{
+"answer": "SPITE",
+"clue": "Ill will toward someone",
+"mech": null,
+"p": 0.09,
+"opus_defect": false
+},
+{
+"answer": "ITTY",
+"clue": "___-bitty (tiny)",
+"mech": null,
+"p": 0.48,
+"opus_defect": false
+},
+{
+"answer": "WAS",
+"clue": "\"He ___ here a minute ago\"",
+"mech": null,
+"p": 0.16,
+"opus_defect": false
+},
+{
+"answer": "DUST",
+"clue": "What a feather duster removes",
+"mech": "embedded",
+"p": 0.73,
+"opus_defect": true
+},
+{
+"answer": "MACHO",
+"clue": "Overly manly",
+"mech": null,
+"p": 0.12,
+"opus_defect": false
+},
+{
+"answer": "ARE",
+"clue": "Metric unit equal to 100 square meters",
+"mech": "compound",
+"p": 0.28,
+"opus_defect": false
+},
+{
+"answer": "UNTO",
+"clue": "\"Do ___ others...\"",
+"mech": null,
+"p": 0.18,
+"opus_defect": false
+},
+{
+"answer": "LOT",
+"clue": "Empty parking area",
+"mech": null,
+"p": 0.4,
+"opus_defect": false
+},
+{
+"answer": "ONE",
+"clue": "The number after zero",
+"mech": null,
+"p": 0.11,
+"opus_defect": false
+},
+{
+"answer": "EAVES",
+"clue": "Roof's overhanging edges",
+"mech": null,
+"p": 0.08,
+"opus_defect": false
+},
+{
+"answer": "LACEY",
+"clue": "Frilly, like some curtains",
+"mech": null,
+"p": 0.33,
+"opus_defect": false
+},
+{
+"answer": "WED",
+"clue": "Have a wedding",
+"mech": "embedded",
+"p": 0.86,
+"opus_defect": true
+},
+{
+"answer": "NUTS",
+"clue": "Peanuts and walnuts, e.g.",
+"mech": "compound",
+"p": 0.48,
+"opus_defect": true
+},
+{
+"answer": "PRE",
+"clue": "Before, as a prefix",
+"mech": "embedded",
+"p": 0.2,
+"opus_defect": true
+},
+{
+"answer": "PUNKSCENE",
+"clue": "Underground music subculture of mohawks and mosh pits",
+"mech": null,
+"p": 0.25,
+"opus_defect": false
+},
+{
+"answer": "KIWI",
+"clue": "Fuzzy brown fruit that's green inside",
+"mech": null,
+"p": 0.07,
+"opus_defect": false
+},
+{
+"answer": "FALLS",
+"clue": "Waterfalls, in place names",
+"mech": "compound",
+"p": 0.81,
+"opus_defect": false
+},
+{
+"answer": "DRY",
+"clue": "Like a towel fresh from the dryer",
+"mech": "embedded",
+"p": 0.77,
+"opus_defect": true
+},
+{
+"answer": "OWED",
+"clue": "In debt for",
+"mech": null,
+"p": 0.36,
+"opus_defect": false
+},
+{
+"answer": "ESP",
+"clue": "Sixth-sense claim, briefly",
+"mech": null,
+"p": 0.13,
+"opus_defect": false
+},
+{
+"answer": "SEEKS",
+"clue": "Tries to find",
+"mech": null,
+"p": 0.14,
+"opus_defect": false
+},
+{
+"answer": "HYPE",
+"clue": "Get a crowd excited",
+"mech": null,
+"p": 0.1,
+"opus_defect": false
+},
+{
+"answer": "PAIRS",
+"clue": "Figure-skating events for two",
+"mech": null,
+"p": 0.19,
+"opus_defect": false
+},
+{
+"answer": "TOWNS",
+"clue": "Hometowns and ghost ___",
+"mech": "compound",
+"p": 0.54,
+"opus_defect": true
+},
+{
+"answer": "STEER",
+"clue": "Guide a car",
+"mech": null,
+"p": 0.11,
+"opus_defect": false
+},
+{
+"answer": "METAL",
+"clue": "Genre for Metallica",
+"mech": "embedded",
+"p": 0.57,
+"opus_defect": true
+},
+{
+"answer": "LENGTH",
+"clue": "Distance from end to end",
+"mech": null,
+"p": 0.1,
+"opus_defect": false
+},
+{
+"answer": "ALOUD",
+"clue": "Read so others can hear",
+"mech": null,
+"p": 0.28,
+"opus_defect": false
+},
+{
+"answer": "CORES",
+"clue": "Middles of apples",
+"mech": null,
+"p": 0.2,
+"opus_defect": false
+},
+{
+"answer": "SITS",
+"clue": "Poses for a portrait",
+"mech": null,
+"p": 0.18,
+"opus_defect": false
+},
+{
+"answer": "KARMA",
+"clue": "What goes around comes around, per a belief",
+"mech": null,
+"p": 0.08,
+"opus_defect": false
+},
+{
+"answer": "SEE",
+"clue": "Look at with your eyes",
+"mech": null,
+"p": 0.19,
+"opus_defect": false
+},
+{
+"answer": "SOON",
+"clue": "\"See you ___!\"",
+"mech": null,
+"p": 0.14,
+"opus_defect": false
+},
+{
+"answer": "KNOW",
+"clue": "Have knowledge of",
+"mech": "embedded",
+"p": 0.56,
+"opus_defect": false
+},
+{
+"answer": "TRICK",
+"clue": "Magician's clever move",
+"mech": null,
+"p": 0.12,
+"opus_defect": false
+},
+{
+"answer": "UBER",
+"clue": "App for hailing a ride",
+"mech": null,
+"p": 0.05,
+"opus_defect": false
+},
+{
+"answer": "BRIEF",
+"clue": "Lawyer's written summary for the court",
+"mech": null,
+"p": 0.16,
+"opus_defect": false
+},
+{
+"answer": "ECO",
+"clue": "Prefix meaning environmentally friendly",
+"mech": null,
+"p": 0.25,
+"opus_defect": false
+},
+{
+"answer": "MANIA",
+"clue": "Beatlemania, e.g.",
+"mech": "compound",
+"p": 0.88,
+"opus_defect": false
+},
+{
+"answer": "OLD",
+"clue": "No longer new",
+"mech": null,
+"p": 0.11,
+"opus_defect": false
+},
+{
+"answer": "CHI",
+"clue": "Vital energy in Chinese philosophy",
+"mech": "embedded",
+"p": 0.29,
+"opus_defect": false
+},
+{
+"answer": "ERR",
+"clue": "Make an error",
+"mech": "embedded",
+"p": 0.51,
+"opus_defect": true
+},
+{
+"answer": "UNARMED",
+"clue": "Holding no weapon",
+"mech": null,
+"p": 0.1,
+"opus_defect": false
+},
+{
+"answer": "REGS",
+"clue": "Rulebook items, for short",
+"mech": null,
+"p": 0.41,
+"opus_defect": false
+},
+{
+"answer": "EMU",
+"clue": "Its oil is used in cosmetics",
+"mech": null,
+"p": 0.11,
+"opus_defect": false
+},
+{
+"answer": "LOOT",
+"clue": "Rewards found in a video game chest",
+"mech": null,
+"p": 0.08,
+"opus_defect": false
+},
+{
+"answer": "NEON",
+"clue": "Noble gas in glowing signs",
+"mech": null,
+"p": 0.11,
+"opus_defect": false
+},
+{
+"answer": "TALK",
+"clue": "Chat",
+"mech": null,
+"p": 0.1,
+"opus_defect": false
+},
+{
+"answer": "NUT",
+"clue": "Pecan or walnut",
+"mech": "compound",
+"p": 0.34,
+"opus_defect": false
+},
+{
+"answer": "ANTI",
+"clue": "On the 'no' side",
+"mech": null,
+"p": 0.11,
+"opus_defect": false
+},
+{
+"answer": "WHOM",
+"clue": "\"For ___ the bell tolls\"",
+"mech": null,
+"p": 0.15,
+"opus_defect": false
+},
+{
+"answer": "ICED",
+"clue": "Like a cake with frosting on top",
+"mech": null,
+"p": 0.22,
+"opus_defect": false
+},
+{
+"answer": "ABLE",
+"clue": "Capable of doing the task",
+"mech": "compound",
+"p": 0.36,
+"opus_defect": false
+},
+{
+"answer": "ICE",
+"clue": "What you skate on",
+"mech": null,
+"p": 0.14,
+"opus_defect": false
+},
+{
+"answer": "SPUD",
+"clue": "Potato, informally",
+"mech": null,
+"p": 0.18,
+"opus_defect": false
+},
+{
+"answer": "RON",
+"clue": "Actor Howard of \"Happy Days\"",
+"mech": null,
+"p": 0.26,
+"opus_defect": false
+},
+{
+"answer": "PRO",
+"clue": "Seasoned veteran, casually",
+"mech": null,
+"p": 0.22,
+"opus_defect": false
+},
+{
+"answer": "OUT",
+"clue": "No longer in fashion",
+"mech": null,
+"p": 0.1,
+"opus_defect": false
+},
+{
+"answer": "CHINESE",
+"clue": "___ checkers (star-shaped board game)",
+"mech": null,
+"p": 0.19,
+"opus_defect": false
+},
+{
+"answer": "GENOMES",
+"clue": "Subjects of mapping projects since the 1990s",
+"mech": null,
+"p": 0.09,
+"opus_defect": false
+},
+{
+"answer": "DIS",
+"clue": "Show disrespect, in rap lingo",
+"mech": "embedded",
+"p": 0.44,
+"opus_defect": false
+},
+{
+"answer": "NESS",
+"clue": "Suffix seen in Loch and Inverness",
+"mech": "compound",
+"p": 0.65,
+"opus_defect": false
+},
+{
+"answer": "EVER",
+"clue": "At any time whatsoever",
+"mech": "compound",
+"p": 0.14,
+"opus_defect": false
+},
+{
+"answer": "ARE",
+"clue": "\"How ___ you doing?\"",
+"mech": null,
+"p": 0.31,
+"opus_defect": false
+},
+{
+"answer": "FAM",
+"clue": "Family, in slang",
+"mech": "embedded",
+"p": 0.74,
+"opus_defect": false
+},
+{
+"answer": "DECOR",
+"clue": "Room's decorations",
+"mech": "embedded",
+"p": 0.48,
+"opus_defect": true
+},
+{
+"answer": "AMY",
+"clue": "Comedian Poehler of \"Parks and Recreation\"",
+"mech": null,
+"p": 0.25,
+"opus_defect": false
+},
+{
+"answer": "PRE",
+"clue": "Beginning of the word \"preview\"",
+"mech": "embedded",
+"p": 0.94,
+"opus_defect": true
+},
+{
+"answer": "POD",
+"clue": "Listening device for a podcast?",
+"mech": "embedded",
+"p": 0.48,
+"opus_defect": false
+},
+{
+"answer": "THAI",
+"clue": "Language spoken in Thailand",
+"mech": "embedded",
+"p": 0.28,
+"opus_defect": false
+},
+{
+"answer": "WOW",
+"clue": "\"That's incredible!\"",
+"mech": null,
+"p": 0.08,
+"opus_defect": false
+},
+{
+"answer": "ADAM",
+"clue": "First man, according to the Bible",
+"mech": null,
+"p": 0.14,
+"opus_defect": false
+},
+{
+"answer": "BUG",
+"clue": "Ladybug or cricket, e.g.",
+"mech": "compound",
+"p": 0.58,
+"opus_defect": false
+},
+{
+"answer": "MAT",
+"clue": "Wrestler's surface",
+"mech": null,
+"p": 0.21,
+"opus_defect": false
+},
+{
+"answer": "IONS",
+"clue": "Cations and anions",
+"mech": "compound",
+"p": 0.31,
+"opus_defect": false
+},
+{
+"answer": "OAK",
+"clue": "Tree that grows from an acorn",
+"mech": null,
+"p": 0.16,
+"opus_defect": false
+},
+{
+"answer": "GREED",
+"clue": "Selfish craving for wealth",
+"mech": null,
+"p": 0.08,
+"opus_defect": false
+},
+{
+"answer": "EWE",
+"clue": "Lamb's mom",
+"mech": null,
+"p": 0.12,
+"opus_defect": false
+},
+{
+"answer": "YIN",
+"clue": "Dark, passive force in Taoism",
+"mech": null,
+"p": 0.1,
+"opus_defect": false
+},
+{
+"answer": "CHOI",
+"clue": "Roy who pioneered gourmet food trucks",
+"mech": null,
+"p": 0.08,
+"opus_defect": false
+},
+{
+"answer": "EVER",
+"clue": "At any point whatsoever",
+"mech": "compound",
+"p": 0.16,
+"opus_defect": false
+},
+{
+"answer": "AND",
+"clue": "Ampersand's meaning",
+"mech": "compound",
+"p": 0.29,
+"opus_defect": true
+},
+{
+"answer": "OAT",
+"clue": "Main grain in oatmeal",
+"mech": "embedded",
+"p": 0.66,
+"opus_defect": true
+},
+{
+"answer": "LLOYD",
+"clue": "Christopher who played Doc Brown",
+"mech": null,
+"p": 0.15,
+"opus_defect": false
+},
+{
+"answer": "FRUIT",
+"clue": "Apple or banana, for example",
+"mech": null,
+"p": 0.1,
+"opus_defect": false
+},
+{
+"answer": "LOUIS",
+"clue": "Trumpeter Armstrong",
+"mech": null,
+"p": 0.26,
+"opus_defect": false
+},
+{
+"answer": "DINO",
+"clue": "Pet dinosaur of the Flintstones",
+"mech": "embedded",
+"p": 0.43,
+"opus_defect": false
+},
+{
+"answer": "TAO",
+"clue": "Central concept of Taoism",
+"mech": "embedded",
+"p": 0.69,
+"opus_defect": true
+},
+{
+"answer": "OAT",
+"clue": "Grain in oatmeal",
+"mech": "embedded",
+"p": 0.63,
+"opus_defect": true
+},
+{
+"answer": "LIGHTEN",
+"clue": "Ease, as a burden",
+"mech": null,
+"p": 0.1,
+"opus_defect": false
+},
+{
+"answer": "ABLE",
+"clue": "Capable or skilled",
+"mech": "compound",
+"p": 0.27,
+"opus_defect": false
+},
+{
+"answer": "AKA",
+"clue": "Letters before a stage name",
+"mech": null,
+"p": 0.15,
+"opus_defect": false
+},
+{
+"answer": "NOS",
+"clue": "Rejections at the polls",
+"mech": null,
+"p": 0.28,
+"opus_defect": false
+},
+{
+"answer": "THERAPY",
+"clue": "Sessions with a counselor",
+"mech": null,
+"p": 0.08,
+"opus_defect": false
+},
+{
+"answer": "GALA",
+"clue": "Fancy fundraising party",
+"mech": null,
+"p": 0.11,
+"opus_defect": false
+},
+{
+"answer": "UPSTATE",
+"clue": "New York region north of the city",
+"mech": null,
+"p": 0.08,
+"opus_defect": false
+},
+{
+"answer": "OPT",
+"clue": "Select from options",
+"mech": "embedded",
+"p": 0.32,
+"opus_defect": true
+},
+{
+"answer": "SLY",
+"clue": "Wily and sneaky",
+"mech": null,
+"p": 0.23,
+"opus_defect": false
+},
+{
+"answer": "BIT",
+"clue": "Small amount",
+"mech": null,
+"p": 0.12,
+"opus_defect": false
+},
+{
+"answer": "OPRAH",
+"clue": "TV host Winfrey",
+"mech": null,
+"p": 0.3,
+"opus_defect": false
+},
+{
+"answer": "MANLY",
+"clue": "Tough and macho",
+"mech": null,
+"p": 0.15,
+"opus_defect": false
+},
+{
+"answer": "COB",
+"clue": "Corncob's namesake pipe part",
+"mech": "compound",
+"p": 0.49,
+"opus_defect": true
+},
+{
+"answer": "COLE",
+"clue": "\"Kiss Me, Kate\" composer Porter",
+"mech": null,
+"p": 0.23,
+"opus_defect": false
+},
+{
+"answer": "MELON",
+"clue": "Watermelon or cantaloupe",
+"mech": "compound",
+"p": 0.88,
+"opus_defect": true
+},
+{
+"answer": "SWUNG",
+"clue": "Took a cut at the plate",
+"mech": null,
+"p": 0.12,
+"opus_defect": false
+},
+{
+"answer": "HERS",
+"clue": "Not his, but the woman's",
+"mech": null,
+"p": 0.22,
+"opus_defect": false
+},
+{
+"answer": "BAN",
+"clue": "Official no-no",
+"mech": null,
+"p": 0.19,
+"opus_defect": false
+},
+{
+"answer": "TRI",
+"clue": "Number of sides on a triangle",
+"mech": "embedded",
+"p": 0.55,
+"opus_defect": true
+},
+{
+"answer": "CLAW",
+"clue": "Lobster's pincer",
+"mech": null,
+"p": 0.15,
+"opus_defect": false
+},
+{
+"answer": "ABC",
+"clue": "First three letters of the alphabet",
+"mech": null,
+"p": 0.13,
+"opus_defect": false
+},
+{
+"answer": "ALEX",
+"clue": "Familiar form of Alexander",
+"mech": "embedded",
+"p": 0.66,
+"opus_defect": false
+},
+{
+"answer": "ISLAM",
+"clue": "Faith with the Five Pillars",
+"mech": null,
+"p": 0.06,
+"opus_defect": false
+},
+{
+"answer": "FAD",
+"clue": "Craze that soon fades",
+"mech": "embedded",
+"p": 0.31,
+"opus_defect": true
+},
+{
+"answer": "RIG",
+"clue": "Set up, as a ship's sails",
+"mech": null,
+"p": 0.14,
+"opus_defect": false
+},
+{
+"answer": "LES",
+"clue": "\"___ Mis\u00e9rables\" (stage musical)",
+"mech": "compound",
+"p": 0.39,
+"opus_defect": false
+},
+{
+"answer": "WED",
+"clue": "Tie the knot",
+"mech": null,
+"p": 0.18,
+"opus_defect": false
+},
+{
+"answer": "THO",
+"clue": "\"Though,\" in a quick text",
+"mech": "embedded",
+"p": 0.83,
+"opus_defect": false
+},
+{
+"answer": "EAR",
+"clue": "Where you put an earbud",
+"mech": "embedded",
+"p": 0.73,
+"opus_defect": false
+},
+{
+"answer": "ARGUE",
+"clue": "Quarrel loudly",
+"mech": null,
+"p": 0.1,
+"opus_defect": false
+},
+{
+"answer": "RASH",
+"clue": "Acting without a second thought",
+"mech": null,
+"p": 0.38,
+"opus_defect": false
+},
+{
+"answer": "ARMENIA",
+"clue": "Land at the foot of Mount Ararat",
+"mech": null,
+"p": 0.28,
+"opus_defect": false
+},
+{
+"answer": "RNA",
+"clue": "Strand that ribosomes read, briefly",
+"mech": null,
+"p": 0.13,
+"opus_defect": false
+},
+{
+"answer": "GRAD",
+"clue": "Diploma earner, for short",
+"mech": null,
+"p": 0.39,
+"opus_defect": false
+},
+{
+"answer": "EAGER",
+"clue": "Excited and ready to go",
+"mech": null,
+"p": 0.09,
+"opus_defect": false
+},
+{
+"answer": "PUN",
+"clue": "Groaner that turns on a double meaning",
+"mech": null,
+"p": 0.3,
+"opus_defect": false
+},
+{
+"answer": "PAS",
+"clue": "Poppas, casually",
+"mech": "compound",
+"p": 0.61,
+"opus_defect": false
+},
+{
+"answer": "TRI",
+"clue": "Number of sides on a triangle, in word form",
+"mech": "embedded",
+"p": 0.6,
+"opus_defect": true
+},
+{
+"answer": "SITS",
+"clue": "Babysits",
+"mech": "compound",
+"p": 0.81,
+"opus_defect": true
+},
+{
+"answer": "RENT",
+"clue": "What a tenant pays each month",
+"mech": null,
+"p": 0.12,
+"opus_defect": false
+},
+{
+"answer": "COMIC",
+"clue": "Person telling jokes onstage",
+"mech": null,
+"p": 0.12,
+"opus_defect": false
+},
+{
+"answer": "INDY",
+"clue": "Dr. Jones, familiarly",
+"mech": null,
+"p": 0.29,
+"opus_defect": false
+},
+{
+"answer": "ROE",
+"clue": "Fish eggs in sushi",
+"mech": null,
+"p": 0.23,
+"opus_defect": false
+},
+{
+"answer": "LES",
+"clue": "\"___ Mis\u00e9rables\" (Broadway musical)",
+"mech": "compound",
+"p": 0.52,
+"opus_defect": false
+},
+{
+"answer": "HAIRS",
+"clue": "Things a comb goes through",
+"mech": null,
+"p": 0.12,
+"opus_defect": false
+},
+{
+"answer": "ANG",
+"clue": "Director Lee of \"Sense and Sensibility\"",
+"mech": null,
+"p": 0.39,
+"opus_defect": false
+},
+{
+"answer": "EVANS",
+"clue": "Chris who played Captain America",
+"mech": null,
+"p": 0.15,
+"opus_defect": false
+},
+{
+"answer": "IOS",
+"clue": "Android's chief competitor",
+"mech": null,
+"p": 0.07,
+"opus_defect": false
+},
+{
+"answer": "THROB",
+"clue": "Pulse rhythmically",
+"mech": null,
+"p": 0.08,
+"opus_defect": false
+},
+{
+"answer": "GEL",
+"clue": "Goopy hair styling product",
+"mech": null,
+"p": 0.09,
+"opus_defect": false
+},
+{
+"answer": "PAN",
+"clue": "Skillet for frying eggs",
+"mech": null,
+"p": 0.17,
+"opus_defect": false
+},
+{
+"answer": "ONYX",
+"clue": "Sardonyx's darker cousin",
+"mech": "compound",
+"p": 0.72,
+"opus_defect": true
+},
+{
+"answer": "MEDS",
+"clue": "Doctor-ordered doses, for short",
+"mech": null,
+"p": 0.18,
+"opus_defect": false
+},
+{
+"answer": "AROMA",
+"clue": "Wafting enticement from a bakery",
+"mech": null,
+"p": 0.11,
+"opus_defect": false
+},
+{
+"answer": "PRAY",
+"clue": "Say a bedtime plea to a higher power",
+"mech": null,
+"p": 0.14,
+"opus_defect": false
+},
+{
+"answer": "SAT",
+"clue": "Rested in a chair",
+"mech": null,
+"p": 0.37,
+"opus_defect": false
+},
+{
+"answer": "LES",
+"clue": "\"___ Mis\u00e9rables\" (Broadway hit)",
+"mech": "compound",
+"p": 0.55,
+"opus_defect": false
+},
+{
+"answer": "PAR",
+"clue": "Standard score on a golf hole",
+"mech": null,
+"p": 0.22,
+"opus_defect": false
+},
+{
+"answer": "ENDS",
+"clue": "Wraps up",
+"mech": null,
+"p": 0.17,
+"opus_defect": false
+},
+{
+"answer": "MEET",
+"clue": "Come together, as friends",
+"mech": null,
+"p": 0.12,
+"opus_defect": false
+},
+{
+"answer": "BUDGE",
+"clue": "Move even slightly",
+"mech": null,
+"p": 0.2,
+"opus_defect": false
+},
+{
+"answer": "OUTS",
+"clue": "Strikeouts, for example",
+"mech": "compound",
+"p": 0.16,
+"opus_defect": false
+},
+{
+"answer": "OPT",
+"clue": "Make a choice",
+"mech": null,
+"p": 0.23,
+"opus_defect": false
+},
+{
+"answer": "TRI",
+"clue": "Word part in \"triangle\" or \"tripod\"",
+"mech": "embedded",
+"p": 0.93,
+"opus_defect": true
+},
+{
+"answer": "ALOE",
+"clue": "Succulent whose gel soothes a burn",
+"mech": null,
+"p": 0.08,
+"opus_defect": false
+},
+{
+"answer": "NUTS",
+"clue": "Peanuts and walnuts",
+"mech": "compound",
+"p": 0.62,
+"opus_defect": false
+},
+{
+"answer": "SCAB",
+"clue": "Crust that forms over a healing cut",
+"mech": null,
+"p": 0.07,
+"opus_defect": false
+},
+{
+"answer": "OAT",
+"clue": "Grain in oatmeal",
+"mech": "embedded",
+"p": 0.67,
+"opus_defect": true
+},
+{
+"answer": "DOC",
+"clue": "Hospital doctor, briefly",
+"mech": "embedded",
+"p": 0.54,
+"opus_defect": true
+},
+{
+"answer": "WING",
+"clue": "Section of a mansion",
+"mech": null,
+"p": 0.1,
+"opus_defect": false
+},
+{
+"answer": "NUT",
+"clue": "Peanut or almond, e.g.",
+"mech": "compound",
+"p": 0.32,
+"opus_defect": false
+},
+{
+"answer": "BOMB",
+"clue": "Big flop at the box office",
+"mech": null,
+"p": 0.09,
+"opus_defect": false
+},
+{
+"answer": "SCENT",
+"clue": "Nice smell of a flower",
+"mech": null,
+"p": 0.11,
+"opus_defect": false
+},
+{
+"answer": "EASED",
+"clue": "Gradually released, as tension",
+"mech": "compound",
+"p": 0.22,
+"opus_defect": false
+},
+{
+"answer": "SAND",
+"clue": "Grains on a beach",
+"mech": null,
+"p": 0.15,
+"opus_defect": false
+},
+{
+"answer": "SIT",
+"clue": "Pose for a painter",
+"mech": null,
+"p": 0.26,
+"opus_defect": false
+},
+{
+"answer": "SKI",
+"clue": "Glide down a snowy slope",
+"mech": null,
+"p": 0.17,
+"opus_defect": false
+},
+{
+"answer": "SIRE",
+"clue": "Stallion listed in a racehorse's pedigree",
+"mech": null,
+"p": 0.18,
+"opus_defect": false
+},
+{
+"answer": "AIR",
+"clue": "What we breathe",
+"mech": null,
+"p": 0.13,
+"opus_defect": false
+},
+{
+"answer": "PRE",
+"clue": "\"___-owned\" (like a used car)",
+"mech": null,
+"p": 0.35,
+"opus_defect": false
+},
+{
+"answer": "ALLAN",
+"clue": "Edgar ___ Poe, who wrote scary tales",
+"mech": null,
+"p": 0.27,
+"opus_defect": false
+},
+{
+"answer": "MEMO",
+"clue": "Quick note in the office",
+"mech": null,
+"p": 0.11,
+"opus_defect": false
+},
+{
+"answer": "TLC",
+"clue": "Extra-gentle handling, for short",
+"mech": null,
+"p": 0.24,
+"opus_defect": false
+},
+{
+"answer": "GEM",
+"clue": "Sparkling jewel in a ring",
+"mech": null,
+"p": 0.14,
+"opus_defect": false
+},
+{
+"answer": "DINO",
+"clue": "Fred Flintstone's dinosaur pet",
+"mech": "embedded",
+"p": 0.14,
+"opus_defect": true
+},
+{
+"answer": "GHANA",
+"clue": "Kofi Annan's home country",
+"mech": null,
+"p": 0.06,
+"opus_defect": false
+},
+{
+"answer": "ISSUE",
+"clue": "One printing of a magazine",
+"mech": null,
+"p": 0.21,
+"opus_defect": false
+},
+{
+"answer": "SON",
+"clue": "Bart, to Homer Simpson",
+"mech": "compound",
+"p": 0.16,
+"opus_defect": false
+},
+{
+"answer": "ALPHA",
+"clue": "First letter in the Greek alphabet",
+"mech": "embedded",
+"p": 0.13,
+"opus_defect": false
+},
+{
+"answer": "EVER",
+"clue": "At any time whatsoever",
+"mech": "compound",
+"p": 0.16,
+"opus_defect": false
+},
+{
+"answer": "LSU",
+"clue": "Bayou Bengals' sch.",
+"mech": null,
+"p": 0.11,
+"opus_defect": false
+},
+{
+"answer": "MUSCLE",
+"clue": "Biceps, for example",
+"mech": null,
+"p": 0.1,
+"opus_defect": false
+},
+{
+"answer": "ANT",
+"clue": "Colony worker",
+"mech": null,
+"p": 0.12,
+"opus_defect": false
+},
+{
+"answer": "AXIAL",
+"clue": "Running through the central line",
+"mech": null,
+"p": 0.13,
+"opus_defect": false
+},
+{
+"answer": "KIA",
+"clue": "Seoul-based automaker",
+"mech": null,
+"p": 0.07,
+"opus_defect": false
+},
+{
+"answer": "MENUS",
+"clue": "Restaurant lists of dishes",
+"mech": null,
+"p": 0.08,
+"opus_defect": false
+},
+{
+"answer": "REPS",
+"clue": "Bench press tallies, informally",
+"mech": null,
+"p": 0.16,
+"opus_defect": false
+},
+{
+"answer": "CHAP",
+"clue": "Fellow, in British speech",
+"mech": null,
+"p": 0.16,
+"opus_defect": false
+},
+{
+"answer": "OTTER",
+"clue": "Playful animal that swims in rivers",
+"mech": null,
+"p": 0.09,
+"opus_defect": false
+},
+{
+"answer": "EPA",
+"clue": "Pollution-fighting U.S. org.",
+"mech": null,
+"p": 0.1,
+"opus_defect": false
+},
+{
+"answer": "COINAGE",
+"clue": "Newly invented word",
+"mech": null,
+"p": 0.09,
+"opus_defect": false
+},
+{
+"answer": "BLING",
+"clue": "Sparkly jewelry, in hip-hop slang",
+"mech": null,
+"p": 0.08,
+"opus_defect": false
+},
+{
+"answer": "GPA",
+"clue": "Report card stat, for short",
+"mech": null,
+"p": 0.09,
+"opus_defect": false
+},
+{
+"answer": "CREW",
+"clue": "Group of workers on a movie set or ship",
+"mech": null,
+"p": 0.15,
+"opus_defect": false
+},
+{
+"answer": "OUT",
+"clue": "No longer a secret",
+"mech": null,
+"p": 0.19,
+"opus_defect": false
+},
+{
+"answer": "FOR",
+"clue": "On the pro side",
+"mech": null,
+"p": 0.2,
+"opus_defect": false
+},
+{
+"answer": "EYE",
+"clue": "Hurricane's calm center",
+"mech": null,
+"p": 0.17,
+"opus_defect": false
+},
+{
+"answer": "SLOAN",
+"clue": "Memorial ___ Kettering (NYC hospital)",
+"mech": null,
+"p": 0.14,
+"opus_defect": false
+},
+{
+"answer": "DAY",
+"clue": "Monday or Tuesday, for example",
+"mech": "compound",
+"p": 0.39,
+"opus_defect": false
+},
+{
+"answer": "PIKE",
+"clue": "Turnpike, casually",
+"mech": "compound",
+"p": 0.68,
+"opus_defect": true
+},
+{
+"answer": "DAY",
+"clue": "Monday or Tuesday, for example",
+"mech": "compound",
+"p": 0.26,
+"opus_defect": false
+},
+{
+"answer": "MATS",
+"clue": "Doormats and gym-floor pads",
+"mech": "compound",
+"p": 0.69,
+"opus_defect": false
+},
+{
+"answer": "FEDEX",
+"clue": "Purple-and-orange shipping giant",
+"mech": null,
+"p": 0.07,
+"opus_defect": false
+},
+{
+"answer": "SKIPPER",
+"clue": "Barbie's little sister",
+"mech": null,
+"p": 0.07,
+"opus_defect": false
+},
+{
+"answer": "ROUTE",
+"clue": "Path a bus follows",
+"mech": null,
+"p": 0.1,
+"opus_defect": false
+},
+{
+"answer": "SASS",
+"clue": "Sassy remarks",
+"mech": "embedded",
+"p": 0.75,
+"opus_defect": true
+},
+{
+"answer": "FLY",
+"clue": "Buzzing pest at a picnic",
+"mech": null,
+"p": 0.14,
+"opus_defect": false
+},
+{
+"answer": "MERITS",
+"clue": "Points in favor of an argument",
+"mech": null,
+"p": 0.11,
+"opus_defect": false
+},
+{
+"answer": "COM",
+"clue": "Commercial site suffix",
+"mech": "embedded",
+"p": 0.56,
+"opus_defect": false
+},
+{
+"answer": "VETO",
+"clue": "Power a president may exercise",
+"mech": null,
+"p": 0.06,
+"opus_defect": false
+},
+{
+"answer": "RAPID",
+"clue": "Very fast",
+"mech": null,
+"p": 0.09,
+"opus_defect": false
+},
+{
+"answer": "NETS",
+"clue": "Angler's gear",
+"mech": null,
+"p": 0.08,
+"opus_defect": false
+},
+{
+"answer": "COB",
+"clue": "Male swan",
+"mech": null,
+"p": 0.13,
+"opus_defect": false
+},
+{
+"answer": "GHOST",
+"clue": "Spooky figure under a sheet",
+"mech": null,
+"p": 0.08,
+"opus_defect": false
+},
+{
+"answer": "SEE",
+"clue": "Catch sight of",
+"mech": null,
+"p": 0.18,
+"opus_defect": false
+},
+{
+"answer": "TRI",
+"clue": "Triathlon shortener",
+"mech": "embedded",
+"p": 0.8,
+"opus_defect": true
+},
+{
+"answer": "THAI",
+"clue": "Of Thailand",
+"mech": "embedded",
+"p": 0.51,
+"opus_defect": true
+},
+{
+"answer": "HOW",
+"clue": "\"In what way?\"",
+"mech": null,
+"p": 0.47,
+"opus_defect": false
+},
+{
+"answer": "LOIN",
+"clue": "Pork or beef cut, as a tenderloin comes from",
+"mech": "compound",
+"p": 0.76,
+"opus_defect": true
+},
+{
+"answer": "PHONE",
+"clue": "Smartphone, e.g.",
+"mech": "compound",
+"p": 0.44,
+"opus_defect": false
+},
+{
+"answer": "CDS",
+"clue": "Round albums in jewel cases, briefly",
+"mech": null,
+"p": 0.15,
+"opus_defect": false
+},
+{
+"answer": "ERR",
+"clue": "Make an error",
+"mech": "embedded",
+"p": 0.51,
+"opus_defect": true
+},
+{
+"answer": "MANIA",
+"clue": "Beatlemania, for one",
+"mech": "compound",
+"p": 0.91,
+"opus_defect": false
+},
+{
+"answer": "DAY",
+"clue": "Daytime, not nighttime",
+"mech": "embedded",
+"p": 0.86,
+"opus_defect": false
+},
+{
+"answer": "BOAT",
+"clue": "Canoe or rowboat",
+"mech": "compound",
+"p": 0.34,
+"opus_defect": false
+},
+{
+"answer": "BED",
+"clue": "Where you rest at bedtime",
+"mech": "embedded",
+"p": 0.23,
+"opus_defect": true
+},
+{
+"answer": "ATONE",
+"clue": "Make amends for wrongdoing",
+"mech": null,
+"p": 0.17,
+"opus_defect": false
+},
+{
+"answer": "USED",
+"clue": "Like a thrift-store find",
+"mech": null,
+"p": 0.18,
+"opus_defect": false
+},
+{
+"answer": "VETS",
+"clue": "Pet-care pros, briefly",
+"mech": null,
+"p": 0.23,
+"opus_defect": false
+},
+{
+"answer": "OWN",
+"clue": "Possess",
+"mech": null,
+"p": 0.12,
+"opus_defect": false
+},
+{
+"answer": "OPT",
+"clue": "Pick, as an option",
+"mech": "embedded",
+"p": 0.67,
+"opus_defect": true
+},
+{
+"answer": "ERR",
+"clue": "Make an error",
+"mech": "embedded",
+"p": 0.54,
+"opus_defect": true
+},
+{
+"answer": "WIN",
+"clue": "Take first place",
+"mech": null,
+"p": 0.1,
+"opus_defect": false
+},
+{
+"answer": "ALEC",
+"clue": "Smart ___ (wise guy)",
+"mech": null,
+"p": 0.24,
+"opus_defect": false
+},
+{
+"answer": "GRIND",
+"clue": "Prep coffee beans, in a way",
+"mech": null,
+"p": 0.08,
+"opus_defect": false
+},
+{
+"answer": "EAR",
+"clue": "Where earbuds go",
+"mech": "embedded",
+"p": 0.76,
+"opus_defect": true
+},
+{
+"answer": "MING",
+"clue": "Chinese dynasty famous for porcelain vases",
+"mech": null,
+"p": 0.12,
+"opus_defect": false
+},
+{
+"answer": "GEO",
+"clue": "Chevrolet brand of the 1990s that made the Metro",
+"mech": null,
+"p": 0.17,
+"opus_defect": false
+},
+{
+"answer": "GEE",
+"clue": "\"Golly!\"",
+"mech": null,
+"p": 0.41,
+"opus_defect": false
+},
+{
+"answer": "BOY",
+"clue": "Young male kid",
+"mech": null,
+"p": 0.11,
+"opus_defect": false
+},
+{
+"answer": "BLADE",
+"clue": "Sharp edge of a knife",
+"mech": null,
+"p": 0.13,
+"opus_defect": false
+},
+{
+"answer": "ACRE",
+"clue": "Land area about the size of a football field",
+"mech": null,
+"p": 0.09,
+"opus_defect": false
+},
+{
+"answer": "PBS",
+"clue": "\"Sesame Street\" airer, in brief",
+"mech": null,
+"p": 0.08,
+"opus_defect": false
+},
+{
+"answer": "GLOAT",
+"clue": "Brag about winning",
+"mech": null,
+"p": 0.07,
+"opus_defect": false
+},
+{
+"answer": "PLANT",
+"clue": "Spy secretly slipped into a group",
+"mech": null,
+"p": 0.2,
+"opus_defect": false
+},
+{
+"answer": "ADDED",
+"clue": "Tossed in extra",
+"mech": null,
+"p": 0.15,
+"opus_defect": false
+},
+{
+"answer": "LEG",
+"clue": "One portion of a relay race",
+"mech": null,
+"p": 0.18,
+"opus_defect": false
+},
+{
+"answer": "EVE",
+"clue": "Evening, to a poet",
+"mech": "embedded",
+"p": 0.7,
+"opus_defect": false
+},
+{
+"answer": "NED",
+"clue": "Kelly of Australian outlaw lore",
+"mech": null,
+"p": 0.29,
+"opus_defect": false
+},
+{
+"answer": "FIRE",
+"clue": "Flames in a campfire",
+"mech": "compound",
+"p": 0.55,
+"opus_defect": true
+},
+{
+"answer": "HELM",
+"clue": "Where the captain stands",
+"mech": null,
+"p": 0.22,
+"opus_defect": false
+},
+{
+"answer": "MEMOS",
+"clue": "Notes sent around the workplace",
+"mech": null,
+"p": 0.09,
+"opus_defect": false
+},
+{
+"answer": "MELON",
+"clue": "Watermelon or cantaloupe",
+"mech": "compound",
+"p": 0.87,
+"opus_defect": false
+},
+{
+"answer": "MATS",
+"clue": "Doormats, essentially",
+"mech": "compound",
+"p": 0.76,
+"opus_defect": true
+},
+{
+"answer": "MEDIC",
+"clue": "First-aid helper on a battlefield",
+"mech": null,
+"p": 0.09,
+"opus_defect": false
+},
+{
+"answer": "EVER",
+"clue": "At all",
+"mech": null,
+"p": 0.12,
+"opus_defect": false
+},
+{
+"answer": "GYM",
+"clue": "Place with treadmills and weights",
+"mech": null,
+"p": 0.07,
+"opus_defect": false
+},
+{
+"answer": "GAVEL",
+"clue": "Judge's wooden hammer",
+"mech": null,
+"p": 0.06,
+"opus_defect": false
+},
+{
+"answer": "DAY",
+"clue": "Heyday, with \"in one's\"",
+"mech": "compound",
+"p": 0.44,
+"opus_defect": false
+},
+{
+"answer": "GRAM",
+"clue": "Telegram, in old slang",
+"mech": "compound",
+"p": 0.69,
+"opus_defect": true
+},
+{
+"answer": "DOSAGES",
+"clue": "Amounts of medicine to take",
+"mech": null,
+"p": 0.07,
+"opus_defect": false
+},
+{
+"answer": "PEN",
+"clue": "Ink-filled writing tool",
+"mech": null,
+"p": 0.12,
+"opus_defect": false
+},
+{
+"answer": "FOG",
+"clue": "Thick cloud near the ground",
+"mech": null,
+"p": 0.08,
+"opus_defect": false
+},
+{
+"answer": "COM",
+"clue": "Common URL ender",
+"mech": "embedded",
+"p": 0.59,
+"opus_defect": false
+},
+{
+"answer": "NOTICED",
+"clue": "Took heed of",
+"mech": null,
+"p": 0.13,
+"opus_defect": false
+},
+{
+"answer": "RECESSIVE",
+"clue": "Like the gene for blue eyes, in biology",
+"mech": null,
+"p": 0.08,
+"opus_defect": false
+},
+{
+"answer": "RICA",
+"clue": "Costa ___ (country in Central America)",
+"mech": "compound",
+"p": 0.57,
+"opus_defect": false
+},
+{
+"answer": "OPT",
+"clue": "Decide between options",
+"mech": "embedded",
+"p": 0.36,
+"opus_defect": true
+},
+{
+"answer": "CROW",
+"clue": "Scarecrow's target",
+"mech": "compound",
+"p": 0.27,
+"opus_defect": true
+},
+{
+"answer": "CALL",
+"clue": "Reach by phone",
+"mech": null,
+"p": 0.21,
+"opus_defect": false
+},
+{
+"answer": "OAT",
+"clue": "Grain in oatmeal",
+"mech": "embedded",
+"p": 0.68,
+"opus_defect": true
+},
+{
+"answer": "OAT",
+"clue": "Grain in oatmeal cookies",
+"mech": "embedded",
+"p": 0.62,
+"opus_defect": true
+},
+{
+"answer": "SIM",
+"clue": "\"The ___s\" (life-simulation game series)",
+"mech": "embedded",
+"p": 0.3,
+"opus_defect": true
+},
+{
+"answer": "MOMENTS",
+"clue": "Fleeting instants",
+"mech": null,
+"p": 0.08,
+"opus_defect": false
+},
+{
+"answer": "WANNA",
+"clue": "Casual \"would like to\"",
+"mech": null,
+"p": 0.24,
+"opus_defect": false
+},
+{
+"answer": "YELL",
+"clue": "Shout loudly",
+"mech": null,
+"p": 0.08,
+"opus_defect": false
+},
+{
+"answer": "WEASEL",
+"clue": "Sneaky, slinky critter",
+"mech": null,
+"p": 0.08,
+"opus_defect": false
+},
+{
+"answer": "DAY",
+"clue": "Monday or Tuesday, for one",
+"mech": "compound",
+"p": 0.5,
+"opus_defect": false
+},
+{
+"answer": "ATE",
+"clue": "Enjoyed a meal",
+"mech": null,
+"p": 0.49,
+"opus_defect": false
+},
+{
+"answer": "OAT",
+"clue": "Grain in a bowl of oatmeal",
+"mech": "embedded",
+"p": 0.7,
+"opus_defect": true
+},
+{
+"answer": "TONER",
+"clue": "Cleanser follow-up in a skin-care routine",
+"mech": null,
+"p": 0.07,
+"opus_defect": false
+},
+{
+"answer": "HIP",
+"clue": "Fashionable and stylish",
+"mech": null,
+"p": 0.16,
+"opus_defect": false
+},
+{
+"answer": "DAB",
+"clue": "Trendy dance move with a bent arm",
+"mech": null,
+"p": 0.14,
+"opus_defect": false
+},
+{
+"answer": "EST",
+"clue": "Suffix for 'great' or 'small'",
+"mech": null,
+"p": 0.2,
+"opus_defect": false
+},
+{
+"answer": "DUPE",
+"clue": "Easy mark for a con artist",
+"mech": null,
+"p": 0.12,
+"opus_defect": false
+},
+{
+"answer": "NOTE",
+"clue": "Do, re, or mi, in music",
+"mech": null,
+"p": 0.17,
+"opus_defect": false
+},
+{
+"answer": "EST",
+"clue": "Suffix making \"small\" into \"smallest\"",
+"mech": "compound",
+"p": 0.38,
+"opus_defect": true
+},
+{
+"answer": "EGO",
+"clue": "Freud's middle term, between id and superego",
+"mech": "compound",
+"p": 0.25,
+"opus_defect": false
+},
+{
+"answer": "PRE",
+"clue": "Prefix meaning before",
+"mech": "embedded",
+"p": 0.31,
+"opus_defect": true
+},
+{
+"answer": "LES",
+"clue": "\"___ Mis\u00e9rables\" (musical)",
+"mech": "compound",
+"p": 0.53,
+"opus_defect": false
+},
+{
+"answer": "ATONE",
+"clue": "Make up for a wrong",
+"mech": null,
+"p": 0.11,
+"opus_defect": false
+},
+{
+"answer": "PASS",
+"clue": "Route through the mountains",
+"mech": null,
+"p": 0.15,
+"opus_defect": false
+},
+{
+"answer": "GMS",
+"clue": "Ones who negotiate player contracts, briefly",
+"mech": null,
+"p": 0.14,
+"opus_defect": false
+},
+{
+"answer": "ICING",
+"clue": "Sugary topping spread on cupcakes",
+"mech": null,
+"p": 0.11,
+"opus_defect": false
+},
+{
+"answer": "TWO",
+"clue": "Company, per a proverb",
+"mech": null,
+"p": 0.24,
+"opus_defect": false
+},
+{
+"answer": "DAY",
+"clue": "Monday, for one",
+"mech": "compound",
+"p": 0.4,
+"opus_defect": false
+},
+{
+"answer": "GOAL",
+"clue": "Aim or objective",
+"mech": null,
+"p": 0.1,
+"opus_defect": false
+},
+{
+"answer": "HULA",
+"clue": "Hawaiian dance with a grass skirt",
+"mech": null,
+"p": 0.09,
+"opus_defect": false
+},
+{
+"answer": "TRI",
+"clue": "Number of wheels on a tricycle, briefly",
+"mech": "embedded",
+"p": 0.78,
+"opus_defect": true
+},
+{
+"answer": "HORNS",
+"clue": "Brass-section instruments",
+"mech": null,
+"p": 0.08,
+"opus_defect": false
+}
+]

@@ -1,0 +1,5 @@
+{
+  "source": "output/classification-evals/jev-controls-v1",
+  "original_records_sha256": "faa6b43d774ba50f3269382f6e71ee4c3f2994e0f93384aec90311c9e421b630",
+  "note": "All attempts retained; repeated request objects omitted. Reconstruct each with core.prepare(corpus row, manifest suite)."
+}

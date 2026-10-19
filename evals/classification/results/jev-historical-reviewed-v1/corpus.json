@@ -1,0 +1,4243 @@
+[
+  {
+    "id": "94fbd71de4a4315645d1",
+    "state": {
+      "answer": "AMMO",
+      "clue": "Stuff fired from a slingshot, informally",
+      "puzzle_difficulty": "easy",
+      "puzzle_type": "mini",
+      "crossing_answers": "FAR, SEMI, THUMB, REDO"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "d3ffac0cd7ac5a8690978e457a9dc95c98d837ddbd613ecd0a719830c55a879a",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "AMMO",
+        "clue": "Stuff fired from a slingshot, informally",
+        "crossing": "FAR, SEMI, THUMB, REDO",
+        "difficulty": "easy",
+        "puzzle_type": "mini",
+        "acc": 8,
+        "fair": 3,
+        "craft": 5,
+        "fresh": 5,
+        "total": 21,
+        "opus_defect": true,
+        "feedback": "guns/ammunition clue; needs neutral family-friendly angle; fairness 0-8 for gun-culture reference",
+        "jev": {
+          "leaks_answer": 0.15,
+          "semantic_giveaway": 0.24,
+          "too_easy_for_hard": 0.05,
+          "ambiguous_multi_answer": 0.81,
+          "factually_wrong": 0.38,
+          "sensitive_content": 0.83,
+          "currency_risk": 0.06
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "56fdce829a850a2a764c",
+    "state": {
+      "answer": "CONAN",
+      "clue": "Late-night host O'Brien",
+      "puzzle_difficulty": "hard",
+      "puzzle_type": "mini",
+      "crossing_answers": "CART, HONOR, ANGLE, WALES, KNOX"
+    },
+    "labels": {
+      "current_state": true,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "5e36325585c9ef7e62dc13b56e6d3235872394594441444895a0ae3fa32d3685",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "CONAN",
+        "clue": "Late-night host O'Brien",
+        "crossing": "CART, HONOR, ANGLE, WALES, KNOX",
+        "difficulty": "hard",
+        "puzzle_type": "mini",
+        "acc": 12,
+        "fair": 22,
+        "craft": 14,
+        "fresh": 10,
+        "total": 58,
+        "opus_defect": true,
+        "feedback": "Currency risk: O'Brien no longer hosts a late-night show; too easy for Hard",
+        "jev": {
+          "leaks_answer": 0.19,
+          "semantic_giveaway": 0.32,
+          "too_easy_for_hard": 0.69,
+          "ambiguous_multi_answer": 0.31,
+          "factually_wrong": 0.74,
+          "sensitive_content": 0.1,
+          "currency_risk": 0.5
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "e14746670fef247547ce",
+    "state": {
+      "answer": "TOOK",
+      "clue": "Grabbed",
+      "puzzle_difficulty": "easy",
+      "puzzle_type": "midi",
+      "crossing_answers": "OUTTA, ION, NON, AKA"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": true
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "61ea03873dd39aec8ac949bb0facc2aaf3930b9b9b9e11ce0582b0ab45855d7d",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "TOOK",
+        "clue": "Grabbed",
+        "crossing": "OUTTA, ION, NON, AKA",
+        "difficulty": "easy",
+        "puzzle_type": "midi",
+        "acc": 23,
+        "fair": 23,
+        "craft": 22,
+        "fresh": 20,
+        "total": 88,
+        "opus_defect": false,
+        "feedback": null,
+        "jev": {
+          "leaks_answer": 0.27,
+          "semantic_giveaway": 0.53,
+          "too_easy_for_hard": 0.06,
+          "ambiguous_multi_answer": 0.88,
+          "factually_wrong": 0.2,
+          "sensitive_content": 0.05,
+          "currency_risk": 0.08
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "b0436afeeae9404e979e",
+    "state": {
+      "answer": "HORN",
+      "clue": "Trumpet, for one",
+      "puzzle_difficulty": "easy",
+      "puzzle_type": "mini",
+      "crossing_answers": "PATH, MACRO, FASTER, IAN"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "a35117d9d1433ec781d219d93afd1d7bb744f7b8b7f052ea2ab6c791bd6d45c8",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "HORN",
+        "clue": "Trumpet, for one",
+        "crossing": "PATH, MACRO, FASTER, IAN",
+        "difficulty": "easy",
+        "puzzle_type": "mini",
+        "acc": 23,
+        "fair": 23,
+        "craft": 22,
+        "fresh": 21,
+        "total": 89,
+        "opus_defect": false,
+        "feedback": null,
+        "jev": {
+          "leaks_answer": 0.4,
+          "semantic_giveaway": 0.32,
+          "too_easy_for_hard": 0.06,
+          "ambiguous_multi_answer": 0.8,
+          "factually_wrong": 0.22,
+          "sensitive_content": 0.03,
+          "currency_risk": 0.08
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "bead4eb455eef1495a5d",
+    "state": {
+      "answer": "COVE",
+      "clue": "Sheltered nook along a coastline",
+      "puzzle_difficulty": "hard",
+      "puzzle_type": "midi",
+      "crossing_answers": "MCLEAN, YOU, TVS, HEH"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": true
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "3a89ead140f0262538defd9a975c6f3dcff200be1f635413e83ad3526bbe76cd",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "COVE",
+        "clue": "Sheltered nook along a coastline",
+        "crossing": "MCLEAN, YOU, TVS, HEH",
+        "difficulty": "hard",
+        "puzzle_type": "midi",
+        "acc": 22,
+        "fair": 22,
+        "craft": 19,
+        "fresh": 14,
+        "total": 77,
+        "opus_defect": false,
+        "feedback": null,
+        "jev": {
+          "leaks_answer": 0.16,
+          "semantic_giveaway": 0.3,
+          "too_easy_for_hard": 0.84,
+          "ambiguous_multi_answer": 0.84,
+          "factually_wrong": 0.19,
+          "sensitive_content": 0.03,
+          "currency_risk": 0.07
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "8a3a10d7c6a01e00f2a9",
+    "state": {
+      "answer": "OAR",
+      "clue": "Sculler's tool",
+      "puzzle_difficulty": "hard",
+      "puzzle_type": "midi",
+      "crossing_answers": "WORM, WANE, WRATH"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "2419962780980c6263d2ebaa28fa139cb7866dac4f3dfc6768db6fc9ced14816",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "OAR",
+        "clue": "Sculler's tool",
+        "crossing": "WORM, WANE, WRATH",
+        "difficulty": "hard",
+        "puzzle_type": "midi",
+        "acc": 24,
+        "fair": 22,
+        "craft": 20,
+        "fresh": 15,
+        "total": 81,
+        "opus_defect": false,
+        "feedback": null,
+        "jev": {
+          "leaks_answer": 0.35,
+          "semantic_giveaway": 0.31,
+          "too_easy_for_hard": 0.8,
+          "ambiguous_multi_answer": 0.76,
+          "factually_wrong": 0.29,
+          "sensitive_content": 0.04,
+          "currency_risk": 0.06
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "4b4263453cf11665021e",
+    "state": {
+      "answer": "ECO",
+      "clue": "Earth-friendly prefix",
+      "puzzle_difficulty": "easy",
+      "puzzle_type": "midi",
+      "crossing_answers": "EAT, CRAM, OCCUR"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "873ddeab79ac1e640b1c445c26d143dbc5f254c1d839b0db520a39e115ffa462",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "ECO",
+        "clue": "Earth-friendly prefix",
+        "crossing": "EAT, CRAM, OCCUR",
+        "difficulty": "easy",
+        "puzzle_type": "midi",
+        "acc": 20,
+        "fair": 12,
+        "craft": 18,
+        "fresh": 20,
+        "total": 70,
+        "opus_defect": true,
+        "feedback": "leaks: ECO inside 'prefix' angle; ECO is abbreviation, needs abbr. indicator",
+        "jev": {
+          "leaks_answer": 0.58,
+          "semantic_giveaway": 0.49,
+          "too_easy_for_hard": 0.06,
+          "ambiguous_multi_answer": 0.6,
+          "factually_wrong": 0.14,
+          "sensitive_content": 0.03,
+          "currency_risk": 0.06
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "dfbbe677b1df8a3a050e",
+    "state": {
+      "answer": "RENEW",
+      "clue": "Keep a subscription going",
+      "puzzle_difficulty": "easy",
+      "puzzle_type": "mini",
+      "crossing_answers": "APR, ALLEN, PIANO, PETER, NEW"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": true
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "6c2ec7f0ca013b555dfff0fd2b3ffcf9c0fbaef7e5bc1910093128e2c39f2a1e",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "RENEW",
+        "clue": "Keep a subscription going",
+        "crossing": "APR, ALLEN, PIANO, PETER, NEW",
+        "difficulty": "easy",
+        "puzzle_type": "mini",
+        "acc": 23,
+        "fair": 8,
+        "craft": 22,
+        "fresh": 22,
+        "total": 75,
+        "opus_defect": true,
+        "feedback": "Hidden answer leak: reNEW contains NEW; also NEW is a crossing word",
+        "jev": {
+          "leaks_answer": 0.18,
+          "semantic_giveaway": 0.6,
+          "too_easy_for_hard": 0.06,
+          "ambiguous_multi_answer": 0.73,
+          "factually_wrong": 0.11,
+          "sensitive_content": 0.03,
+          "currency_risk": 0.1
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "cede7216892aa493aa5f",
+    "state": {
+      "answer": "AKIN",
+      "clue": "Similar in nature",
+      "puzzle_difficulty": "easy",
+      "puzzle_type": "midi",
+      "crossing_answers": "MAR, SHAKE, TULIP, GEN"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": true
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "8b23087f875283628bedad90b8e200648288d2d554cd8c84bf8e2851171da3af",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "AKIN",
+        "clue": "Similar in nature",
+        "crossing": "MAR, SHAKE, TULIP, GEN",
+        "difficulty": "easy",
+        "puzzle_type": "midi",
+        "acc": 24,
+        "fair": 24,
+        "craft": 23,
+        "fresh": 22,
+        "total": 93,
+        "opus_defect": false,
+        "feedback": null,
+        "jev": {
+          "leaks_answer": 0.29,
+          "semantic_giveaway": 0.38,
+          "too_easy_for_hard": 0.06,
+          "ambiguous_multi_answer": 0.89,
+          "factually_wrong": 0.24,
+          "sensitive_content": 0.04,
+          "currency_risk": 0.09
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "017dc10f7778a10eb141",
+    "state": {
+      "answer": "PLEA",
+      "clue": "Impassioned cry for mercy",
+      "puzzle_difficulty": "hard",
+      "puzzle_type": "midi",
+      "crossing_answers": "RPG, ALL, SEA, HANNA"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": true
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "f5df0b62d8029588ef33fd589e0d2e398e7107faacfada94c323ebc59984b18a",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "PLEA",
+        "clue": "Impassioned cry for mercy",
+        "crossing": "RPG, ALL, SEA, HANNA",
+        "difficulty": "hard",
+        "puzzle_type": "midi",
+        "acc": 23,
+        "fair": 22,
+        "craft": 20,
+        "fresh": 15,
+        "total": 80,
+        "opus_defect": false,
+        "feedback": null,
+        "jev": {
+          "leaks_answer": 0.33,
+          "semantic_giveaway": 0.42,
+          "too_easy_for_hard": 0.82,
+          "ambiguous_multi_answer": 0.76,
+          "factually_wrong": 0.19,
+          "sensitive_content": 0.11,
+          "currency_risk": 0.07
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "7333c107ad5769c8205b",
+    "state": {
+      "answer": "TRUNK",
+      "clue": "Elephant's grabbing appendage",
+      "puzzle_difficulty": "hard",
+      "puzzle_type": "midi",
+      "crossing_answers": "RATSNESTS, APR, BRUH, BONE, INKY"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": true
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "036382148a9ab97b58356561eb101c638bbdf983cf11ef1c95a1440f88e9f12f",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "TRUNK",
+        "clue": "Elephant's grabbing appendage",
+        "crossing": "RATSNESTS, APR, BRUH, BONE, INKY",
+        "difficulty": "hard",
+        "puzzle_type": "midi",
+        "acc": 23,
+        "fair": 22,
+        "craft": 20,
+        "fresh": 16,
+        "total": 81,
+        "opus_defect": false,
+        "feedback": null,
+        "jev": {
+          "leaks_answer": 0.28,
+          "semantic_giveaway": 0.77,
+          "too_easy_for_hard": 0.86,
+          "ambiguous_multi_answer": 0.21,
+          "factually_wrong": 0.17,
+          "sensitive_content": 0.03,
+          "currency_risk": 0.06
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "6b076210b4e80153e9e8",
+    "state": {
+      "answer": "MANLY",
+      "clue": "Rugged and strong",
+      "puzzle_difficulty": "easy",
+      "puzzle_type": "mini",
+      "crossing_answers": "MIT, TACO, DINKY, ONLY, GAY"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "1beaab4b80bcdbcba85ee9cf57c6d979e182e0e9d5b038367eacb7f3a9e3931d",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "MANLY",
+        "clue": "Rugged and strong",
+        "crossing": "MIT, TACO, DINKY, ONLY, GAY",
+        "difficulty": "easy",
+        "puzzle_type": "mini",
+        "acc": 18,
+        "fair": 8,
+        "craft": 18,
+        "fresh": 18,
+        "total": 62,
+        "opus_defect": true,
+        "feedback": "crossing word GAY leaks via antonym/association; also ONLY shares -LY ending fragment",
+        "jev": {
+          "leaks_answer": 0.17,
+          "semantic_giveaway": 0.29,
+          "too_easy_for_hard": 0.06,
+          "ambiguous_multi_answer": 0.87,
+          "factually_wrong": 0.15,
+          "sensitive_content": 0.07,
+          "currency_risk": 0.07
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "3d1b09fa3a08a6812fb7",
+    "state": {
+      "answer": "GRIN",
+      "clue": "Big happy smile",
+      "puzzle_difficulty": "easy",
+      "puzzle_type": "midi",
+      "crossing_answers": "STAGE, HAIRY, EDDIE, END"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": true
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "f0d5e12a0cc63fc66fc5026fd90499d19c84996e4fd6b7b2fa24582645f75183",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "GRIN",
+        "clue": "Big happy smile",
+        "crossing": "STAGE, HAIRY, EDDIE, END",
+        "difficulty": "easy",
+        "puzzle_type": "midi",
+        "acc": 24,
+        "fair": 24,
+        "craft": 23,
+        "fresh": 22,
+        "total": 93,
+        "opus_defect": false,
+        "feedback": null,
+        "jev": {
+          "leaks_answer": 0.18,
+          "semantic_giveaway": 0.33,
+          "too_easy_for_hard": 0.06,
+          "ambiguous_multi_answer": 0.86,
+          "factually_wrong": 0.22,
+          "sensitive_content": 0.03,
+          "currency_risk": 0.08
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "cd985ae7fcddadf2c4c7",
+    "state": {
+      "answer": "MAPS",
+      "clue": "Atlas contents",
+      "puzzle_difficulty": "easy",
+      "puzzle_type": "mini",
+      "crossing_answers": "MAT, ADMINS, PLANS, SYNC"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": true
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "092a2e59ad841bb0ee7e6e3b7dbbea1ad191229b98bea894ce5ae190ff94e7ec",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "MAPS",
+        "clue": "Atlas contents",
+        "crossing": "MAT, ADMINS, PLANS, SYNC",
+        "difficulty": "easy",
+        "puzzle_type": "mini",
+        "acc": 24,
+        "fair": 24,
+        "craft": 23,
+        "fresh": 22,
+        "total": 93,
+        "opus_defect": false,
+        "feedback": null,
+        "jev": {
+          "leaks_answer": 0.39,
+          "semantic_giveaway": 0.54,
+          "too_easy_for_hard": 0.06,
+          "ambiguous_multi_answer": 0.63,
+          "factually_wrong": 0.16,
+          "sensitive_content": 0.03,
+          "currency_risk": 0.08
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "7114558650684d8229d2",
+    "state": {
+      "answer": "KIN",
+      "clue": "Kith and ___",
+      "puzzle_difficulty": "hard",
+      "puzzle_type": "midi",
+      "crossing_answers": "MEEK, SRI, SON"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "5cae6ab564223dd4a20df5b8e9a46cabf4b1ea6c8b045b45f2b2587ea80ed3a0",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "KIN",
+        "clue": "Kith and ___",
+        "crossing": "MEEK, SRI, SON",
+        "difficulty": "hard",
+        "puzzle_type": "midi",
+        "acc": 22,
+        "fair": 6,
+        "craft": 15,
+        "fresh": 15,
+        "total": 58,
+        "opus_defect": true,
+        "feedback": "collocation giveaway: kith and kin",
+        "jev": {
+          "leaks_answer": 0.3,
+          "semantic_giveaway": 0.93,
+          "too_easy_for_hard": 0.72,
+          "ambiguous_multi_answer": 0.07,
+          "factually_wrong": 0.13,
+          "sensitive_content": 0.04,
+          "currency_risk": 0.05
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "90e21c65228027ce3f70",
+    "state": {
+      "answer": "DUNN",
+      "clue": "Comedian Nora once of late-night sketch comedy",
+      "puzzle_difficulty": "hard",
+      "puzzle_type": "mini",
+      "crossing_answers": "DULL, QUITS, UNDO, ONE"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "0572f7f604a0447af0d7acd2cdfdbbea17d0310f3a12cdfb221ce85960f83623",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "DUNN",
+        "clue": "Comedian Nora once of late-night sketch comedy",
+        "crossing": "DULL, QUITS, UNDO, ONE",
+        "difficulty": "hard",
+        "puzzle_type": "mini",
+        "acc": 14,
+        "fair": 20,
+        "craft": 12,
+        "fresh": 12,
+        "total": 58,
+        "opus_defect": true,
+        "feedback": "Currency risk: 'once of' awkward; clue still depends on current/recent role context",
+        "jev": {
+          "leaks_answer": 0.41,
+          "semantic_giveaway": 0.26,
+          "too_easy_for_hard": 0.59,
+          "ambiguous_multi_answer": 0.26,
+          "factually_wrong": 0.39,
+          "sensitive_content": 0.06,
+          "currency_risk": 0.19
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "82bef8fa3249a82e583b",
+    "state": {
+      "answer": "IBLEWIT",
+      "clue": "Rueful confession after a missed chance",
+      "puzzle_difficulty": "hard",
+      "puzzle_type": "mini",
+      "crossing_answers": "RIFF, RABBIS, ENLISTS, AGE, REWRITE, SINNED, TAGS"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "5286014fc6ab5f53d3c2d8d96b609bd72245cee68515bc12880cdc791964012e",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "IBLEWIT",
+        "clue": "Rueful confession after a missed chance",
+        "crossing": "RIFF, RABBIS, ENLISTS, AGE, REWRITE, SINNED, TAGS",
+        "difficulty": "hard",
+        "puzzle_type": "mini",
+        "acc": 8,
+        "fair": 18,
+        "craft": 12,
+        "fresh": 10,
+        "total": 48,
+        "opus_defect": true,
+        "feedback": "Wrong: answer is IBLEWIT not a phrase; likely I BLEW IT — confirm entry, also 'blew' hidden in clue angle unclear",
+        "jev": {
+          "leaks_answer": 0.35,
+          "semantic_giveaway": 0.19,
+          "too_easy_for_hard": 0.61,
+          "ambiguous_multi_answer": 0.68,
+          "factually_wrong": 0.44,
+          "sensitive_content": 0.1,
+          "currency_risk": 0.08
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "36592427cfeeb865179f",
+    "state": {
+      "answer": "SUM",
+      "clue": "Total of added numbers",
+      "puzzle_difficulty": "easy",
+      "puzzle_type": "midi",
+      "crossing_answers": "ADS, GURU, ADAM"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": true
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "7f10835193c0ec06721a137ddb40a97332cc6317b93607bfe857ef8cb3bdbb6c",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "SUM",
+        "clue": "Total of added numbers",
+        "crossing": "ADS, GURU, ADAM",
+        "difficulty": "easy",
+        "puzzle_type": "midi",
+        "acc": 23,
+        "fair": 23,
+        "craft": 22,
+        "fresh": 21,
+        "total": 89,
+        "opus_defect": false,
+        "feedback": null,
+        "jev": {
+          "leaks_answer": 0.38,
+          "semantic_giveaway": 0.81,
+          "too_easy_for_hard": 0.07,
+          "ambiguous_multi_answer": 0.66,
+          "factually_wrong": 0.12,
+          "sensitive_content": 0.03,
+          "currency_risk": 0.06
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "d088381a85c3c00e4416",
+    "state": {
+      "answer": "RAM",
+      "clue": "Male sheep with curly horns",
+      "puzzle_difficulty": "easy",
+      "puzzle_type": "midi",
+      "crossing_answers": "CORK, BRAN, SEMIFINAL"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": true
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "d54c72aa822b63edd7c0395b9fcd73d3c84eec50849803b0d7e7ce52c712292b",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "RAM",
+        "clue": "Male sheep with curly horns",
+        "crossing": "CORK, BRAN, SEMIFINAL",
+        "difficulty": "easy",
+        "puzzle_type": "midi",
+        "acc": 24,
+        "fair": 24,
+        "craft": 23,
+        "fresh": 23,
+        "total": 94,
+        "opus_defect": false,
+        "feedback": null,
+        "jev": {
+          "leaks_answer": 0.35,
+          "semantic_giveaway": 0.3,
+          "too_easy_for_hard": 0.07,
+          "ambiguous_multi_answer": 0.6,
+          "factually_wrong": 0.73,
+          "sensitive_content": 0.1,
+          "currency_risk": 0.11
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "34a53a8f14805b2b7841",
+    "state": {
+      "answer": "CUE",
+      "clue": "Stick for striking a billiard ball",
+      "puzzle_difficulty": "easy",
+      "puzzle_type": "midi",
+      "crossing_answers": "MACRO, MUD, PEPPERONI"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": true
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "a90aebcb978937cf76a137177a2612a011d928dc9373043b96d2db0448e49a22",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "CUE",
+        "clue": "Stick for striking a billiard ball",
+        "crossing": "MACRO, MUD, PEPPERONI",
+        "difficulty": "easy",
+        "puzzle_type": "midi",
+        "acc": 24,
+        "fair": 24,
+        "craft": 24,
+        "fresh": 22,
+        "total": 94,
+        "opus_defect": false,
+        "feedback": null,
+        "jev": {
+          "leaks_answer": 0.31,
+          "semantic_giveaway": 0.74,
+          "too_easy_for_hard": 0.06,
+          "ambiguous_multi_answer": 0.59,
+          "factually_wrong": 0.17,
+          "sensitive_content": 0.05,
+          "currency_risk": 0.05
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "73f9f753eeeee9d5d83c",
+    "state": {
+      "answer": "MIN",
+      "clue": "Sixty seconds, for short",
+      "puzzle_difficulty": "easy",
+      "puzzle_type": "mini",
+      "crossing_answers": "MAST, GIRTH, MENTOR"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "b2d3a5a1bad5e5a763a070b94529c0700b0e28a8dc80d60286e9ab0b9f201447",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "MIN",
+        "clue": "Sixty seconds, for short",
+        "crossing": "MAST, GIRTH, MENTOR",
+        "difficulty": "easy",
+        "puzzle_type": "mini",
+        "acc": 25,
+        "fair": 25,
+        "craft": 24,
+        "fresh": 22,
+        "total": 96,
+        "opus_defect": false,
+        "feedback": null,
+        "jev": {
+          "leaks_answer": 0.46,
+          "semantic_giveaway": 0.72,
+          "too_easy_for_hard": 0.06,
+          "ambiguous_multi_answer": 0.33,
+          "factually_wrong": 0.2,
+          "sensitive_content": 0.03,
+          "currency_risk": 0.06
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "88acfb94147b0b09b8e2",
+    "state": {
+      "answer": "IVORY",
+      "clue": "Off-white shade named for a soap",
+      "puzzle_difficulty": "hard",
+      "puzzle_type": "midi",
+      "crossing_answers": "INCUR, ADVERB, WOO, ERR, DAY"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "3be356f36869312d28630f245b46e58bf0d7b2ee31fc8d00f4fca09fb08b9d32",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "IVORY",
+        "clue": "Off-white shade named for a soap",
+        "crossing": "INCUR, ADVERB, WOO, ERR, DAY",
+        "difficulty": "hard",
+        "puzzle_type": "midi",
+        "acc": 6,
+        "fair": 18,
+        "craft": 14,
+        "fresh": 15,
+        "total": 53,
+        "opus_defect": true,
+        "feedback": "wrong: ivory named for tusks, not soap",
+        "jev": {
+          "leaks_answer": 0.28,
+          "semantic_giveaway": 0.41,
+          "too_easy_for_hard": 0.75,
+          "ambiguous_multi_answer": 0.32,
+          "factually_wrong": 0.69,
+          "sensitive_content": 0.04,
+          "currency_risk": 0.06
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "bea964d33ccde968f177",
+    "state": {
+      "answer": "SUN",
+      "clue": "Source of a beachgoer's tan",
+      "puzzle_difficulty": "hard",
+      "puzzle_type": "midi",
+      "crossing_answers": "CCS, THOU, WORN"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": true
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "5ad638d38b6be2834874824d3378a34f0a428cdf0b8ca2b9a4ec6850319f52a1",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "SUN",
+        "clue": "Source of a beachgoer's tan",
+        "crossing": "CCS, THOU, WORN",
+        "difficulty": "hard",
+        "puzzle_type": "midi",
+        "acc": 22,
+        "fair": 20,
+        "craft": 14,
+        "fresh": 7,
+        "total": 63,
+        "opus_defect": true,
+        "feedback": "too easy for Hard",
+        "jev": {
+          "leaks_answer": 0.17,
+          "semantic_giveaway": 0.5,
+          "too_easy_for_hard": 0.88,
+          "ambiguous_multi_answer": 0.56,
+          "factually_wrong": 0.12,
+          "sensitive_content": 0.06,
+          "currency_risk": 0.05
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "8ab068c01d45f5c43638",
+    "state": {
+      "answer": "ALMA",
+      "clue": "Nurturing soul, in Latin",
+      "puzzle_difficulty": "hard",
+      "puzzle_type": "midi",
+      "crossing_answers": "AMERICA, GLUED, EMITS, LARS"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "0df2df317d44cf5046c61b5859fd7ac4a6758a265647fad37bee24864c5f0768",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "ALMA",
+        "clue": "Nurturing soul, in Latin",
+        "crossing": "AMERICA, GLUED, EMITS, LARS",
+        "difficulty": "hard",
+        "puzzle_type": "midi",
+        "acc": 8,
+        "fair": 15,
+        "craft": 10,
+        "fresh": 10,
+        "total": 43,
+        "opus_defect": true,
+        "feedback": "wrong: alma means nourishing, not soul, in Latin",
+        "jev": {
+          "leaks_answer": 0.46,
+          "semantic_giveaway": 0.37,
+          "too_easy_for_hard": 0.76,
+          "ambiguous_multi_answer": 0.63,
+          "factually_wrong": 0.31,
+          "sensitive_content": 0.07,
+          "currency_risk": 0.06
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "af674c19c7cfc5bca904",
+    "state": {
+      "answer": "SURE",
+      "clue": "\"No problem at all!\"",
+      "puzzle_difficulty": "hard",
+      "puzzle_type": "midi",
+      "crossing_answers": "WARBONDS, SYRUP, CARR, GEE"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "dc2b86635494941bc492d7acaa6803721f7a5ad7d4404bda30131cbaa26736a8",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "SURE",
+        "clue": "\"No problem at all!\"",
+        "crossing": "WARBONDS, SYRUP, CARR, GEE",
+        "difficulty": "hard",
+        "puzzle_type": "midi",
+        "acc": 22,
+        "fair": 22,
+        "craft": 19,
+        "fresh": 15,
+        "total": 78,
+        "opus_defect": false,
+        "feedback": null,
+        "jev": {
+          "leaks_answer": 0.2,
+          "semantic_giveaway": 0.44,
+          "too_easy_for_hard": 0.84,
+          "ambiguous_multi_answer": 0.83,
+          "factually_wrong": 0.37,
+          "sensitive_content": 0.05,
+          "currency_risk": 0.12
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "1562011b02dd1465ad4c",
+    "state": {
+      "answer": "CON",
+      "clue": "Sneaky swindle",
+      "puzzle_difficulty": "easy",
+      "puzzle_type": "midi",
+      "crossing_answers": "ETCHING, ORG, MANIACS"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": true
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "342ab3c700e99fb8f7e786ed866034c3ed5958fbfa841cb340ee0431b75c1c7f",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "CON",
+        "clue": "Sneaky swindle",
+        "crossing": "ETCHING, ORG, MANIACS",
+        "difficulty": "easy",
+        "puzzle_type": "midi",
+        "acc": 23,
+        "fair": 23,
+        "craft": 22,
+        "fresh": 21,
+        "total": 89,
+        "opus_defect": false,
+        "feedback": null,
+        "jev": {
+          "leaks_answer": 0.25,
+          "semantic_giveaway": 0.22,
+          "too_easy_for_hard": 0.07,
+          "ambiguous_multi_answer": 0.81,
+          "factually_wrong": 0.59,
+          "sensitive_content": 0.06,
+          "currency_risk": 0.23
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "dc28ed274e455c179d01",
+    "state": {
+      "answer": "YOUTH",
+      "clue": "Time of life when you're young",
+      "puzzle_difficulty": "starter",
+      "puzzle_type": "mini",
+      "crossing_answers": "YOU, BOWS, PRUNE, EATS, ASH"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": true
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "78cc4f71daa11fb4c3ae2707dcf8a184a9416af18318a9243957fc72ff77e3ec",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "YOUTH",
+        "clue": "Time of life when you're young",
+        "crossing": "YOU, BOWS, PRUNE, EATS, ASH",
+        "difficulty": "starter",
+        "puzzle_type": "mini",
+        "acc": 22,
+        "fair": 10,
+        "craft": 19,
+        "fresh": 20,
+        "total": 71,
+        "opus_defect": true,
+        "feedback": "leaks crossing answer YOU via 'you're'",
+        "jev": {
+          "leaks_answer": 0.87,
+          "semantic_giveaway": 0.72,
+          "too_easy_for_hard": 0.06,
+          "ambiguous_multi_answer": 0.72,
+          "factually_wrong": 0.11,
+          "sensitive_content": 0.03,
+          "currency_risk": 0.04
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "f1464c522e9c3fa4a4f6",
+    "state": {
+      "answer": "ALA",
+      "clue": "In the style of",
+      "puzzle_difficulty": "hard",
+      "puzzle_type": "mini",
+      "crossing_answers": "EPA, TAIL, OUTTA"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "e92abac13ce57cc4b3d043a0915d3962f288221840ae5743e0a4875bcb6dcce8",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "ALA",
+        "clue": "In the style of",
+        "crossing": "EPA, TAIL, OUTTA",
+        "difficulty": "hard",
+        "puzzle_type": "mini",
+        "acc": 18,
+        "fair": 10,
+        "craft": 15,
+        "fresh": 12,
+        "total": 55,
+        "opus_defect": true,
+        "feedback": "missing accent; needs \"à la\" form; too easy; abbreviation indicator missing",
+        "jev": {
+          "leaks_answer": 0.21,
+          "semantic_giveaway": 0.2,
+          "too_easy_for_hard": 0.61,
+          "ambiguous_multi_answer": 0.74,
+          "factually_wrong": 0.49,
+          "sensitive_content": 0.08,
+          "currency_risk": 0.28
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "84456db0247a616685a8",
+    "state": {
+      "answer": "BEDS",
+      "clue": "Things you sleep on",
+      "puzzle_difficulty": "easy",
+      "puzzle_type": "mini",
+      "crossing_answers": "RIB, THOSE, HOUND, RESTS"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": true
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "c51787f8616a68d523820652751cddfa0977a29340ca49c229dfd34dc72abe06",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "BEDS",
+        "clue": "Things you sleep on",
+        "crossing": "RIB, THOSE, HOUND, RESTS",
+        "difficulty": "easy",
+        "puzzle_type": "mini",
+        "acc": 24,
+        "fair": 24,
+        "craft": 23,
+        "fresh": 20,
+        "total": 91,
+        "opus_defect": false,
+        "feedback": null,
+        "jev": {
+          "leaks_answer": 0.22,
+          "semantic_giveaway": 0.48,
+          "too_easy_for_hard": 0.05,
+          "ambiguous_multi_answer": 0.83,
+          "factually_wrong": 0.12,
+          "sensitive_content": 0.03,
+          "currency_risk": 0.05
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "c49aa8868dcc302c78ee",
+    "state": {
+      "answer": "PGA",
+      "clue": "Links org.",
+      "puzzle_difficulty": "hard",
+      "puzzle_type": "mini",
+      "crossing_answers": "PIG, GNAW, ACTOR"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "2c27054c70615d828972878be37a2bacbb0b8fc2c5af3774fc477b3714eb2ec2",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "PGA",
+        "clue": "Links org.",
+        "crossing": "PIG, GNAW, ACTOR",
+        "difficulty": "hard",
+        "puzzle_type": "mini",
+        "acc": 23,
+        "fair": 22,
+        "craft": 20,
+        "fresh": 18,
+        "total": 83,
+        "opus_defect": false,
+        "feedback": null,
+        "jev": {
+          "leaks_answer": 0.18,
+          "semantic_giveaway": 0.35,
+          "too_easy_for_hard": 0.68,
+          "ambiguous_multi_answer": 0.58,
+          "factually_wrong": 0.39,
+          "sensitive_content": 0.06,
+          "currency_risk": 0.18
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "2fb4cd56b4310e3e62bc",
+    "state": {
+      "answer": "USE",
+      "clue": "Make good ___ of",
+      "puzzle_difficulty": "easy",
+      "puzzle_type": "mini",
+      "crossing_answers": "URN, SUED, ENVOY"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "306f8d82d047683d5446a4f74dc03930f2dc3d2c02507f6b08ae22d2aaf94ef7",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "USE",
+        "clue": "Make good ___ of",
+        "crossing": "URN, SUED, ENVOY",
+        "difficulty": "easy",
+        "puzzle_type": "mini",
+        "acc": 24,
+        "fair": 7,
+        "craft": 18,
+        "fresh": 20,
+        "total": 69,
+        "opus_defect": true,
+        "feedback": "collocation giveaway: only 'use' fits phrase",
+        "jev": {
+          "leaks_answer": 0.37,
+          "semantic_giveaway": 0.86,
+          "too_easy_for_hard": 0.06,
+          "ambiguous_multi_answer": 0.39,
+          "factually_wrong": 0.14,
+          "sensitive_content": 0.04,
+          "currency_risk": 0.06
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "213717771576bfdaa651",
+    "state": {
+      "answer": "MIC",
+      "clue": "Karaoke handheld, briefly",
+      "puzzle_difficulty": "hard",
+      "puzzle_type": "midi",
+      "crossing_answers": "MPH, IRAS, COUNTYTAX"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": true
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "72376d78b899f403778aa6af3fe55c707b4ca84cf20e826bef7d2caddb366971",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "MIC",
+        "clue": "Karaoke handheld, briefly",
+        "crossing": "MPH, IRAS, COUNTYTAX",
+        "difficulty": "hard",
+        "puzzle_type": "midi",
+        "acc": 24,
+        "fair": 24,
+        "craft": 22,
+        "fresh": 15,
+        "total": 85,
+        "opus_defect": false,
+        "feedback": null,
+        "jev": {
+          "leaks_answer": 0.47,
+          "semantic_giveaway": 0.51,
+          "too_easy_for_hard": 0.74,
+          "ambiguous_multi_answer": 0.44,
+          "factually_wrong": 0.24,
+          "sensitive_content": 0.05,
+          "currency_risk": 0.1
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "321a8b431689f7f2c3d1",
+    "state": {
+      "answer": "FBI",
+      "clue": "U.S. agency once led by J. Edgar Hoover (abbr.)",
+      "puzzle_difficulty": "easy",
+      "puzzle_type": "midi",
+      "crossing_answers": "FEARFUL, RUB, REALISM"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "df1f868588ef68b198944047a855ec7a05872a42232f8243770296dca7502cfe",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "FBI",
+        "clue": "U.S. agency once led by J. Edgar Hoover (abbr.)",
+        "crossing": "FEARFUL, RUB, REALISM",
+        "difficulty": "easy",
+        "puzzle_type": "midi",
+        "acc": 23,
+        "fair": 8,
+        "craft": 23,
+        "fresh": 22,
+        "total": 76,
+        "opus_defect": true,
+        "feedback": "abbr. expansion leak: FBI — 'Bureau' not in clue but 'agency' is borderline; acceptable since no B/I expansion words present",
+        "jev": {
+          "leaks_answer": 0.15,
+          "semantic_giveaway": 0.7,
+          "too_easy_for_hard": 0.06,
+          "ambiguous_multi_answer": 0.08,
+          "factually_wrong": 0.09,
+          "sensitive_content": 0.06,
+          "currency_risk": 0.09
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "a9725515e25acf4f80f7",
+    "state": {
+      "answer": "ETA",
+      "clue": "Arrival guess on a flight board, for short",
+      "puzzle_difficulty": "hard",
+      "puzzle_type": "midi",
+      "crossing_answers": "YOHEAVEHO, MEETS, TSA"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "7bff627665281ef106c6eb5f10b9072eec94f6ab5f9871065280362b6b7af0a1",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "ETA",
+        "clue": "Arrival guess on a flight board, for short",
+        "crossing": "YOHEAVEHO, MEETS, TSA",
+        "difficulty": "hard",
+        "puzzle_type": "midi",
+        "acc": 20,
+        "fair": 6,
+        "craft": 14,
+        "fresh": 15,
+        "total": 55,
+        "opus_defect": true,
+        "feedback": "leaks: arrival (ETA)",
+        "jev": {
+          "leaks_answer": 0.79,
+          "semantic_giveaway": 0.7,
+          "too_easy_for_hard": 0.82,
+          "ambiguous_multi_answer": 0.32,
+          "factually_wrong": 0.14,
+          "sensitive_content": 0.03,
+          "currency_risk": 0.09
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "f905dc2fad5204986943",
+    "state": {
+      "answer": "TRI",
+      "clue": "Prefix for \"angle\" or \"pod\"",
+      "puzzle_difficulty": "easy",
+      "puzzle_type": "mini",
+      "crossing_answers": "THROB, RODS, IRS"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "6c7823edede894bfce55d8fe724c0cf6d372011fe32bde13c0d02cfd064850a8",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "TRI",
+        "clue": "Prefix for \"angle\" or \"pod\"",
+        "crossing": "THROB, RODS, IRS",
+        "difficulty": "easy",
+        "puzzle_type": "mini",
+        "acc": 8,
+        "fair": 3,
+        "craft": 14,
+        "fresh": 15,
+        "total": 40,
+        "opus_defect": true,
+        "feedback": "leaks: TRI hidden in tRIangle; also prefix expansion leak",
+        "jev": {
+          "leaks_answer": 0.82,
+          "semantic_giveaway": 0.46,
+          "too_easy_for_hard": 0.05,
+          "ambiguous_multi_answer": 0.49,
+          "factually_wrong": 0.14,
+          "sensitive_content": 0.03,
+          "currency_risk": 0.05
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "1b2a130d6aa16160fbe8",
+    "state": {
+      "answer": "SEXES",
+      "clue": "\"Battle of the ___\"",
+      "puzzle_difficulty": "easy",
+      "puzzle_type": "mini",
+      "crossing_answers": "PALES, ALIVE, ROLEX, INANE, SECTS"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "6ea49530717f613a4099e70164b80554bd4234d6956d5fd17dc35a199ec3afa4",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "SEXES",
+        "clue": "\"Battle of the ___\"",
+        "crossing": "PALES, ALIVE, ROLEX, INANE, SECTS",
+        "difficulty": "easy",
+        "puzzle_type": "mini",
+        "acc": 25,
+        "fair": 25,
+        "craft": 25,
+        "fresh": 23,
+        "total": 98,
+        "opus_defect": false,
+        "feedback": null,
+        "jev": {
+          "leaks_answer": 0.24,
+          "semantic_giveaway": 0.63,
+          "too_easy_for_hard": 0.05,
+          "ambiguous_multi_answer": 0.56,
+          "factually_wrong": 0.2,
+          "sensitive_content": 0.19,
+          "currency_risk": 0.11
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "7698a5bae56e5611eb3b",
+    "state": {
+      "answer": "AGE",
+      "clue": "Mature gracefully, like fine wine",
+      "puzzle_difficulty": "hard",
+      "puzzle_type": "mini",
+      "crossing_answers": "AVIATOR, EDGED, SEEDY"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": true,
+      "drug_use_angle": false,
+      "plain_definition": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "23e11f84d8bb9ec00e2614a7428d753ef0ea9f9d1bc0fd1ee7eb08991da2e232",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "AGE",
+        "clue": "Mature gracefully, like fine wine",
+        "crossing": "AVIATOR, EDGED, SEEDY",
+        "difficulty": "hard",
+        "puzzle_type": "mini",
+        "acc": 22,
+        "fair": 14,
+        "craft": 20,
+        "fresh": 16,
+        "total": 72,
+        "opus_defect": true,
+        "feedback": "wine/aging angle fine but AGE hidden in 'gracefully' end; fairness docked",
+        "jev": {
+          "leaks_answer": 0.26,
+          "semantic_giveaway": 0.26,
+          "too_easy_for_hard": 0.55,
+          "ambiguous_multi_answer": 0.78,
+          "factually_wrong": 0.34,
+          "sensitive_content": 0.66,
+          "currency_risk": 0.09
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "b2496c19a9ea1b91767c",
+    "state": {
+      "answer": "SALON",
+      "clue": "Salt, Hair, or Beauty ___",
+      "puzzle_difficulty": "easy",
+      "puzzle_type": "mini",
+      "crossing_answers": "SIS, ROACH, IGLOO, CRONE, HEN"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "5bd1a16b05e25b40f81816baaaff8f9265564936d24426bfe555429e459dc328",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "SALON",
+        "clue": "Salt, Hair, or Beauty ___",
+        "crossing": "SIS, ROACH, IGLOO, CRONE, HEN",
+        "difficulty": "easy",
+        "puzzle_type": "mini",
+        "acc": 12,
+        "fair": 18,
+        "craft": 14,
+        "fresh": 15,
+        "total": 59,
+        "opus_defect": true,
+        "feedback": "'Salt salon' isn't a real phrase",
+        "jev": {
+          "leaks_answer": 0.39,
+          "semantic_giveaway": 0.71,
+          "too_easy_for_hard": 0.05,
+          "ambiguous_multi_answer": 0.48,
+          "factually_wrong": 0.13,
+          "sensitive_content": 0.04,
+          "currency_risk": 0.06
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "f26c9548d75d1e9e5147",
+    "state": {
+      "answer": "AHEAD",
+      "clue": "Winning by a little",
+      "puzzle_difficulty": "easy",
+      "puzzle_type": "mini",
+      "crossing_answers": "TAPS, OHIO, PEARL, ANTI, DOSE"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": true
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "762aa86fd0f2843ce3cfcddaae08d3f0e1c29ab9f68cd5a12f30fcc28220cb1b",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "AHEAD",
+        "clue": "Winning by a little",
+        "crossing": "TAPS, OHIO, PEARL, ANTI, DOSE",
+        "difficulty": "easy",
+        "puzzle_type": "mini",
+        "acc": 23,
+        "fair": 24,
+        "craft": 22,
+        "fresh": 22,
+        "total": 91,
+        "opus_defect": false,
+        "feedback": null,
+        "jev": {
+          "leaks_answer": 0.18,
+          "semantic_giveaway": 0.32,
+          "too_easy_for_hard": 0.05,
+          "ambiguous_multi_answer": 0.81,
+          "factually_wrong": 0.24,
+          "sensitive_content": 0.05,
+          "currency_risk": 0.06
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "6cd46a94f411c8924b6e",
+    "state": {
+      "answer": "THE",
+      "clue": "\"___ Who\" (long-running sci-fi series)",
+      "puzzle_difficulty": "hard",
+      "puzzle_type": "mini",
+      "crossing_answers": "TEMPO, HEAT, ETSY"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "1af5bb9d3c72e99fea7123e4418d9dcc252f1793906fee28de514ae792ff1a21",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "THE",
+        "clue": "\"___ Who\" (long-running sci-fi series)",
+        "crossing": "TEMPO, HEAT, ETSY",
+        "difficulty": "hard",
+        "puzzle_type": "mini",
+        "acc": 4,
+        "fair": 15,
+        "craft": 10,
+        "fresh": 10,
+        "total": 39,
+        "opus_defect": true,
+        "feedback": "wrong: The Who is a band, not sci-fi",
+        "jev": {
+          "leaks_answer": 0.29,
+          "semantic_giveaway": 0.69,
+          "too_easy_for_hard": 0.52,
+          "ambiguous_multi_answer": 0.25,
+          "factually_wrong": 0.31,
+          "sensitive_content": 0.07,
+          "currency_risk": 0.18
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "4f4f68c39936a1eb03ce",
+    "state": {
+      "answer": "IVE",
+      "clue": "\"___ had it up to here!\"",
+      "puzzle_difficulty": "hard",
+      "puzzle_type": "midi",
+      "crossing_answers": "SKIRT, EVAN, SENT"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "0e245028fc048db998055ad3b2d8eea9a31a2ceec8bc78048e25206efc7a73da",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "IVE",
+        "clue": "\"___ had it up to here!\"",
+        "crossing": "SKIRT, EVAN, SENT",
+        "difficulty": "hard",
+        "puzzle_type": "midi",
+        "acc": 20,
+        "fair": 16,
+        "craft": 16,
+        "fresh": 14,
+        "total": 66,
+        "opus_defect": false,
+        "feedback": "collocation makes fill mostly unique",
+        "jev": {
+          "leaks_answer": 0.33,
+          "semantic_giveaway": 0.6,
+          "too_easy_for_hard": 0.5,
+          "ambiguous_multi_answer": 0.72,
+          "factually_wrong": 0.44,
+          "sensitive_content": 0.1,
+          "currency_risk": 0.12
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "013366696c25cd3679e4",
+    "state": {
+      "answer": "ROB",
+      "clue": "Lowe of \"St. Elmo's Fire\"",
+      "puzzle_difficulty": "hard",
+      "puzzle_type": "midi",
+      "crossing_answers": "WEIRD, DOT, GLOBE"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "de67ccb6bc457053c79cde1c8673d5f7645f0933ddb960e579390f4ea2461689",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "ROB",
+        "clue": "Lowe of \"St. Elmo's Fire\"",
+        "crossing": "WEIRD, DOT, GLOBE",
+        "difficulty": "hard",
+        "puzzle_type": "midi",
+        "acc": 24,
+        "fair": 24,
+        "craft": 22,
+        "fresh": 20,
+        "total": 90,
+        "opus_defect": false,
+        "feedback": null,
+        "jev": {
+          "leaks_answer": 0.26,
+          "semantic_giveaway": 0.41,
+          "too_easy_for_hard": 0.49,
+          "ambiguous_multi_answer": 0.2,
+          "factually_wrong": 0.39,
+          "sensitive_content": 0.09,
+          "currency_risk": 0.08
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "a6bf80511370d9ea8cb6",
+    "state": {
+      "answer": "GHOST",
+      "clue": "Suddenly cut off contact, in dating slang",
+      "puzzle_difficulty": "hard",
+      "puzzle_type": "mini",
+      "crossing_answers": "AGES, SHAM, KOREA, STAB, THRU"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "c9b9a9b40c6a108008aed06c30978f671ace28e24662e7b041a824c54fbab187",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "GHOST",
+        "clue": "Suddenly cut off contact, in dating slang",
+        "crossing": "AGES, SHAM, KOREA, STAB, THRU",
+        "difficulty": "hard",
+        "puzzle_type": "mini",
+        "acc": 24,
+        "fair": 23,
+        "craft": 22,
+        "fresh": 21,
+        "total": 90,
+        "opus_defect": false,
+        "feedback": null,
+        "jev": {
+          "leaks_answer": 0.37,
+          "semantic_giveaway": 0.8,
+          "too_easy_for_hard": 0.83,
+          "ambiguous_multi_answer": 0.18,
+          "factually_wrong": 0.13,
+          "sensitive_content": 0.22,
+          "currency_risk": 0.1
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "fa2d349464f57b78d18c",
+    "state": {
+      "answer": "LOB",
+      "clue": "Gentle arc over the net",
+      "puzzle_difficulty": "hard",
+      "puzzle_type": "mini",
+      "crossing_answers": "VAL, TACO, CRUMB"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": true
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "a50275b131afea8c351732af8ded48e8e9d46e01967002dbb353fef1c30b6a06",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "LOB",
+        "clue": "Gentle arc over the net",
+        "crossing": "VAL, TACO, CRUMB",
+        "difficulty": "hard",
+        "puzzle_type": "mini",
+        "acc": 23,
+        "fair": 24,
+        "craft": 22,
+        "fresh": 15,
+        "total": 84,
+        "opus_defect": false,
+        "feedback": "too easy for Hard; plain definition",
+        "jev": {
+          "leaks_answer": 0.16,
+          "semantic_giveaway": 0.26,
+          "too_easy_for_hard": 0.7,
+          "ambiguous_multi_answer": 0.62,
+          "factually_wrong": 0.22,
+          "sensitive_content": 0.05,
+          "currency_risk": 0.11
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "5fec8f034319e06ea267",
+    "state": {
+      "answer": "PRE",
+      "clue": "Prefix meaning before",
+      "puzzle_difficulty": "easy",
+      "puzzle_type": "midi",
+      "crossing_answers": "PERU, REAL, ELM"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "03f1b85c7b6010f8f8a8f55bdebdb528a6192002d4aeb67823dc06b6fb25a449",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "PRE",
+        "clue": "Prefix meaning before",
+        "crossing": "PERU, REAL, ELM",
+        "difficulty": "easy",
+        "puzzle_type": "midi",
+        "acc": 4,
+        "fair": 4,
+        "craft": 18,
+        "fresh": 18,
+        "total": 44,
+        "opus_defect": true,
+        "feedback": "leaks: 'Prefix meaning before' — etymology leak and hidden PRE in 'prefix'; fairness 0-8",
+        "jev": {
+          "leaks_answer": 0.47,
+          "semantic_giveaway": 0.6,
+          "too_easy_for_hard": 0.06,
+          "ambiguous_multi_answer": 0.5,
+          "factually_wrong": 0.1,
+          "sensitive_content": 0.03,
+          "currency_risk": 0.04
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "56ed495680eb1c121b7d",
+    "state": {
+      "answer": "SLOTH",
+      "clue": "Slow-moving jungle dweller",
+      "puzzle_difficulty": "hard",
+      "puzzle_type": "mini",
+      "crossing_answers": "STRAW, LEAVE, ORGAN, TREND, HASTY"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": true
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "906fd6d7212bd11eb5b7478b61f2ffa3d558548473d33db4b7f75e0263a12aa8",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "SLOTH",
+        "clue": "Slow-moving jungle dweller",
+        "crossing": "STRAW, LEAVE, ORGAN, TREND, HASTY",
+        "difficulty": "hard",
+        "puzzle_type": "mini",
+        "acc": 22,
+        "fair": 22,
+        "craft": 20,
+        "fresh": 16,
+        "total": 80,
+        "opus_defect": false,
+        "feedback": null,
+        "jev": {
+          "leaks_answer": 0.27,
+          "semantic_giveaway": 0.45,
+          "too_easy_for_hard": 0.85,
+          "ambiguous_multi_answer": 0.5,
+          "factually_wrong": 0.13,
+          "sensitive_content": 0.03,
+          "currency_risk": 0.07
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "33f383e4c8b7fa86e2cf",
+    "state": {
+      "answer": "BRUTE",
+      "clue": "\"Et tu, ___?\"",
+      "puzzle_difficulty": "hard",
+      "puzzle_type": "mini",
+      "crossing_answers": "BRIG, GRADE, AUGER, STEAM, HESS"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "a9c0d470e249707753798d047489054175a9fa1ef907062cb4328c168de0c797",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "BRUTE",
+        "clue": "\"Et tu, ___?\"",
+        "crossing": "BRIG, GRADE, AUGER, STEAM, HESS",
+        "difficulty": "hard",
+        "puzzle_type": "mini",
+        "acc": 8,
+        "fair": 22,
+        "craft": 12,
+        "fresh": 15,
+        "total": 57,
+        "opus_defect": true,
+        "feedback": "Wrong: Shakespeare's line is 'Et tu, Brute?' not 'Et tu, ___?' answer is BRUTE not BRUTE; actually the fill-in answer BRUTE fits but the clue quotes wrong — standard quote is 'Et tu, Brute' so blank clue leaks the answer; more critically answer is BRUTE but clue spelling 'Brute' in the quote gives it away — fairness issue aside, the quoted line is correct but the blank replaces 'Brute' making it trivially transparent; too easy for Hard",
+        "jev": {
+          "leaks_answer": 0.17,
+          "semantic_giveaway": 0.4,
+          "too_easy_for_hard": 0.38,
+          "ambiguous_multi_answer": 0.41,
+          "factually_wrong": 0.74,
+          "sensitive_content": 0.67,
+          "currency_risk": 0.06
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "b772ee153c6fb385276b",
+    "state": {
+      "answer": "MOAN",
+      "clue": "Sound of a wind in the trees",
+      "puzzle_difficulty": "hard",
+      "puzzle_type": "midi",
+      "crossing_answers": "MRI, CHICAGOAN, YEARN, ONES"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "9f69854ad0901db5134589d2d6da6d60c444ad066aca402bbfb4d90622d2aebc",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "MOAN",
+        "clue": "Sound of a wind in the trees",
+        "crossing": "MRI, CHICAGOAN, YEARN, ONES",
+        "difficulty": "hard",
+        "puzzle_type": "midi",
+        "acc": 20,
+        "fair": 22,
+        "craft": 20,
+        "fresh": 18,
+        "total": 80,
+        "opus_defect": false,
+        "feedback": "wind in trees is more of a sigh or rustle; slightly off",
+        "jev": {
+          "leaks_answer": 0.24,
+          "semantic_giveaway": 0.19,
+          "too_easy_for_hard": 0.76,
+          "ambiguous_multi_answer": 0.84,
+          "factually_wrong": 0.41,
+          "sensitive_content": 0.04,
+          "currency_risk": 0.06
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "09545ca28fa8a2e47d9a",
+    "state": {
+      "answer": "AGONY",
+      "clue": "Sheer torment",
+      "puzzle_difficulty": "hard",
+      "puzzle_type": "mini",
+      "crossing_answers": "FRAT, DIEGO, ANTON, FERNS, TROY"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": true
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "5aad795f43260873103833d43c3a765011ef25e2880c352988b7b353ce8d30ba",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "AGONY",
+        "clue": "Sheer torment",
+        "crossing": "FRAT, DIEGO, ANTON, FERNS, TROY",
+        "difficulty": "hard",
+        "puzzle_type": "mini",
+        "acc": 22,
+        "fair": 24,
+        "craft": 18,
+        "fresh": 14,
+        "total": 78,
+        "opus_defect": false,
+        "feedback": null,
+        "jev": {
+          "leaks_answer": 0.44,
+          "semantic_giveaway": 0.55,
+          "too_easy_for_hard": 0.87,
+          "ambiguous_multi_answer": 0.85,
+          "factually_wrong": 0.17,
+          "sensitive_content": 0.19,
+          "currency_risk": 0.08
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "e49ef87e772ef9727e70",
+    "state": {
+      "answer": "STATS",
+      "clue": "Baseball figures, briefly",
+      "puzzle_difficulty": "easy",
+      "puzzle_type": "mini",
+      "crossing_answers": "SCAMS, ORBIT, LAURA, INSET, DEEDS"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "a1102b801929c80cadca78b89975c483043509bd4de331e95b0434deaa03e004",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "STATS",
+        "clue": "Baseball figures, briefly",
+        "crossing": "SCAMS, ORBIT, LAURA, INSET, DEEDS",
+        "difficulty": "easy",
+        "puzzle_type": "mini",
+        "acc": 18,
+        "fair": 14,
+        "craft": 16,
+        "fresh": 18,
+        "total": 66,
+        "opus_defect": true,
+        "feedback": "STATS: abbrev indicator ok but 'figures' vague; 'statistics' leaks S",
+        "jev": {
+          "leaks_answer": 0.29,
+          "semantic_giveaway": 0.34,
+          "too_easy_for_hard": 0.05,
+          "ambiguous_multi_answer": 0.65,
+          "factually_wrong": 0.19,
+          "sensitive_content": 0.03,
+          "currency_risk": 0.1
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "6d02e9054ceef5553719",
+    "state": {
+      "answer": "ADDED",
+      "clue": "Tacked on extra",
+      "puzzle_difficulty": "easy",
+      "puzzle_type": "mini",
+      "crossing_answers": "DRAB, SUEDE, ABIDE, SAGES, HIND"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": true
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "7b3c77649dc9d0b089fc948bd145a9506ac2bbd8f557581f6462715916283fda",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "ADDED",
+        "clue": "Tacked on extra",
+        "crossing": "DRAB, SUEDE, ABIDE, SAGES, HIND",
+        "difficulty": "easy",
+        "puzzle_type": "mini",
+        "acc": 22,
+        "fair": 22,
+        "craft": 21,
+        "fresh": 20,
+        "total": 85,
+        "opus_defect": false,
+        "feedback": null,
+        "jev": {
+          "leaks_answer": 0.31,
+          "semantic_giveaway": 0.44,
+          "too_easy_for_hard": 0.06,
+          "ambiguous_multi_answer": 0.76,
+          "factually_wrong": 0.23,
+          "sensitive_content": 0.04,
+          "currency_risk": 0.1
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "153cfdf684e3b2c8eabd",
+    "state": {
+      "answer": "ANNIE",
+      "clue": "Little orphan of the comics",
+      "puzzle_difficulty": "easy",
+      "puzzle_type": "mini",
+      "crossing_answers": "AIM, WANNA, AUNTS, IDIOT, TIE"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "e44d525a81ce3ebcfc0ff20e4a49e02e3e464c2a3d1230e2f4a48246d013f93f",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "ANNIE",
+        "clue": "Little orphan of the comics",
+        "crossing": "AIM, WANNA, AUNTS, IDIOT, TIE",
+        "difficulty": "easy",
+        "puzzle_type": "mini",
+        "acc": 24,
+        "fair": 24,
+        "craft": 23,
+        "fresh": 22,
+        "total": 93,
+        "opus_defect": false,
+        "feedback": null,
+        "jev": {
+          "leaks_answer": 0.2,
+          "semantic_giveaway": 0.66,
+          "too_easy_for_hard": 0.05,
+          "ambiguous_multi_answer": 0.14,
+          "factually_wrong": 0.14,
+          "sensitive_content": 0.08,
+          "currency_risk": 0.07
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "efce27a6ae2fcec07ead",
+    "state": {
+      "answer": "RBIS",
+      "clue": "Cleanup hitter's stats, in brief",
+      "puzzle_difficulty": "hard",
+      "puzzle_type": "midi",
+      "crossing_answers": "BROW, CABLE, REIGN, SAT"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "ef127d29fe98b3b14c02b30e26655404385830bbb5b2293247848abaef3d40e0",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "RBIS",
+        "clue": "Cleanup hitter's stats, in brief",
+        "crossing": "BROW, CABLE, REIGN, SAT",
+        "difficulty": "hard",
+        "puzzle_type": "midi",
+        "acc": 24,
+        "fair": 23,
+        "craft": 20,
+        "fresh": 16,
+        "total": 83,
+        "opus_defect": false,
+        "feedback": null,
+        "jev": {
+          "leaks_answer": 0.49,
+          "semantic_giveaway": 0.42,
+          "too_easy_for_hard": 0.73,
+          "ambiguous_multi_answer": 0.47,
+          "factually_wrong": 0.24,
+          "sensitive_content": 0.04,
+          "currency_risk": 0.11
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "91fabdace00d02ec2fe9",
+    "state": {
+      "answer": "LAB",
+      "clue": "Coat-named dog breed, for short",
+      "puzzle_difficulty": "hard",
+      "puzzle_type": "midi",
+      "crossing_answers": "SPYPLANES, HAM, COWABUNGA"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "f7d47de62961d2512c3c032cd4f0ba7d154bfde22ef41a4041694d1b8d2a37ed",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "LAB",
+        "clue": "Coat-named dog breed, for short",
+        "crossing": "SPYPLANES, HAM, COWABUNGA",
+        "difficulty": "hard",
+        "puzzle_type": "midi",
+        "acc": 8,
+        "fair": 15,
+        "craft": 12,
+        "fresh": 12,
+        "total": 47,
+        "opus_defect": true,
+        "feedback": "wrong: Labrador not coat-named",
+        "jev": {
+          "leaks_answer": 0.47,
+          "semantic_giveaway": 0.34,
+          "too_easy_for_hard": 0.69,
+          "ambiguous_multi_answer": 0.42,
+          "factually_wrong": 0.49,
+          "sensitive_content": 0.05,
+          "currency_risk": 0.1
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "b5ef294a5b69d6c94b84",
+    "state": {
+      "answer": "SUP",
+      "clue": "Greeting that's short for three words",
+      "puzzle_difficulty": "hard",
+      "puzzle_type": "mini",
+      "crossing_answers": "MENSANS, ACUTE, TYPED"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "0589b130c916bf34b81fe606b954fbd02dee167b2109ca3528bf3dbad360087a",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "SUP",
+        "clue": "Greeting that's short for three words",
+        "crossing": "MENSANS, ACUTE, TYPED",
+        "difficulty": "hard",
+        "puzzle_type": "mini",
+        "acc": 15,
+        "fair": 20,
+        "craft": 18,
+        "fresh": 18,
+        "total": 71,
+        "opus_defect": false,
+        "feedback": "questionable: 'sup' expands to two words",
+        "jev": {
+          "leaks_answer": 0.34,
+          "semantic_giveaway": 0.42,
+          "too_easy_for_hard": 0.84,
+          "ambiguous_multi_answer": 0.63,
+          "factually_wrong": 0.38,
+          "sensitive_content": 0.04,
+          "currency_risk": 0.08
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "87811cb73168c48d7825",
+    "state": {
+      "answer": "VIP",
+      "clue": "Special guest, briefly",
+      "puzzle_difficulty": "easy",
+      "puzzle_type": "mini",
+      "crossing_answers": "VECTOR, INHALE, PLACED"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": true
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "b16fca7cd5bc07d50a4d94daf9686223cfd85fe0001fd75c66e0d7b89b63c7ca",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "VIP",
+        "clue": "Special guest, briefly",
+        "crossing": "VECTOR, INHALE, PLACED",
+        "difficulty": "easy",
+        "puzzle_type": "mini",
+        "acc": 22,
+        "fair": 14,
+        "craft": 22,
+        "fresh": 22,
+        "total": 80,
+        "opus_defect": true,
+        "feedback": "leaks: VIP contains letters of 'guest' angle is fine but 'briefly' weak signal; 'Important person, abbr.' cleaner",
+        "jev": {
+          "leaks_answer": 0.25,
+          "semantic_giveaway": 0.63,
+          "too_easy_for_hard": 0.06,
+          "ambiguous_multi_answer": 0.62,
+          "factually_wrong": 0.15,
+          "sensitive_content": 0.04,
+          "currency_risk": 0.07
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "a5cf42499210488711b4",
+    "state": {
+      "answer": "YOURS",
+      "clue": "Belonging to you",
+      "puzzle_difficulty": "hard",
+      "puzzle_type": "mini",
+      "crossing_answers": "YEP, SOAR, LOUSY, SURE, UPS"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": true
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "22de31bd220fae7b93f82cafe3eb95a1a272d9e71e2fab4f177467ecb0b7e477",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "YOURS",
+        "clue": "Belonging to you",
+        "crossing": "YEP, SOAR, LOUSY, SURE, UPS",
+        "difficulty": "hard",
+        "puzzle_type": "mini",
+        "acc": 22,
+        "fair": 18,
+        "craft": 15,
+        "fresh": 8,
+        "total": 63,
+        "opus_defect": true,
+        "feedback": "too easy for Hard, plain definition",
+        "jev": {
+          "leaks_answer": 0.72,
+          "semantic_giveaway": 0.75,
+          "too_easy_for_hard": 0.91,
+          "ambiguous_multi_answer": 0.53,
+          "factually_wrong": 0.11,
+          "sensitive_content": 0.04,
+          "currency_risk": 0.1
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "8609b0e20138a51225f3",
+    "state": {
+      "answer": "RPG",
+      "clue": "Dungeon-crawling video game type, for short",
+      "puzzle_difficulty": "hard",
+      "puzzle_type": "mini",
+      "crossing_answers": "MAYOR, CORP, HUNG"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "5bfaa2b1503120221f4ba30437e281a70c7a28c07bd055fff172f34cf2b54243",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "RPG",
+        "clue": "Dungeon-crawling video game type, for short",
+        "crossing": "MAYOR, CORP, HUNG",
+        "difficulty": "hard",
+        "puzzle_type": "mini",
+        "acc": 22,
+        "fair": 10,
+        "craft": 14,
+        "fresh": 17,
+        "total": 63,
+        "opus_defect": true,
+        "feedback": "missing abbreviation indicator; leaks: RPG expansion 'game'",
+        "jev": {
+          "leaks_answer": 0.27,
+          "semantic_giveaway": 0.38,
+          "too_easy_for_hard": 0.79,
+          "ambiguous_multi_answer": 0.54,
+          "factually_wrong": 0.32,
+          "sensitive_content": 0.09,
+          "currency_risk": 0.07
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "777332d5808c085d9f7d",
+    "state": {
+      "answer": "AROMA",
+      "clue": "Nice scent",
+      "puzzle_difficulty": "easy",
+      "puzzle_type": "mini",
+      "crossing_answers": "CLAP, AARON, SCOPE, TEMPT, SAYS"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": true
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "1c5e7beaa937a949b5a7cb2e2bd4e7c653c7eac33251b3e1e1479e55fb64ab5c",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "AROMA",
+        "clue": "Nice scent",
+        "crossing": "CLAP, AARON, SCOPE, TEMPT, SAYS",
+        "difficulty": "easy",
+        "puzzle_type": "mini",
+        "acc": 18,
+        "fair": 12,
+        "craft": 16,
+        "fresh": 16,
+        "total": 62,
+        "opus_defect": true,
+        "feedback": "'Nice' ambiguous: city in France or adjective; rephrase to plain 'Pleasant scent' or 'Fragrance'",
+        "jev": {
+          "leaks_answer": 0.48,
+          "semantic_giveaway": 0.72,
+          "too_easy_for_hard": 0.06,
+          "ambiguous_multi_answer": 0.88,
+          "factually_wrong": 0.14,
+          "sensitive_content": 0.03,
+          "currency_risk": 0.06
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "e7f003bf9da8c26c05f2",
+    "state": {
+      "answer": "EARL",
+      "clue": "British title of nobility",
+      "puzzle_difficulty": "easy",
+      "puzzle_type": "mini",
+      "crossing_answers": "MIKE, DONNA, UTTER, STEAL"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "c8d9d282cdbef4c85a0e50185d193208ca686ec2c244b734f39d4e3a26dcf3ac",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "EARL",
+        "clue": "British title of nobility",
+        "crossing": "MIKE, DONNA, UTTER, STEAL",
+        "difficulty": "easy",
+        "puzzle_type": "mini",
+        "acc": 24,
+        "fair": 24,
+        "craft": 23,
+        "fresh": 21,
+        "total": 92,
+        "opus_defect": false,
+        "feedback": null,
+        "jev": {
+          "leaks_answer": 0.13,
+          "semantic_giveaway": 0.2,
+          "too_easy_for_hard": 0.06,
+          "ambiguous_multi_answer": 0.9,
+          "factually_wrong": 0.11,
+          "sensitive_content": 0.03,
+          "currency_risk": 0.08
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "651b221038dd074d8669",
+    "state": {
+      "answer": "VOICE",
+      "clue": "A say in the matter",
+      "puzzle_difficulty": "hard",
+      "puzzle_type": "mini",
+      "crossing_answers": "VIC, TONER, HINDU, OCEAN, ERR"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": true
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "63a57825309dfaad3ca38c7075aaec7cd08258f6b83664d13aa0f738abc1462a",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "VOICE",
+        "clue": "A say in the matter",
+        "crossing": "VIC, TONER, HINDU, OCEAN, ERR",
+        "difficulty": "hard",
+        "puzzle_type": "mini",
+        "acc": 22,
+        "fair": 22,
+        "craft": 19,
+        "fresh": 16,
+        "total": 79,
+        "opus_defect": false,
+        "feedback": null,
+        "jev": {
+          "leaks_answer": 0.31,
+          "semantic_giveaway": 0.42,
+          "too_easy_for_hard": 0.83,
+          "ambiguous_multi_answer": 0.75,
+          "factually_wrong": 0.21,
+          "sensitive_content": 0.03,
+          "currency_risk": 0.07
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "2b25a3884dbd3dba1ffe",
+    "state": {
+      "answer": "HIT",
+      "clue": "Smash single, say",
+      "puzzle_difficulty": "hard",
+      "puzzle_type": "mini",
+      "crossing_answers": "CHER, RAIDED, REPTILE"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "d017266692053a805d9e626c263df11866627199c5d2e36d96219372b4ad0b2b",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "HIT",
+        "clue": "Smash single, say",
+        "crossing": "CHER, RAIDED, REPTILE",
+        "difficulty": "hard",
+        "puzzle_type": "mini",
+        "acc": 22,
+        "fair": 10,
+        "craft": 16,
+        "fresh": 16,
+        "total": 64,
+        "opus_defect": true,
+        "feedback": "leaks: smash≈hit",
+        "jev": {
+          "leaks_answer": 0.63,
+          "semantic_giveaway": 0.38,
+          "too_easy_for_hard": 0.74,
+          "ambiguous_multi_answer": 0.82,
+          "factually_wrong": 0.24,
+          "sensitive_content": 0.07,
+          "currency_risk": 0.13
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "bb8f41a38d68b421cdac",
+    "state": {
+      "answer": "RICO",
+      "clue": "Puerto ___ (Caribbean spot)",
+      "puzzle_difficulty": "easy",
+      "puzzle_type": "midi",
+      "crossing_answers": "ERODED, RID, ICE, COO"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "b30ff088bafbb126a9667f83e7e580c50457b955624091a028426f3aed06dbce",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "RICO",
+        "clue": "Puerto ___ (Caribbean spot)",
+        "crossing": "ERODED, RID, ICE, COO",
+        "difficulty": "easy",
+        "puzzle_type": "midi",
+        "acc": 24,
+        "fair": 24,
+        "craft": 24,
+        "fresh": 22,
+        "total": 94,
+        "opus_defect": false,
+        "feedback": null,
+        "jev": {
+          "leaks_answer": 0.53,
+          "semantic_giveaway": 0.47,
+          "too_easy_for_hard": 0.07,
+          "ambiguous_multi_answer": 0.36,
+          "factually_wrong": 0.41,
+          "sensitive_content": 0.19,
+          "currency_risk": 0.11
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "12efec5789ad48f4ef57",
+    "state": {
+      "answer": "VCMONEY",
+      "clue": "Startup funding from investors, informally",
+      "puzzle_difficulty": "hard",
+      "puzzle_type": "mini",
+      "crossing_answers": "VIE, CRY, MAE, OTS, SCENE, AWE, REY"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "f1fcd0328e24bcd43416cd645466b2922d924cd63934b3a672272e8dad531c19",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "VCMONEY",
+        "clue": "Startup funding from investors, informally",
+        "crossing": "VIE, CRY, MAE, OTS, SCENE, AWE, REY",
+        "difficulty": "hard",
+        "puzzle_type": "mini",
+        "acc": 15,
+        "fair": 18,
+        "craft": 12,
+        "fresh": 14,
+        "total": 59,
+        "opus_defect": true,
+        "feedback": "VCMONEY looks like two words; needs abbreviation indicator or wordplay signal",
+        "jev": {
+          "leaks_answer": 0.5,
+          "semantic_giveaway": 0.22,
+          "too_easy_for_hard": 0.71,
+          "ambiguous_multi_answer": 0.66,
+          "factually_wrong": 0.34,
+          "sensitive_content": 0.04,
+          "currency_risk": 0.13
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "f54456ac759acf4d510e",
+    "state": {
+      "answer": "MAST",
+      "clue": "Tall pole holding a ship's sail",
+      "puzzle_difficulty": "easy",
+      "puzzle_type": "mini",
+      "crossing_answers": "MAT, ACIDIC, SHOVE, TEND"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": true
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "5d405583caf265dc8efc774105f7b1921a3cc871ee8a70d577eaa8aeac5efc96",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "MAST",
+        "clue": "Tall pole holding a ship's sail",
+        "crossing": "MAT, ACIDIC, SHOVE, TEND",
+        "difficulty": "easy",
+        "puzzle_type": "mini",
+        "acc": 24,
+        "fair": 24,
+        "craft": 24,
+        "fresh": 22,
+        "total": 94,
+        "opus_defect": false,
+        "feedback": null,
+        "jev": {
+          "leaks_answer": 0.14,
+          "semantic_giveaway": 0.74,
+          "too_easy_for_hard": 0.05,
+          "ambiguous_multi_answer": 0.32,
+          "factually_wrong": 0.08,
+          "sensitive_content": 0.02,
+          "currency_risk": 0.04
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "7a2a03509f8535b3ab06",
+    "state": {
+      "answer": "PROGRAM",
+      "clue": "Handout at a theater performance",
+      "puzzle_difficulty": "hard",
+      "puzzle_type": "midi",
+      "crossing_answers": "PLOY, RARE, SEMITONES, SNAGS, NOR, ABEL, MEMO"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": true
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "dcc51efb3d1dfb6fe3dd8ba579d0b84fce810ef9f1cdeabff817d7fa03780e47",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "PROGRAM",
+        "clue": "Handout at a theater performance",
+        "crossing": "PLOY, RARE, SEMITONES, SNAGS, NOR, ABEL, MEMO",
+        "difficulty": "hard",
+        "puzzle_type": "midi",
+        "acc": 23,
+        "fair": 22,
+        "craft": 19,
+        "fresh": 14,
+        "total": 78,
+        "opus_defect": false,
+        "feedback": null,
+        "jev": {
+          "leaks_answer": 0.23,
+          "semantic_giveaway": 0.64,
+          "too_easy_for_hard": 0.84,
+          "ambiguous_multi_answer": 0.44,
+          "factually_wrong": 0.16,
+          "sensitive_content": 0.04,
+          "currency_risk": 0.07
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "eb1044faacc43dad57f3",
+    "state": {
+      "answer": "THE",
+      "clue": "Word before \"end\" or \"start\"",
+      "puzzle_difficulty": "easy",
+      "puzzle_type": "midi",
+      "crossing_answers": "TWIST, HATE, EYED"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "f6d7fc0cd52494c778569593f407fecfb705895a9ad851cec234713669387f63",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "THE",
+        "clue": "Word before \"end\" or \"start\"",
+        "crossing": "TWIST, HATE, EYED",
+        "difficulty": "easy",
+        "puzzle_type": "midi",
+        "acc": 18,
+        "fair": 12,
+        "craft": 17,
+        "fresh": 18,
+        "total": 65,
+        "opus_defect": true,
+        "feedback": "'start' not standard: 'the start' less fixed than 'the end'; also 'end' hidden in 'end'",
+        "jev": {
+          "leaks_answer": 0.27,
+          "semantic_giveaway": 0.3,
+          "too_easy_for_hard": 0.08,
+          "ambiguous_multi_answer": 0.83,
+          "factually_wrong": 0.6,
+          "sensitive_content": 0.05,
+          "currency_risk": 0.09
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "7e909891119f1e648520",
+    "state": {
+      "answer": "THEIR",
+      "clue": "\"___ house is blue\"",
+      "puzzle_difficulty": "easy",
+      "puzzle_type": "mini",
+      "crossing_answers": "CENTS, ALOHA, NOTED, APRIL, LEERY"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "62f5f4a811f2c9177c8e90bac1361635d5df652ad5c78488070e0b3ccd02bade",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "THEIR",
+        "clue": "\"___ house is blue\"",
+        "crossing": "CENTS, ALOHA, NOTED, APRIL, LEERY",
+        "difficulty": "easy",
+        "puzzle_type": "mini",
+        "acc": 15,
+        "fair": 20,
+        "craft": 14,
+        "fresh": 12,
+        "total": 61,
+        "opus_defect": true,
+        "feedback": "Ambiguous: many houses could be blue; no single famous/fixed phrase confirmed.",
+        "jev": {
+          "leaks_answer": 0.31,
+          "semantic_giveaway": 0.15,
+          "too_easy_for_hard": 0.06,
+          "ambiguous_multi_answer": 0.85,
+          "factually_wrong": 0.26,
+          "sensitive_content": 0.03,
+          "currency_risk": 0.15
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "76336fae2831e1c48b42",
+    "state": {
+      "answer": "USA",
+      "clue": "Home of the Grand Canyon, briefly",
+      "puzzle_difficulty": "hard",
+      "puzzle_type": "midi",
+      "crossing_answers": "UNLUCKY, TASKS, SAP"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "3ec4f960a853267e0fc6a38708d7a00ba518459fff64dc2a0c9304d893b27d5d",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "USA",
+        "clue": "Home of the Grand Canyon, briefly",
+        "crossing": "UNLUCKY, TASKS, SAP",
+        "difficulty": "hard",
+        "puzzle_type": "midi",
+        "acc": 23,
+        "fair": 22,
+        "craft": 19,
+        "fresh": 13,
+        "total": 77,
+        "opus_defect": false,
+        "feedback": "too easy for Hard",
+        "jev": {
+          "leaks_answer": 0.17,
+          "semantic_giveaway": 0.34,
+          "too_easy_for_hard": 0.76,
+          "ambiguous_multi_answer": 0.6,
+          "factually_wrong": 0.39,
+          "sensitive_content": 0.05,
+          "currency_risk": 0.26
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "a099c799f5b419ed5d66",
+    "state": {
+      "answer": "CLUE",
+      "clue": "Trail a sleuth follows",
+      "puzzle_difficulty": "easy",
+      "puzzle_type": "midi",
+      "crossing_answers": "MCS, ALE, CUP, EARLOBE"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": true
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "a2002de9047ce03fad03d834afde3aa47e238da75b35341a55efc901a97cf9ba",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "CLUE",
+        "clue": "Trail a sleuth follows",
+        "crossing": "MCS, ALE, CUP, EARLOBE",
+        "difficulty": "easy",
+        "puzzle_type": "midi",
+        "acc": 22,
+        "fair": 22,
+        "craft": 22,
+        "fresh": 22,
+        "total": 88,
+        "opus_defect": false,
+        "feedback": null,
+        "jev": {
+          "leaks_answer": 0.29,
+          "semantic_giveaway": 0.41,
+          "too_easy_for_hard": 0.06,
+          "ambiguous_multi_answer": 0.71,
+          "factually_wrong": 0.27,
+          "sensitive_content": 0.06,
+          "currency_risk": 0.07
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "de4c5d95551cc13c5401",
+    "state": {
+      "answer": "EASE",
+      "clue": "Make less painful",
+      "puzzle_difficulty": "easy",
+      "puzzle_type": "mini",
+      "crossing_answers": "PEA, CLAY, ERASE, CONE"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": true
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "00bed138ab386e93cbcce2a3a61b48c5fbf538ae357d2b14313542c928b12999",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "EASE",
+        "clue": "Make less painful",
+        "crossing": "PEA, CLAY, ERASE, CONE",
+        "difficulty": "easy",
+        "puzzle_type": "mini",
+        "acc": 23,
+        "fair": 24,
+        "craft": 22,
+        "fresh": 22,
+        "total": 91,
+        "opus_defect": false,
+        "feedback": null,
+        "jev": {
+          "leaks_answer": 0.43,
+          "semantic_giveaway": 0.35,
+          "too_easy_for_hard": 0.06,
+          "ambiguous_multi_answer": 0.84,
+          "factually_wrong": 0.14,
+          "sensitive_content": 0.07,
+          "currency_risk": 0.06
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "e6879b7c392ab9953858",
+    "state": {
+      "answer": "YUP",
+      "clue": "Casual affirmative",
+      "puzzle_difficulty": "hard",
+      "puzzle_type": "midi",
+      "crossing_answers": "ANYDAYNOW, DUNCE, PAS"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": true
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "07e1bf35cb26cf12507e684ee7502be18a9a873a63cf8ca9a00c5e89a7aa083b",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "YUP",
+        "clue": "Casual affirmative",
+        "crossing": "ANYDAYNOW, DUNCE, PAS",
+        "difficulty": "hard",
+        "puzzle_type": "midi",
+        "acc": 23,
+        "fair": 24,
+        "craft": 19,
+        "fresh": 10,
+        "total": 76,
+        "opus_defect": false,
+        "feedback": "too easy for Hard; plain descriptor",
+        "jev": {
+          "leaks_answer": 0.23,
+          "semantic_giveaway": 0.38,
+          "too_easy_for_hard": 0.9,
+          "ambiguous_multi_answer": 0.88,
+          "factually_wrong": 0.18,
+          "sensitive_content": 0.04,
+          "currency_risk": 0.08
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "9fa085025502fc305cc1",
+    "state": {
+      "answer": "ACL",
+      "clue": "Knee tissue a runner might tear, briefly",
+      "puzzle_difficulty": "hard",
+      "puzzle_type": "midi",
+      "crossing_answers": "APPS, CHAP, LINEDANCE"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "c9bd257962e806534df256fc2843498e68b6b2ddddd7b94c847af5d125e7233c",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "ACL",
+        "clue": "Knee tissue a runner might tear, briefly",
+        "crossing": "APPS, CHAP, LINEDANCE",
+        "difficulty": "hard",
+        "puzzle_type": "midi",
+        "acc": 22,
+        "fair": 14,
+        "craft": 20,
+        "fresh": 18,
+        "total": 74,
+        "opus_defect": true,
+        "feedback": "leaks: knee (K in ACL... actually 'knee' shares collocation with ACL tear)",
+        "jev": {
+          "leaks_answer": 0.16,
+          "semantic_giveaway": 0.26,
+          "too_easy_for_hard": 0.78,
+          "ambiguous_multi_answer": 0.65,
+          "factually_wrong": 0.16,
+          "sensitive_content": 0.09,
+          "currency_risk": 0.07
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "20fc3f77f14e40ced5d9",
+    "state": {
+      "answer": "LIL",
+      "clue": "Prefix for rappers Wayne and Kim",
+      "puzzle_difficulty": "hard",
+      "puzzle_type": "midi",
+      "crossing_answers": "LADS, IDEA, LACY"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "a061a26786251a57baacfab087f6a6e8888acfab612bcfd354d19146d11acb0e",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "LIL",
+        "clue": "Prefix for rappers Wayne and Kim",
+        "crossing": "LADS, IDEA, LACY",
+        "difficulty": "hard",
+        "puzzle_type": "midi",
+        "acc": 20,
+        "fair": 12,
+        "craft": 19,
+        "fresh": 18,
+        "total": 69,
+        "opus_defect": true,
+        "feedback": "leaks: LIL is the prefix itself, spelled out in answer",
+        "jev": {
+          "leaks_answer": 0.25,
+          "semantic_giveaway": 0.21,
+          "too_easy_for_hard": 0.52,
+          "ambiguous_multi_answer": 0.28,
+          "factually_wrong": 0.35,
+          "sensitive_content": 0.11,
+          "currency_risk": 0.18
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "c65f36726c7bef71f39c",
+    "state": {
+      "answer": "KEY",
+      "clue": "Of central importance",
+      "puzzle_difficulty": "hard",
+      "puzzle_type": "midi",
+      "crossing_answers": "ARK, PIE, SPY"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": true
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "a0444435aac64e3b4ce759a035903121ad3f04e98ed91c09d4d5fcaa4320d991",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "KEY",
+        "clue": "Of central importance",
+        "crossing": "ARK, PIE, SPY",
+        "difficulty": "hard",
+        "puzzle_type": "midi",
+        "acc": 22,
+        "fair": 24,
+        "craft": 20,
+        "fresh": 16,
+        "total": 82,
+        "opus_defect": false,
+        "feedback": "too easy for Hard; plain adjective definition",
+        "jev": {
+          "leaks_answer": 0.26,
+          "semantic_giveaway": 0.23,
+          "too_easy_for_hard": 0.83,
+          "ambiguous_multi_answer": 0.87,
+          "factually_wrong": 0.28,
+          "sensitive_content": 0.05,
+          "currency_risk": 0.08
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "3b008a441e1a064f315b",
+    "state": {
+      "answer": "TINY",
+      "clue": "Very small",
+      "puzzle_difficulty": "easy",
+      "puzzle_type": "midi",
+      "crossing_answers": "ARRESTS, IOS, NFL, YAY"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": true
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "2f6a4281603efb036e67f1856f53c57707e672360a97b9ddcd412f69fd6516d2",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "TINY",
+        "clue": "Very small",
+        "crossing": "ARRESTS, IOS, NFL, YAY",
+        "difficulty": "easy",
+        "puzzle_type": "midi",
+        "acc": 24,
+        "fair": 24,
+        "craft": 23,
+        "fresh": 23,
+        "total": 94,
+        "opus_defect": false,
+        "feedback": null,
+        "jev": {
+          "leaks_answer": 0.45,
+          "semantic_giveaway": 0.45,
+          "too_easy_for_hard": 0.06,
+          "ambiguous_multi_answer": 0.92,
+          "factually_wrong": 0.14,
+          "sensitive_content": 0.05,
+          "currency_risk": 0.08
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "a369984f4d87e9edf46d",
+    "state": {
+      "answer": "ALONE",
+      "clue": "Solo, with no one around",
+      "puzzle_difficulty": "easy",
+      "puzzle_type": "mini",
+      "crossing_answers": "PAN, JULIA, AMONG, BANJO, SEA"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": true
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "17a699d7ba777d019fb689f821d4178738af85aca995accc03f29795c077c6df",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "ALONE",
+        "clue": "Solo, with no one around",
+        "crossing": "PAN, JULIA, AMONG, BANJO, SEA",
+        "difficulty": "easy",
+        "puzzle_type": "mini",
+        "acc": 23,
+        "fair": 24,
+        "craft": 22,
+        "fresh": 21,
+        "total": 90,
+        "opus_defect": false,
+        "feedback": null,
+        "jev": {
+          "leaks_answer": 0.53,
+          "semantic_giveaway": 0.65,
+          "too_easy_for_hard": 0.05,
+          "ambiguous_multi_answer": 0.8,
+          "factually_wrong": 0.14,
+          "sensitive_content": 0.03,
+          "currency_risk": 0.11
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "c97a601eeedecf3b966c",
+    "state": {
+      "answer": "ALE",
+      "clue": "Ginger ___ (bubbly soft drink)",
+      "puzzle_difficulty": "hard",
+      "puzzle_type": "midi",
+      "crossing_answers": "BALMY, TOLLS, CAMEL"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "0d47a604d6e013544aed85a9697f8d98fb5832d50321d628b637443af1e842c8",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "ALE",
+        "clue": "Ginger ___ (bubbly soft drink)",
+        "crossing": "BALMY, TOLLS, CAMEL",
+        "difficulty": "hard",
+        "puzzle_type": "midi",
+        "acc": 22,
+        "fair": 10,
+        "craft": 18,
+        "fresh": 8,
+        "total": 58,
+        "opus_defect": true,
+        "feedback": "collocation giveaway: Ginger ___, too easy for Hard",
+        "jev": {
+          "leaks_answer": 0.56,
+          "semantic_giveaway": 0.75,
+          "too_easy_for_hard": 0.79,
+          "ambiguous_multi_answer": 0.37,
+          "factually_wrong": 0.18,
+          "sensitive_content": 0.08,
+          "currency_risk": 0.09
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "0e27538c4b3477bbd3f2",
+    "state": {
+      "answer": "HART",
+      "clue": "Comedian Kevin of \"Jumanji\" films",
+      "puzzle_difficulty": "easy",
+      "puzzle_type": "midi",
+      "crossing_answers": "CHAPELS, PLANS, CURT, SETS"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "023d776e30b66cd2b08767625098b2101882e3bc442a265075b59eb098e4c234",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "HART",
+        "clue": "Comedian Kevin of \"Jumanji\" films",
+        "crossing": "CHAPELS, PLANS, CURT, SETS",
+        "difficulty": "easy",
+        "puzzle_type": "midi",
+        "acc": 22,
+        "fair": 14,
+        "craft": 21,
+        "fresh": 20,
+        "total": 77,
+        "opus_defect": true,
+        "feedback": "currency risk: current role/films reference may go stale",
+        "jev": {
+          "leaks_answer": 0.36,
+          "semantic_giveaway": 0.33,
+          "too_easy_for_hard": 0.06,
+          "ambiguous_multi_answer": 0.17,
+          "factually_wrong": 0.5,
+          "sensitive_content": 0.05,
+          "currency_risk": 0.17
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "c53a2dec7d8ceebea862",
+    "state": {
+      "answer": "ATM",
+      "clue": "Cash-dispensing spot, for short",
+      "puzzle_difficulty": "easy",
+      "puzzle_type": "mini",
+      "crossing_answers": "ADMIN, TIARA, MANLY"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": true
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "afd54764c51d1fc6c3e9f4b97ef691046c79c2af01b4106fd2d53f8dc8121478",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "ATM",
+        "clue": "Cash-dispensing spot, for short",
+        "crossing": "ADMIN, TIARA, MANLY",
+        "difficulty": "easy",
+        "puzzle_type": "mini",
+        "acc": 24,
+        "fair": 20,
+        "craft": 23,
+        "fresh": 22,
+        "total": 89,
+        "opus_defect": false,
+        "feedback": "leaks: machine (M) absent but 'cash' not a leak; clean enough; minor: ATM letters not echoed",
+        "jev": {
+          "leaks_answer": 0.22,
+          "semantic_giveaway": 0.79,
+          "too_easy_for_hard": 0.05,
+          "ambiguous_multi_answer": 0.21,
+          "factually_wrong": 0.1,
+          "sensitive_content": 0.03,
+          "currency_risk": 0.09
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "dd25e503565f33bfcb6a",
+    "state": {
+      "answer": "PIC",
+      "clue": "Quick snapshot, casually",
+      "puzzle_difficulty": "easy",
+      "puzzle_type": "mini",
+      "crossing_answers": "WHIP, AUDI, LYRIC"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": true
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "4a52866e24f4113ab0991ce1517e572f39e51403bc8bb5c499885e76645ca616",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "PIC",
+        "clue": "Quick snapshot, casually",
+        "crossing": "WHIP, AUDI, LYRIC",
+        "difficulty": "easy",
+        "puzzle_type": "mini",
+        "acc": 21,
+        "fair": 22,
+        "craft": 18,
+        "fresh": 19,
+        "total": 80,
+        "opus_defect": false,
+        "feedback": "'casually' is redundant with 'for short' implied; minor craft issue",
+        "jev": {
+          "leaks_answer": 0.5,
+          "semantic_giveaway": 0.42,
+          "too_easy_for_hard": 0.06,
+          "ambiguous_multi_answer": 0.63,
+          "factually_wrong": 0.24,
+          "sensitive_content": 0.05,
+          "currency_risk": 0.11
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "e8a69168f78b3008d487",
+    "state": {
+      "answer": "CONAN",
+      "clue": "Talk-show host O'Brien",
+      "puzzle_difficulty": "easy",
+      "puzzle_type": "mini",
+      "crossing_answers": "CARB, LOWER, INANE, NAKED, KNEW"
+    },
+    "labels": {
+      "current_state": true,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "6681beffaae04c41b2a15c3fc0df131a2d60289009e69579baae55401c713670",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "CONAN",
+        "clue": "Talk-show host O'Brien",
+        "crossing": "CARB, LOWER, INANE, NAKED, KNEW",
+        "difficulty": "easy",
+        "puzzle_type": "mini",
+        "acc": 9,
+        "fair": 24,
+        "craft": 20,
+        "fresh": 16,
+        "total": 69,
+        "opus_defect": true,
+        "feedback": "currency risk: needs timeless angle for Conan",
+        "jev": {
+          "leaks_answer": 0.24,
+          "semantic_giveaway": 0.38,
+          "too_easy_for_hard": 0.05,
+          "ambiguous_multi_answer": 0.29,
+          "factually_wrong": 0.64,
+          "sensitive_content": 0.15,
+          "currency_risk": 0.58
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "55cbe1d0509953c48806",
+    "state": {
+      "answer": "TRY",
+      "clue": "Give it your best shot",
+      "puzzle_difficulty": "easy",
+      "puzzle_type": "midi",
+      "crossing_answers": "ACT, FUR, ITINERARY"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "60908eb4f401927fe6646b8a605014f5896b44e330274dd320ef0b9b490a3236",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "TRY",
+        "clue": "Give it your best shot",
+        "crossing": "ACT, FUR, ITINERARY",
+        "difficulty": "easy",
+        "puzzle_type": "midi",
+        "acc": 20,
+        "fair": 14,
+        "craft": 19,
+        "fresh": 18,
+        "total": 71,
+        "opus_defect": true,
+        "feedback": "hidden-answer leak: beSTshot contains no leak but 'shot' may misdirect; 'Give it your best shot' mildly idiomatic but acceptable; minor: 'shot' gun-culture adjacent",
+        "jev": {
+          "leaks_answer": 0.44,
+          "semantic_giveaway": 0.42,
+          "too_easy_for_hard": 0.07,
+          "ambiguous_multi_answer": 0.82,
+          "factually_wrong": 0.28,
+          "sensitive_content": 0.14,
+          "currency_risk": 0.09
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "9801e76b2471c98cd11b",
+    "state": {
+      "answer": "META",
+      "clue": "Self-referential, in current slang",
+      "puzzle_difficulty": "hard",
+      "puzzle_type": "midi",
+      "crossing_answers": "AMPS, LEAP, GEARRATIO, ART"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "alcohol_angle": false,
+      "drug_use_angle": false,
+      "plain_definition": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "2f126e84fec57e637fb4ecac693865eaa9077bded0a4c07f0a230e4528172e33",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "META",
+        "clue": "Self-referential, in current slang",
+        "crossing": "AMPS, LEAP, GEARRATIO, ART",
+        "difficulty": "hard",
+        "puzzle_type": "midi",
+        "acc": 19,
+        "fair": 22,
+        "craft": 17,
+        "fresh": 15,
+        "total": 73,
+        "opus_defect": false,
+        "feedback": "currency risk: 'current slang' wording",
+        "jev": {
+          "leaks_answer": 0.38,
+          "semantic_giveaway": 0.24,
+          "too_easy_for_hard": 0.62,
+          "ambiguous_multi_answer": 0.72,
+          "factually_wrong": 0.45,
+          "sensitive_content": 0.09,
+          "currency_risk": 0.56
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  },
+  {
+    "id": "78012d86b79c7484c076",
+    "state": {
+      "answer": "FLASK",
+      "clue": "Skinny bottle you can slip in a pocket",
+      "puzzle_difficulty": "easy",
+      "puzzle_type": "mini",
+      "crossing_answers": "DUFF, ISLE, REHAB, AGES, WORK"
+    },
+    "labels": {
+      "current_state": false,
+      "number_mismatch": false,
+      "tense_mismatch": false,
+      "part_of_speech_mismatch": false,
+      "firearms_angle": false,
+      "drug_use_angle": false
+    },
+    "metadata": {
+      "source": "output/classification-evals/imported/shadow_results.jsonl",
+      "source_sha256": "daf88beaf95e0f728d3d5ef5daa15704b20c0b9c12b00d59f151a3dffc74748f",
+      "label_source": "agent-reviewed-historical",
+      "reference": {
+        "answer": "FLASK",
+        "clue": "Skinny bottle you can slip in a pocket",
+        "crossing": "DUFF, ISLE, REHAB, AGES, WORK",
+        "difficulty": "easy",
+        "puzzle_type": "mini",
+        "acc": 20,
+        "fair": 8,
+        "craft": 15,
+        "fresh": 15,
+        "total": 58,
+        "opus_defect": true,
+        "feedback": "implies hip flask/alcohol, needs neutral angle",
+        "jev": {
+          "leaks_answer": 0.16,
+          "semantic_giveaway": 0.45,
+          "too_easy_for_hard": 0.06,
+          "ambiguous_multi_answer": 0.6,
+          "factually_wrong": 0.23,
+          "sensitive_content": 0.79,
+          "currency_risk": 0.08
+        }
+      },
+      "split": "diagnostic",
+      "review_note": "Reviewed from answer and clue before historical Jev run; not human gold. Original feedback remains an unverified reference. First 80 rows plus targeted context controls; not a random prevalence sample."
+    }
+  }
+]

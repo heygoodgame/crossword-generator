@@ -1,0 +1,48 @@
+[
+  {
+    "case_id": "control-019",
+    "repeat": 0,
+    "started_at": "2026-09-18T19:42:00.053211+00:00",
+    "raw": {
+      "id": "msg_011CfBUW4s2oJCB6VCBjXctp",
+      "model": "claude-sonnet-5",
+      "role": "assistant",
+      "stop_reason": "end_turn",
+      "stop_sequence": null,
+      "text": "{\"current_state\": 0.03, \"number_mismatch\": 0.05, \"tense_mismatch\": 0.85, \"part_of_speech_mismatch\": 0.15, \"firearms_angle\": 0.02, \"alcohol_angle\": 0.02, \"drug_use_angle\": 0.02, \"plain_definition\": 0.6, \"specialist_knowledge\": 0.03, \"unnatural_wording\": 0.05}",
+      "text_chars": 258
+    },
+    "resolved_model": "claude-sonnet-5",
+    "usage": {
+      "input_tokens": 1144,
+      "output_tokens": 608,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0
+    },
+    "cost": {
+      "estimated_cost_usd": 0.008368,
+      "currency": "USD",
+      "pricing": "anthropic_sonnet_5_usd_per_mtok",
+      "rates_usd_per_mtok": {
+        "input_tokens": 2.0,
+        "output_tokens": 10.0,
+        "cache_creation_input_tokens": 2.5,
+        "cache_read_input_tokens": 0.2
+      }
+    },
+    "probabilities": {
+      "current_state": 0.03,
+      "number_mismatch": 0.05,
+      "tense_mismatch": 0.85,
+      "part_of_speech_mismatch": 0.15,
+      "firearms_angle": 0.02,
+      "alcohol_angle": 0.02,
+      "drug_use_angle": 0.02,
+      "plain_definition": 0.6,
+      "specialist_knowledge": 0.03,
+      "unnatural_wording": 0.05
+    },
+    "error": null,
+    "latency_s": 7.07
+  }
+]
