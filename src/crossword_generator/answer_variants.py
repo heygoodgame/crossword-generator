@@ -6,23 +6,40 @@ were found in the first 62 days of the daily schedule). This module expands
 an excluded answer into the regular English inflections a solver would
 perceive as "the same word again".
 
-The suffix set mirrors the terminal-S / shared-root rules in
-``graders/fill_grader.py`` (which catch the same variants *within* one grid)
-but is deliberately generative and dictionary-free: it produces candidate
-strings, and the dictionary filter simply drops whichever of them exist.
+The rules mirror the daily scheduler's variant tier exactly (hey-you
+``App\\Support\\CrosswordAnswerVariants``, added after the easy Mini's USERS
+and the easy Midi's USER shared 2026-10-26), so a fill the generator allows
+is one the scheduler will place on its day. Change both together.
+
+- Forms: +S, +ING, +ES after S/X/Z/CH/SH/O, +ED (+D and E-dropped +ING
+  after a silent E), consonant+Y -> IES/IED, and a doubled final consonant
+  (STRIP -> STRIPPED, STRIPPING).
+- Symmetric: TIDYING expands to TIDY just as TIDY expands to TIDYING.
+- No agentive/comparative -ER, and no -ES after other letters: on the live
+  schedule those mostly paired unrelated words (LINE/LINER, DORM/DORMER,
+  STAT/STATES).
+
+It is deliberately dictionary-free: it produces candidate strings (BAKEING,
+USERRED), and the dictionary filter simply drops whichever of them exist.
+The intra-grid terminal-S / shared-root rules in ``graders/fill_grader.py``
+are separate.
 """
 
 from __future__ import annotations
 
+import functools
+import re
 from collections.abc import Iterable
 
-# Regular inflectional suffixes appended to a base word.
-_APPEND_SUFFIXES = ("S", "ES", "ED", "ER", "ING")
-
-# Minimum base-word length eligible for expansion. Three-letter answers are
+# Minimum length for a base word and for any variant. Three-letter answers are
 # the glue that keeps 9x9 (and 5x5) grids fillable; expanding them (ART ->
 # ARTS, ERA -> ERAS, ...) would gut those pools for little reuse benefit.
 DEFAULT_MIN_BASE_LENGTH = 4
+
+_ANSWER = re.compile(r"[A-Z]+")
+_ES_ENDINGS = ("S", "X", "Z", "CH", "SH", "O")
+_CONSONANT_Y = re.compile(r"[^AEIOU]Y$")
+_DOUBLING_END = re.compile(r"[^AEIOU][AEIOU]([^AEIOUWXY])$")
 
 
 def expand_answer_variants(
@@ -31,14 +48,6 @@ def expand_answer_variants(
     min_base_length: int = DEFAULT_MIN_BASE_LENGTH,
 ) -> set[str]:
     """Return inflectional variants of ``answers`` (excluding the answers).
-
-    For each base word of length >= ``min_base_length`` the result contains:
-
-    * base + S / ES / ED / ER / ING (with the usual drop-trailing-E rule for
-      ED / ER / ING: BAKE -> BAKED, BAKER, BAKING)
-    * consonant+Y plurals and the reverse: PARTY -> PARTIES, PARTIES -> PARTY
-      (plus PARTIED, PARTIER for consonant+Y bases)
-    * strip-terminal-S / -ES: ARTS -> ART, BOXES -> BOX
 
     Bases themselves are never returned, and neither are variants shorter
     than ``min_base_length`` — so with the default of 4, ARTS does not
@@ -51,36 +60,58 @@ def expand_answer_variants(
     bases.discard("")
     variants: set[str] = set()
     for base in bases:
-        if len(base) < min_base_length or not base.isalpha():
-            continue
-        variants.update(_variants_of(base))
-    variants -= bases
-    return {variant for variant in variants if len(variant) >= min_base_length}
+        variants.update(answer_variants(base, min_length=min_base_length))
+    return variants - bases
 
 
-def _variants_of(base: str) -> set[str]:
-    out: set[str] = set()
+@functools.lru_cache(maxsize=65536)
+def answer_variants(
+    answer: str, *, min_length: int = DEFAULT_MIN_BASE_LENGTH
+) -> frozenset[str]:
+    """Variants of one normalized (A-Z) answer, never the answer itself.
 
-    # Appended suffixes.
-    for suffix in _APPEND_SUFFIXES:
-        out.add(base + suffix)
+    The reverse direction checks each candidate base against the forward
+    rules, so the relation is symmetric by construction.
+    """
+    if len(answer) < min_length or not _ANSWER.fullmatch(answer):
+        return frozenset()
+    found = set(_inflect(answer, min_length))
+    for base in _base_candidates(answer):
+        if answer in _inflect(base, min_length):
+            found.add(base)
+    found.discard(answer)
+    return frozenset(variant for variant in found if len(variant) >= min_length)
+
+
+def _inflect(base: str, min_length: int) -> list[str]:
+    """Forward inflections of ``base``; over-generates on purpose."""
+    if len(base) < min_length:
+        return []
+    forms = [base + "S", base + "ING"]
+    if base.endswith(_ES_ENDINGS):
+        forms.append(base + "ES")
     if base.endswith("E"):
-        stem = base[:-1]
-        out.update({stem + "ED", stem + "ER", stem + "ING"})
+        # BAKE -> BAKED, BAKING.
+        forms += [base + "D", base[:-1] + "ING"]
+    else:
+        forms.append(base + "ED")
+    if _CONSONANT_Y.search(base):
+        # PARTY -> PARTIES, PARTIED.
+        forms += [base[:-1] + "IES", base[:-1] + "IED"]
+    doubling = _DOUBLING_END.search(base)
+    if doubling:
+        # STRIP -> STRIPPED, STRIPPING.
+        forms += [base + doubling.group(1) + "ED", base + doubling.group(1) + "ING"]
+    return forms
 
-    # Consonant + Y: PARTY -> PARTIES / PARTIED / PARTIER.
-    if len(base) >= 2 and base.endswith("Y") and base[-2] not in "AEIOU":
-        stem = base[:-1]
-        out.update({stem + "IES", stem + "IED", stem + "IER"})
 
-    # Reverse direction: PARTIES -> PARTY.
-    if base.endswith("IES"):
-        out.add(base[:-3] + "Y")
-
-    # Strip terminal S / ES.
-    if base.endswith("S") and not base.endswith("SS"):
-        out.add(base[:-1])
-        if base.endswith("ES"):
-            out.add(base[:-2])
-
-    return out
+def _base_candidates(word: str) -> list[str]:
+    """Every string ``_inflect`` could have produced ``word`` from."""
+    return [
+        word[:-1],
+        word[:-2],
+        word[:-3],
+        word[:-4],
+        word[:-3] + "E",  # BAKING -> BAKE
+        word[:-3] + "Y",  # PARTIES, PARTIED -> PARTY
+    ]

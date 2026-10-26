@@ -14,7 +14,9 @@ scheduler's actual rules (``CrosswordPuzzleController::dailyAnswerConflict``):
 
 - regular answers (4+ letters): +/-6 days, cross-game and cross-track;
 - short glue (<= 3 letters): +/-2 days when placing a 9x9, else +/-6;
-- HGG 60 answers: +/-180 days.
+- HGG 60 answers: +/-180 days;
+- plural/verb-form variants of 4+ letter answers: +/-6 days (the batch
+  runner expands ``regular_window_answers`` with ``answer_variants``).
 
 Each generated puzzle then carries its ``target_date`` so the reviewer (or the
 scheduler's metadata fallback) schedules it onto the day it was filled for.

@@ -324,3 +324,64 @@ def test_targeted_short_answer_with_mini_uses_six_day_window(
     )
     assert result.exit_code == 1
     assert "blocking" in result.output
+
+
+def _mini_word(word: str) -> list[str]:
+    """A 5x5 whose only entry is ``word`` across the first row."""
+    return [word.ljust(5, "#")] + ["#" * 5] * 4
+
+
+def _nine_word(word: str) -> list[str]:
+    """A 9x9 whose only entry is ``word`` across the first row."""
+    return [word.ljust(9, "#")] + ["#" * 9] * 8
+
+
+def test_targeted_variant_pair_on_the_same_day_is_blocking(tmp_path: Path) -> None:
+    # The 2026-10-26 incident: the easy Mini had USERS, the easy Midi USER.
+    manifest = _write_batch(
+        tmp_path,
+        [
+            ("easy", 5, 1, _mini_word("USERS")),
+            ("easy", 9, 2, _nine_word("USER")),
+        ],
+        target_days=[127, 127],
+    )
+    result = CliRunner().invoke(
+        check_batch_answers, ["--manifest", str(manifest), "--allow-short-window"]
+    )
+    assert result.exit_code == 1, result.output
+    assert "VARIANT [blocking" in result.output
+    assert "USERS / USER" in result.output
+    assert "0 duplicate answer(s) and 1 plural/verb-form pair(s)" in result.output
+
+
+def test_targeted_variant_pair_outside_window_passes(tmp_path: Path) -> None:
+    manifest = _write_batch(
+        tmp_path,
+        [
+            ("easy", 9, 1, _nine_word("TIDYING")),
+            ("hard", 9, 2, _nine_word("TIDY")),
+        ],
+        target_days=[120, 127],
+    )
+    result = CliRunner().invoke(
+        check_batch_answers, ["--manifest", str(manifest)]
+    )
+    assert result.exit_code == 0, result.output
+    assert "No duplicate answers across puzzles." in result.output
+
+
+def test_untargeted_variant_pair_in_seed_order_is_blocking(tmp_path: Path) -> None:
+    # Verb forms count in both directions: TIDYING on day 1, TIDY on day 2.
+    manifest = _write_batch(
+        tmp_path,
+        [
+            ("hard", 9, 1, _nine_word("TIDYING")),
+            ("hard", 9, 2, _nine_word("TIDY")),
+        ],
+    )
+    result = CliRunner().invoke(
+        check_batch_answers, ["--manifest", str(manifest)]
+    )
+    assert result.exit_code == 1, result.output
+    assert "TIDYING / TIDY" in result.output

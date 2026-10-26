@@ -21,6 +21,7 @@ from pathlib import Path
 
 import click
 
+from crossword_generator.answer_variants import answer_variants
 from crossword_generator.clue_history import (
     ClueHistoryIndex,
     duplicate_error_message,
@@ -466,12 +467,14 @@ def generate(
     "--exclude-answer-variants/--no-exclude-answer-variants",
     default=True,
     help=(
-        "Also exclude inflectional variants (+S/+ES/+ED/+ER/+ING, IES<->Y, "
-        "strip -S/-ES) of the scheduled-60 answers and of the recent-daily "
-        "answers inside --recent-short-window-days (the scheduler-adjacent "
-        "range), so PART on Monday does not become PARTS on Tuesday. Only "
-        "4+ letter words are expanded and no variant shorter than 4 letters "
-        "is excluded, so 3-letter glue pools are untouched."
+        "Also exclude inflectional variants (plural and verb forms in both "
+        "directions, the scheduler's own variant rule) of the scheduled-60 "
+        "answers, of the recent-daily answers inside "
+        "--recent-short-window-days (the scheduler-adjacent range), and of "
+        "batch-mates' answers within +/-6 days, so PART on Monday does not "
+        "become PARTS on Tuesday. Only 4+ letter words are expanded and no "
+        "variant shorter than 4 letters is excluded, so 3-letter glue pools "
+        "are untouched."
     ),
 )
 @click.option(
@@ -1453,6 +1456,7 @@ def generate_pilot_batch(
             size=size,
             day=item_day,
             regular_window=REGULAR_WINDOW_DAYS if target_plan is not None else 0,
+            variant_window=REGULAR_WINDOW_DAYS if exclude_answer_variants else 0,
         )
         schedule_excluded_count = 0
         if schedule_index is not None:
@@ -2361,6 +2365,11 @@ class _UsedAnswerSet:
       used in that many puzzles regardless of spacing.
     - ``short_counts`` exposes prior uses as synthetic usage counts for the
       CSP's weighted value ordering, so glue is avoided softly everywhere.
+    - ``variant_window``: inflectional variants (USER/USERS, TIDY/TIDYING)
+      of 4+ letter answers used within that many days are excluded too,
+      mirroring the scheduler's variant tier. The Sept 2026 open-day run
+      shipped NAME/NAMES and NOSE/NOSES on adjacent days because this set
+      only matched exact answers.
     """
 
     def __init__(self) -> None:
@@ -2376,6 +2385,7 @@ class _UsedAnswerSet:
         size: int | None = None,
         day: int | None = None,
         regular_window: int = 0,
+        variant_window: int = 0,
     ) -> set[str]:
         """Answers to exclude from the puzzle being filled.
 
@@ -2384,10 +2394,22 @@ class _UsedAnswerSet:
         "once used, excluded for the whole batch". Targeted runs use the
         scheduler's +/-6 so a chained multi-track batch does not starve its
         fill pools on answers scheduled weeks apart.
+
+        ``variant_window`` is always date-aware, even in untargeted runs: a
+        ~28-puzzle batch spans about a month of answers, and variants of a
+        month of answers removed ~300 five-letter plurals and made the open
+        5x5 unfillable (Aug 2026).
         """
         with self._lock:
             excluded: set[str] = set()
             for answer, uses in self._uses.items():
+                if variant_window > 0 and (
+                    day is None
+                    or any(
+                        abs(used_day - day) <= variant_window for _, used_day in uses
+                    )
+                ):
+                    excluded.update(answer_variants(answer))
                 if len(answer) >= min_length:
                     if (
                         regular_window <= 0
@@ -2650,6 +2672,10 @@ def check_batch_answers(
     puzzles more than +/-6 days apart is labelled regular-window and never
     blocks; 3-letter glue uses +/-2 between 9x9s and +/-6 when a mini is
     involved.
+
+    Plural/verb forms of each other (USER/USERS, TIDY/TIDYING) in two
+    puzzles within +/-6 days, on target days or seed-order days, are
+    blocking too: the scheduler's variant tier rejects them.
     """
     from crossword_generator.clue_history import extract_ipuz_answers
 
@@ -2712,11 +2738,35 @@ def check_batch_answers(
         for answer, hits in by_answer.items()
         if len(hits) > 1
     }
+    # Plural/verb forms of each other (USER/USERS) in two puzzles within the
+    # scheduler's +/-6 variant window, on target days or seed-order days.
+    variant_pairs: list[
+        tuple[str, str, tuple[str, int, int], tuple[str, int, int]]
+    ] = []
+    for (label_a, size_a, day_a, answers_a), (
+        label_b,
+        size_b,
+        day_b,
+        answers_b,
+    ) in itertools.combinations(puzzles, 2):
+        if abs(day_a - day_b) > REGULAR_WINDOW_DAYS:
+            continue
+        others = set(answers_b)
+        for answer in sorted(set(answers_a)):
+            for variant in sorted(answer_variants(answer) & others):
+                variant_pairs.append(
+                    (
+                        answer,
+                        variant,
+                        (label_a, size_a, day_a),
+                        (label_b, size_b, day_b),
+                    )
+                )
     click.echo(
         f"{manifest.get('batch', '<batch>')}: {len(puzzles)} puzzle(s), "
         f"{total_answers} answer(s), {len(by_answer)} unique."
     )
-    if not duplicates:
+    if not duplicates and not variant_pairs:
         click.echo("No duplicate answers across puzzles.")
         return
 
@@ -2765,8 +2815,16 @@ def check_batch_answers(
                 )
         labels = ", ".join(f"{label} (day {day + 1})" for label, _, day in hits)
         click.echo(f"DUPLICATE [{kind}]: {answer} — {labels}")
+    for answer, variant, (label_a, _, day_a), (label_b, _, day_b) in variant_pairs:
+        blocking_count += 1
+        click.echo(
+            f"VARIANT [blocking (plural/verb forms within +/-{REGULAR_WINDOW_DAYS} "
+            f"days)]: {answer} / {variant} — {label_a} (day {day_a + 1}), "
+            f"{label_b} (day {day_b + 1})"
+        )
     click.echo(
-        f"{len(duplicates)} duplicate answer(s) across puzzles "
+        f"{len(duplicates)} duplicate answer(s) and {len(variant_pairs)} "
+        f"plural/verb-form pair(s) across puzzles "
         f"({blocking_count} blocking, {short_window_count} short-window, "
         f"{regular_window_count} regular-window)."
     )
