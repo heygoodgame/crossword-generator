@@ -503,13 +503,21 @@ Three generator-side changes, all ON by default for daily runs:
   A 30-day window on glue leaves easy 5x5 open-grid fills at 10/16; keeping
   glue on 7 days keeps every 5x5 pattern filling on every seed.
 - **Inflectional variants.** `--exclude-answer-variants` expands the
-  short-window recent answers and the scheduled-60 answers with
-  +S/+ES/+ED/+ER/+ING, IES↔Y and strip -S/-ES (`answer_variants.py`). Only
-  4+ letter words are expanded and no variant shorter than 4 letters is ever
-  excluded. Variants are expanded from the 7-day list on purpose: expanding
-  the 30-day list removes ~300 five-letter plurals and makes the fully open
-  5x5 (the highest-weighted easy pattern) unfillable on every seed. The run
-  log and manifest report variant rows removed per dictionary.
+  short-window recent answers, the scheduled-60 answers, and batch-mates'
+  answers within +/-6 days into their plural and verb forms
+  (`answer_variants.py`): +S, +ING, +ES after S/X/Z/CH/SH/O, +ED, silent-E
+  drop, consonant+Y to IES/IED, and a doubled final consonant. The relation
+  is symmetric (TIDYING excludes TIDY, not just the reverse), and -ER is not a
+  variant (LINE/LINER). These are exactly the scheduler's rules: since
+  hey-you #588 (2026-10-26, after USER and USERS shared a day across the Mini
+  and Midi) the scheduler rejects a variant within +/-6 days, so change
+  hey-you's `CrosswordAnswerVariants` with this module. Only 4+ letter words
+  are expanded and no variant shorter than 4 letters is ever excluded.
+  Variants are expanded from the 7-day list on purpose: expanding the 30-day
+  list removes ~300 five-letter plurals and makes the fully open 5x5 (the
+  highest-weighted easy pattern) unfillable on every seed. The run log and
+  manifest report variant rows removed per dictionary. `check-batch-answers`
+  reports variant pairs within +/-6 days as `VARIANT [blocking ...]`.
 - **Usage-frequency penalty.** The `/daily-answers/recent` endpoint (hey-you
   PR #263) returns `counts` — scheduled daily slots per answer over
   `--daily-count-window-days` (default 90), global across games/tracks.
@@ -1034,8 +1042,8 @@ uv run crossword-generator generate-pilot-batch \
   `--target-max N` caps the count. Minis pick 5x5/7x7 by weekday.
 - Each puzzle excludes exactly what the scheduler would reject on ITS day,
   cross-game and cross-track: 4+ letter answers within +/-6, 3-letter glue
-  within +/-2 (9x9) or +/-6 (mini), hgg-60 within +/-180, plus inflectional
-  variants of the +/-6 answers. The anchored recent-answer window is skipped
+  within +/-2 (9x9) or +/-6 (mini), hgg-60 within +/-180, plus plural and
+  verb-form variants of the +/-6 answers in both directions. The anchored recent-answer window is skipped
   (its usage counts still feed the soft penalty); intra-batch dedup keys off
   the real day numbers.
 - Every result and uploaded record carries `target_date`,

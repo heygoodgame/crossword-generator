@@ -9,6 +9,7 @@ import pytest
 from click.testing import CliRunner
 
 from crossword_generator import cli as cli_module
+from crossword_generator.answer_variants import answer_variants
 from crossword_generator.cli import (
     _OPT_IN_DIFFICULTIES,
     _apply_dictionary_overrides,
@@ -835,9 +836,10 @@ def test_generate_pilot_batch_short_glue_soft_penalty_and_cap(
     assert first["excluded_fill_words"] == set()
     assert first["answer_usage_counts"] == {"ETA": 3}
 
-    # Puzzle 2: OCEAN (4+) hard-excluded; the glue is *penalised* (8 per
-    # prior use, on top of the schedule count) but still fillable.
-    assert second["excluded_fill_words"] == {"OCEAN"}
+    # Puzzle 2: OCEAN (4+) and its plural/verb forms hard-excluded; the glue
+    # is *penalised* (8 per prior use, on top of the schedule count) but
+    # still fillable.
+    assert second["excluded_fill_words"] == {"OCEAN"} | answer_variants("OCEAN")
     counts = second["answer_usage_counts"]
     assert counts["ETA"] == 3
     assert counts["ALL"] == 8 and counts["OWE"] == 8 and counts["ATO"] == 8
@@ -1490,6 +1492,22 @@ def test_used_answer_set_regular_window_is_date_aware() -> None:
     assert "ETA" not in used.snapshot(
         min_length=4, size=9, day=103, short_window=2, regular_window=6
     )
+
+
+def test_used_answer_set_variant_window_excludes_nearby_forms() -> None:
+    # Sept 2026 open-day run: NAME and NAMES landed on adjacent days.
+    used = cli_module._UsedAnswerSet()
+    used.add(["NAME", "TIDYING", "ETA"], size=9, day=100)
+    nearby = used.snapshot(min_length=4, size=9, day=101, variant_window=6)
+    assert {"NAMES", "NAMED", "TIDY"} <= nearby
+    # Glue is never expanded.
+    assert "ETAS" not in nearby
+    # Variants are always date-aware, unlike the untargeted exact exclusion.
+    later = used.snapshot(min_length=4, size=9, day=107, variant_window=6)
+    assert "NAME" in later
+    assert "NAMES" not in later
+    # Off by default (--no-exclude-answer-variants).
+    assert "NAMES" not in used.snapshot(min_length=4, size=9, day=101)
 
 
 def test_open_day_guard_refuses_scattered_holes(tmp_path, monkeypatch) -> None:
