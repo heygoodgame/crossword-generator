@@ -35,6 +35,7 @@ from crossword_generator.steps.hint_step import HintGenerationStep
 from crossword_generator.steps.puzzle_naming_step import PuzzleNamingStep
 from crossword_generator.steps.theme_step import ThemeGenerationStep
 from crossword_generator.taken_boards import TakenBoards
+from crossword_generator.word_families import load_root_lexicon
 
 logger = logging.getLogger(__name__)
 
@@ -361,6 +362,12 @@ def create_pipeline(
             len(proper_noun_set),
             config.grading.fill.proper_nouns_path,
         )
+    root_lexicon = load_root_lexicon(
+        tuple(
+            str(project_root / path)
+            for path in config.grading.fill.root_lexicon_paths
+        )
+    )
 
     # Build filler
     if config.fill.provider == "csp":
@@ -390,6 +397,7 @@ def create_pipeline(
         proper_noun_set=proper_noun_set,
         max_proper_noun_ratio=config.grading.fill.max_proper_noun_ratio,
         min_proper_noun_allowance=config.grading.fill.min_proper_noun_allowance,
+        root_lexicon=root_lexicon,
     )
     fill_step = FillWithGradingStep(
         filler,

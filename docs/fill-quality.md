@@ -51,6 +51,28 @@ classification lives in `dictionaries/HggProperNounClassifications.txt`
 Theme seed entries are not in the file, so intentional themed names never
 count against the cap.
 
+**One word family per grid (Jeff, 2026-10):**
+
+Two answers from the same root in one grid read as the same word twice,
+so the fill grader hard-fails them (`shared_root` penalty). Jeff hand-edited
+these out of the 2026-09 midi batch, and his replacement letters pushed two
+puzzles off their target days. A pair counts when both answers share a
+lemma that is a real word in the root lexicon (`hgg-easy` + `hgg-hard` +
+`hgg-starter`, `grading.fill.root_lexicon_paths`):
+
+-   Inflections, including three-letter stems: OWE/OWED, ICE/ICED, HIRED/HIRING, PLAY/PLAYED, STOP/STOPPED
+-   Irregular forms from a curated table: ATE/EAT, MEET/MET, SAID/SAYS, GONE/WENT, TEETH/TOOTH
+-   -Y adjectives of short stems, also curated: ICE/ICY, FOG/FOGGY, BONE/BONY (Jeff edited ICE out of a grid with ICY, 2026-10)
+-   Derivatives, up to two steps: STINKY/STINKS, COMEDIC/COMEDIANS (both from COMEDY)
+
+Coincidental overlaps do not count: START/STAR, RID/RIDES, BUS/BUSY,
+BET/BETTER, BAR/BARED, ERIC/ERICA, RED/REDO. Plain plurals (ART/ARTS) are
+reported by the separate `terminal_s_variants` rule. The logic lives in
+`src/crossword_generator/word_families.py`; a backtest on the 947
+generated puzzles Jeff has reviewed caught all seven same-root grid edits
+he made and flagged 16 approved grids (mostly real pairs he let through,
+such as AWE/AWED and SAW/SEE).
+
 **Structural/holistic factors:**
 
 -   Grid density — how many theme entries and black squares constrain the fill; more openness generally allows cleaner fill

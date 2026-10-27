@@ -382,8 +382,13 @@ Current hard guardrails:
 - Exact duplicate answers are penalized.
 - Answers that only differ by a terminal `S` are a hard fail, e.g.
   `OPAH`/`OPAHS`.
-- The terminal-S rule is deliberately simple. It does not try to catch
-  irregular morphology like `EAT`/`ATE`.
+- The terminal-S rule is deliberately simple. Other same-root pairs are the
+  `shared_root` hard fail (`word_families.py`): inflections including
+  three-letter stems (`OWE`/`OWED`, `ICE`/`ICED`, `SLOW`/`SLOWED`), a curated
+  irregular table (`EAT`/`ATE`), derivatives (`STINKY`/`STINKS`), and a
+  curated table of short-stem -Y adjectives (`ICE`/`ICY`, `FOG`/`FOGGY`).
+  The 2026-11-07 easy midi draft shipped `ICE`+`ICY`, and Jeff's edit removing
+  `ICE` added a 3-letter repeat that bumped it to May 2027.
 - Unknown-heavy grids are penalized.
 - Short-glue penalties were removed because 3-letter entries are structurally
   unavoidable in 5x5-11x11 grids.

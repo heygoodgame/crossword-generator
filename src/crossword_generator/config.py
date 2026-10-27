@@ -126,6 +126,18 @@ class FillGradingConfig(BaseModel):
     proper_nouns_path: str | None = None
     max_proper_noun_ratio: float = 0.15
     min_proper_noun_allowance: int = 2
+    # Word lists whose union is the lexicon for the same-root rule
+    # (OWE/OWED, HIRED/HIRING, COMEDIC/COMEDIANS): a lemma only counts if it
+    # is a real word. Kept separate from the fill dictionary, which has the
+    # schedule's excluded answers removed — HIRE missing from it must not
+    # let HIRED and HIRING through.
+    root_lexicon_paths: list[str] = Field(
+        default_factory=lambda: [
+            "dictionaries/hgg-easy.txt",
+            "dictionaries/hgg-hard.txt",
+            "dictionaries/hgg-starter.txt",
+        ]
+    )
 
 
 class ClueGradingConfig(BaseModel):
