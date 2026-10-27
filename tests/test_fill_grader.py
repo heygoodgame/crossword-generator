@@ -286,6 +286,45 @@ class TestGridLevelPenalties:
         assert "shared_root" not in report.penalties_applied
         assert report.passing is True
 
+    def test_shared_root_catches_short_inflection(self) -> None:
+        # OWE/OWED shipped in the 2026-09 midi batch: the old rule ignored
+        # three-letter stems.
+        grader = FillGrader(
+            _make_dict({"OWE": 50, "OWED": 50}),
+            min_passing_score=0,
+        )
+        grid = [
+            ["O", "W", "E", "D"],
+            [".", ".", ".", "."],
+            ["O", "W", "E", "."],
+        ]
+
+        report = grader.grade(grid)
+
+        assert report.penalties_applied["shared_root"] == 100.0
+        assert report.passing is False
+
+    def test_shared_root_uses_root_lexicon_beyond_fill_dictionary(self) -> None:
+        # HIRE is not in the fill dictionary (e.g. excluded by the schedule)
+        # but the root lexicon still knows it, so HIRED/HIRING collide.
+        dictionary = _make_dict({"HIRED": 50, "HIRING": 50})
+        grid = [
+            ["H", "I", "R", "I", "N", "G"],
+            [".", ".", ".", ".", ".", "."],
+            ["H", "I", "R", "E", "D", "."],
+        ]
+
+        without = FillGrader(dictionary, min_passing_score=0).grade(grid)
+        with_lexicon = FillGrader(
+            dictionary,
+            min_passing_score=0,
+            root_lexicon=frozenset({"HIRE"}),
+        ).grade(grid)
+
+        assert "shared_root" not in without.penalties_applied
+        assert with_lexicon.penalties_applied["shared_root"] == 100.0
+        assert with_lexicon.passing is False
+
     def test_shared_root_requires_dictionary_stem(self) -> None:
         # CANDY ends in -y but CAND is not a dictionary word, so CANDY does not
         # derive a CAND stem and cannot collide with another CAND* entry.

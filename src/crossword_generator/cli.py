@@ -3317,6 +3317,7 @@ def evaluate(
     from crossword_generator.fillers.base import GridFiller
     from crossword_generator.fillers.csp import CSPFiller
     from crossword_generator.graders.fill_grader import FillGrader
+    from crossword_generator.word_families import load_root_lexicon
 
     config = load_config(Path(config_path) if config_path else None)
 
@@ -3333,7 +3334,16 @@ def evaluate(
         min_word_score=config.dictionary.min_word_score,
         min_2letter_score=config.dictionary.min_2letter_score,
     )
-    grader = FillGrader(dictionary, min_passing_score=config.grading.fill.min_score)
+    grader = FillGrader(
+        dictionary,
+        min_passing_score=config.grading.fill.min_score,
+        root_lexicon=load_root_lexicon(
+            tuple(
+                str(project_root / path)
+                for path in config.grading.fill.root_lexicon_paths
+            )
+        ),
+    )
 
     # Build all available fillers
     fillers: list[GridFiller] = []
