@@ -11,6 +11,7 @@ from crossword_generator.fillers.csp import (
     CSPFiller,
     _extract_slots,
     _shuffle_within_tiers,
+    load_word_weights,
     usage_weight,
 )
 
@@ -530,6 +531,55 @@ class TestGridRulesInSearch:
             assert sum(w in proper for w in across + down) <= 2, (across, down)
             assert across[0] not in proper, across
 
+    def test_abbreviation_cap_binds_by_size(
+        self, real_dictionary: Dictionary
+    ) -> None:
+        abbreviations = frozenset(
+            w for w in real_dictionary.words_by_length(5) if w[0] in "ASTC"
+        )
+        spec = GridSpec(rows=5, cols=5)
+
+        unconstrained = CSPFiller(CSPFillerConfig(timeout=30), real_dictionary)
+        worst = max(
+            sum(
+                w in abbreviations
+                for words in self._words(unconstrained.fill(spec, seed=s).grid)
+                for w in words
+            )
+            for s in range(8)
+        )
+        assert worst > 1, "fixture too weak: the cap never binds"
+
+        filler = CSPFiller(
+            CSPFillerConfig(timeout=30),
+            real_dictionary,
+            abbreviation_set=abbreviations,
+            max_abbreviations_by_size={5: 1, 7: 2, 9: 3},
+        )
+        for seed in range(8):
+            across, down = self._words(filler.fill(spec, seed=seed).grid)
+            assert sum(w in abbreviations for w in across + down) <= 1, (
+                across,
+                down,
+            )
+
+    def test_zero_abbreviation_cap_bans_them(
+        self, real_dictionary: Dictionary
+    ) -> None:
+        abbreviations = frozenset(
+            w for w in real_dictionary.words_by_length(5) if w[0] in "ST"
+        )
+        filler = CSPFiller(
+            CSPFillerConfig(timeout=30),
+            real_dictionary,
+            abbreviation_set=abbreviations,
+            max_abbreviations_by_size={5: 0},
+        )
+        spec = GridSpec(rows=5, cols=5)
+        for seed in range(4):
+            across, down = self._words(filler.fill(spec, seed=seed).grid)
+            assert not any(w in abbreviations for w in across + down)
+
     def test_enforce_grid_rules_off_ignores_sets(
         self, small_dictionary: Dictionary
     ) -> None:
@@ -538,6 +588,110 @@ class TestGridRulesInSearch:
             small_dictionary,
             hard_word_set=frozenset({"ACE"}),
             proper_noun_set=frozenset({"ACT"}),
+            abbreviation_set=frozenset({"ADD"}),
         )
         assert filler._hard_word_set is None
         assert filler._proper_noun_set is None
+        assert filler._abbreviation_set is None
+
+
+class TestWordWeights:
+    """Jeff's demoted fill is drawn less often, never removed (2026-10-27)."""
+
+    def test_word_weight_lowers_chance_of_being_tried_first(self) -> None:
+        import random
+
+        rng = random.Random(11)
+        first = [0, 0, 0]
+        trials = 3000
+        for _ in range(trials):
+            ordered = _shuffle_within_tiers(
+                [0, 1, 2], [50, 50, 50], rng, word_weights=[0.1, 1.0, 1.0]
+            )
+            first[ordered[0]] += 1
+        # Expected P(first) for idx0 = 0.1 / 2.1 ~ 4.8%.
+        assert 0.02 * trials < first[0] < 0.08 * trials
+
+    def test_word_weight_multiplies_usage_weight(self) -> None:
+        import random
+
+        rng = random.Random(3)
+        first = [0, 0]
+        trials = 4000
+        for _ in range(trials):
+            # idx0: usage weight 0.5 x word weight 0.5 = 0.25 vs idx1 at 1.0.
+            ordered = _shuffle_within_tiers(
+                [0, 1],
+                [50, 50],
+                rng,
+                usage_counts=[1, 0],
+                usage_penalty=1.0,
+                word_weights=[0.5, 1.0],
+            )
+            first[ordered[0]] += 1
+        # Expected P(first) for idx0 = 0.25 / 1.25 = 20%.
+        assert 0.16 * trials < first[0] < 0.24 * trials
+
+    def test_tiers_still_win_over_word_weight(self) -> None:
+        import random
+
+        for seed in range(50):
+            ordered = _shuffle_within_tiers(
+                [0, 1], [59, 48], random.Random(seed), word_weights=[0.01, 1.0]
+            )
+            assert ordered == [0, 1]
+
+    def test_load_word_weights(self, tmp_path) -> None:
+        path = tmp_path / "weights.txt"
+        path.write_text("# comment\n\nholt;0.1\nSIS;0.33  # keep\n")
+        assert load_word_weights(path) == {"HOLT": 0.1, "SIS": 0.33}
+
+    @pytest.mark.parametrize("line", ["HOLT", "HOLT;0", "HOLT;-1", "HOLT;x"])
+    def test_load_word_weights_rejects_bad_lines(self, tmp_path, line) -> None:
+        path = tmp_path / "weights.txt"
+        path.write_text(line + "\n")
+        with pytest.raises(ValueError):
+            load_word_weights(path)
+
+    def test_committed_weights_file_loads(self, project_root) -> None:
+        weights = load_word_weights(
+            project_root / "dictionaries" / "HggFillWeights.txt"
+        )
+        assert weights["HOLT"] == 0.1
+        assert weights["OTS"] == 0.33
+        assert "IDS" not in weights
+
+    def test_demoted_word_is_rarer_in_fills(
+        self, real_dictionary: Dictionary
+    ) -> None:
+        # Demote half of the 3-letter pool hard and compare against the same
+        # seeds unweighted. Crossings still force some demoted words in (the
+        # weight is a preference, not a ban), so the drop is partial.
+        threes = sorted(real_dictionary.words_by_length(3))
+        demoted = {w: 0.01 for w in threes[::2]}
+        spec = GridSpec(
+            rows=5, cols=5, black_cells=[(0, 0), (0, 4), (4, 0), (4, 4)]
+        )
+
+        def demoted_hits(word_weights: dict[str, float] | None) -> int:
+            filler = CSPFiller(
+                CSPFillerConfig(timeout=30),
+                real_dictionary,
+                word_weights=word_weights,
+            )
+            hits = 0
+            for seed in range(20):
+                grid = filler.fill(spec, seed=seed).grid
+                across = ["".join(row).strip(".") for row in grid]
+                down = [
+                    "".join(col).strip(".")
+                    for col in zip(*grid, strict=True)
+                ]
+                hits += sum(
+                    len(word) == 3 and word in demoted for word in across + down
+                )
+            return hits
+
+        baseline = demoted_hits(None)
+        assert baseline > 0
+        assert demoted_hits(demoted) < 0.85 * baseline

@@ -6,6 +6,7 @@ import logging
 import math
 from collections import defaultdict
 
+from crossword_generator.abbreviations import abbreviation_cap_for_size
 from crossword_generator.dictionary import Dictionary
 from crossword_generator.exporters.numbering import (
     NumberedEntry,
@@ -40,6 +41,8 @@ class FillGrader:
         proper_noun_set: frozenset[str] | None = None,
         max_proper_noun_ratio: float = 0.15,
         min_proper_noun_allowance: int = 2,
+        abbreviation_set: frozenset[str] | None = None,
+        max_abbreviations_by_size: dict[int, int] | None = None,
         root_lexicon: frozenset[str] | None = None,
     ) -> None:
         self._dictionary = dictionary
@@ -65,6 +68,12 @@ class FillGrader:
         self._proper_noun_set = proper_noun_set
         self._max_proper_noun_ratio = max_proper_noun_ratio
         self._min_proper_noun_allowance = min_proper_noun_allowance
+        # Words a clue must tag as shortened (see abbreviations.py). Jeff
+        # (2026-10-27): limit abbreviations per puzzle — capped by grid
+        # size (5x5: 1, 7x7: 2, 9x9: 3 by default). A word may count toward
+        # both this and the proper-noun cap (NBA).
+        self._abbreviation_set = abbreviation_set
+        self._max_abbreviations_by_size = max_abbreviations_by_size or {}
 
     def _is_root_word(self, word: str) -> bool:
         return word in self._root_lexicon or self._dictionary.contains(word)
@@ -106,6 +115,15 @@ class FillGrader:
                 0.0, overall_score - grid_penalties["proper_noun_cap"]
             )
 
+        excess_abbreviations = self._excess_abbreviation_count(
+            entries, grid_size
+        )
+        if excess_abbreviations > 0:
+            grid_penalties["abbreviation_cap"] = 100.0 * excess_abbreviations
+            overall_score = max(
+                0.0, overall_score - grid_penalties["abbreviation_cap"]
+            )
+
         if self._first_across_is_proper_noun(entries):
             grid_penalties["proper_noun_first_across"] = 100.0
             overall_score = max(
@@ -129,6 +147,8 @@ class FillGrader:
         if "proper_noun_cap" in grid_penalties:
             passing = False
         if "proper_noun_first_across" in grid_penalties:
+            passing = False
+        if "abbreviation_cap" in grid_penalties:
             passing = False
 
         summary_parts = [
@@ -195,6 +215,26 @@ class FillGrader:
             math.floor(len(entries) * self._max_proper_noun_ratio),
         )
         return max(0, proper_count - cap)
+
+    def _excess_abbreviation_count(
+        self, entries: list[NumberedEntry], grid_size: int
+    ) -> int:
+        """Count abbreviation answers beyond the per-grid cap for this size.
+
+        Returns 0 when no abbreviation set is configured or the size is
+        uncapped.
+        """
+        if not self._abbreviation_set:
+            return 0
+        cap = abbreviation_cap_for_size(
+            self._max_abbreviations_by_size, grid_size
+        )
+        if cap is None:
+            return 0
+        abbreviation_count = sum(
+            1 for e in entries if e.answer in self._abbreviation_set
+        )
+        return max(0, abbreviation_count - cap)
 
     def _first_across_is_proper_noun(
         self, entries: list[NumberedEntry]

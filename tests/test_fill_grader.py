@@ -636,6 +636,86 @@ class TestFirstAcrossProperNounRule:
         assert "proper_noun_first_across" not in report.penalties_applied
 
 
+class TestAbbreviationCapRule:
+    """At most 1/2/3 abbreviation answers in a 5x5/7x7/9x9 (Jeff, 2026-10-27)."""
+
+    CAPS = {5: 1, 7: 2, 9: 3}
+
+    def test_two_abbreviations_in_5x5_fails(self) -> None:
+        grader = FillGrader(
+            GOOD_DICT,
+            min_passing_score=0,
+            abbreviation_set=frozenset({"PARSE", "ENTER"}),
+            max_abbreviations_by_size=self.CAPS,
+        )
+
+        report = grader.grade(GOOD_GRID)
+
+        assert report.penalties_applied["abbreviation_cap"] == 100.0
+        assert report.passing is False
+
+    def test_one_abbreviation_in_5x5_passes(self) -> None:
+        grader = FillGrader(
+            GOOD_DICT,
+            min_passing_score=0,
+            abbreviation_set=frozenset({"PARSE"}),
+            max_abbreviations_by_size=self.CAPS,
+        )
+
+        report = grader.grade(GOOD_GRID)
+
+        assert "abbreviation_cap" not in report.penalties_applied
+        assert report.passing is True
+
+    def test_penalty_scales_with_excess(self) -> None:
+        grader = FillGrader(
+            GOOD_DICT,
+            min_passing_score=0,
+            abbreviation_set=frozenset({"PARSE", "ENTER", "ROSES"}),
+            max_abbreviations_by_size=self.CAPS,
+        )
+
+        report = grader.grade(GOOD_GRID)
+
+        assert report.penalties_applied["abbreviation_cap"] == 200.0
+
+    def test_word_counts_toward_both_caps(self) -> None:
+        # NBA-style: one answer that is a proper noun and an abbreviation.
+        grader = FillGrader(
+            GOOD_DICT,
+            min_passing_score=0,
+            proper_noun_set=frozenset({"PARSE", "ENTER", "ROSES"}),
+            abbreviation_set=frozenset({"ROSES", "ANGEL"}),
+            max_abbreviations_by_size=self.CAPS,
+        )
+
+        report = grader.grade(GOOD_GRID)
+
+        assert report.penalties_applied["proper_noun_cap"] == 100.0
+        assert report.penalties_applied["abbreviation_cap"] == 100.0
+
+    def test_size_without_cap_is_uncapped(self) -> None:
+        grader = FillGrader(
+            GOOD_DICT,
+            min_passing_score=0,
+            abbreviation_set=frozenset({"PARSE", "ENTER", "ROSES"}),
+            max_abbreviations_by_size={7: 2, 9: 3},
+        )
+
+        report = grader.grade(GOOD_GRID)
+
+        assert "abbreviation_cap" not in report.penalties_applied
+
+    def test_no_abbreviation_set_skips_rule(self) -> None:
+        grader = FillGrader(
+            GOOD_DICT, min_passing_score=0, max_abbreviations_by_size=self.CAPS
+        )
+
+        report = grader.grade(GOOD_GRID)
+
+        assert "abbreviation_cap" not in report.penalties_applied
+
+
 class TestMinOneHardEntryRule:
     """Every Hard puzzle must contain a Hard-list entry (Jeff, 2026-06)."""
 

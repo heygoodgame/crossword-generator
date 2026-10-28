@@ -1,0 +1,14 @@
+# Per-word draw weights for the CSP filler (WORD;weight). Inside each score
+# tier a word is tried first with probability proportional to its weight;
+# unlisted words weigh 1.0. Weights never remove a word: to remove one, take
+# it off Jeff's admin lists instead.
+#
+# Jeff, 2026-10-27 — "Demote (use much less frequently than other entries)".
+AMES;0.1
+FRO;0.1
+HOLT;0.1
+LENA;0.1
+# Jeff, 2026-10-27 — "Use less often, but keep". (IDS is okay: no entry.)
+DOO;0.33
+OTS;0.33
+SIS;0.33
