@@ -69,17 +69,33 @@ def test_refresh_dictionaries_consolidates_and_rebuilds_local_outputs(
     (dictionaries / "XwiJeffChenList-NotFamilyFriendly.txt").write_text("")
     (dictionaries / "HggGeneratedSafetyExclude.txt").write_text("")
 
+    starter_source = dictionaries / "HGGXW-Starter.txt"
+    starter_output = dictionaries / "hgg-starter.txt"
+
     easy_source.write_text("SLOAN\nAPPLE\n")
     hard_source.write_text("")
     sixty_source.write_text("SLOAN;50\nAPPLE;50\nFEATURES;60\n")
+    starter_source.write_text("CAT\nGASH\n")
+    starter_output.write_text("CAT;50\nGASH;50\n")
 
     def fake_list(**_kw):
         return [
             {"slug": "hgg-easy", "file_path": "dictionaries/HGGXW-Easy.txt"},
             {"slug": "hgg-hard", "file_path": "dictionaries/HGGXW-Hard.txt"},
+            {"slug": "hggxw-starter", "file_path": "dictionaries/HGGXW-Starter.txt"},
         ]
 
     def fake_consolidate(slug, project_root, **_kw):
+        if slug == "hggxw-starter":
+            starter_source.write_text("CAT\n")
+            return cl.ListSummary(
+                slug=slug,
+                file_path="dictionaries/HGGXW-Starter.txt",
+                added=0,
+                removed=1,
+                total_after=1,
+                wrote=True,
+            )
         if slug == "hgg-easy":
             easy_source.write_text("APPLE\n")
             return cl.ListSummary(
@@ -111,3 +127,5 @@ def test_refresh_dictionaries_consolidates_and_rebuilds_local_outputs(
     assert "Rebuilt local effective dictionaries" in result.output
     assert (dictionaries / "hgg-easy.txt").read_text() == "APPLE;50\n"
     assert "SLOAN;50\n" in (dictionaries / "hgg-hard.txt").read_text()
+    # A word removed from the Starter admin list leaves the Starter fill pool.
+    assert starter_output.read_text() == "CAT;50\n"
