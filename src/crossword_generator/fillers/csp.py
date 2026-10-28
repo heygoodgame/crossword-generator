@@ -9,6 +9,7 @@ import time
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from crossword_generator.abbreviations import abbreviation_cap_for_size
 from crossword_generator.config import CSPFillerConfig, find_project_root
 from crossword_generator.dictionary import Dictionary
 from crossword_generator.fillers.base import FilledGrid, FillError, GridFiller, GridSpec
@@ -155,6 +156,35 @@ def usage_weight(usage_count: int, penalty: float) -> float:
     return (1.0 + usage_count) ** -penalty
 
 
+def load_word_weights(path: Path) -> dict[str, float]:
+    """Load a per-word draw-weight file (``WORD;weight`` per line).
+
+    Blank lines and ``#`` comments are ignored. Weights must be positive:
+    a weight scales how likely a word is to be tried first inside its score
+    tier, it never removes the word (remove words from the lists instead).
+    """
+    if not path.exists():
+        raise FileNotFoundError(f"Word weights file not found: {path}")
+    weights: dict[str, float] = {}
+    for line_number, raw in enumerate(path.read_text().splitlines(), start=1):
+        line = raw.split("#", 1)[0].strip()
+        if not line:
+            continue
+        word, sep, value = line.partition(";")
+        word = word.strip().upper()
+        try:
+            weight = float(value)
+        except ValueError:
+            weight = 0.0
+        if not word or not sep or weight <= 0:
+            raise ValueError(
+                f"{path}:{line_number}: expected WORD;weight with weight > 0, "
+                f"got {raw!r}"
+            )
+        weights[word] = weight
+    return weights
+
+
 def _weighted_shuffle(
     items: list[int],
     weights: list[float],
@@ -181,25 +211,36 @@ def _shuffle_within_tiers(
     tier_size: int = 10,
     usage_counts: list[int] | None = None,
     usage_penalty: float = 0.0,
+    word_weights: list[float] | None = None,
 ) -> list[int]:
     """Sort indices by score descending, then shuffle within 10-point tiers.
 
     When ``usage_counts`` (parallel to ``scores``) and a positive
     ``usage_penalty`` are given, the shuffle inside each tier is weighted by
     :func:`usage_weight`, so recently overused answers tend to be tried
-    later than fresh answers of the same quality.
+    later than fresh answers of the same quality. ``word_weights`` (also
+    parallel to ``scores``) multiplies in a fixed per-word weight, e.g.
+    Jeff's demoted fill.
     """
     pairs = [(i, scores[i]) for i in indices]
     pairs.sort(key=lambda p: p[1], reverse=True)
 
-    weighted = usage_counts is not None and usage_penalty > 0
+    use_usage = usage_counts is not None and usage_penalty > 0
+    weighted = use_usage or word_weights is not None
 
     def _flush(tier: list[int]) -> list[int]:
         if not weighted:
             rng.shuffle(tier)
             return tier
-        assert usage_counts is not None
-        weights = [usage_weight(usage_counts[i], usage_penalty) for i in tier]
+        weights: list[float] = []
+        for i in tier:
+            weight = 1.0
+            if use_usage:
+                assert usage_counts is not None
+                weight = usage_weight(usage_counts[i], usage_penalty)
+            if word_weights is not None:
+                weight *= word_weights[i]
+            weights.append(weight)
         return _weighted_shuffle(tier, weights, rng)
 
     result: list[int] = []
@@ -322,19 +363,32 @@ class CSPFiller(GridFiller):
         proper_noun_set: frozenset[str] | None = None,
         max_proper_noun_ratio: float = 0.15,
         min_proper_noun_allowance: int = 2,
+        abbreviation_set: frozenset[str] | None = None,
+        max_abbreviations_by_size: dict[int, int] | None = None,
+        word_weights: dict[str, float] | None = None,
     ) -> None:
         self._config = config
         self._dictionary = dictionary
         # The fill grader's board-level hard fails, enforced during search
         # when ``enforce_grid_rules`` is on: no two Hard-list words may cross,
         # at most max(allowance, floor(ratio * slots)) proper-noun answers,
-        # and 1-Across is never a proper noun. Same sets and cap formula as
-        # FillGrader so the search never converges on a board it rejects.
+        # 1-Across is never a proper noun, and at most the size's cap of
+        # abbreviation answers. Same sets and cap formulas as FillGrader so
+        # the search never converges on a board it rejects.
         enforce = config.enforce_grid_rules
         self._hard_word_set = hard_word_set if enforce else None
         self._proper_noun_set = proper_noun_set if enforce else None
         self._max_proper_noun_ratio = max_proper_noun_ratio
         self._min_proper_noun_allowance = min_proper_noun_allowance
+        self._abbreviation_set = abbreviation_set if enforce else None
+        self._max_abbreviations_by_size = max_abbreviations_by_size or {}
+        # Fixed per-word draw weights inside each score tier (see
+        # CSPFillerConfig.word_weights_path); 1.0 for unlisted words.
+        self._word_weights = {
+            str(word).strip().upper(): float(weight)
+            for word, weight in (word_weights or {}).items()
+            if float(weight) != 1.0
+        }
         # Recent-schedule usage per answer (uppercase). Drives a soft
         # value-ordering penalty so globally overused fill is tried last.
         self._usage_counts = {
@@ -533,6 +587,28 @@ class CSPFiller(GridFiller):
                         [self._usage_counts.get(w, 0) for w in slot_cands]
                     )
 
+            # Fixed per-word weights. Non-seed slots of one length share a
+            # candidate list, so weights are built once per length; a slot
+            # with no weighted candidate gets None and a plain shuffle.
+            word_weights_by_slot: list[list[float] | None] | None = None
+            if self._word_weights:
+                word_weights_by_slot = []
+                weights_by_length: dict[int, list[float] | None] = {}
+                for slot, slot_cands in zip(
+                    slots, candidates_by_slot, strict=True
+                ):
+                    if slot.index in seed_assignments:
+                        word_weights_by_slot.append(None)
+                        continue
+                    if slot.length not in weights_by_length:
+                        weights = [
+                            self._word_weights.get(w, 1.0) for w in slot_cands
+                        ]
+                        weights_by_length[slot.length] = (
+                            weights if any(x != 1.0 for x in weights) else None
+                        )
+                    word_weights_by_slot.append(weights_by_length[slot.length])
+
             # Domains as bitsets
             initial_domains: list[int] = [
                 (1 << len(cands)) - 1 for cands in candidates_by_slot
@@ -558,6 +634,19 @@ class CSPFiller(GridFiller):
                 first_across = _first_across_slot(slots)
                 if first_across is not None:
                     initial_domains[first_across] &= ~proper_masks[first_across]
+            abbr_masks = self._candidate_masks(
+                candidates_by_slot, self._abbreviation_set, seed_assignments
+            )
+            abbr_cap = (
+                abbreviation_cap_for_size(
+                    self._max_abbreviations_by_size, max(spec.rows, spec.cols)
+                )
+                if abbr_masks is not None
+                else None
+            )
+            if abbr_masks is not None and abbr_cap == 0:
+                for si in range(len(slots)):
+                    initial_domains[si] &= ~abbr_masks[si]
 
             # Initial arc consistency
             self._initial_ac3_flat(slots, initial_domains, slot_li)
@@ -599,9 +688,12 @@ class CSPFiller(GridFiller):
                 scores_by_slot, initial_domains, black, seed, deadline,
                 timeout, seed_assignments,
                 usage_by_slot=usage_by_slot,
+                word_weights_by_slot=word_weights_by_slot,
                 hard_masks=hard_masks,
                 proper_masks=proper_masks,
                 proper_cap=proper_cap,
+                abbr_masks=abbr_masks,
+                abbr_cap=abbr_cap,
             )
             if result is not None:
                 return result
@@ -634,9 +726,12 @@ class CSPFiller(GridFiller):
         seed_assignments: dict[int, str] | None = None,
         *,
         usage_by_slot: list[list[int]] | None = None,
+        word_weights_by_slot: list[list[float] | None] | None = None,
         hard_masks: list[int] | None = None,
         proper_masks: list[int] | None = None,
         proper_cap: int | None = None,
+        abbr_masks: list[int] | None = None,
+        abbr_cap: int | None = None,
     ) -> FilledGrid | None:
         """Run the random-restart solve loop. Returns FilledGrid or None."""
         if seed_assignments is None:
@@ -652,8 +747,10 @@ class CSPFiller(GridFiller):
         check_interval = 1000
         backtracks = 0
         backtrack_limit = 10_000
-        # Proper-noun answers placed so far (grid rule: at most proper_cap).
+        # Proper-noun / abbreviation answers placed so far (grid rules: at
+        # most proper_cap / abbr_cap).
         proper_count = 0
+        abbr_count = 0
 
         class _BacktrackLimitError(Exception):
             pass
@@ -666,7 +763,7 @@ class CSPFiller(GridFiller):
             return count
 
         def solve() -> bool:
-            nonlocal backtracks, proper_count
+            nonlocal backtracks, proper_count, abbr_count
 
             if len(assignment) == len(slots):
                 return True
@@ -702,6 +799,11 @@ class CSPFiller(GridFiller):
                     usage_by_slot[best_slot] if usage_by_slot is not None else None
                 ),
                 usage_penalty=usage_penalty,
+                word_weights=(
+                    word_weights_by_slot[best_slot]
+                    if word_weights_by_slot is not None
+                    else None
+                ),
             )
 
             for wi in ordered:
@@ -722,6 +824,9 @@ class CSPFiller(GridFiller):
                     proper_masks and proper_masks[best_slot] >> wi & 1
                 )
                 if is_proper and proper_cap is not None and proper_count >= proper_cap:
+                    continue
+                is_abbr = bool(abbr_masks and abbr_masks[best_slot] >> wi & 1)
+                if is_abbr and abbr_cap is not None and abbr_count >= abbr_cap:
                     continue
 
                 # Prefix pruning
@@ -782,19 +887,25 @@ class CSPFiller(GridFiller):
                             break
                         fc_reduced.append(other_si)
 
-                # proper_noun_cap: once this word fills the last allowed
-                # proper-noun slot, no unassigned slot may take one.
-                if (
-                    feasible
-                    and is_proper
-                    and proper_masks is not None
-                    and proper_cap is not None
-                    and proper_count + 1 >= proper_cap
+                # proper_noun_cap / abbreviation_cap: once this word fills
+                # the last allowed slot of a capped kind, no unassigned slot
+                # may take another word of that kind.
+                for flagged, masks, cap, count in (
+                    (is_proper, proper_masks, proper_cap, proper_count),
+                    (is_abbr, abbr_masks, abbr_cap, abbr_count),
                 ):
+                    if not (
+                        feasible
+                        and flagged
+                        and masks is not None
+                        and cap is not None
+                        and count + 1 >= cap
+                    ):
+                        continue
                     for other_si in range(len(slots)):
                         if other_si == best_slot or other_si in assignment:
                             continue
-                        pruned = domains[other_si] & ~proper_masks[other_si]
+                        pruned = domains[other_si] & ~masks[other_si]
                         if pruned != domains[other_si]:
                             if other_si not in saved_domains:
                                 saved_domains[other_si] = domains[other_si]
@@ -833,6 +944,8 @@ class CSPFiller(GridFiller):
                     used_words.add(word)
                     if is_proper:
                         proper_count += 1
+                    if is_abbr:
+                        abbr_count += 1
                     newly_placed: list[tuple[int, int]] = []
                     for pos, cell in enumerate(slot.cells):
                         if cell not in placed:
@@ -844,6 +957,8 @@ class CSPFiller(GridFiller):
                     used_words.discard(word)
                     if is_proper:
                         proper_count -= 1
+                    if is_abbr:
+                        abbr_count -= 1
                     for cell in newly_placed:
                         del placed[cell]
 
@@ -863,6 +978,7 @@ class CSPFiller(GridFiller):
             placed.clear()
             backtracks = 0
             proper_count = 0
+            abbr_count = 0
             domains[:] = list(initial_domains)
 
             # Pre-assign seed entry slots

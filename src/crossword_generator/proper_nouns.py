@@ -67,9 +67,12 @@ def build_classification_prompt(words: list[str]) -> str:
 
 
 def parse_classification_response(
-    raw: str, expected_words: list[str]
+    raw: str,
+    expected_words: list[str],
+    *,
+    allowed_labels: tuple[str, ...] = (PROPER, COMMON),
 ) -> dict[str, str]:
-    """Parse ``WORD P|C`` lines, returning labels for expected words only.
+    """Parse ``WORD <label>`` lines, returning labels for expected words only.
 
     Words missing from the response or carrying an unknown label are simply
     absent from the result; the caller re-queues them.
@@ -81,7 +84,7 @@ def parse_classification_response(
         if len(parts) != 2:
             continue
         word, label = parts[0].upper(), parts[1].upper()
-        if word in expected and label in (PROPER, COMMON):
+        if word in expected and label in allowed_labels:
             labels[word] = label
     return labels
 
@@ -94,13 +97,17 @@ def classify_words(
     max_workers: int = 4,
     model: str | None = None,
     checkpoint: Callable[[dict[str, str]], None] | None = None,
+    system_prompt: str = _SYSTEM_PROMPT,
+    allowed_labels: tuple[str, ...] = (PROPER, COMMON),
 ) -> dict[str, str]:
     """Classify words in parallel batches, retrying omitted words.
 
-    Returns a mapping of uppercase word -> ``P``/``C``. Words the model
-    repeatedly fails to label are omitted (and logged). ``checkpoint`` is
-    called with the labels accumulated so far after each round, so a long
-    run interrupted mid-way keeps its completed work.
+    Returns a mapping of uppercase word -> label (``P``/``C`` by default;
+    other classifiers such as abbreviations.py pass their own prompt and
+    labels). Words the model repeatedly fails to label are omitted (and
+    logged). ``checkpoint`` is called with the labels accumulated so far
+    after each round, so a long run interrupted mid-way keeps its
+    completed work.
     """
     pending = sorted({w.strip().upper() for w in words if w.strip()})
     results: dict[str, str] = {}
@@ -128,7 +135,7 @@ def classify_words(
             try:
                 raw = provider.generate(
                     build_classification_prompt(batch),
-                    system=_SYSTEM_PROMPT,
+                    system=system_prompt,
                     **kwargs,
                 )
             except Exception:
@@ -137,7 +144,9 @@ def classify_words(
                     len(batch),
                 )
                 return {}
-            return parse_classification_response(raw, batch)
+            return parse_classification_response(
+                raw, batch, allowed_labels=allowed_labels
+            )
 
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             for index, labels in enumerate(
@@ -167,8 +176,12 @@ def classify_words(
     return results
 
 
-def load_classifications(path: Path) -> dict[str, str]:
-    """Load an existing classification file (``WORD;P|C`` per line)."""
+def load_classifications(
+    path: Path,
+    *,
+    allowed_labels: tuple[str, ...] = (PROPER, COMMON),
+) -> dict[str, str]:
+    """Load an existing classification file (``WORD;<label>`` per line)."""
     if not path.exists():
         return {}
     labels: dict[str, str] = {}
@@ -178,7 +191,7 @@ def load_classifications(path: Path) -> dict[str, str]:
             continue
         word, _, label = line.partition(";")
         word, label = word.strip().upper(), label.strip().upper()
-        if word and label in (PROPER, COMMON):
+        if word and label in allowed_labels:
             labels[word] = label
     return labels
 

@@ -51,6 +51,20 @@ classification lives in `dictionaries/HggProperNounClassifications.txt`
 Theme seed entries are not in the file, so intentional themed names never
 count against the cap.
 
+**Abbreviation cap (Jeff, 2026-10-27):** at most 1 abbreviation answer in a
+5x5, 2 in a 7x7, 3 in a 9x9. An abbreviation is an answer every fair clue must
+tag as shortened ("(abbr.)", ", for short"): ETA, NBA, OTS, IDS, SIS. Clipped
+forms that are words now (MEMO, INFO, PRO) and words with an ordinary reading
+(AMP, ORE) do not count. The classification lives in
+`dictionaries/HggAbbreviationClassifications.txt` (`WORD;A|W` per line),
+built and incrementally refreshed by `crossword-generator
+classify-abbreviations` after dictionary updates.
+
+**Demoted fill (Jeff, 2026-10-27):** words Jeff wants used much less often
+(HOLT, AMES, LENA, FRO) or somewhat less often (OTS, SIS, DOO) carry a draw
+weight in `dictionaries/HggFillWeights.txt`. They stay in the lists and can
+still fill a slot when nothing else fits.
+
 **One word family per grid (Jeff, 2026-10):**
 
 Two answers from the same root in one grid read as the same word twice,

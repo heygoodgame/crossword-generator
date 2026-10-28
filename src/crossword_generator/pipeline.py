@@ -8,13 +8,14 @@ from collections.abc import Iterable
 from datetime import UTC, datetime
 from pathlib import Path
 
+from crossword_generator.abbreviations import load_abbreviation_set
 from crossword_generator.clue_history import ClueHistoryIndex
 from crossword_generator.config import Config, find_project_root
 from crossword_generator.dictionary import Dictionary
 from crossword_generator.exporters.base import Exporter
 from crossword_generator.exporters.ipuz_exporter import IpuzExporter
 from crossword_generator.exporters.puz_exporter import PuzExporter
-from crossword_generator.fillers.csp import CSPFiller
+from crossword_generator.fillers.csp import CSPFiller, load_word_weights
 from crossword_generator.graders.clue_fact_checker import ClueFactChecker
 from crossword_generator.graders.clue_grader import ClueGrader
 from crossword_generator.graders.fill_grader import FillGrader
@@ -362,6 +363,26 @@ def create_pipeline(
             len(proper_noun_set),
             config.grading.fill.proper_nouns_path,
         )
+    abbreviation_set = None
+    if config.grading.fill.abbreviations_path:
+        abbreviation_set = load_abbreviation_set(
+            project_root / config.grading.fill.abbreviations_path
+        )
+        logger.info(
+            "Loaded %d abbreviation words for the abbreviation cap from %s",
+            len(abbreviation_set),
+            config.grading.fill.abbreviations_path,
+        )
+    word_weights = None
+    if config.fill.csp.word_weights_path:
+        word_weights = load_word_weights(
+            project_root / config.fill.csp.word_weights_path
+        )
+        logger.info(
+            "Loaded %d fill word weights from %s",
+            len(word_weights),
+            config.fill.csp.word_weights_path,
+        )
     root_lexicon = load_root_lexicon(
         tuple(
             str(project_root / path)
@@ -384,6 +405,9 @@ def create_pipeline(
             proper_noun_set=proper_noun_set,
             max_proper_noun_ratio=config.grading.fill.max_proper_noun_ratio,
             min_proper_noun_allowance=config.grading.fill.min_proper_noun_allowance,
+            abbreviation_set=abbreviation_set,
+            max_abbreviations_by_size=config.grading.fill.max_abbreviations_by_size,
+            word_weights=word_weights,
         )
     else:
         raise ValueError(f"Unknown fill provider: {config.fill.provider}")
@@ -397,6 +421,8 @@ def create_pipeline(
         proper_noun_set=proper_noun_set,
         max_proper_noun_ratio=config.grading.fill.max_proper_noun_ratio,
         min_proper_noun_allowance=config.grading.fill.min_proper_noun_allowance,
+        abbreviation_set=abbreviation_set,
+        max_abbreviations_by_size=config.grading.fill.max_abbreviations_by_size,
         root_lexicon=root_lexicon,
     )
     fill_step = FillWithGradingStep(

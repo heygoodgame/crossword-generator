@@ -141,6 +141,24 @@ class TestLoadConfig:
             assert cfg.dictionary.additional_max_length is None
             assert cfg.fill.csp.additional_dictionary_min_length is None
             assert cfg.fill.csp.additional_dictionary_max_length is None
+        if filename == "config.hard.yaml":
+            assert cfg.grading.fill.abbreviations_path is None
+            assert cfg.fill.csp.word_weights_path is None
+        else:
+            # Jeff, 2026-10-27: abbreviation cap and demoted fill.
+            assert cfg.grading.fill.abbreviations_path == (
+                "dictionaries/HggAbbreviationClassifications.txt"
+            )
+            assert cfg.grading.fill.max_abbreviations_by_size == {
+                5: 1,
+                7: 2,
+                9: 3,
+            }
+            assert cfg.fill.csp.word_weights_path == (
+                "dictionaries/HggFillWeights.txt"
+            )
+            assert (project_root / cfg.grading.fill.abbreviations_path).exists()
+            assert (project_root / cfg.fill.csp.word_weights_path).exists()
         if filename.startswith("config.hard"):
             assert cfg.grading.clue.freshness_repair_threshold == 10
         else:

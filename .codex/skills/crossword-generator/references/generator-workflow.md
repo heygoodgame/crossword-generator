@@ -450,6 +450,34 @@ Current hard guardrails:
   **After any dictionary refresh, run `uv run crossword-generator
   classify-proper-nouns` — it is incremental and only classifies words not
   yet in the file — then commit the updated classification file.**
+- `abbreviation_cap` hard fail (all difficulties, Jeff, 2026-10-27: "limit
+  the number of abbreviations used in any one puzzle"): at most 1
+  abbreviation answer in a 5x5, 2 in a 7x7, 3 in a 9x9
+  (`grading.fill.max_abbreviations_by_size`; a size not in the map takes the
+  cap of the largest smaller size). An abbreviation is an answer every fair
+  clue must tag as shortened ("(abbr.)", ", for short"): ETA, NBA, OTS, IDS,
+  SIS. Clipped forms that are words now (MEMO, INFO, PRO, LAB) and words with
+  an ordinary reading (AMP, ORE, LIZ) do not count. A word can count toward
+  both this cap and the proper-noun cap (NBA). Classifications live in
+  `dictionaries/HggAbbreviationClassifications.txt` (`WORD;A|W`, 3-6 letter
+  words only; longer entries are effectively never abbreviations),
+  configured via `grading.fill.abbreviations_path` on every batch config. The
+  CSP enforces the cap during search (`enforce_grid_rules`), so the grader
+  almost never rejects on it. **After any dictionary refresh, also run
+  `uv run crossword-generator classify-abbreviations` (incremental, like
+  `classify-proper-nouns`), spot-check the new `A` rows, and commit the
+  file.** The first run (2026-10-28, Sonnet 5) needed ~40 hand corrections:
+  it marked names and words as A (LIZ, III, POR, GOIN, ABC) and missed some
+  initialisms (SUV, VIP, IPA, CVS).
+- Demoted fill (Jeff, 2026-10-27): `dictionaries/HggFillWeights.txt`
+  (`WORD;weight`, `#` comments allowed), configured via
+  `fill.csp.word_weights_path` on every batch config. Inside each score tier
+  the CSP draws a word with its weight times its usage weight, so HOLT, AMES,
+  LENA, FRO (0.1, "use much less frequently") and OTS, SIS, DOO (0.33, "use
+  less often, but keep") are tried first far less often but stay fillable.
+  Never express a demotion as a score deduction: on the flat HGG lists that
+  becomes a strict sort (see the open-5x5 note under reuse reduction). To
+  remove a word, take it off Jeff's admin list instead.
 
 When adding new fill-quality rules, prefer the fill grader if a board should
 be rejected before clue generation. Add focused tests in `tests/test_fill_grader.py`

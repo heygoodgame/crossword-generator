@@ -24,6 +24,9 @@ fill:
     #   5: 30
     #   7: 120
     #   9: 300
+    # Per-word draw weights inside each score tier (WORD;weight per line);
+    # 0.1 makes a word ~10x less likely to be tried first, never removed.
+    # word_weights_path: dictionaries/HggFillWeights.txt
 
 grading:
   fill:
@@ -37,6 +40,11 @@ grading:
     # proper_nouns_path: dictionaries/HggProperNounClassifications.txt
     # max_proper_noun_ratio: 0.15
     # min_proper_noun_allowance: 2
+    # Abbreviation cap by grid size: grids with more abbreviation answers
+    # than the size allows are a hard fail. Build the classification file
+    # with `classify-abbreviations`.
+    # abbreviations_path: dictionaries/HggAbbreviationClassifications.txt
+    # max_abbreviations_by_size: {5: 1, 7: 2, 9: 3}
   clue:
     min_score: 70           # Minimum clue quality score (0-100)
     regenerate_on_fail: true

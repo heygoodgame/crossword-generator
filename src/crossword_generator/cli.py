@@ -4308,6 +4308,160 @@ def classify_proper_nouns(
         )
 
 
+@main.command(name="classify-abbreviations")
+@click.option(
+    "--dictionary",
+    "dictionaries",
+    multiple=True,
+    type=click.Path(exists=True, path_type=Path),
+    help=(
+        "Dictionary file(s) to classify (word;score per line). Repeatable. "
+        "Defaults to the live fill dictionaries: hgg-easy.txt, hgg-hard.txt, "
+        "hgg-starter.txt."
+    ),
+)
+@click.option(
+    "--output",
+    type=click.Path(path_type=Path),
+    default=None,
+    help=(
+        "Classification file to write (WORD;A|W per line). Defaults to "
+        "dictionaries/HggAbbreviationClassifications.txt."
+    ),
+)
+@click.option(
+    "--max-length",
+    type=int,
+    default=None,
+    help=(
+        "Only classify words up to this length (default 6). Longer entries "
+        "are almost never abbreviations."
+    ),
+)
+@click.option(
+    "--model",
+    default="claude-sonnet-5",
+    show_default=True,
+    help="Claude model to classify with.",
+)
+@click.option(
+    "--batch-size",
+    type=int,
+    default=100,
+    show_default=True,
+    help="Words per LLM call.",
+)
+@click.option(
+    "--max-workers",
+    type=int,
+    default=4,
+    show_default=True,
+    help="Concurrent LLM calls.",
+)
+@click.option(
+    "--limit",
+    type=int,
+    default=None,
+    help="Classify at most this many new words (for testing).",
+)
+def classify_abbreviations_command(
+    dictionaries: tuple[Path, ...],
+    output: Path | None,
+    max_length: int | None,
+    model: str,
+    batch_size: int,
+    max_workers: int,
+    limit: int | None,
+) -> None:
+    """Classify short dictionary words as abbreviations (A) or words (W).
+
+    Incremental: words already present in the output file are skipped, so
+    rerun this after dictionary refreshes to classify only the new words.
+    The fill grader reads the output file via grading.fill.abbreviations_path
+    to enforce the per-grid abbreviation cap.
+
+    Auth: requires ANTHROPIC_API_KEY (or ANTHROPIC_API_KEY_CROSSWORD_GENERATOR).
+    """
+    from crossword_generator.abbreviations import (
+        ABBREVIATION,
+        MAX_CLASSIFIED_LENGTH,
+        classify_abbreviations,
+        load_abbreviation_classifications,
+        save_abbreviation_classifications,
+    )
+    from crossword_generator.config import ClaudeConfig
+    from crossword_generator.llm.claude_provider import ClaudeProvider
+
+    project_root = find_project_root()
+    if not dictionaries:
+        dictionaries = tuple(
+            project_root / "dictionaries" / name
+            for name in ("hgg-easy.txt", "hgg-hard.txt", "hgg-starter.txt")
+        )
+    if output is None:
+        output = (
+            project_root / "dictionaries" / "HggAbbreviationClassifications.txt"
+        )
+    if max_length is None:
+        max_length = MAX_CLASSIFIED_LENGTH
+
+    words: set[str] = set()
+    for path in dictionaries:
+        for line in path.read_text().splitlines():
+            word = line.split(";", 1)[0].strip().upper()
+            if word and len(word) <= max_length:
+                words.add(word)
+
+    existing = load_abbreviation_classifications(output)
+    pending = sorted(words - existing.keys())
+    if limit is not None:
+        pending = pending[:limit]
+
+    click.echo(
+        f"{len(words)} unique words of length <= {max_length} across "
+        f"{len(dictionaries)} dictionaries; {len(existing)} already "
+        f"classified; {len(pending)} to classify with {model}"
+    )
+    if not pending:
+        click.echo("Nothing to do.")
+        return
+
+    # Same headroom as classify-proper-nouns: Claude 5 models think
+    # internally, and a 100-word batch must fit that plus 100 lines.
+    provider = ClaudeProvider(ClaudeConfig(model=model, max_tokens=16384))
+
+    def _checkpoint(partial: dict[str, str]) -> None:
+        save_abbreviation_classifications(output, {**existing, **partial})
+
+    labels = classify_abbreviations(
+        provider,
+        pending,
+        batch_size=batch_size,
+        max_workers=max_workers,
+        checkpoint=_checkpoint,
+    )
+
+    merged = {**existing, **labels}
+    save_abbreviation_classifications(output, merged)
+
+    abbreviation_total = sum(
+        1 for label in merged.values() if label == ABBREVIATION
+    )
+    unclassified = len(pending) - len(labels)
+    click.echo(
+        f"Classified {len(labels)} word(s) "
+        f"({sum(1 for v in labels.values() if v == ABBREVIATION)} "
+        f"abbreviations). File now has {len(merged)} entries, "
+        f"{abbreviation_total} abbreviations "
+        f"({abbreviation_total / len(merged):.1%})."
+    )
+    if unclassified:
+        click.echo(
+            f"WARNING: {unclassified} word(s) left unclassified; rerun to retry.",
+            err=True,
+        )
+
+
 @main.command(name="validate-mini-patterns")
 def validate_mini_patterns() -> None:
     """Validate catalogued 5x5 and 7x7 mini grid patterns."""

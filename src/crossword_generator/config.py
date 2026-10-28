@@ -70,11 +70,19 @@ class CSPFillerConfig(BaseModel):
     # fresh word to be tried first. Only applied when usage counts are
     # supplied (daily batches); never affects tier eligibility.
     answer_usage_penalty: float = 1.0
+    # Path to a per-word draw-weight file (WORD;weight per line). Inside each
+    # score tier a word is drawn with its weight (multiplied by the usage
+    # weight above), so 0.1 makes it ~10x less likely to be tried first —
+    # Jeff's "use much less frequently" without ever removing the word or
+    # making it strictly last (a score deduction would be a strict sort on
+    # the flat HGG lists). Words not in the file weigh 1.0.
+    word_weights_path: str | None = None
     # Enforce the grader's board-level hard fails (hard_cross,
-    # proper_noun_cap, proper_noun_first_across) inside the search instead
-    # of only rejecting finished boards. Under exclusion pressure the CSP
-    # otherwise converges on boards the grader can never accept (hard/9,
-    # 2026-09-02: 399/399 complete fills rejected on four seeds).
+    # proper_noun_cap, proper_noun_first_across, abbreviation_cap) inside
+    # the search instead of only rejecting finished boards. Under exclusion
+    # pressure the CSP otherwise converges on boards the grader can never
+    # accept (hard/9, 2026-09-02: 399/399 complete fills rejected on four
+    # seeds).
     enforce_grid_rules: bool = True
 
 
@@ -126,6 +134,16 @@ class FillGradingConfig(BaseModel):
     proper_nouns_path: str | None = None
     max_proper_noun_ratio: float = 0.15
     min_proper_noun_allowance: int = 2
+    # Path to the abbreviation classification file (WORD;A|W per line,
+    # built by the classify-abbreviations command). When set, grids with
+    # more abbreviation answers than max_abbreviations_by_size allows for
+    # their size are a hard fail — Jeff (2026-10-27): "limit the number of
+    # abbreviations used in any one puzzle." Sizes missing from the map take
+    # the cap of the largest smaller size.
+    abbreviations_path: str | None = None
+    max_abbreviations_by_size: dict[int, int] = Field(
+        default_factory=lambda: {5: 1, 7: 2, 9: 3}
+    )
     # Word lists whose union is the lexicon for the same-root rule
     # (OWE/OWED, HIRED/HIRING, COMEDIC/COMEDIANS): a lemma only counts if it
     # is a real word. Kept separate from the fill dictionary, which has the
