@@ -3,7 +3,18 @@
 **HGG difficulty calibration:**
 
 -   Easy clues should be easier than an NYT Monday. Favor direct definitions, obvious fill-in-the-blank clues, familiar meanings, and fast recognition for a broad casual audience. For Easy, plain and instantly solvable is a feature, not a flaw. Never use a wordplay/tricky question-mark clue (the punny `?`-tagged kind) in an Easy puzzle — a literal `?` inside quoted text, like `"___ you okay?"` for ARE, is fine; only the trick-signalling question mark is banned.
--   Hard clues should land around NYT Tuesday/Wednesday. They may use oblique-but-fair definitions, common secondary meanings, mild misdirection, wordplay, and occasional question-mark clues, but should avoid Saturday-level obscurity, forced cleverness, and ultra-current slang that needs a long explanation.
+-   Hard clues should land around NYT Monday/Tuesday (Jeff, 2026-10-27: "Generally make both Easy and Hard puzzles easier"). Clue the familiar meaning of the answer and make it a little less direct through phrasing: a specific example, a fresh angle, light misdirection, or an occasional question-mark clue. Never make a clue harder by switching to a rare or secondary sense (DELL as "Small wooded valley"). A clue a solver gets right away is fine on Hard.
+
+**House rules (Jeff, 2026-10-27):**
+
+-   Everyday meanings only, on every difficulty: never a rare, technical, or archaic sense such as ARE as a metric unit of area.
+-   Abbreviation answers are tagged "(abbr.)" or ", for short". Never "briefly" or "in brief"; the generator rewrites those tags automatically.
+-   Fill-in-the-blank clues are welcome when the phrase is common and colorful, one people actually say. A made-up or stitched-together phrase is a defect.
+-   Names: at most 2 per Mini and 5 per Midi. An entry counts when the answer is a proper name or the clue reaches an ordinary word through one ("Actor Hanks" for TOM). The repair loop enforces this from the grader's per-clue name flag.
+-   "Opposite of ___" is good on Easy: about one per puzzle, never more than one.
+-   Drinks are fine as plain things (RUM: "Spirit in a mojito"). Drunkenness, hangovers, and drug use are not.
+-   Hints are paste-ready clues: Jeff swaps them in when a clue feels too hard.
+-   Hidden words: etymology matters, letter sequences do not. STAR/START is not a duplicate; ICE/ICY is (the same-root fill rule).
 
 **Positive indicators (high clue quality):**
 
@@ -15,7 +26,7 @@
 -   Multiple viable interpretations that narrow to exactly one answer with crossing letters
 -   Cultural references that are accessible but not dumbed down
 -   Clues that teach the solver something interesting even when they don't know the answer
--   Appropriate difficulty calibration — HGG Easy should be easier than Monday; HGG Hard should feel Tuesday/Wednesday
+-   Appropriate difficulty calibration — HGG Easy should be easier than Monday; HGG Hard should feel Monday/Tuesday
 -   Varied clue styles within a single puzzle — a mix of definitional, wordplay, trivia, fill-in-the-blank, and lateral thinking
 -   Clues that reward a solver's general knowledge across domains (science, art, sports, food, geography) rather than leaning on one area
 -   Contemporary references that make the puzzle feel alive and timely
@@ -24,7 +35,7 @@
 -   Clever use of parts of speech ambiguity ("Lead" as a noun vs. verb vs. adjective)
 -   Clues that make the solver smile or groan after the answer clicks
 -   Fresh angles on common entries — finding a new way to clue OREO for the thousandth time
--   Fill-in-the-blank clues that reference things solvers actually know ("\_\_\_ of the Tiger")
+-   Fill-in-the-blank clues on common, colorful phrases that solvers actually know ("\_\_\_ of the Tiger", "Easy as \_\_\_")
 -   Thematic clue consistency — when theme entries have clues that subtly echo each other or build toward the revealer
 
 **Negative indicators (low clue quality):**
@@ -40,12 +51,12 @@
 -   Clues requiring hyper-specific knowledge with no gettable path from crossings
 -   Inconsistent difficulty within a puzzle — one corner plays like a Monday, another like a Friday
 -   Clues that are longer and more complex than the answer warrants (a 15-word clue for a 3-letter entry that isn't doing any wordplay)
--   Over-reliance on "opposite of" or "not" constructions as a crutch
+-   More than one "Opposite of" clue in a puzzle (one is welcome on Easy)
 -   Dated references that haven't been culturally relevant in decades without being classic enough to endure
 -   Clues with redundant or circular phrasing
 -   Trivia clues that are binary — you either know it or you don't, with no way to reason toward the answer
 -   Cross-reference clues ("See 17-Across") used excessively or unnecessarily
--   Fill-in-the-blank clues for obscure quotes nobody recognizes
+-   Fill-in-the-blank clues for obscure quotes nobody recognizes, or for made-up phrases nobody says
 -   Demographic blind spots — clues that assume a narrow cultural lens (all sports clues from one league, all music clues from one era)
 -   Inconsistent word-count tags such as "(two words)." Until explicit word-boundary metadata exists, omit these tags rather than applying them sporadically.
 

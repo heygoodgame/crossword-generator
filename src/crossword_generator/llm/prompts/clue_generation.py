@@ -39,14 +39,15 @@ _GUIDELINES = (
     'with "ligament" (Medial Collateral Ligament); do not clue CPR with '
     '"resuscitation"; do not clue GPA with "grade" or "average"; do not '
     'clue ATM with "machine". Clue the thing itself instead (e.g. ETA: '
-    '"Flight-board figure, for short"; MCL: "Knee part that can tear, '
-    'briefly").\n'
+    '"Flight-board figure, for short"; MCL: "Knee part that can tear '
+    '(abbr.)").\n'
     "- ABBREVIATION INDICATOR RULE (strict): if the answer is an "
     "abbreviation, acronym, or initialism (DNA, CIA, USA, ETA, EST, ATM, "
-    "etc.), the clue MUST signal that the answer is shortened. Add an "
-    'indicator such as ", for short", ", briefly", ", in brief", or a '
-    'parenthetical "(abbr.)" — or use an abbreviated cue word that makes '
-    'the short form obviously expected (e.g. "org.", "agcy.", "assn."). '
+    "etc.), the clue MUST signal that the answer is shortened. Use a "
+    'parenthetical "(abbr.)" or ", for short". NEVER use "briefly" or '
+    '"in brief" — many solvers do not know what they signal. An abbreviated '
+    'cue word that makes the short form obviously expected (e.g. "org.", '
+    '"agcy.") also works. '
     'For example, clue DNA as "Genetic blueprint material, for short" not '
     '"Genetic material"; clue CIA as "Cloak-and-dagger org." not '
     '"Spy agency"; clue USA as "Letters on some Olympic uniforms". An '
@@ -66,7 +67,7 @@ _GUIDELINES = (
     "middle, or the END of the clue word — this is a leak even when the clue "
     "word is a completely different meaning and even when the answer is short. "
     'Do not clue BOT with "Robot, informally" (BOT is the end of roBOT); do '
-    'not clue TIL with "Until, briefly" (TIL is the end of unTIL); do not '
+    'not clue TIL with "Until, for short" (TIL is the end of unTIL); do not '
     'clue MEN with "Gentlemen" (MEN is the end of gentleMEN); do not clue CAT '
     'with "Catalog listing" (CAT begins CATalog). These read as lazy, '
     "inferior clues to solvers. Clue the answer through its own meaning "
@@ -105,6 +106,30 @@ _GUIDELINES = (
     "singular/plural, tense, spacing, and contractions. Do not clue SAINT "
     'with the plural Saints, BATTING with "At ___", or GOT A SAY with '
     '"gotta say" / "my two cents" phrasing.\n'
+    "- FILL-IN-THE-BLANK RULE: blanks are welcome when the phrase is common "
+    "and colorful — an idiom, saying, catchphrase, or famous title that "
+    'solvers hear in everyday life ("Easy as ___" for PIE, "Living on the '
+    '___" for EDGE, "___ up (perk up)" for LIVEN). It is fine that a '
+    "well-known phrase points straight at the answer. NEVER invent a phrase "
+    "or stitch words into something nobody actually says (\"Morning ___ "
+    'bowl" for OATS). If you cannot picture '
+    "people saying the phrase, use a different clue.\n"
+    "- EVERYDAY MEANING RULE (all difficulties): clue the meaning of the "
+    "answer that ordinary solvers use. Never clue a rare, technical, "
+    "archaic, or specialist sense of a common word: not ARE as a metric "
+    'unit of area, ELL as an old cloth measure, DAM as "Foal\'s mother", '
+    'TAT as "Make lace", or DELL as "Small wooded valley" (clue DELL as the '
+    "laptop brand). If an answer has no everyday meaning at all, use its "
+    "best-known reference.\n"
+    "- NAME LIMIT: too many names makes a puzzle feel like a trivia contest. "
+    "An entry counts as a NAME when the answer is itself a proper name "
+    "(OPRAH, ERIE, NBA), or when the clue reaches an ordinary word through "
+    'the name of a person, character, brand, company, team, or place ("Actor '
+    'Hanks" for TOM, "Singer Grande" for ARIANA). Titles of movies, songs, '
+    "and books do not count unless the answer is a name. A MINI puzzle may "
+    "have at most 2 names and a MIDI puzzle at most 5. Answers that can only "
+    "be clued as names use up that budget first, so give every other entry "
+    'a non-name clue whenever a good one exists ("Male cat" for TOM).\n'
     "- Vary clue styles within the target difficulty: definitional, "
     "fill-in-the-blank, wordplay, trivia, and lateral thinking are all "
     "available, but Easy clues should stay direct and obvious.\n"
@@ -213,16 +238,15 @@ _GUIDELINES = (
     'loaded"-style wordplay or via any firearm angle; clue it with a '
     'benign sense like "Bowling-alley target" or "Sewing-kit item". '
     "Steer clear of any clue that evokes weapons or violence.\n"
-    "- NO ALCOHOL, DRUNKENNESS, OR DRUGS: do not reference being drunk, "
-    "drinking, hangovers, sobriety as recovery, or drug use. Clue such "
-    "answers through neutral, everyday senses instead. For example, do "
-    'not clue SOBER as "Newly off the bottle" or via any '
-    'drinking/recovery angle; clue it as "Serious and solemn" or '
-    '"Clear-headed". When an answer can read as alcohol- or '
-    "drug-related, pick a different, wholesome meaning.\n"
+    "- DRINKS ARE FINE, DRUNKENNESS IS NOT: a drink may appear as a plain "
+    "thing — a cocktail ingredient, a kind of wine or beer, a bar order "
+    '(RUM: "Spirit in a mojito"; ALE: "Pub pour"). Never reference being '
+    "drunk, hangovers, heavy drinking, sobriety as recovery, or drug use. "
+    'For example, do not clue SOBER as "Newly off the bottle"; clue it as '
+    '"Serious and solemn" or "Clear-headed".\n'
     "- Keep the overall tone family-friendly and broadly welcoming. When "
-    "in doubt about whether a clue's subject matter (weapons, alcohol, "
-    "drugs, violence, or any edgy theme) could draw a complaint, choose "
+    "in doubt about whether a clue's subject matter (weapons, drugs, "
+    "violence, or any edgy theme) could draw a complaint, choose "
     "a plainer, more neutral angle."
 )
 
@@ -295,9 +319,9 @@ _LEAK_EXAMPLES = (
     '   ANSWER: ETA  BAD: "Arrival time, for short" — ETA = Estimated TIME of '
     "ARRIVAL, so both 'arrival' (A) and 'time' (T) leak.\n"
     '   GOOD: "Flight-board figure, for short"\n'
-    '   ANSWER: MCL  BAD: "Knee ligament, briefly" — MCL = Medial Collateral '
+    '   ANSWER: MCL  BAD: "Knee ligament (abbr.)" — MCL = Medial Collateral '
     "LIGAMENT.\n"
-    '   GOOD: "Knee part that can tear, in brief"\n'
+    '   GOOD: "Knee part that can tear (abbr.)"\n'
     "\n"
     "4. Shared etymology / root (different word, same origin):\n"
     '   ANSWER: NAVAL  BAD: "Of the navy" — naval and navy share a root.\n'
@@ -312,12 +336,12 @@ _LEAK_EXAMPLES = (
     "   (Note: 'Prefix for...' is fine here because the clue word 'cycle' does "
     "not share letters with TRI; do not clue PRE with 'Prefix...'.)\n"
     "\n"
-    "6. Collocation fill-in-the-blank (the blank + a partner word forms a "
-    "phrase that uniquely gives the answer):\n"
-    '   ANSWER: SOY  BAD: "___ sauce" — soy sauce is a fixed phrase.\n'
-    '   GOOD: "Tofu base"\n'
-    '   ANSWER: LIST  BAD: "Shopping ___" — shopping list is fixed.\n'
-    '   GOOD: "Itemized rundown"\n'
+    "6. Fill-in-the-blank — only on phrases people actually say:\n"
+    '   ANSWER: PIE  GOOD: "Easy as ___"  (a saying everyone knows)\n'
+    '   ANSWER: LIVEN  GOOD: "___ up (perk up)"\n'
+    '   ANSWER: EDGE  GOOD: "Living on the ___"\n'
+    '   ANSWER: OATS  BAD: "Morning ___ bowl" — stitched together, not a real '
+    'phrase.  GOOD: "Oatmeal grains"\n'
     "\n"
     "7. Singular/plural and tense leaks:\n"
     '   ANSWER: SAINT  BAD: "New Orleans NFL player" points at SAINTS '
@@ -344,19 +368,20 @@ _LEAK_EXAMPLES = (
     "\n"
     "10. Difficulty calibration — same answer, Easy vs Hard:\n"
     '   ANSWER: OCEAN   Easy: "Atlantic or Pacific"   '
-    'Hard: "Vast expanse with a \\"floor\\" you\'ll never sweep"\n'
+    'Hard: "Where whales roam"\n'
     '   ANSWER: EDGE    Easy: "Border of a table"     '
-    'Hard: "Competitive advantage"\n'
+    'Hard: "Slight advantage"\n'
     '   ANSWER: TIER    Easy: "Wedding-cake layer"    '
     'Hard: "Level in a ranking"\n'
     '   ANSWER: ARC     Easy: "Curved path"           '
     'Hard: "Rainbow\'s shape"\n'
     '   ANSWER: THREE   Easy: "One more than two"     '
     'Hard: "A crowd, proverbially"\n'
-    "   For Easy, prefer the instantly-solvable angle. For Hard, the Easy "
-    "column above is NOT acceptable — an instantly-solvable clue on a Hard "
-    "puzzle is a defect. Use the fair-but-less-direct angle, while accuracy "
-    "and the leak rules above ALWAYS take priority over difficulty.\n"
+    "   For Easy, prefer the instantly-solvable angle. For Hard, take one "
+    "short step away from it: the same familiar meaning, phrased a little "
+    "less directly. Never make a Hard clue harder by switching to a rare "
+    "sense (DELL as a wooded valley). Accuracy and the leak rules above "
+    "ALWAYS take priority over difficulty.\n"
     "\n"
     "11. Compound / hidden-word leaks (a clue word that CONTAINS the answer "
     "anywhere — start, middle, or END, even for short answers and even when "
@@ -369,7 +394,7 @@ _LEAK_EXAMPLES = (
     '   GOOD: "Museum display"\n'
     '   ANSWER: BOT  BAD: "Robot, informally" — roBOT ends with the answer.\n'
     '   GOOD: "Automated social-media account"\n'
-    '   ANSWER: TIL  BAD: "Until, briefly" — unTIL ends with the answer.\n'
+    '   ANSWER: TIL  BAD: "Until, for short" — unTIL ends with the answer.\n'
     '   GOOD: "Up to, in texts"\n'
     '   ANSWER: MEN  BAD: "Gentlemen" — gentleMEN ends with the answer.\n'
     '   GOOD: "Adult guys"\n'
@@ -426,15 +451,18 @@ _LEAK_EXAMPLES = (
     "clue word at its start, middle, or end (roBOT, unTIL, gentleMEN)? "
     "(b) if the answer is an abbreviation, does the clue "
     "contain ANY word its letters stand for? (c) does the clue use a crossing "
-    "word? (d) is it a fill-in-the-blank whose phrase gives the answer away? "
+    "word? (d) is it a fill-in-the-blank on a phrase people do not actually "
+    "say? "
     "(e) does the clue's truth depend on a current-state fact that could "
     "change — a current role, broadcast deal, roster, or title holder? "
     "(f) if the answer is an abbreviation, acronym, or initialism, does the "
-    'clue include an indicator that it is shortened (", for short", '
-    '", briefly", "(abbr.)", or an "org."-style abbreviated cue)? '
-    "(g) does the clue reference guns/firearms/shooting or "
-    "alcohol/drunkenness/drugs, even playfully? "
-    "If yes to (a)-(e) or (g), or NO to (f), rewrite the clue before "
+    'clue include "(abbr.)", ", for short", or an "org."-style abbreviated '
+    'cue (never "briefly" or "in brief")? '
+    "(g) does the clue reference guns/firearms/shooting, drunkenness, or "
+    "drugs, even playfully? "
+    "(h) does the clue use a rare or technical sense when an everyday one "
+    "exists? "
+    "If yes to (a)-(e), (g), or (h), or NO to (f), rewrite the clue before "
     "returning it.\n"
 )
 
@@ -507,6 +535,12 @@ def _difficulty_guidance(puzzle_type: PuzzleType, difficulty: PuzzleDifficulty) 
             '("Sounds like \\"two\\"" for TOO). Pick whichever is the most '
             "immediately gettable for that answer, and vary the technique "
             "across the puzzle so it does not feel formulaic. "
+            'OPPOSITES: solvers like an "Opposite of ___" clue. When an entry '
+            "has a clear everyday opposite, clue ONE entry in the puzzle that "
+            'way ("Opposite of high" for LOW) — one per puzzle, never more. '
+            "Keep the vocabulary IN the clue everyday too: never use a clue "
+            "word that is rarer or harder than the answer itself. When you are "
+            "unsure whether a clue is easy enough, make it easier. "
             "CRITICAL — Easy clues must be specific enough to point to one "
             "answer, not just a broad category. Given the clue and answer "
             "length, a casual solver should not be able to name several "
@@ -534,42 +568,26 @@ def _difficulty_guidance(puzzle_type: PuzzleType, difficulty: PuzzleDifficulty) 
         )
     else:
         base = (
-            "This is an HGG Hard crossword. Aim for solid NYT Tuesday "
-            "difficulty — Wednesday is the CEILING, not the target: still "
-            "fair and broadly accessible, but every clue "
-            "should make the solver pause and think for a beat. A clue the "
-            "average solver answers instantly with no crossing letters is TOO "
-            "EASY for this puzzle and is a defect, the same way an inaccurate "
-            "clue is. Never write Easy-style giveaways like a plain primary "
-            'definition, an obvious fill-in-the-blank, or arithmetic ("One '
-            'more than two" for THREE is exactly what NOT to write here — use '
-            'an angle like "A crowd, proverbially" instead). For each entry, '
-            "DEFAULT to a harder fair angle: a common secondary meaning, a "
-            "less-expected but accurate definition, a specific example instead "
-            "of the category, fair trivia solvers can reason toward, mild "
-            "misdirection, or an occasional question-mark clue. Reserve plain "
-            "direct definitions for entries that genuinely cannot support a "
-            "harder fair angle (some abbreviations, partials, and awkward "
-            "glue) — they should be the exception, roughly a quarter of the "
-            "clues at most, not the default. DO NOT STRAIN for difficulty: "
-            "pick the most natural fair angle that is not a giveaway, not "
-            "the hardest angle you can construct. If an entry's natural "
-            "fair angles are only moderately tricky, use the best of those "
-            "— a clean, modestly challenging clue is better than a "
-            "contrived or ridiculously hard one. Difficulty should come "
-            "from ONE fair twist (a secondary meaning, a specific example, "
-            "or mild misdirection), never from obscurity, convoluted "
-            "phrasing, or stacking multiple tricks in one clue. When in "
-            "doubt between two fair angles, choose the easier one. "
-            "Accuracy still constrains WHICH "
-            "hard angle you pick: every clue must remain factually airtight "
-            "and reasonably inferable, and if a specific clever angle is "
-            "factually shaky, pick a different harder angle that is solid — "
-            "do not fall back to an instantly-solvable Easy clue. Avoid "
-            "Saturday-level obscurity and trivia that solvers cannot reason "
-            "toward. Do not force difficulty with strained pop-culture "
-            "references, ultra-current slang, or clues that only work after a "
-            "long explanation. Older pop-culture references are appropriate "
+            "This is an HGG Hard crossword. Aim for NYT Monday-to-Tuesday "
+            "difficulty: a step up from our Easy puzzles, never a test of "
+            "obscure knowledge. Clue the familiar, everyday meaning of each "
+            "answer — the one most solvers know — and make the clue a little "
+            "less direct through PHRASING: a specific example instead of the "
+            "category, a fresh angle on the common meaning, light "
+            "misdirection, or an occasional question-mark clue. NEVER make a "
+            "clue harder by switching to a rare, secondary, technical, or "
+            "archaic sense: clue DELL as the laptop brand, not \"Small wooded "
+            'valley\". A clue that a solver gets right away is FINE on a Hard '
+            "puzzle; an obscure or strained clue is not. Most clues should "
+            "fall with one or two crossing letters. Difficulty comes from at "
+            "most ONE fair twist, never from obscurity, convoluted phrasing, "
+            "or stacked tricks. When in doubt between two fair angles, choose "
+            "the easier one. Accuracy still decides which angle you pick: "
+            "every clue must be factually airtight and reasonably inferable; "
+            "if a clever angle is factually shaky, use a plainer solid one. "
+            "Avoid trivia solvers cannot reason toward, strained pop-culture "
+            "references, ultra-current slang, and clues that only work after "
+            "a long explanation. Older pop-culture references are appropriate "
             "only when they are cross-generationally iconic."
         )
     if puzzle_type == PuzzleType.MINI:
@@ -779,8 +797,8 @@ _REPAIR_GUIDELINES = (
     'clue MCL with "ligament"). Clue the thing itself instead.\n'
     "- ABBREVIATION INDICATOR RULE (strict): if the answer is an "
     "abbreviation, acronym, or initialism (DNA, CIA, USA, EST, etc.), the "
-    "replacement clue MUST signal that the answer is shortened — via an "
-    'indicator like ", for short", ", briefly", "(abbr.)", or an '
+    "replacement clue MUST signal that the answer is shortened — via "
+    '"(abbr.)" or ", for short" (never "briefly" or "in brief"), or an '
     'abbreviated cue word ("org.", "agcy."). A clue with no such '
     'indicator (e.g. DNA clued plainly as "Genetic material") is a '
     "defect even when otherwise clean.\n"
@@ -820,14 +838,18 @@ _REPAIR_GUIDELINES = (
     "(awards won, famous works, fixed historical events) or non-temporal "
     "meanings; if a current association is the only fair angle, phrase it so "
     'it stays true forever ("longtime", "Emmy-winning", or past tense).\n'
-    "- If a clue was flagged as TOO EASY for a Hard puzzle, the replacement "
-    "must use a harder fair angle (secondary meaning, less-expected accurate "
-    "definition, fair trivia, or mild misdirection) — do not return another "
-    "instantly-solvable definition.\n"
-    "- If a clue was flagged as TOO HARD, strained, or contrived, the "
-    "replacement should be a clean NYT Tuesday-level clue: one fair twist "
-    "(a secondary meaning or mild misdirection), not obscurity, convoluted "
-    "phrasing, or stacked tricks.\n"
+    "- If a clue was flagged as TOO HARD, an esoteric sense, strained, or "
+    "contrived, the replacement must clue the familiar everyday meaning of "
+    "the answer — on a Hard puzzle phrased a little less directly, never "
+    "through a rare or secondary sense, obscurity, or stacked tricks.\n"
+    "- If a clue was flagged for TOO MANY NAMES, the replacement must not "
+    "use the name of any person, character, brand, company, team, or "
+    'place (TOM: "Male cat", not "Actor Hanks").\n'
+    '- If a clue was flagged for too many "Opposite of" clues, the '
+    'replacement must not use "Opposite of" or any other antonym '
+    "construction.\n"
+    "- If a clue was flagged as a MADE-UP PHRASE, replace the blank with a "
+    "phrase people actually say, or use a plain definition instead.\n"
     "- TITLE QUOTING RULE: put quotation marks around titles of movies, TV "
     "shows, songs, albums, books, plays, and video games — including in "
     'fill-in-the-blank clues ("\\"Better Call ___\\"", not '
@@ -861,12 +883,13 @@ _REPAIR_GUIDELINES = (
     '- Avoid unpleasant clue wording such as "death" or '
     '"undocumented immigrant"; use gentle wording like "passed on" only '
     "if dying is unavoidable.\n"
-    "- NO GUNS, ALCOHOL, OR DRUGS: the replacement must not reference "
+    "- NO GUNS, DRUNKENNESS, OR DRUGS: the replacement must not reference "
     "firearms, ammunition, shooting, or gun culture, nor drunkenness, "
-    "drinking, hangovers, or drug use — even playfully. Clue such answers "
-    'through a benign everyday sense instead (e.g. PIN as "Bowling-alley '
-    'target", SOBER as "Serious and solemn"). Keep the tone '
-    "family-friendly; when in doubt, choose a plainer neutral angle.\n"
+    "hangovers, or drug use — even playfully. A drink as a plain thing is "
+    'fine (RUM: "Spirit in a mojito"). Clue other such answers through a '
+    'benign everyday sense (e.g. PIN as "Bowling-alley target", SOBER as '
+    '"Serious and solemn"). Keep the tone family-friendly; when in doubt, '
+    "choose a plainer neutral angle.\n"
     "- Keep clues concise and culturally accessible."
 )
 

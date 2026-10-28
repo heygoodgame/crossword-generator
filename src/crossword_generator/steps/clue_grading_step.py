@@ -11,6 +11,7 @@ from crossword_generator.clue_history import (
     DuplicateClueHit,
     duplicate_error_message,
 )
+from crossword_generator.clue_style import normalize_abbreviation_tags
 from crossword_generator.dictionary import Dictionary
 from crossword_generator.exporters.numbering import (
     compute_crossing_words,
@@ -34,12 +35,18 @@ from crossword_generator.models import (
     ClueEntry,
     ClueGrade,
     ClueGradeReport,
+    PuzzleDifficulty,
     PuzzleEnvelope,
+    PuzzleType,
 )
 from crossword_generator.steps.base import PipelineStep
 from crossword_generator.steps.clue_step import ClueGenerationStep
 
 logger = logging.getLogger(__name__)
+
+# Jeff (2026-10-27): "Two [names] at most for a Mini, five at most for a Midi."
+_DEFAULT_NAME_LIMITS = {PuzzleType.MINI: 2, PuzzleType.MIDI: 5}
+_OPPOSITE_CLUE = re.compile(r"^\W*opposite of\b", re.IGNORECASE)
 
 
 class ClueWithGradingStep(PipelineStep):
@@ -76,6 +83,8 @@ class ClueWithGradingStep(PipelineStep):
         parallel_chunks: bool = False,
         parallel_chunk_workers: int = 4,
         dictionary: Dictionary | None = None,
+        max_name_entries: int | None = None,
+        max_opposite_clues: int | None = 1,
     ) -> None:
         self._llm = llm
         self._repair_llm = repair_llm or llm
@@ -95,6 +104,10 @@ class ClueWithGradingStep(PipelineStep):
         self._leak_repair_attempts = leak_repair_attempts
         self._repair_verify_attempts = repair_verify_attempts
         self._fact_check_repair_attempts = fact_check_repair_attempts
+        # Per-puzzle budgets. None for names means the puzzle-type default
+        # (_DEFAULT_NAME_LIMITS); None for opposites turns that budget off.
+        self._max_name_entries = max_name_entries
+        self._max_opposite_clues = max_opposite_clues
         self._clue_step = ClueGenerationStep(
             llm,
             clue_history=clue_history,
@@ -403,6 +416,7 @@ class ClueWithGradingStep(PipelineStep):
         add("leak", self._detect_leaks(envelope))
         add("hyphen", self._detect_hyphens(envelope))
         add("duplicate", self._detect_duplicates(envelope))
+        add("budget", self._detect_budgets(envelope))
         return findings, fact_results
 
     def _is_soft_freshness_only(self, grade: ClueGrade) -> bool:
@@ -525,6 +539,10 @@ class ClueWithGradingStep(PipelineStep):
         return rollback
 
     def _is_hard_final_finding(self, name: str, grade: ClueGrade) -> bool:
+        # A budget overrun is about the puzzle, not this clue: restoring the
+        # pre-repair text would not bring the count down.
+        if name == "budget":
+            return False
         if name != "quality":
             return True
         if (
@@ -664,6 +682,78 @@ class ClueWithGradingStep(PipelineStep):
                 hit.existing_clue
             ]
             entries.append((hit.clue, _duplicate_clue_grade(hit, used)))
+        return entries
+
+    def _detect_budgets(
+        self, envelope: PuzzleEnvelope
+    ) -> list[tuple[ClueEntry, ClueGrade]]:
+        """Clues over a per-puzzle budget: names, and "Opposite of" clues.
+
+        Clue generation runs in parallel chunks, so no single call can keep
+        a puzzle-wide count; this detector does. Names come from the grader's
+        per-clue flag. Answers that are names themselves cannot change, so
+        they use the budget first; the ordinary words clued through a name
+        after that are sent back to repair without one.
+        """
+        report = envelope.clue_grade_report
+        grades = (
+            {(g.number, g.direction): g for g in report.clue_grades}
+            if report
+            else {}
+        )
+        entries: list[tuple[ClueEntry, ClueGrade]] = []
+
+        name_limit = (
+            self._max_name_entries
+            if self._max_name_entries is not None
+            else _DEFAULT_NAME_LIMITS.get(envelope.puzzle_type)
+        )
+        if name_limit is not None and grades:
+
+            def uses(clue: ClueEntry) -> str | None:
+                grade = grades.get((clue.number, clue.direction))
+                return grade.uses_name if grade else None
+
+            answer_names = [c for c in envelope.clues if uses(c) == "answer"]
+            clue_names = [c for c in envelope.clues if uses(c) == "clue"]
+            total = len(answer_names) + len(clue_names)
+            if total > name_limit:
+                room = max(0, name_limit - len(answer_names))
+                for clue in clue_names[room:]:
+                    entries.append(
+                        (
+                            clue,
+                            _budget_clue_grade(
+                                clue,
+                                grades.get((clue.number, clue.direction)),
+                                f"Too many names: this puzzle has {total} name "
+                                f"entries (limit {name_limit}). Reclue without "
+                                "the name of any person, character, brand, "
+                                "company, team, or place.",
+                            ),
+                        )
+                    )
+
+        if (
+            self._max_opposite_clues is not None
+            and envelope.difficulty != PuzzleDifficulty.STARTER
+        ):
+            # Jeff (2026-10-27): one "Opposite of ___" per Easy puzzle (or every
+            # other puzzle) is great; more than one reads as a crutch.
+            opposites = [c for c in envelope.clues if _OPPOSITE_CLUE.match(c.clue)]
+            for clue in opposites[self._max_opposite_clues :]:
+                entries.append(
+                    (
+                        clue,
+                        _budget_clue_grade(
+                            clue,
+                            grades.get((clue.number, clue.direction)),
+                            f'Too many "Opposite of" clues: this puzzle has '
+                            f"{len(opposites)}, keep one. Reclue without an "
+                            "antonym construction.",
+                        ),
+                    )
+                )
         return entries
 
     def _run_clue_repair_once(
@@ -1070,6 +1160,9 @@ class ClueWithGradingStep(PipelineStep):
             "should not be",
             "too obscure",
             "too hard",
+            "esoteric sense",
+            "made-up phrase",
+            "use (abbr.)",
             "ultra-current slang",
             "forced",
             "strained",
@@ -1236,7 +1329,7 @@ def _parse_repair_response(
                 number=number,
                 direction=direction,
                 answer=original.answer,
-                clue=str(item["clue"]),
+                clue=normalize_abbreviation_tags(str(item["clue"])),
             )
         )
 
@@ -1349,6 +1442,25 @@ def _leak_error_message(finding: LeakFinding) -> str:
         f"LEAK: {finding.answer} ({finding.number}-{finding.direction}) "
         f'[{finding.kind}] in clue "{finding.clue}" (offending: '
         f'"{finding.detail}")'
+    )
+
+
+def _budget_clue_grade(
+    clue: ClueEntry, grade: ClueGrade | None, feedback: str
+) -> ClueGrade:
+    """Repair entry for a clue over a per-puzzle budget.
+
+    The clue itself graded fine, so its scores are kept; only the feedback,
+    which the repair prompt shows as the problem, says what to change.
+    """
+    if grade is not None:
+        return grade.model_copy(update={"feedback": feedback})
+    return ClueGrade(
+        number=clue.number,
+        direction=clue.direction,
+        answer=clue.answer,
+        score=100,
+        feedback=feedback,
     )
 
 

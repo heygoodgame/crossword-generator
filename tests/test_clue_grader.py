@@ -151,7 +151,7 @@ class TestHappyPath:
         assert "too broad" in prompt
         assert "score ACCURACY 0-9" in prompt
 
-    def test_hard_evaluation_rewards_tuesday_level_clues(self) -> None:
+    def test_hard_evaluation_rewards_monday_to_tuesday_clues(self) -> None:
         prompt = build_clue_evaluation_prompt(
             MOCK_CLUES,
             {},
@@ -159,17 +159,17 @@ class TestHappyPath:
             difficulty=PuzzleDifficulty.HARD,
         )
 
-        assert "solid NYT Tuesday-level" in prompt
-        assert "Wednesday is the ceiling" in prompt
-        assert "Mild misdirection" in prompt
-        assert "Saturday-level obscurity" in prompt
+        assert "NYT Monday-to-Tuesday" in prompt
+        assert "light misdirection" in prompt
         assert "cross-generationally iconic" in prompt
         assert "Accuracy and exact answer fit are more important" in prompt
-        # Too-easy clues on Hard puzzles must be flagged via freshness.
-        assert "too easy" in prompt
+        # Jeff (2026-10-27): make Hard easier. Plain clues are never
+        # penalized; rare senses and strained clues are flagged "too hard".
+        assert "never penalize a clue for being easy" in prompt
+        assert "too easy\" in the feedback" not in prompt
         assert "FRESHNESS 0-9" in prompt
-        # Strained / over-hard clues must be flagged via freshness too.
         assert "too hard" in prompt
+        assert "rare or secondary" in prompt
 
     def test_evaluation_penalizes_dated_niche_references(self) -> None:
         prompt = build_clue_evaluation_prompt(
@@ -594,3 +594,60 @@ class TestMarkdownWrappedResponse:
 
         assert report.passing is True
         assert report.clue_count == len(MOCK_CLUES)
+
+
+class TestJeffFeedback20261027:
+    """Grader rules from Jeff's 2026-10-27 answers."""
+
+    def _prompt(self, difficulty: PuzzleDifficulty = PuzzleDifficulty.EASY) -> str:
+        return build_clue_evaluation_prompt(
+            MOCK_CLUES, {}, PuzzleType.MIDI, difficulty=difficulty
+        )
+
+    def test_blanks_on_real_phrases_are_good_made_up_ones_flagged(self) -> None:
+        prompt = self._prompt()
+        assert "collocation give-aways" not in prompt
+        assert "made-up phrase" in prompt
+        assert '"___ sauce" for SOY' in prompt
+
+    def test_esoteric_senses_flagged_on_every_difficulty(self) -> None:
+        for difficulty in (PuzzleDifficulty.EASY, PuzzleDifficulty.HARD):
+            prompt = self._prompt(difficulty)
+            assert "esoteric sense" in prompt
+            assert "ARE as a metric unit of area" in prompt
+
+    def test_drinks_allowed_drunkenness_not(self) -> None:
+        prompt = self._prompt()
+        assert "Spirit in a mojito" in prompt
+        assert "must NOT be penalized" in prompt
+        assert "Newly off the bottle" in prompt
+
+    def test_briefly_is_not_an_abbreviation_indicator(self) -> None:
+        prompt = self._prompt()
+        assert '"briefly" and "in brief" are NOT acceptable' in prompt
+        assert '", briefly", "(abbr.)"' not in prompt
+
+    def test_grader_reports_name_flag(self) -> None:
+        prompt = self._prompt()
+        assert '"name":"answer"' in prompt
+        assert '"name":"clue"' in prompt
+
+    def test_parse_reads_name_flag(self) -> None:
+        from crossword_generator.graders.clue_grader import (
+            _parse_evaluation_response,
+        )
+
+        raw = json.dumps(
+            [
+                {"number": 1, "direction": "across", "accuracy": 20,
+                 "freshness": 20, "craft": 20, "fairness": 20, "name": "clue"},
+                {"number": 2, "direction": "down", "accuracy": 20,
+                 "freshness": 20, "craft": 20, "fairness": 20, "name": "Answer"},
+                {"number": 3, "direction": "down", "accuracy": 20,
+                 "freshness": 20, "craft": 20, "fairness": 20, "name": "yes"},
+                {"number": 4, "direction": "across", "accuracy": 20,
+                 "freshness": 20, "craft": 20, "fairness": 20},
+            ]
+        )
+        grades = _parse_evaluation_response(raw, [object()] * 4)
+        assert [g.uses_name for g in grades] == ["clue", "answer", None, None]

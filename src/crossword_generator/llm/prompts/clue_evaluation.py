@@ -48,13 +48,8 @@ _RUBRIC = (
     "fair misdirection, wordplay, or creative angles that make the clue "
     "interesting without becoming obscure. For Hard clues, do not reward "
     "cleverness unless the clue is first clearly accurate and inferable. "
-    "CRITICAL — too-easy clues on Hard puzzles: if this is a Hard puzzle and "
-    "the clue is an Easy-style giveaway the average solver answers instantly "
-    "(a plain primary definition, an obvious fill-in-the-blank, or arithmetic "
-    'like "One more than two" for THREE), score FRESHNESS 0-9 and include '
-    'the phrase "too easy" in the feedback. Plain direct clues are '
-    "acceptable on Hard only for entries that cannot support a harder fair "
-    "angle, such as abbreviations and partials.\n\n"
+    "Never penalize a clue on any puzzle for being too easy or too plain: "
+    "our solvers want easier puzzles.\n\n"
     "3. CRAFT (0-25): Is the language economical and the surface reading clean? "
     "Does the clue read naturally as English? Is the difficulty appropriate "
     "for the puzzle type? Penalize missing quotation marks around titles of "
@@ -95,26 +90,29 @@ _RUBRIC = (
     "CRITICAL — missing abbreviation indicator: if the answer is an "
     "abbreviation, acronym, or initialism (DNA, CIA, USA, ETA, EST, etc.) "
     "and the clue gives NO signal that the answer is shortened — no "
-    '", for short", ", briefly", "(abbr.)", or "org."-style abbreviated '
-    "cue — penalize CRAFT (0-12) and note the clue needs an abbreviation "
-    'indicator. Example to flag: DNA clued plainly as "Genetic material" '
-    '(should be "Genetic material, for short" or similar). '
-    "CRITICAL — collocation give-aways: heavily penalize (fairness 0-8) any "
-    "fill-in-the-blank clue whose blank plus a partner word forms a common "
-    "fixed phrase or compound that uniquely gives away the answer, even when "
-    'the answer text never appears. Examples to fail: SOY clued "___ sauce," '
-    'LIST clued "Shopping ___," MILK clued "___ shake," RAIN clued "___ '
-    'forest." These are unfair because the collocation makes the answer the '
-    "only fit. Prefer a plain definition instead. A blank is only fair when "
-    "several different words could plausibly complete the phrase. "
+    '"(abbr.)", ", for short", or "org."-style abbreviated cue — penalize '
+    "CRAFT (0-12) and note the clue needs an abbreviation indicator. "
+    'Example to flag: DNA clued plainly as "Genetic material" (should be '
+    '"Genetic material, for short" or similar). "briefly" and "in brief" '
+    "are NOT acceptable indicators (many solvers do not know them): score "
+    'CRAFT 0-7 and say "use (abbr.) or for short". '
+    "Fill-in-the-blank clues on common, colorful phrases — idioms, sayings, "
+    "catchphrases, famous titles — are GOOD, even when the phrase points "
+    'straight at the answer ("Easy as ___" for PIE, "___ sauce" for SOY). '
+    "CRITICAL — made-up phrases: if a fill-in-the-blank's phrase is not "
+    "something people actually say — invented, stitched together, or "
+    'awkward ("Morning ___ bowl" for OATS) — score CRAFT 0-7 and include '
+    'the phrase "made-up phrase" in the feedback. '
     "Is the clue culturally accessible without being obscure? Penalize "
     "strained pop-culture references, ultra-current slang, and Hard clues "
     "that try to create Friday/Saturday-level difficulty. "
-    "Penalize FRESHNESS (0-12) for deep-cut or obscure senses that most "
-    "solvers will not know, especially when a plain everyday angle exists — "
-    "this includes reaching for a barely-known meaning of a word just to "
-    'avoid reusing a prior clue (e.g. COS clued "Romaine lettuce variety" '
-    "instead of the companies or cosine sense). For this primarily "
+    "CRITICAL — esoteric senses (all difficulties): when a clue uses a rare, "
+    "technical, archaic, or specialist sense of the answer and an everyday "
+    'sense exists — ARE as a metric unit of area, DELL as "Small wooded '
+    'valley", DAM as "Foal\'s mother", COS as romaine lettuce — score '
+    'FAIRNESS 0-12 and include the phrase "esoteric sense" in the feedback. '
+    "This includes reaching for a barely-known meaning just to avoid "
+    "reusing a prior clue. For this primarily "
     "American-audience puzzle, also penalize FAIRNESS for deep-cut British "
     "or regional slang an American solver would not know (e.g. SNIP clued "
     '"A bargain"); common Briticisms in moderation are fine, but flag clues '
@@ -141,14 +139,15 @@ _RUBRIC = (
     'be more welcoming. Penalize unpleasant wording such as "death" or '
     '"undocumented immigrant"; if dying must be referenced, gentle '
     'euphemisms like "passed on" are preferred. '
-    "CRITICAL — guns, alcohol, and drugs: heavily penalize (fairness 0-8) "
-    "any clue that references firearms, ammunition, shooting, or gun "
-    "culture, or that references drunkenness, drinking, hangovers, or drug "
-    'use — even playfully. Examples to fail: PIN clued "Locked and loaded" '
-    '(gun wordplay); SOBER clued "Newly off the bottle" (drinking/recovery '
-    "angle). These answers should be clued through a benign everyday sense "
-    "instead. Note in the feedback that the clue needs a neutral, "
-    "family-friendly angle."
+    "CRITICAL — guns, drunkenness, and drugs: heavily penalize (fairness "
+    "0-8) any clue that references firearms, ammunition, shooting, or gun "
+    "culture, or that references drunkenness, hangovers, heavy drinking, or "
+    'drug use — even playfully. Examples to fail: PIN clued "Locked and '
+    'loaded" (gun wordplay); SOBER clued "Newly off the bottle" '
+    "(drinking/recovery angle). Note in the feedback that the clue needs a "
+    "neutral, family-friendly angle. A drink as a plain thing — a cocktail "
+    'ingredient, a kind of wine or beer (RUM clued "Spirit in a mojito") — '
+    "is fine and must NOT be penalized."
 )
 
 _THEME_EVAL_RULES = (
@@ -198,6 +197,7 @@ _EXAMPLE_OUTPUT = json.dumps(
             "freshness": 23,
             "craft": 24,
             "fairness": 24,
+            "name": "clue",
         },
     ],
     separators=(",", ":"),
@@ -209,14 +209,21 @@ _OUTPUT_SECTION = (
     "colons/commas) with one object per clue. Return the four sub-scores "
     "(accuracy, freshness, craft, fairness — each 0-25), NOT a total score. "
     'Include a SHORT "feedback" string (under ~10 words) ONLY for clues with '
-    'a real problem — name the issue tersely (e.g. "leaks: navy", "too easy '
-    'for Hard", "wrong: Frank Lloyd Wright"). OMIT the "feedback" field '
+    'a real problem — name the issue tersely (e.g. "leaks: navy", "esoteric '
+    'sense", "wrong: Frank Lloyd Wright"). OMIT the "feedback" field '
     "entirely for clean, high-scoring clues; do not write praise. Keep the "
     "exact issue keywords the repair step looks for. "
+    'NAMES: add "name":"answer" when the answer itself is a proper name '
+    '(OPRAH, ERIE, NBA), and "name":"clue" when the answer is an ordinary '
+    "word but the clue reaches it through the name of a person, character, "
+    'brand, company, team, or place ("Actor Hanks" for TOM). Titles of '
+    'movies, songs, and books alone do not count. OMIT "name" otherwise. '
+    "This flag is a count, not a defect — do not lower scores for it. "
     "No other text before or after.\n"
     f"\n{_EXAMPLE_OUTPUT}\n"
     "\n(First object: a flagged clue with terse feedback. Second: a clean clue "
-    "— scores only, no feedback field.)\n"
+    "that reaches its answer through a person's name — scores and the name "
+    "flag, no feedback field.)\n"
     "Evaluate every clue listed in the user message. "
     "Return ONLY the JSON array."
 )
@@ -294,31 +301,24 @@ def _difficulty_note(puzzle_type: PuzzleType, difficulty: PuzzleDifficulty) -> s
         )
     else:
         base = (
-            "This is an HGG Hard crossword. Reward solid NYT Tuesday-level "
-            "clues — Wednesday is the ceiling, not the target: fair, broadly "
-            "accessible, and a notch more challenging — "
-            "every clue should make the solver pause and think for a beat. "
-            "Accuracy and exact answer fit are more important than difficulty. "
-            "Mild misdirection, common secondary meanings, wordplay, and "
-            "occasional question-mark clues are appropriate only when they are "
-            "factually airtight and reasonably inferable. "
-            "CRITICAL — too-hard clues: if a clue is strained, contrived, "
-            "stacks multiple tricks, or is unfairly hard for a Tuesday "
-            "(Saturday-level obscurity, a leap solvers cannot reason toward, "
-            "or wordplay that only works after a long explanation), score "
-            'FRESHNESS 0-9 and include the phrase "too hard" in the '
-            "feedback. Difficulty should come from ONE fair twist; reward "
-            "clean, modestly challenging clues over maximal difficulty. "
-            "Also penalize "
+            "This is an HGG Hard crossword. Reward NYT Monday-to-Tuesday "
+            "clues: a step up from Easy, fair and broadly accessible. The "
+            "familiar meaning of the answer, phrased a little less directly — "
+            "a specific example, a fresh angle, light misdirection, or an "
+            "occasional question-mark clue — is the target. A clue a solver "
+            "gets right away is fine here; never penalize a clue for being "
+            "easy. Accuracy and exact answer fit are more important than "
+            "difficulty. "
+            "CRITICAL — too-hard clues: if a clue uses a rare or secondary "
+            "sense of the answer when its familiar meaning would work, or is "
+            "strained, contrived, stacks multiple tricks, or is unfairly hard "
+            "(obscure trivia, a leap solvers cannot reason toward, or wordplay "
+            "that only works after a long explanation), score FRESHNESS 0-9 "
+            'and include the phrase "too hard" in the feedback. Reward clean, '
+            "modestly challenging clues over maximal difficulty. Also penalize "
             "forced cleverness, ultra-current slang, "
             "older pop-culture references that are not cross-generationally "
-            "iconic, or trivia solvers cannot reason toward. Equally, penalize "
-            "clues that are too easy for this difficulty: an instantly "
-            "solvable Easy-style clue (plain primary definition, obvious "
-            "fill-in-the-blank, or arithmetic giveaway) must score FRESHNESS "
-            '0-9, with "too easy" stated in the feedback, unless the entry is '
-            "an abbreviation, partial, or similar glue that cannot support a "
-            "harder fair angle."
+            "iconic, or trivia solvers cannot reason toward."
         )
     if puzzle_type == PuzzleType.MINI:
         return f"{base} MINI clues should remain especially concise."

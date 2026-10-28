@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 
+from crossword_generator.clue_style import normalize_abbreviation_tags
 from crossword_generator.exporters.numbering import NumberedEntry
 from crossword_generator.llm.prompts.clue_generation import (
     _GUIDELINES,
@@ -33,9 +34,16 @@ _HINT_GUIDANCE = (
     "If the clue is a fill-in-the-blank, the hint should usually be a plain "
     "definition or a familiar everyday example, and vice versa.\n"
     "- Reach for: a plain dictionary definition (\"Frozen water\" for ICE); a "
-    "totally obvious example or category (\"A color\" for BLUE); a simple "
-    "synonym (\"Happy\" for GLAD); a clear antonym (\"Opposite of up\" for "
-    "DOWN); or a household-familiar association (\"Says 'meow'\" for CAT).\n"
+    "totally obvious example or category (\"Color of a clear sky\" for BLUE); "
+    "a simple synonym (\"Happy\" for GLAD); a clear antonym (\"Opposite of "
+    "up\" for DOWN); or a household-familiar association (\"Says 'meow'\" for "
+    "CAT).\n"
+    "- PASTE-READY: the editor often swaps a hint in as the puzzle's real "
+    "clue when the clue feels too hard, so every hint must work as a "
+    "finished clue on its own: exactly one answer fits (never a bare "
+    "category like \"A color\"), abbreviation answers carry \"(abbr.)\" or "
+    "\", for short\", titles are quoted, and it follows every clue rule "
+    "below.\n"
     "- Keep it short and plain. No wordplay, no \"?\"-trick clues, no "
     "lateral-thinking, no obscure trivia — ever, regardless of how hard the "
     "original puzzle is. The whole point of a hint is to rescue a stuck "
@@ -253,7 +261,7 @@ def parse_hint_response(
             )
         number = int(item["number"])
         direction = str(item["direction"]).lower()
-        hint = str(item["hint"]).strip()
+        hint = normalize_abbreviation_tags(str(item["hint"]).strip())
 
         key = (number, direction)
         if key not in valid_keys:
