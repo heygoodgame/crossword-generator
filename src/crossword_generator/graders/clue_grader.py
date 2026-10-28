@@ -202,6 +202,7 @@ def _parse_evaluation_response(
         craft = max(0.0, min(25.0, float(item.get("craft", 0))))
         fairness = max(0.0, min(25.0, float(item.get("fairness", 0))))
         score = accuracy + freshness + craft + fairness
+        uses_name = str(item.get("name") or "").strip().lower()
 
         grades.append(
             ClueGrade(
@@ -214,6 +215,7 @@ def _parse_evaluation_response(
                 freshness=freshness,
                 craft=craft,
                 fairness=fairness,
+                uses_name=uses_name if uses_name in ("answer", "clue") else None,
             )
         )
 

@@ -12,26 +12,35 @@ Current emphasis:
 - Easy puzzles should favor accessible, one-word fill.
 - Easy clue generation should be easier than NYT Monday: direct definitions,
   obvious fill-in-the-blanks, and broad casual-audience accessibility.
-- Hard clue generation should target solid NYT Tuesday, with Wednesday as the
-  ceiling rather than the target: fair but more oblique definitions, mild
-  wordplay, and occasional misdirection. Per Jeff's June 2026 feedback, an
-  instantly-solvable Easy-style clue (e.g. "One more than two" for THREE) is a
-  defect on a Hard puzzle: the generation prompt defaults Hard clues to a
-  harder fair angle (secondary meanings, specific examples, fair trivia, mild
-  misdirection) and reserves plain direct definitions for glue entries
-  (roughly a quarter of clues at most). Equally (per Jeff's follow-up after
-  the first harder-Hard batch overshot), do not strain for difficulty:
-  one fair twist per clue, never obscurity, convoluted phrasing, or stacked
-  tricks — when in doubt between two fair angles, pick the easier one. The
-  evaluator flags both "too easy" and "too hard" clues for repair. Avoid
-  forced difficulty, strained pop-culture references, ultra-current slang, and
-  clues that need a long explanation to be fair. For pop-culture, celebrity,
-  entertainment, sports, brand, and historical references, the older or more
-  niche the reference is, the more broadly iconic it must be. Accuracy and
-  exact answer fit beat cleverness: if a proper noun, song, quote, team name,
-  idiom, or fill-in-the-blank angle is not certain, drop that angle — on Hard,
-  switch to a different solid hard angle rather than an instantly-solvable
-  clue.
+- Hard clue generation targets NYT Monday-to-Tuesday (Jeff, 2026-10-27:
+  "Generally make both Easy and Hard puzzles easier"). This reverses the
+  June 2026 "too easy is a defect" rule, which his edits contradicted: on Hard
+  puzzles 48% of his edits made a clue easier and 9% made it harder. Clue the
+  familiar meaning and make it a little less direct through phrasing; never
+  switch to a rare or secondary sense (DELL as "Small wooded valley"). The
+  evaluator never penalizes a clue for being easy. It flags "too hard"
+  (rare sense, strained, stacked tricks) for repair. One fair twist per clue
+  at most. For pop-culture, celebrity, entertainment, sports, brand, and
+  historical references, the older or more niche the reference is, the more
+  broadly iconic it must be. Accuracy and exact answer fit beat cleverness:
+  if a proper noun, song, quote, team name, idiom, or fill-in-the-blank angle
+  is not certain, drop that angle.
+- Jeff's 2026-10-27 house rules, enforced in the prompts, grader and repair
+  loop (full list in `docs/clue-quality.md`):
+  - everyday meanings only, on all difficulties (no ARE as a unit of area);
+  - abbreviation tags are "(abbr.)" or ", for short". `clue_style.py`
+    rewrites any "briefly" or "in brief" tag in clues, repairs and hints;
+  - fill-in-the-blanks only on common, colorful phrases people actually say.
+    The grader flags a "made-up phrase";
+  - names: at most 2 per Mini and 5 per Midi. The grader flags each clue
+    `"name":"answer"|"clue"`, and the `budget` detector in the convergence
+    loop sends extra clued names to repair
+    (`grading.clue.max_name_entries` overrides the limit);
+  - at most one "Opposite of" clue per puzzle; Easy asks for one when an
+    entry has a clear opposite (`grading.clue.max_opposite_clues`; Starter
+    has no limit);
+  - drinks are fine as plain things; drunkenness and drugs are not;
+  - hints must be paste-ready clues, because Jeff swaps them in.
 - Clues must be timeless: no dependence on current employers, broadcast
   rights, rosters, reigning champions, or current hosts (per Jeff's June 2026
   feedback on stale TNT/NBA and Ari Shapiro/NPR clues). Titles of movies, TV

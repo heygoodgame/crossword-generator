@@ -170,6 +170,12 @@ class ClueGradingConfig(BaseModel):
     # raise it so evaluator-flagged too-easy clues (freshness 0-9) get repaired.
     freshness_repair_threshold: int = 0
     individual_repair_score_threshold: int = 65
+    # Per-puzzle budgets enforced by the repair loop (Jeff, 2026-10-27). Names:
+    # entries that are, or are clued through, a proper name; None means the
+    # puzzle-type default (2 per Mini, 5 per Midi). Opposites: "Opposite of"
+    # clues per puzzle; None turns the limit off. Starter has no opposites limit.
+    max_name_entries: int | None = None
+    max_opposite_clues: int | None = 1
     # Skip whole-puzzle regeneration and go straight to surgical repair when at
     # least this fraction of clues already pass. None disables (always regen).
     surgical_repair_pass_ratio: float = 0.8

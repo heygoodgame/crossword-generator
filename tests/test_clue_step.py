@@ -740,7 +740,7 @@ class TestThemeAnnotationsInPrompt:
         assert "equally plausible answers" in prompt
         assert "familiar unique hook" in prompt
 
-    def test_hard_prompt_targets_tuesday_wordplay(self) -> None:
+    def test_hard_prompt_targets_familiar_meanings(self) -> None:
         """Hard guidance is tied to difficulty, even for mini puzzles."""
         from crossword_generator.exporters.numbering import compute_numbering
 
@@ -754,17 +754,17 @@ class TestThemeAnnotationsInPrompt:
             difficulty=PuzzleDifficulty.HARD,
         )
 
-        assert "solid NYT Tuesday" in prompt
-        assert "Wednesday is the CEILING" in prompt
-        assert "DO NOT STRAIN" in prompt
-        assert "mild misdirection" in prompt
-        assert "Saturday-level obscurity" in prompt
+        assert "NYT Monday-to-Tuesday" in prompt
+        assert "light misdirection" in prompt
         assert "strained pop-culture references" in prompt
         assert "cross-generationally iconic" in prompt
-        # Too-easy clues are an explicit defect on Hard puzzles.
-        assert "TOO EASY" in prompt
-        assert 'One more than two" for THREE' in prompt
-        assert "DEFAULT to a harder fair angle" in prompt
+        # Jeff (2026-10-27): Hard clues come from the familiar meaning, made
+        # harder by phrasing, never by a rare sense; easy clues are fine.
+        assert "familiar, everyday meaning" in prompt
+        assert "NEVER make a clue harder by switching to a rare" in prompt
+        assert "FINE on a Hard puzzle" in prompt
+        assert "TOO EASY" not in prompt
+        assert "DEFAULT to a harder fair angle" not in prompt
 
     def test_prompt_applies_sliding_familiarity_to_references(self) -> None:
         """Older/nicher references must be especially well known."""
@@ -947,3 +947,56 @@ class TestRevealerClueNotSubstituted:
         revealer_clue = next(c for c in result.clues if c.answer == "KLMNO")
         assert revealer_clue.clue == "Clue for KLMNO"
         assert revealer_clue.clue != theme.revealer_clue
+
+
+class TestJeffFeedbackPromptRules:
+    """Generation and repair rules from Jeff's 2026-10-27 answers."""
+
+    def _prompt(self, difficulty: PuzzleDifficulty) -> str:
+        from crossword_generator.exporters.numbering import compute_numbering
+
+        entries = compute_numbering(MOCK_GRID)
+        return build_clue_generation_prompt(
+            entries,
+            compute_crossing_words(entries, MOCK_GRID),
+            PuzzleType.MIDI,
+            difficulty=difficulty,
+        )
+
+    def test_abbreviation_tags_are_abbr_or_for_short(self) -> None:
+        prompt = self._prompt(PuzzleDifficulty.EASY)
+        assert 'NEVER use "briefly" or' in prompt
+        assert '", briefly", ", in brief"' not in prompt
+        assert "can tear, briefly" not in prompt
+
+    def test_drinks_allowed_drunkenness_banned(self) -> None:
+        prompt = self._prompt(PuzzleDifficulty.EASY)
+        assert "DRINKS ARE FINE, DRUNKENNESS IS NOT" in prompt
+        assert "NO ALCOHOL" not in prompt
+
+    def test_name_limit_everyday_meaning_and_blank_rules(self) -> None:
+        prompt = self._prompt(PuzzleDifficulty.HARD)
+        assert "NAME LIMIT" in prompt
+        assert "at most 2 names and a MIDI puzzle at most 5" in prompt
+        assert "EVERYDAY MEANING RULE" in prompt
+        assert "ARE as a metric" in prompt
+        assert "FILL-IN-THE-BLANK RULE" in prompt
+        assert '"___ sauce" — soy sauce is a fixed phrase' not in prompt
+
+    def test_easy_asks_for_one_opposite_clue(self) -> None:
+        prompt = self._prompt(PuzzleDifficulty.EASY)
+        assert "one per puzzle, never more" in prompt
+
+    def test_repair_handles_budget_and_esoteric_flags(self) -> None:
+        clue = ClueEntry(number=1, direction="across", answer="CAT", clue="Old")
+        grade = ClueGrade(
+            number=1, direction="across", answer="CAT", score=50, feedback="x"
+        )
+        prompt = build_clue_repair_prompt(
+            [(clue, grade)], [clue], {}, PuzzleType.MINI,
+            difficulty=PuzzleDifficulty.HARD,
+        )
+        assert "TOO MANY NAMES" in prompt
+        assert '"Opposite of" clues' in prompt
+        assert "MADE-UP PHRASE" in prompt
+        assert "TOO EASY" not in prompt

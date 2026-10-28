@@ -341,3 +341,21 @@ def test_parse_hint_response_rejects_non_object_items() -> None:
 
     with pytest.raises(ValueError, match="Expected hint objects"):
         parse_hint_response('["just a hint string", "another"]', _entries())
+
+
+def test_hints_are_paste_ready_clues() -> None:
+    """Jeff swaps hints in as clues, so hints must work as finished clues."""
+    entries = compute_numbering([["C", "A", "T"], ["A", "R", "E"], ["B", "E", "D"]])
+    system, _ = build_hint_generation_messages(entries, {})
+    assert "PASTE-READY" in system
+    assert '"A color" for BLUE' not in system
+
+
+def test_hint_parse_normalizes_abbreviation_tags() -> None:
+    entries = compute_numbering([["C", "A", "T"], ["A", "R", "E"], ["B", "E", "D"]])
+    raw = json.dumps(
+        [{"number": 3, "direction": "down", "hint": "Talk series, in brief"}]
+    )
+    assert parse_hint_response(raw, entries) == {
+        (3, "down"): "Talk series, for short"
+    }

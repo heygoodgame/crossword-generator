@@ -14,6 +14,7 @@ from crossword_generator.models import (
     ClueEntry,
     ClueGrade,
     FillResult,
+    PuzzleDifficulty,
     PuzzleEnvelope,
     PuzzleType,
 )
@@ -1773,3 +1774,139 @@ class TestConvergenceLoop:
         assert clue_1a.clue == original
         assert fact_llm.call_count == 1
         assert not any(e.startswith("FACT:") for e in result.errors)
+
+
+class TestPuzzleBudgets:
+    """Per-puzzle budgets from Jeff's 2026-10-27 feedback: at most 2 names in
+    a Mini and 5 in a Midi, and one "Opposite of" clue per puzzle."""
+
+    def _step(self, **kwargs: object) -> ClueWithGradingStep:
+        llm = SequentialMockLLM([])
+        grader = ClueGrader(llm, min_passing_score=70)
+        return ClueWithGradingStep(llm, grader, max_retries=1, **kwargs)
+
+    def _envelope(
+        self,
+        clue_texts: list[str],
+        names: list[str | None],
+        *,
+        puzzle_type: PuzzleType = PuzzleType.MINI,
+        difficulty: PuzzleDifficulty = PuzzleDifficulty.EASY,
+    ) -> PuzzleEnvelope:
+        from crossword_generator.models import ClueGradeReport
+
+        clues = [
+            ClueEntry(
+                number=e["number"],
+                direction=e["direction"],
+                answer=e["answer"],
+                clue=text,
+            )
+            for e, text in zip(EXPECTED_ENTRIES, clue_texts, strict=True)
+        ]
+        grades = [
+            ClueGrade(
+                number=c.number,
+                direction=c.direction,
+                answer=c.answer,
+                score=90,
+                accuracy=23,
+                freshness=22,
+                craft=22,
+                fairness=23,
+                uses_name=name,
+            )
+            for c, name in zip(clues, names, strict=True)
+        ]
+        envelope = _make_envelope(clues=clues)
+        return envelope.model_copy(
+            update={
+                "puzzle_type": puzzle_type,
+                "difficulty": difficulty,
+                "clue_grade_report": ClueGradeReport(
+                    overall_score=90,
+                    clue_count=len(grades),
+                    passing=True,
+                    clue_grades=grades,
+                ),
+            }
+        )
+
+    def test_mini_over_name_budget_flags_clued_names_after_answer_names(
+        self,
+    ) -> None:
+        envelope = self._envelope(
+            ["Clue"] * 6,
+            ["clue", "answer", "clue", "clue", None, None],
+        )
+        flagged = self._step()._detect_budgets(envelope)
+        # One answer-name uses the budget first, so one clued name fits and
+        # the other two clued names are sent back to repair.
+        assert [(c.number, c.direction) for c, _ in flagged] == [
+            (2, "down"),
+            (3, "down"),
+        ]
+        assert all("Too many names" in g.feedback for _, g in flagged)
+        assert "4 name entries (limit 2)" in flagged[0][1].feedback
+
+    def test_names_within_budget_are_not_flagged(self) -> None:
+        envelope = self._envelope(
+            ["Clue"] * 6, ["clue", "answer", None, None, None, None]
+        )
+        assert self._step()._detect_budgets(envelope) == []
+
+    def test_midi_allows_five_names(self) -> None:
+        names = ["clue", "clue", "clue", "clue", "clue", None]
+        envelope = self._envelope(["Clue"] * 6, names, puzzle_type=PuzzleType.MIDI)
+        assert self._step()._detect_budgets(envelope) == []
+        names[5] = "answer"
+        envelope = self._envelope(["Clue"] * 6, names, puzzle_type=PuzzleType.MIDI)
+        assert len(self._step()._detect_budgets(envelope)) == 1
+
+    def test_configured_name_limit_overrides_default(self) -> None:
+        envelope = self._envelope(
+            ["Clue"] * 6, ["clue", "clue", None, None, None, None]
+        )
+        assert len(self._step(max_name_entries=1)._detect_budgets(envelope)) == 1
+
+    def test_second_opposite_clue_is_flagged(self) -> None:
+        texts = [
+            "Opposite of dog",
+            "Taxi",
+            '"Opposite of" clue two',
+            "opposite of fred",
+            "Exists",
+            "Sleep spot",
+        ]
+        envelope = self._envelope(texts, [None] * 6)
+        flagged = self._step()._detect_budgets(envelope)
+        assert [c.clue for c, _ in flagged] == [
+            '"Opposite of" clue two',
+            "opposite of fred",
+        ]
+        assert 'Too many "Opposite of" clues' in flagged[0][1].feedback
+
+    def test_starter_has_no_opposite_limit(self) -> None:
+        texts = ["Opposite of dog", "Opposite of walk"] + ["Clue"] * 4
+        envelope = self._envelope(
+            texts, [None] * 6, difficulty=PuzzleDifficulty.STARTER
+        )
+        assert self._step()._detect_budgets(envelope) == []
+
+    def test_budget_findings_never_roll_back(self) -> None:
+        grade = ClueGrade(
+            number=1, direction="across", answer="CAT", score=90, feedback="x"
+        )
+        assert self._step()._is_hard_final_finding("budget", grade) is False
+        assert self._step()._is_hard_final_finding("leak", grade) is True
+
+
+class TestRepairNormalizesAbbreviationTags:
+    def test_briefly_tag_becomes_for_short(self) -> None:
+        clue = ClueEntry(number=3, direction="down", answer="TED", clue="Old")
+        grade = ClueGrade(number=3, direction="down", answer="TED", score=40)
+        raw = json.dumps(
+            [{"number": 3, "direction": "down", "clue": "Talk series, briefly"}]
+        )
+        repaired = _parse_repair_response(raw, [(clue, grade)])
+        assert repaired[0].clue == "Talk series, for short"

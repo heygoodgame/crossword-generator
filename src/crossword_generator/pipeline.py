@@ -488,6 +488,8 @@ def create_pipeline(
         fact_checker=clue_fact_checker,
         clue_history=clue_history,
         dictionary=dictionary,
+        max_name_entries=config.grading.clue.max_name_entries,
+        max_opposite_clues=config.grading.clue.max_opposite_clues,
     )
 
     # Build steps

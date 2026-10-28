@@ -98,6 +98,11 @@ class ClueGrade(BaseModel):
     freshness: float | None = None
     craft: float | None = None
     fairness: float | None = None
+    # How the entry uses a proper name, as the grader reports it: "answer"
+    # when the answer itself is a name (OPRAH), "clue" when an ordinary word
+    # is clued through one ("Actor Hanks" for TOM), None otherwise. Feeds the
+    # per-puzzle name budget (Jeff, 2026-10-27: 2 per Mini, 5 per Midi).
+    uses_name: str | None = None
 
 
 class ClueGradeReport(BaseModel):
