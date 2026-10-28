@@ -272,6 +272,12 @@ XWordInfo list) supplies them.
   snapshot (hey-you's snapshot allowlist is `hgg-easy` + `hgg-60`).
 - `hgg-60.txt` — the source-score-60 entries (lengths 7–9) from the master.
 
+`refresh-dictionaries` (and so every `generate-pilot-batch` run) also
+rebuilds `hgg-starter.txt` from `HGGXW-Starter.txt`, flattened to `;50`.
+Starter is not part of the published snapshot. Until 2026-10-28 nothing
+rebuilt it, so 9 words Jeff had removed from Starter (FRISK, TOTE, DOE, …)
+were still in Starter fill.
+
 Composition by bucket:
 
 - Easy puzzles draw from `hgg-easy.txt` (`config.easy.yaml`, `config.easy9.yaml`).

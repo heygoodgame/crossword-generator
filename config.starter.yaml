@@ -1,8 +1,8 @@
 # Starter batch-generation config — "easier than Easy" difficulty tier.
-# Fills directly from the raw HGGXW Starter source list (Jeff, 2026-07):
-# 4,102 common 3-5 letter words, no scores. This is the quick wiring that
-# points straight at the source list rather than a built effective
-# dictionary; see the follow-up to fold Starter into
+# Fills from hgg-starter.txt, which refresh-dictionaries rebuilds from the
+# HGGXW Starter source list (Jeff, 2026-07): ~4,100 common 3-5 letter words,
+# flattened to ;50. It is not part of the published effective
+# dictionary snapshot; see the follow-up to fold Starter into
 # publish-effective-dictionaries.
 #
 # Starter clues use their own first-time-solver register (a notch below

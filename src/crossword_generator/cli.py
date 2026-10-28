@@ -3936,6 +3936,8 @@ def _refresh_dictionaries_for_generation(
     easy_output: str = "dictionaries/hgg-easy.txt",
     hard_output: str = "dictionaries/hgg-hard.txt",
     sixty_output: str = "dictionaries/hgg-60.txt",
+    starter_source: str = "dictionaries/HGGXW-Starter.txt",
+    starter_output: str = "dictionaries/hgg-starter.txt",
 ) -> None:
     """Sync admin-managed word lists and rebuild local generator dictionaries."""
     from crossword_generator.consolidate_list import (
@@ -4013,6 +4015,17 @@ def _refresh_dictionaries_for_generation(
         )
         for path in written:
             click.echo(f"Wrote local output: {path}")
+
+    # Starter fills straight from Jeff's Starter list, flattened to ;50. It is
+    # not part of the published snapshot, but it must follow his removals:
+    # until 2026-10-28 nothing rebuilt it, so 7 removed words stayed in fill.
+    starter_source_path = _resolve_project_path(project_root, starter_source)
+    if starter_source_path.exists():
+        from crossword_generator.dictionary_prep import prepare_flat_dictionary
+
+        starter_output_path = _resolve_project_path(project_root, starter_output)
+        prepare_flat_dictionary(starter_source_path, starter_output_path, score=50)
+        click.echo(f"Wrote local output: {starter_output_path}")
 
 
 def _build_local_effective_dictionaries(
