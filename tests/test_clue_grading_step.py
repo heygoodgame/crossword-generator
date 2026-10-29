@@ -1901,6 +1901,62 @@ class TestPuzzleBudgets:
         assert self._step()._is_hard_final_finding("leak", grade) is True
 
 
+class TestQuestionMarkClues:
+    """Jeff (2026-10-29): no question-mark clues, and "for example" not
+    "e.g."."""
+
+    def _step(self) -> ClueWithGradingStep:
+        llm = SequentialMockLLM([])
+        return ClueWithGradingStep(
+            llm, ClueGrader(llm, min_passing_score=70), max_retries=1
+        )
+
+    def _envelope(self, clue_texts: list[str]) -> PuzzleEnvelope:
+        clues = [
+            ClueEntry(
+                number=e["number"],
+                direction=e["direction"],
+                answer=e["answer"],
+                clue=text,
+            )
+            for e, text in zip(EXPECTED_ENTRIES, clue_texts, strict=True)
+        ]
+        return _make_envelope(clues=clues)
+
+    def test_detector_flags_only_pun_question_marks(self) -> None:
+        envelope = self._envelope(
+            [
+                "Purring pet",
+                "Ride for hire?",
+                "___ you okay?",
+                '"Ted ___?"',
+                "Exists",
+                "Sleep spot? (abbr.)",
+            ]
+        )
+        flagged = self._step()._detect_question_marks(envelope)
+        assert [c.clue for c, _ in flagged] == [
+            "Ride for hire?",
+            "Sleep spot? (abbr.)",
+        ]
+        assert "question-mark clue" in flagged[0][1].feedback
+        assert flagged[0][1].score == 0
+
+    def test_findings_include_question_detector(self) -> None:
+        envelope = self._envelope(["Ride for hire?"] + ["Clue"] * 5)
+        findings, _ = self._step()._collect_findings(envelope)
+        assert [name for name, _, _ in findings[(1, "across")]] == ["question"]
+
+    def test_repair_spells_out_eg(self) -> None:
+        clue = ClueEntry(number=3, direction="down", answer="TED", clue="Old")
+        grade = ClueGrade(number=3, direction="down", answer="TED", score=40)
+        raw = json.dumps(
+            [{"number": 3, "direction": "down", "clue": "Talk series, e.g."}]
+        )
+        repaired = _parse_repair_response(raw, [(clue, grade)])
+        assert repaired[0].clue == "Talk series, for example"
+
+
 class TestRepairNormalizesAbbreviationTags:
     def test_briefly_tag_becomes_for_short(self) -> None:
         clue = ClueEntry(number=3, direction="down", answer="TED", clue="Old")

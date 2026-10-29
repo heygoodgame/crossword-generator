@@ -96,6 +96,9 @@ _RUBRIC = (
     '"Genetic material, for short" or similar). "briefly" and "in brief" '
     "are NOT acceptable indicators (many solvers do not know them): score "
     'CRAFT 0-7 and say "use (abbr.) or for short". '
+    'A pun or wordplay clue ending in "?" is NOT allowed at any difficulty '
+    '(a literal question in quotes or a fill-in-the-blank is fine): score '
+    'CRAFT 0-7 and say "question-mark clue". '
     "Fill-in-the-blank clues on common, colorful phrases — idioms, sayings, "
     "catchphrases, famous titles — are GOOD, even when the phrase points "
     'straight at the answer ("Easy as ___" for PIE, "___ sauce" for SOY). '
@@ -304,8 +307,8 @@ def _difficulty_note(puzzle_type: PuzzleType, difficulty: PuzzleDifficulty) -> s
             "This is an HGG Hard crossword. Reward NYT Monday-to-Tuesday "
             "clues: a step up from Easy, fair and broadly accessible. The "
             "familiar meaning of the answer, phrased a little less directly — "
-            "a specific example, a fresh angle, light misdirection, or an "
-            "occasional question-mark clue — is the target. A clue a solver "
+            "a specific example, a fresh angle, or light misdirection — is "
+            "the target (never a question-mark pun clue). A clue a solver "
             "gets right away is fine here; never penalize a clue for being "
             "easy. Accuracy and exact answer fit are more important than "
             "difficulty. "
