@@ -987,6 +987,27 @@ class TestJeffFeedbackPromptRules:
         prompt = self._prompt(PuzzleDifficulty.EASY)
         assert "one per puzzle, never more" in prompt
 
+    def test_no_question_mark_clues_or_eg(self) -> None:
+        for difficulty in (PuzzleDifficulty.EASY, PuzzleDifficulty.HARD):
+            prompt = self._prompt(difficulty)
+            assert "NO QUESTION-MARK CLUES, at any difficulty" in prompt
+            assert 'NEVER write "e.g." in a clue' in prompt
+            assert "occasional question-mark clue" not in prompt
+            assert 'Hard: "Plant manager?"' not in prompt
+            assert '"Strawberry, e.g."' not in prompt
+
+    def test_evaluation_flags_question_mark_clues(self) -> None:
+        from crossword_generator.llm.prompts.clue_evaluation import (
+            build_clue_evaluation_prompt,
+        )
+
+        clue = ClueEntry(number=1, direction="across", answer="CAT", clue="Pet")
+        prompt = build_clue_evaluation_prompt(
+            [clue], {}, PuzzleType.MIDI, difficulty=PuzzleDifficulty.HARD
+        )
+        assert 'say "question-mark clue"' in prompt
+        assert "occasional question-mark clue" not in prompt
+
     def test_repair_handles_budget_and_esoteric_flags(self) -> None:
         clue = ClueEntry(number=1, direction="across", answer="CAT", clue="Old")
         grade = ClueGrade(
@@ -999,4 +1020,5 @@ class TestJeffFeedbackPromptRules:
         assert "TOO MANY NAMES" in prompt
         assert '"Opposite of" clues' in prompt
         assert "MADE-UP PHRASE" in prompt
+        assert "QUESTION-MARK CLUE" in prompt
         assert "TOO EASY" not in prompt

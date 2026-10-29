@@ -41,6 +41,10 @@ Current emphasis:
     has no limit);
   - drinks are fine as plain things; drunkenness and drugs are not;
   - hints must be paste-ready clues, because Jeff swaps them in.
+- Jeff's 2026-10-29 additions: no question-mark (pun "?") clues on any
+  difficulty, via the `question` detector (survivors surface as
+  `QUESTION:` soft errors); and "for example", never "e.g.", which
+  `clue_style.py` rewrites automatically.
 - Clues must be timeless: no dependence on current employers, broadcast
   rights, rosters, reigning champions, or current hosts (per Jeff's June 2026
   feedback on stale TNT/NBA and Ari Shapiro/NPR clues). Titles of movies, TV

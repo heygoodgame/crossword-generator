@@ -75,7 +75,7 @@ _GUIDELINES = (
     'texts"; MEN: "Adult guys").\n'
     "- COMPOUND-WORD RULE: never define an answer with a compound word that "
     "contains it spelled out — a more specific type of the answer. Do not clue "
-    'ROBE with "Bathrobe, for example", BERRY with "Strawberry, e.g.", or CAKE '
+    'ROBE with "Bathrobe, for example", BERRY with "Strawberry, for example", or CAKE '
     'with "Cheesecake type". The compound hands the answer to the solver; use a '
     "plain definition instead.\n"
     "- SHARED-FRAGMENT RULE: if the answer is itself a compound (e.g. MINIFIG = "
@@ -148,12 +148,13 @@ _GUIDELINES = (
     "used before.\n"
     "- Use misdirection and cleverness only when they fit the target "
     "difficulty. For Easy clues, clarity beats cleverness.\n"
-    "- Use question marks for witty/punny clues only when the target "
-    'difficulty allows it (e.g., "Plant manager?" for GARDENER). For Easy '
-    "clues this is FORBIDDEN: never end an Easy clue with a wordplay/tricky "
-    "question mark. A literal question mark INSIDE quoted material is fine "
-    '(e.g., "___ you okay?" for ARE, or a quoted question) — the ban is only '
-    "on the trick-signalling ? that marks a clue as punny.\n"
+    "- NO QUESTION-MARK CLUES, at any difficulty: never write a pun or "
+    'wordplay clue that ends in "?" ("Plant manager?" for GARDENER is out). '
+    "Clue the answer straight instead. A literal question inside quoted "
+    'material or a fill-in-the-blank is fine ("___ you okay?" for ARE, or a '
+    "quoted question); only the trick-signalling ? is banned.\n"
+    '- NEVER write "e.g." in a clue: many solvers do not know it. Write '
+    '"for example" instead ("Sedan, for example", not "Sedan, e.g.").\n'
     "- HYPHENATION RULE: do not hyphenate open compounds. Noun phrases like "
     '"snooze button", "lobster feast", "ice cream", "high school", and "real '
     'estate" are two separate words — never "snooze-button" or "lobster-feast". '
@@ -406,9 +407,9 @@ _LEAK_EXAMPLES = (
     "   If unsure whether a proper noun, song, quote, team, or date is exact, "
     "use a plain dictionary-style clue instead of risking a wrong fact.\n"
     "\n"
-    "13. Question-mark / pun clues (Hard only, and only when airtight):\n"
-    '   ANSWER: GARDENER  Hard: "Plant manager?"  (the ? signals wordplay)\n'
-    "   Never use a ? clue on Easy, and never when the pun is a stretch.\n"
+    "13. No question-mark / pun clues, at any difficulty:\n"
+    '   ANSWER: GARDENER  BAD: "Plant manager?"  (a ? pun clue)\n'
+    '   GOOD: "Person who tends a vegetable patch"\n'
     "\n"
     "14. Roman-numeral answers (clue the real-world thing, not the "
     "conversion):\n"
@@ -462,7 +463,8 @@ _LEAK_EXAMPLES = (
     "drugs, even playfully? "
     "(h) does the clue use a rare or technical sense when an everyday one "
     "exists? "
-    "If yes to (a)-(e), (g), or (h), or NO to (f), rewrite the clue before "
+    '(i) does the clue end in a pun "?" or use "e.g."? '
+    "If yes to (a)-(e) or (g)-(i), or NO to (f), rewrite the clue before "
     "returning it.\n"
 )
 
@@ -573,8 +575,8 @@ def _difficulty_guidance(puzzle_type: PuzzleType, difficulty: PuzzleDifficulty) 
             "obscure knowledge. Clue the familiar, everyday meaning of each "
             "answer — the one most solvers know — and make the clue a little "
             "less direct through PHRASING: a specific example instead of the "
-            "category, a fresh angle on the common meaning, light "
-            "misdirection, or an occasional question-mark clue. NEVER make a "
+            "category, a fresh angle on the common meaning, or light "
+            "misdirection (never a question-mark pun clue). NEVER make a "
             "clue harder by switching to a rare, secondary, technical, or "
             "archaic sense: clue DELL as the laptop brand, not \"Small wooded "
             'valley\". A clue that a solver gets right away is FINE on a Hard '
@@ -880,6 +882,9 @@ _REPAIR_GUIDELINES = (
     'a noun ("well-known author") and genuinely hyphenated words '
     '("self-esteem", "X-ray"). When unsure, leave the words open.\n'
     "- Put explanatory tags in parentheses, not after a comma or colon.\n"
+    '- NO QUESTION-MARK CLUES: never end a replacement with a pun "?". If a '
+    "clue was flagged as a QUESTION-MARK CLUE, clue the answer straight.\n"
+    '- Write "for example", never "e.g.".\n'
     '- Avoid unpleasant clue wording such as "death" or '
     '"undocumented immigrant"; use gentle wording like "passed on" only '
     "if dying is unavoidable.\n"

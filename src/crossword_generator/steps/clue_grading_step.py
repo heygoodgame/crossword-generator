@@ -11,7 +11,10 @@ from crossword_generator.clue_history import (
     DuplicateClueHit,
     duplicate_error_message,
 )
-from crossword_generator.clue_style import normalize_abbreviation_tags
+from crossword_generator.clue_style import (
+    is_question_mark_clue,
+    normalize_clue_style,
+)
 from crossword_generator.dictionary import Dictionary
 from crossword_generator.exporters.numbering import (
     compute_crossing_words,
@@ -232,6 +235,9 @@ class ClueWithGradingStep(PipelineStep):
             new_errors.append(_leak_error_message(finding))
         for hyphen in detect_hyphens(best_envelope.clues, self._dictionary):
             new_errors.append(_hyphen_error_message(hyphen))
+        for clue in best_envelope.clues:
+            if is_question_mark_clue(clue.clue):
+                new_errors.append(_question_mark_error_message(clue))
         if self._clue_history is not None:
             for hit in self._clue_history.find_duplicates(best_envelope.clues):
                 new_errors.append(duplicate_error_message(hit))
@@ -415,6 +421,7 @@ class ClueWithGradingStep(PipelineStep):
         add("fact", fact_entries)
         add("leak", self._detect_leaks(envelope))
         add("hyphen", self._detect_hyphens(envelope))
+        add("question", self._detect_question_marks(envelope))
         add("duplicate", self._detect_duplicates(envelope))
         add("budget", self._detect_budgets(envelope))
         return findings, fact_results
@@ -669,6 +676,19 @@ class ClueWithGradingStep(PipelineStep):
             if clue is not None:
                 entries.append((clue, _hyphen_clue_grade(finding)))
         return entries
+
+    def _detect_question_marks(
+        self, envelope: PuzzleEnvelope
+    ) -> list[tuple[ClueEntry, ClueGrade]]:
+        """Pun clues that end in "?" (deterministic).
+
+        Jeff (2026-10-29): "let's avoid those completely", at every difficulty.
+        """
+        return [
+            (clue, _question_mark_clue_grade(clue))
+            for clue in envelope.clues
+            if is_question_mark_clue(clue.clue)
+        ]
 
     def _detect_duplicates(
         self, envelope: PuzzleEnvelope
@@ -1163,6 +1183,7 @@ class ClueWithGradingStep(PipelineStep):
             "esoteric sense",
             "made-up phrase",
             "use (abbr.)",
+            "question-mark clue",
             "ultra-current slang",
             "forced",
             "strained",
@@ -1329,7 +1350,7 @@ def _parse_repair_response(
                 number=number,
                 direction=direction,
                 answer=original.answer,
-                clue=normalize_abbreviation_tags(str(item["clue"])),
+                clue=normalize_clue_style(str(item["clue"])),
             )
         )
 
@@ -1426,6 +1447,31 @@ def _hyphen_clue_grade(finding: HyphenFinding) -> ClueGrade:
             'modifiers before a noun like "well-known author", or genuinely '
             'hyphenated words like "self-esteem" and "X-ray").'
         ),
+    )
+
+
+def _question_mark_clue_grade(clue: ClueEntry) -> ClueGrade:
+    return ClueGrade(
+        number=clue.number,
+        direction=clue.direction,
+        answer=clue.answer,
+        score=0,
+        accuracy=25,
+        freshness=10,
+        craft=0,
+        fairness=25,
+        feedback=(
+            "This is a question-mark clue: it ends in a pun \"?\". HGG puzzles "
+            "never use them. Clue the answer straight, with no trailing "
+            "question mark."
+        ),
+    )
+
+
+def _question_mark_error_message(clue: ClueEntry) -> str:
+    return (
+        f"QUESTION: {clue.answer} ({clue.number}-{clue.direction}) "
+        f'question-mark clue "{clue.clue}"'
     )
 
 

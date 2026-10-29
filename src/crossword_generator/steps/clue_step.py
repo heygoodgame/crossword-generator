@@ -7,7 +7,7 @@ import logging
 from concurrent.futures import ThreadPoolExecutor
 
 from crossword_generator.clue_history import ClueHistoryIndex
-from crossword_generator.clue_style import normalize_abbreviation_tags
+from crossword_generator.clue_style import normalize_clue_style
 from crossword_generator.exporters.numbering import (
     NumberedEntry,
     compute_crossing_words,
@@ -257,7 +257,7 @@ def _parse_clue_response(
     for item in parsed:
         number = int(item["number"])
         direction = item["direction"].lower()
-        clue_text = normalize_abbreviation_tags(str(item["clue"]))
+        clue_text = normalize_clue_style(str(item["clue"]))
 
         key = (number, direction)
         if key not in entry_lookup:

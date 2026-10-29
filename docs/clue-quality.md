@@ -2,8 +2,8 @@
 
 **HGG difficulty calibration:**
 
--   Easy clues should be easier than an NYT Monday. Favor direct definitions, obvious fill-in-the-blank clues, familiar meanings, and fast recognition for a broad casual audience. For Easy, plain and instantly solvable is a feature, not a flaw. Never use a wordplay/tricky question-mark clue (the punny `?`-tagged kind) in an Easy puzzle — a literal `?` inside quoted text, like `"___ you okay?"` for ARE, is fine; only the trick-signalling question mark is banned.
--   Hard clues should land around NYT Monday/Tuesday (Jeff, 2026-10-27: "Generally make both Easy and Hard puzzles easier"). Clue the familiar meaning of the answer and make it a little less direct through phrasing: a specific example, a fresh angle, light misdirection, or an occasional question-mark clue. Never make a clue harder by switching to a rare or secondary sense (DELL as "Small wooded valley"). A clue a solver gets right away is fine on Hard.
+-   Easy clues should be easier than an NYT Monday. Favor direct definitions, obvious fill-in-the-blank clues, familiar meanings, and fast recognition for a broad casual audience. For Easy, plain and instantly solvable is a feature, not a flaw. No question-mark clues on any difficulty (see the house rules below).
+-   Hard clues should land around NYT Monday/Tuesday (Jeff, 2026-10-27: "Generally make both Easy and Hard puzzles easier"). Clue the familiar meaning of the answer and make it a little less direct through phrasing: a specific example, a fresh angle, or light misdirection. Never make a clue harder by switching to a rare or secondary sense (DELL as "Small wooded valley"). A clue a solver gets right away is fine on Hard.
 
 **House rules (Jeff, 2026-10-27):**
 
@@ -16,12 +16,16 @@
 -   Hints are paste-ready clues: Jeff swaps them in when a clue feels too hard.
 -   Hidden words: etymology matters, letter sequences do not. STAR/START is not a duplicate; ICE/ICY is (the same-root fill rule).
 
+**House rules (Jeff, 2026-10-29):**
+
+-   No question-mark clues, on any difficulty: never a pun or wordplay clue ending in `?` ("Plant manager?" for GARDENER). A literal question in quotes or a fill-in-the-blank, like `"___ you okay?"` for ARE, is fine. A deterministic `question` detector sends any `?` clue to repair; one that survives is reported as a `QUESTION:` soft error.
+-   Write "for example", never "e.g." ("Sedan, for example"). Many solvers don't know "e.g."; `clue_style.py` rewrites it in clues, repairs and hints. All published puzzles and drafts were rewritten on 2026-10-29.
+
 **Positive indicators (high clue quality):**
 
 -   Difficulty-fit — Easy clues are direct and obvious; Hard clues can be cleverer while staying fair
--   Misdirection — for Hard clues, the clue points the solver's mind in the wrong direction before the answer clicks ("Plant manager?" for GARDENER)
+-   Misdirection — for Hard clues, the clue points the solver's mind in the wrong direction before the answer clicks, without a question mark
 -   Wordplay — exploiting double meanings, homophones, or alternate readings of a word or phrase when the target difficulty allows it
--   Question-mark clues that are genuinely witty, not just lazy ("Suit material?" for EVIDENCE), especially in Hard puzzles
 -   Precise, clean surface reading — the clue reads naturally as an English phrase or sentence, not as an awkward construction forced to fit
 -   Multiple viable interpretations that narrow to exactly one answer with crossing letters
 -   Cultural references that are accessible but not dumbed down

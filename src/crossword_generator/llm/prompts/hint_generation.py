@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import json
 
-from crossword_generator.clue_style import normalize_abbreviation_tags
+from crossword_generator.clue_style import normalize_clue_style
 from crossword_generator.exporters.numbering import NumberedEntry
 from crossword_generator.llm.prompts.clue_generation import (
     _GUIDELINES,
@@ -42,7 +42,8 @@ _HINT_GUIDANCE = (
     "clue when the clue feels too hard, so every hint must work as a "
     "finished clue on its own: exactly one answer fits (never a bare "
     "category like \"A color\"), abbreviation answers carry \"(abbr.)\" or "
-    "\", for short\", titles are quoted, and it follows every clue rule "
+    "\", for short\", titles are quoted, \"for example\" is spelled out "
+    "(never \"e.g.\"), and it follows every clue rule "
     "below.\n"
     "- Keep it short and plain. No wordplay, no \"?\"-trick clues, no "
     "lateral-thinking, no obscure trivia — ever, regardless of how hard the "
@@ -261,7 +262,7 @@ def parse_hint_response(
             )
         number = int(item["number"])
         direction = str(item["direction"]).lower()
-        hint = normalize_abbreviation_tags(str(item["hint"]).strip())
+        hint = normalize_clue_style(str(item["hint"]).strip())
 
         key = (number, direction)
         if key not in valid_keys:
