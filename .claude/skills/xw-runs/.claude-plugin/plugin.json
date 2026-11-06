@@ -1,0 +1,6 @@
+{
+  "name": "xw-runs",
+  "version": "0.1.0",
+  "description": "A pane for kicking off and watching crossword-generator runs: open-day fills and unlimited pool batches.",
+  "types": "./types/index.d.ts"
+}
