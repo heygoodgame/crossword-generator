@@ -17,6 +17,9 @@ Codex has the same guidance mirrored at:
 - `.codex/skills/crossword-generator/SKILL.md`
 - `.codex/skills/crossword-generator/references/generator-workflow.md`
 
+`.claude/skills/xw-runs/` is a Claude Code mod (not a skill): `/xw` opens a pane
+that starts and watches open-day fills and unlimited pool batches. See its README.
+
 ## Key Commands
 
 ```bash
